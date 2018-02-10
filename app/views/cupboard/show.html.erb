@@ -1,0 +1,26 @@
+<div class="main cupboard-show">
+  <div class="container">
+    <div class="cupboard">
+      
+      <!-- Display the cupboard's info here -->
+      <div class="info">
+        <h3 class="cupboard-location"><%= @cupboard.location %></h3>
+      </div>
+    </div>
+
+    <% if @ingredients.first %>
+			<h2>Ingredients</h2>
+			<!-- Display each ingredient's info here -->
+			<% @ingredients.each do |ingredient| %>
+			<div class="ingredient">
+				<%= image_tag ingredient.image %>
+				<h3 class="ingredient-name"><%= ingredient.name %></h3>
+				<%= link_to "Learn more", ingredient_path(ingredient) %>
+			</div>
+			<% end %>
+    <% else %>
+      <p>Cupboard currently empty. Check <%= link_to "all ingredients", ingredients_path %> in stock.</p>
+    <% end %>
+
+  </div>
+</div>

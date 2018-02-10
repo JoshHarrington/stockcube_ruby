@@ -1,0 +1,10 @@
+    <%= form_for(@ingredient) do |f| %>  
+      <div class="field"> 
+        Label <%= f.label :ingredient %><br> 
+        Name <%= f.text_field :name %><br>
+        Image Src <%= f.text_field :image %> 
+      </div> 
+      <div class="actions"> 
+        <%= f.submit "Create" %> 
+      </div> 
+    <% end %>

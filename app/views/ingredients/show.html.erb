@@ -1,0 +1,40 @@
+<div class="main ingredient-show">
+  <div class="container">
+    
+    <!-- Display an ingredient's info here -->
+    <div class="ingredient">
+      <%= image_tag @ingredient.image %>
+      <div class="info">
+        <h3 class="ingredient-name"><%= @ingredient.name %></h3>
+      </div>
+    </div>
+
+    <% if @meals.first %>
+      <h2>meals</h2>
+      <!-- Display each meal's info here -->
+      <% @meals.each do |meal| %>
+      <div class="meal">
+        <%= image_tag meal.image %>
+        <h3 class="meal-title"><%= meal.title %></h3>
+        <%= link_to "Learn more", meal_path(meal) %>
+      </div>
+      <% end %>
+    <% else %>
+      <p>Ingredients not used in any meals. Check out <%= link_to "all meals", meals_path %>.</p>
+    <% end %>
+
+    <% if @cupboards.first %>
+      <h2>Cupboard</h2>
+      <!-- Display each location's info here -->
+      <% @cupboards.each do |cupboard| %>
+      <div class="meal">
+        <h3 class="cupboard-location"><%= cupboard.location %></h3>
+        <%= link_to "Learn more", cupboard_path(cupboard) %>
+      </div>
+      <% end %>
+    <% else %>
+      <p>Ingredients not currently in stock. Check everything <%= link_to "currently in stock", cupboards_path %>.</p>
+    <% end %>
+
+  </div>
+</div>

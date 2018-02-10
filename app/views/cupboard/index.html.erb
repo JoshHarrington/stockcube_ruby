@@ -1,0 +1,11 @@
+<div class="main">
+  <div class="container">
+  <h2>All Cupboards</h2>
+    <% @cupboards.each do |cupboard| %>
+    <div class="cupboard">
+      <h3><%= cupboard.location %></h3>
+      <%= link_to "Learn more", cupboard_path(cupboard) %>
+    </div>
+    <% end %>
+  </div>
+</div>

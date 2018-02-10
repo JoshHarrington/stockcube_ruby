@@ -1,0 +1,12 @@
+<div class="main">
+  <div class="container">
+  <h2>All Meals</h2>
+    <% @meals.each do |meal| %>
+    <div class="meal">
+      <%= image_tag meal.image %>
+      <h3><%= meal.title %></h3>
+      <%= link_to "Learn more", meal_path(meal) %>
+    </div>
+    <% end %>
+  </div>
+</div>

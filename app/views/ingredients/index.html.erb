@@ -1,0 +1,16 @@
+<div class="main ingredient-index">
+      <div class="container">
+        <div class="row">
+
+          <% @ingredients.each do |ingredient| %>
+          
+          <div class="ingredient col-xs-2">
+            <%= image_tag ingredient.image %>
+            <h3><%= ingredient.name %></h3>
+            <%= link_to "Learn more", ingredient_path(ingredient) %>
+          </div>
+          <% end  %>
+					<%= link_to 'New Ingredient', '/ingredients/new' %>
+          
+      </div>
+</div>
