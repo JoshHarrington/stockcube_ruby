@@ -19,7 +19,7 @@
         <%= link_to "Learn more", meal_path(meal) %>
       </div>
       <% end %>
-    <% else %>
+    
       <p>Ingredients not used in any meals. Check out <%= link_to "all meals", meals_path %>.</p>
     <% end %>
 
@@ -34,6 +34,18 @@
       <% end %>
     <% else %>
       <p>Ingredients not currently in stock. Check everything <%= link_to "currently in stock", cupboards_path %>.</p>
+    <% end %>
+  
+    <% if @portions.first %>
+      <h2>Portion</h2>
+      <!-- Display each location's info here -->
+      <% @portions.each do |portion| %>
+      <div class="meal">
+        <h3 class="portion-amount"><%= portion.amount %> <%= portion.unit %></h3>
+      </div>
+      <% end %>
+    <% else %>
+      <p>Portions not currently in stock. Check everything <%= link_to "currently in stock", cupboards_path %>.</p>
     <% end %>
 
   </div>

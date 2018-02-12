@@ -35,6 +35,8 @@ ActiveRecord::Schema.define(version: 20180209192813) do
   create_table "portions", force: :cascade do |t|
     t.integer "meal_id"
     t.integer "ingredient_id"
+    t.string "unit"
+    t.string "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ingredient_id"], name: "index_portions_on_ingredient_id"
@@ -44,6 +46,8 @@ ActiveRecord::Schema.define(version: 20180209192813) do
   create_table "stocks", force: :cascade do |t|
     t.integer "cupboard_id"
     t.integer "ingredient_id"
+    t.string "unit"
+    t.string "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cupboard_id"], name: "index_stocks_on_cupboard_id"

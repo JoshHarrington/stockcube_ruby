@@ -6,6 +6,7 @@ class IngredientsController < ApplicationController
 		@ingredient = Ingredient.find(params[:id])
 		@meals = @ingredient.meals
 		@cupboards = @ingredient.cupboards
+		@portions = @ingredient.portions
 	end
 	def new 
     @ingredient = Ingredient.new 
