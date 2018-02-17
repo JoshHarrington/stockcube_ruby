@@ -15,6 +15,7 @@ I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby en
 
 ## To dos
 - Set up default units for all ingredients
+	- Add some example amounts and units for stock and portions in `seeds.rb`
 - Could move unit over to ingredient?
 	- May create issues down the road if importing recipes that don't match the units defined by ingredients, but could be dealt with through conversion.
 	- Would ensure that entire database was using the same units so would be easier to do calculations if needed on multiple items.
