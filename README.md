@@ -2,7 +2,8 @@
 
 Welcome to this rudamentary prototype for the StockCube App
 
-* Ruby version - 2.5.0
+* Ruby version - 2.5.0  
+
 I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby environments and using [Homebrew](https://brew.sh/) to manage your packages (if you're on a Mac).
 
 ## Steps to run
