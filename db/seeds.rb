@@ -70,4 +70,18 @@ c2.ingredients << [i6, i12, i13, i16]
 c3.ingredients << [i18, i19, i20, i21]
 c4.ingredients << [i24, i25, i26, i28, i31]
 
-# p_default = Portion.create(unit: "kg", amount: ".1")
+User.create!(name:  "Example User",
+             email: "example@railstutorial.org",
+             password:              "foobar",
+						 password_confirmation: "foobar",
+						 admin: true)
+
+99.times do |n|
+  name  = Faker::Name.name
+  email = "example-#{n+1}@railstutorial.org"
+  password = "password"
+  User.create!(name:  name,
+               email: email,
+               password:              password,
+               password_confirmation: password)
+end
