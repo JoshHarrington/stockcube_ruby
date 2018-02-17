@@ -6,6 +6,7 @@
       <%= image_tag @ingredient.image %>
       <div class="info">
         <h3 class="ingredient-name"><%= @ingredient.name %></h3>
+        <%= link_to "Edit Ingredient", edit_ingredient_path(@ingredient) %>
       </div>
     </div>
 
@@ -19,8 +20,8 @@
         <%= link_to "Learn more", meal_path(meal) %>
       </div>
       <% end %>
-    
-      <p>Ingredients not used in any meals. Check out <%= link_to "all meals", meals_path %>.</p>
+    <% else %>
+      <p>Ingredient not used in any meals. Check out <%= link_to "all meals", meals_path %>.</p>
     <% end %>
 
     <% if @cupboards.first %>
@@ -33,7 +34,7 @@
       </div>
       <% end %>
     <% else %>
-      <p>Ingredients not currently in stock. Check everything <%= link_to "currently in stock", cupboards_path %>.</p>
+      <p>Ingredient not currently in stock. Check everything <%= link_to "currently in stock", cupboards_path %>.</p>
     <% end %>
   
     <% if @portions.first %>
@@ -41,7 +42,7 @@
       <!-- Display each location's info here -->
       <% @portions.each do |portion| %>
       <div class="meal">
-        <h3 class="portion-amount"><%= portion.amount %> <%= portion.unit %></h3>
+        <h3 class="portion-amount"><%= portion.amount %> <%= portion.ingredient.unit %></h3>
       </div>
       <% end %>
     <% else %>

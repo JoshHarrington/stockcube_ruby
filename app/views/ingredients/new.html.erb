@@ -1,10 +1,11 @@
-    <%= form_for(@ingredient) do |f| %>  
+    <%= form_for(@ingredient) do |i| %>  
       <div class="field"> 
-        Label <%= f.label :ingredient %><br> 
-        Name <%= f.text_field :name %><br>
-        Image Src <%= f.text_field :image %> 
+        Label <%= i.label :ingredient %><br> 
+        Name <%= i.text_field :name %><br>
+        Image Src <%= i.text_field :image %> 
+        Unit <%= i.text_field :unit %> 
       </div> 
       <div class="actions"> 
-        <%= f.submit "Create" %> 
+        <%= i.submit "Create" %> 
       </div> 
     <% end %>

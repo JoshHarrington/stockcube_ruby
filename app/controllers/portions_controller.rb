@@ -16,6 +16,6 @@ class PortionsController < ApplicationController
 	end
 	private 
 		def portion_params 
-			params.require(:portion).permit(:amount, :unit) 
+			params.require(:portion).permit(:amount) 
 		end
 end

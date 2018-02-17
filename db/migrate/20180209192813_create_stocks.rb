@@ -4,8 +4,7 @@ class CreateStocks < ActiveRecord::Migration[5.1]
       t.belongs_to :cupboard, index: true 
       t.belongs_to :ingredient, index: true
 
-      t.string :unit
-      t.string :amount
+      t.string :amount, :default => '0.1'
       
       t.timestamps
     end

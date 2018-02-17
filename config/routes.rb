@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'users/new'
+
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   get '/meals' => 'meals#index'
   get '/meals/new' => 'meals#new'
@@ -18,5 +20,7 @@ Rails.application.routes.draw do
   get '/ingredients' => 'ingredients#index'
   get '/ingredients/new' => 'ingredients#new'
   get '/ingredients/:id' => 'ingredients#show', as: :ingredient
+  get '/ingredients/:id/edit' => 'ingredients#edit', as: :edit_ingredient
+  patch '/ingredients/:id' => 'ingredients#update'
   post 'ingredients' => 'ingredients#create'
 end

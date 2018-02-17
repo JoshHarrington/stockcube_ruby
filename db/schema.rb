@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180209192813) do
+ActiveRecord::Schema.define(version: 20180217134610) do
 
   create_table "cupboards", force: :cascade do |t|
     t.string "location"
@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 20180209192813) do
   create_table "ingredients", force: :cascade do |t|
     t.string "name"
     t.string "image"
+    t.string "unit", default: "kg"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -35,8 +36,7 @@ ActiveRecord::Schema.define(version: 20180209192813) do
   create_table "portions", force: :cascade do |t|
     t.integer "meal_id"
     t.integer "ingredient_id"
-    t.string "unit"
-    t.string "amount"
+    t.string "amount", default: "0.1"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ingredient_id"], name: "index_portions_on_ingredient_id"
@@ -46,12 +46,20 @@ ActiveRecord::Schema.define(version: 20180209192813) do
   create_table "stocks", force: :cascade do |t|
     t.integer "cupboard_id"
     t.integer "ingredient_id"
-    t.string "unit"
-    t.string "amount"
+    t.string "amount", default: "0.1"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cupboard_id"], name: "index_stocks_on_cupboard_id"
     t.index ["ingredient_id"], name: "index_stocks_on_ingredient_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "password_digest"
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
 end
