@@ -1,0 +1,18 @@
+<%= form_for(@meal) do |m| %>  
+	<div class="field"> 
+		Label <%= m.label :meal %><br> 
+		Name <%= m.text_field :title %><br>
+		Image Src <%= m.text_field :image %> 
+		
+	</div>
+	<div class="actions"> 
+		<%= m.submit "Save" %> 
+	</div> 
+<% end %>
+
+<% @portions.each do |portion| %>
+	<div class="portion-block">
+		<p class="portion"><%= portion.amount %> <%= portion.unit %> of <%= portion.ingredient.name %></p>
+		<%= link_to "Update", edit_portion_path(portion) %>
+	</div>
+<% end %>

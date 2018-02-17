@@ -4,11 +4,11 @@ class MealsController < ApplicationController
 	end
 	def show
 		@meal = Meal.find(params[:id])
-    @ingredients = @meal.ingredients
+		@portions = @meal.portions
+		@ingredients = @meal.ingredients
 	end
 	def new 
 		@meal = Meal.new 
-
   end
   def create
     @meal = Meal.new(meal_params)
@@ -18,9 +18,21 @@ class MealsController < ApplicationController
       render 'new'
     end
 	end
+	def edit
+		@meal = Meal.find(params[:id])
+		@portions = @meal.portions
+	end
+	def update
+		@meal = Meal.find(params[:id])
+		@portions = @meal.portions
+      if @meal.update(meal_params)
+        redirect_to @meal
+      else
+        render 'edit'
+      end
+  end
 	private 
 		def meal_params 
 			params.require(:meal).permit(:title) 
-			# params.require(:portion).permit(:amount, :unit)
 		end
 end

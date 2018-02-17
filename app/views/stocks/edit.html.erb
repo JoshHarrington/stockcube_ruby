@@ -1,0 +1,13 @@
+<h1><%= @stock.ingredient.name %></h1>
+<%= form_for(@stock) do |s| %>  
+	<div class="field"> 
+		<%= s.label :stock %><br> 
+		Amount <%= s.text_field :amount %><br>
+		Unit <%= s.text_field :unit %> 
+		
+	</div>
+	<div class="actions"> 
+		<%= s.submit "Save" %> 
+	</div> 
+<% end %>
+

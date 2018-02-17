@@ -1,0 +1,13 @@
+<h1><%= @portion.ingredient.name %></h1>
+<%= form_for(@portion) do |p| %>  
+	<div class="field"> 
+		<%= p.label :portion %><br> 
+		Amount <%= p.text_field :amount %><br>
+		Unit <%= p.text_field :unit %> 
+		
+	</div>
+	<div class="actions"> 
+		<%= p.submit "Save" %> 
+	</div> 
+<% end %>
+
