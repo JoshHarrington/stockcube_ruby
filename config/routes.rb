@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  root 'static_pages#home'
+
+  get 'sessions/new'
 
   get '/meals' => 'meals#index'
   get '/meals/new' => 'meals#new'
@@ -28,6 +31,9 @@ Rails.application.routes.draw do
 
   get  '/signup',  to: 'users#new', as: :users_new
   post '/signup',  to: 'users#create'
+  get    '/login',   to: 'sessions#new'
+  post   '/login',   to: 'sessions#create'
+  delete '/logout',  to: 'sessions#destroy'
 
   resources :users
 end
