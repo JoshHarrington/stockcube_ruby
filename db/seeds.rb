@@ -29,7 +29,16 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
 
 		## define ingredient
 		ingredient_name = ingredient['ItemName']
-		ingredient_name = ingredient_name.gsub(/#{foodRegex}/, '').downcase
+    ingredient_name = ingredient_name.gsub(/#{foodRegex}/, '').downcase
+    
+    if ingredient_name.include? ","
+      ingredient_name = ingredient_name.split(', ', 2)
+      ingredient_main_title = ingredient_name[0].titleize
+      ingredient_title_detail = " (" + ingredient_name[1] + ")"
+      ingredient_name = ingredient_main_title + ingredient_title_detail
+    else
+      ingredient_name
+    end
 
 		ingredients_set.add(ingredient_name)
 
@@ -37,19 +46,6 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
 
 end
 
-# worldRecipes.css('recipe').each_with_index do |recipe, recipe_index|
-
-# 	recipe.children.css('RecipeItem').each do |ingredient|
-
-# 		## define ingredient
-# 		ingredient_name = ingredient['ItemName']
-# 		ingredient_name = ingredient_name.gsub(/#{foodRegex}/, '').downcase
-
-# 		ingredients_set.add(ingredient_name)
-
-# 	end
-
-# end
 
 sorted_ingredients = ingredients_set.sort
 
@@ -63,21 +59,29 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
   recipe_title = recipe['description']
   recipe_desc = Array.new
 
-  
+
   recipe.children.css('XML_MEMO1').each do |description|
     safe_desc = URI.escape(description.inner_text)
     recipe_desc << safe_desc
   end
-  
+
 	recipe_new = Meal.create(title: recipe_title, description: recipe_desc.to_s)
-  
+
 	recipe.children.css('RecipeItem').each do |ingredient|
-    
+
 		## define ingredient
 		ingredient_name = ingredient['ItemName']
-		ingredient_name = ingredient_name.gsub(/#{foodRegex}/, '').downcase
-        
-    # ingredient_id = Ingredient[ingredient_name]
+    ingredient_name = ingredient_name.gsub(/#{foodRegex}/, '').downcase
+
+    if ingredient_name.include? ","
+      ingredient_name = ingredient_name.split(', ', 2)
+      ingredient_main_title = ingredient_name[0].titleize
+      ingredient_title_detail = " (" + ingredient_name[1].titleize + ")"
+      ingredient_name = ingredient_main_title + ingredient_title_detail
+    else
+      ingredient_name.titleize
+    end
+
     ingredient_obj = Ingredient.find_or_create_by(name: ingredient_name)
 
 		recipe_new.ingredients << ingredient_obj
@@ -85,26 +89,6 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
   
 
 end
-
-# worldRecipes.css('recipe').each_with_index do |recipe, recipe_index|
-
-#   recipe_title = recipe['description']
-
-# 	recipe_new = Meal.create(title: recipe_title)
-  
-# 	recipe.children.css('RecipeItem').each do |ingredient|
-    
-# 		## define ingredient
-# 		ingredient_name = ingredient['ItemName']
-# 		ingredient_name = ingredient_name.gsub(/#{foodRegex}/, '').downcase
-        
-#     # ingredient_id = Ingredient[ingredient_name]
-#     ingredient_obj = Ingredient.find_or_create_by(name: ingredient_name)
-
-# 		recipe_new.ingredients << ingredient_obj
-# 	end
-
-# end
 
 
 
