@@ -34,10 +34,10 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
     if ingredient_name.include? ","
       ingredient_name = ingredient_name.split(', ', 2)
       ingredient_main_title = ingredient_name[0].titleize
-      ingredient_title_detail = " (" + ingredient_name[1] + ")"
+      ingredient_title_detail = " (" + ingredient_name[1].titleize + ")"
       ingredient_name = ingredient_main_title + ingredient_title_detail
     else
-      ingredient_name
+      ingredient_name = ingredient_name.titleize
     end
 
 		ingredients_set.add(ingredient_name)
@@ -61,8 +61,8 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
 
 
   recipe.children.css('XML_MEMO1').each do |description|
-    safe_desc = URI.escape(description.inner_text)
-    recipe_desc << safe_desc
+    # safe_desc = URI.escape(description.inner_text)
+    recipe_desc = description.inner_text
   end
 
 	recipe_new = Meal.create(title: recipe_title, description: recipe_desc.to_s)
@@ -79,7 +79,7 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
       ingredient_title_detail = " (" + ingredient_name[1].titleize + ")"
       ingredient_name = ingredient_main_title + ingredient_title_detail
     else
-      ingredient_name.titleize
+      ingredient_name = ingredient_name.titleize
     end
 
     ingredient_obj = Ingredient.find_or_create_by(name: ingredient_name)
