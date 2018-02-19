@@ -11,17 +11,19 @@ require 'uri'
 # #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 veggieRecipesXML = File.read("./db/foodDBs/VegetarianRecipes.exl")
-veggieRecipes = Nokogiri::XML(veggieRecipesXML)
-
 worldRecipesXML = File.read("./db/foodDBs/WorldRecipes.exl")
-worldRecipes = Nokogiri::XML(worldRecipesXML)
+
+recipes = Nokogiri::XML(veggieRecipesXML)
+worldRecipes = Nokogiri::XML(worldRecipesXML).search('data')
+
+recipes.at('data').add_child(worldRecipes)
 
 foodRegex = "(, boiled.*)|(, blanched.*)|(, california.*)|(, pan fried.*)|(, braised.*)|(, roasted.*)|(, chuck clod.*)|(, fresh.*)|(, salad or.*)|(, instant.*)|(, prepared.*)|(, sliced.*)|(, canned.*)|(, salted.*)|(, dry roasted.*)|(, plain.*)|(, double acting.*)|(, Eagle.*)|(, from .*)|(, degerminated.*)|(, ground.*)|(, all purpose.*)|(, pastry.*)|(, white.*)|(, cooked.*)|(, grated.*)|(, shredded.*)|(, organic.*)|(, dash.*)|(, whole grain.*)|(, chopped.*)|(, extracted.*)|(, unsweetened.*)|(, frozen.*)|(, red, California.*)|(, old fashioned.*)|(, dry.*)|(, original.*)|(, TSP.*)|(, seedless.*)|(, without seeds.*)|(, table.*)|(, brown.*)|(, with calcium.*)|(, winter.*)|(, powdered.*)|(, silken.*)|(, with nigari.*)|(, unsalted.*)|(, crushed.*)|(, stewed.*)|(, filtered.*)|(, natural.*)|(, municipal.*)|(, regular.*)|(, baked.*)|(, active.*)|(, steamed.*)|(, ready to.*)|(, diced.*)|(, powder.*)|(, defatted.*)|(, toasted.*)|(, hulled.*)|(, oriental.*)|(, daikon.*)|(, halves.*)|(, creamy.*)|(, flakes.*)|(, vital.*)|(, slivered.*)|(, 60 grain.*)|(, raw.*)|(, top round.*)|(, top sirloin.*)|(, chuck.*)|(, dehydrated.*)|(, seasoned.*)|(, low moisture.*)|(, roasted.*)|(, whole.*)|(, kernels.*)|(, 50 grain.*)|(, refrigerated.*)|(, smoked.*)|(, food service.*)|(, elegant.*)"
 
 
 ingredients_set = Set[]
 
-veggieRecipes.css('recipe').each_with_index do |recipe, recipe_index|
+recipes.css('recipe').each_with_index do |recipe, recipe_index|
 
 	recipe.children.css('RecipeItem').each do |ingredient|
 
@@ -35,19 +37,19 @@ veggieRecipes.css('recipe').each_with_index do |recipe, recipe_index|
 
 end
 
-worldRecipes.css('recipe').each_with_index do |recipe, recipe_index|
+# worldRecipes.css('recipe').each_with_index do |recipe, recipe_index|
 
-	recipe.children.css('RecipeItem').each do |ingredient|
+# 	recipe.children.css('RecipeItem').each do |ingredient|
 
-		## define ingredient
-		ingredient_name = ingredient['ItemName']
-		ingredient_name = ingredient_name.gsub(/#{foodRegex}/, '').downcase
+# 		## define ingredient
+# 		ingredient_name = ingredient['ItemName']
+# 		ingredient_name = ingredient_name.gsub(/#{foodRegex}/, '').downcase
 
-		ingredients_set.add(ingredient_name)
+# 		ingredients_set.add(ingredient_name)
 
-	end
+# 	end
 
-end
+# end
 
 sorted_ingredients = ingredients_set.sort
 
@@ -56,7 +58,7 @@ sorted_ingredients.to_a.each_with_index do |ingredient, index|
 end
 
 
-veggieRecipes.css('recipe').each_with_index do |recipe, recipe_index|
+recipes.css('recipe').each_with_index do |recipe, recipe_index|
 
   recipe_title = recipe['description']
   recipe_desc = Array.new
@@ -84,25 +86,25 @@ veggieRecipes.css('recipe').each_with_index do |recipe, recipe_index|
 
 end
 
-worldRecipes.css('recipe').each_with_index do |recipe, recipe_index|
+# worldRecipes.css('recipe').each_with_index do |recipe, recipe_index|
 
-  recipe_title = recipe['description']
+#   recipe_title = recipe['description']
 
-	recipe_new = Meal.create(title: recipe_title)
+# 	recipe_new = Meal.create(title: recipe_title)
   
-	recipe.children.css('RecipeItem').each do |ingredient|
+# 	recipe.children.css('RecipeItem').each do |ingredient|
     
-		## define ingredient
-		ingredient_name = ingredient['ItemName']
-		ingredient_name = ingredient_name.gsub(/#{foodRegex}/, '').downcase
+# 		## define ingredient
+# 		ingredient_name = ingredient['ItemName']
+# 		ingredient_name = ingredient_name.gsub(/#{foodRegex}/, '').downcase
         
-    # ingredient_id = Ingredient[ingredient_name]
-    ingredient_obj = Ingredient.find_or_create_by(name: ingredient_name)
+#     # ingredient_id = Ingredient[ingredient_name]
+#     ingredient_obj = Ingredient.find_or_create_by(name: ingredient_name)
 
-		recipe_new.ingredients << ingredient_obj
-	end
+# 		recipe_new.ingredients << ingredient_obj
+# 	end
 
-end
+# end
 
 
 
