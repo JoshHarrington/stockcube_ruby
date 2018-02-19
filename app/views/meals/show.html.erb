@@ -4,8 +4,8 @@
       
       <!-- Display the meal's info here -->
       <div class="info">
-        <%= image_tag @meal.image %>
         <h3 class="meal-title"><%= @meal.title %></h3>
+        <p class="meal-description"><%= description_unescape %></p>
         <%= link_to "Edit meal", edit_meal_path(@meal) %>
       </div>
     </div>

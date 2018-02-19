@@ -3,7 +3,7 @@
     
     <!-- Display an ingredient's info here -->
     <div class="ingredient">
-      <%= image_tag @ingredient.image %>
+
       <div class="info">
         <h3 class="ingredient-name"><%= @ingredient.name %></h3>
         <%= link_to "Edit Ingredient", edit_ingredient_path(@ingredient) %>
@@ -15,7 +15,7 @@
       <!-- Display each meal's info here -->
       <% @meals.each do |meal| %>
       <div class="meal">
-        <%= image_tag meal.image %>
+
         <h3 class="meal-title"><%= meal.title %></h3>
         <%= link_to "Learn more", meal_path(meal) %>
       </div>
