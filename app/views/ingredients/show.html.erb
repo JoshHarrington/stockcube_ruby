@@ -10,25 +10,25 @@
       </div>
     </div>
 
-    <% if @meals.first %>
-      <h2>meals</h2>
-      <!-- Display each meal's info here -->
-      <% @meals.each do |meal| %>
-      <div class="meal">
+    <% if @recipes.first %>
+      <h2>recipes</h2>
+      <!-- Display each recipe's info here -->
+      <% @recipes.each do |recipe| %>
+      <div class="recipe">
 
-        <h3 class="meal-title"><%= meal.title %></h3>
-        <%= link_to "Learn more", meal_path(meal) %>
+        <h3 class="recipe-title"><%= recipe.title %></h3>
+        <%= link_to "Learn more", recipe_path(recipe) %>
       </div>
       <% end %>
     <% else %>
-      <p>Ingredient not used in any meals. Check out <%= link_to "all meals", meals_path %>.</p>
+      <p>Ingredient not used in any recipes. Check out <%= link_to "all recipes", recipes_path %>.</p>
     <% end %>
 
     <% if @cupboards.first %>
       <h2>Cupboard</h2>
       <!-- Display each location's info here -->
       <% @cupboards.each do |cupboard| %>
-      <div class="meal">
+      <div class="recipe">
         <h3 class="cupboard-location"><%= cupboard.location %></h3>
         <%= link_to "Learn more", cupboard_path(cupboard) %>
       </div>
@@ -41,7 +41,7 @@
       <h2>Portion</h2>
       <!-- Display each location's info here -->
       <% @portions.each do |portion| %>
-      <div class="meal">
+      <div class="recipe">
         <h3 class="portion-amount"><%= portion.amount %> <%= portion.ingredient.unit %></h3>
       </div>
       <% end %>

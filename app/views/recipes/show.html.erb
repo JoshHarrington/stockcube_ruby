@@ -1,12 +1,12 @@
-<div class="main meal-show">
+<div class="main recipe-show">
   <div class="container">
-    <div class="meal">
+    <div class="recipe">
       
-      <!-- Display the meal's info here -->
+      <!-- Display the recipe's info here -->
       <div class="info">
-        <h3 class="meal-title"><%= @meal.title %></h3>
-        <p class="meal-description"><%= description_unescape %></p>
-        <%= link_to "Edit meal", edit_meal_path(@meal) %>
+        <h3 class="recipe-title"><%= @recipe.title %></h3>
+        <p class="recipe-description"><%= description_unescape %></p>
+        <%= link_to "Edit recipe", edit_recipe_path(@recipe) %>
       </div>
     </div>
 

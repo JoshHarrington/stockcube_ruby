@@ -7,9 +7,9 @@ class PortionsController < ApplicationController
 	end
 	def update
 		@portion = Portion.find(params[:id])
-		@meal = @portion.meal
+		@recipe = @portion.recipe
       if @portion.update(portion_params)
-        redirect_to meal_path(@meal)
+        redirect_to recipe_path(@recipe)
       else
         render 'edit'
       end

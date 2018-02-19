@@ -26,21 +26,21 @@ ActiveRecord::Schema.define(version: 20180217164454) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "meals", force: :cascade do |t|
-    t.string "title"
-    t.string "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "portions", force: :cascade do |t|
-    t.integer "meal_id"
+    t.integer "recipe_id"
     t.integer "ingredient_id"
     t.string "amount", default: "0.1"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ingredient_id"], name: "index_portions_on_ingredient_id"
-    t.index ["meal_id"], name: "index_portions_on_meal_id"
+    t.index ["recipe_id"], name: "index_portions_on_recipe_id"
+  end
+
+  create_table "recipes", force: :cascade do |t|
+    t.string "title"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "stocks", force: :cascade do |t|

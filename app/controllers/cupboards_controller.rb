@@ -11,7 +11,7 @@ class CupboardsController < ApplicationController
 		@cupboard = cupboard.new 
   end
   def create
-    @cupboard = cupboard.new(cupboard_params)
+    @cupboard = Cupboard.new(cupboard_params)
     if @cupboard.save
       redirect_to '/cupboards'
     else
@@ -23,7 +23,7 @@ class CupboardsController < ApplicationController
 		@stocks = @cupboard.stocks
 	end
 	def update
-		@cupboard = cupboard.find(params[:id])
+		@cupboard = Cupboard.find(params[:id])
 		@stocks = @cupboard.stocks
       if @cupboard.update(cupboard_params)
         redirect_to @cupboard

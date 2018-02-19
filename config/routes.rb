@@ -3,11 +3,11 @@ Rails.application.routes.draw do
 
   get 'sessions/new'
 
-  get '/meals' => 'meals#index'
-  get '/meals/new' => 'meals#new'
-  get '/meals/:id' => 'meals#show', as: :meal
-  get '/meals/:id/edit' => 'meals#edit', as: :edit_meal
-  patch '/meals/:id' => 'meals#update'
+  get '/recipes' => 'recipes#index'
+  get '/recipes/new' => 'recipes#new'
+  get '/recipes/:id' => 'recipes#show', as: :recipe
+  get '/recipes/:id/edit' => 'recipes#edit', as: :edit_recipe
+  patch '/recipes/:id' => 'recipes#update'
 
   get '/portions/:id' => 'portions#show', as: :portion
   get '/portions/:id/edit' => 'portions#edit', as: :edit_portion

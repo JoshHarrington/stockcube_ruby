@@ -25,8 +25,8 @@ I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby en
 	- sign up form?
 - ~~Start working on user accounts~~
 	- Complete [rails tutorial](https://www.railstutorial.org/book/updating_and_deleting_users#sec-updating_what_we_learned_in_this_chapter)
-- Add description field to meals
-- Rename meals to recipes
+- ~~Add description field to meals~~
+- ~~Rename meals to recipes~~
 - Import Veggie recipes from `.exl` file into database
 	- Figure out repeatable method to import [esha databases](https://www.esha.com/resources/additional-databases/)
 - Figure out where to host database

@@ -1,11 +1,11 @@
-<%= form_for(@meal) do |m| %>  
+<%= form_for(@recipe) do |r| %>  
 	<div class="field"> 
-		Label <%= m.label :meal %><br> 
-		Name <%= m.text_field :title %><br>
-		Image Src <%= m.text_field :image %> 
+		Label <%= r.label :recipe %><br> 
+		Name <%= r.text_field :title %><br>
+		Name <%= r.text_area :description %><br>
 	</div>
 	<div class="actions"> 
-		<%= m.submit "Save" %> 
+		<%= r.submit "Save" %> 
 	</div> 
 <% end %>
 

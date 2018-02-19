@@ -66,7 +66,7 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
 		puts description
   end
 
-	# recipe_new = Meal.create(title: recipe_title, description: recipe_desc.to_s)
+	# recipe_new = Recipe.create(title: recipe_title, description: recipe_desc.to_s)
 
 	recipe.children.css('RecipeItem').each do |ingredient|
 

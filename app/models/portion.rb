@@ -1,4 +1,4 @@
 class Portion < ApplicationRecord
-	belongs_to :meal
+	belongs_to :recipe
 	belongs_to :ingredient
 end
