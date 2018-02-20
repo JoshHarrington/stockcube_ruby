@@ -34,6 +34,8 @@ gem 'will_paginate',  '3.1.6'
 
 gem 'sendgrid-ruby'
 
+gem 'dotenv-rails'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

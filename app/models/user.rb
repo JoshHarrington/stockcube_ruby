@@ -9,6 +9,8 @@ class User < ApplicationRecord
 										uniqueness: { case_sensitive: false }
 	has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
+  has_many :favourites
+  has_many :recipes, through: :favourites
 
   class << self
     # Returns the hash digest of the given string.

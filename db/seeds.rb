@@ -105,10 +105,10 @@ c4 = Cupboard.create(location: "Cupboard by the Oven")
 # c3.ingredients << [i18, i19, i20, i21]
 # c4.ingredients << [i24, i25, i26, i28, i31]
 
-User.create!(name:  "Example User",
-             email: "example@railstutorial.org",
-             password:              "foobar",
-						 password_confirmation: "foobar",
+me = User.create(name:  "Example User",
+             email: ENV['PERSONAL_EMAIL'],
+             password:              ENV['PERSONAL_PASSWORD'],
+						 password_confirmation: ENV['PERSONAL_PASSWORD'],
              admin: true,
              activated: true,
              activated_at: Time.zone.now)
@@ -124,3 +124,11 @@ User.create!(name:  "Example User",
                activated: true,
                activated_at: Time.zone.now)
 end
+
+# Build recipe selection
+recipes = Recipe.all
+recipe  = recipes.first
+recipePickTitle  = recipes[2].title
+recipePickObj = Recipe.find_or_create_by(title: recipePickTitle)
+
+me.recipes << recipePickObj
