@@ -5,7 +5,7 @@
       <!-- Display the recipe's info here -->
       <div class="info">
         <h3 class="recipe-title"><%= @recipe.title %></h3>
-        <p class="recipe-description"><%= description_unescape %></p>
+        <p class="recipe-description"><%= recipe_description %></p>
         <%= link_to "Edit recipe", edit_recipe_path(@recipe) %>
       </div>
     </div>
