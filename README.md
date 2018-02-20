@@ -38,8 +38,6 @@ I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby en
 	- ~~Figure out repeatable method to import [esha databases](https://www.esha.com/resources/additional-databases/)~~
 	- Figure out how to seed remote database with esha data
 	- Figure out method to mark ingredients as vegetarian & vegan in database
-	- Logic to present if recipe is vegetarian / vegan 
-		- If all ingredients in a recipe are vegetarian then the recipe is vegetarian
 - Cupboards functionality
 	- Simple method of adding ingredients to cupboards with default weight and use by date
 	- Joint (family) account to share cupboards?
@@ -47,8 +45,10 @@ I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby en
 	- Method to favourite a set of recipes
 	- Default recipes page would be user's favourite recipes, not a listing of all recipes
 	- Method to share recipes between account?
+	- Logic to present if recipe is vegetarian / vegan 
+		- If all ingredients in a recipe are vegetarian then the recipe is vegetarian
 - Ingredients functionality
-	- Ingredients list should only be accessible by admins
+	- ~~Ingredients list should only be accessible by admins~~
 	- Ingredients can be added by anyone but adding method should search through and present existing ingredients to ensure that user can see use existing ingredient if possible.
 	- Should be method for admin to combine the user added ingredients with existing ingredients 
 - Notifications

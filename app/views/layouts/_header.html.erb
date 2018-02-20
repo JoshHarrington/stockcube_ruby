@@ -4,7 +4,9 @@
     <ul>
       <li><%= link_to "Home", root_path %></li>
       <li><%= link_to "Recipes", recipes_path %></li>
-      <li><%= link_to "Ingredients", ingredients_path %></li>
+      <% if logged_in? && current_user.admin? %>
+        <li><%= link_to "Ingredients", ingredients_path %></li>
+      <% end %>
       <li><%= link_to "Cupboard", cupboards_path %></li>
       <% if logged_in? %>
         <li><%= link_to "Users", users_path %></li>
