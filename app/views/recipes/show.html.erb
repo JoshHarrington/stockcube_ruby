@@ -10,25 +10,21 @@
       </div>
     </div>
 
-    <h2>Ingredients</h2>
-    <!-- Display each ingredient's info here -->
-		<% @ingredients.each do |ingredient| %>
-    <div class="ingredient">
-      ingredient_id 
-      <h3 class="ingredient-name"><%= ingredient.name %></h3>
-			<%= link_to "Learn more", ingredient_path(ingredient) %>
-    </div>
-		<% end %>
+    <button>Favourite<%= current_user.name %></button>
 
-		<% @portions.each do |portion| %>
+    <% @portions.each do |portion| %>
     <div class="portion-block">
 
-      <%= portion.ingredient.name %>
-      <br />
+      <h3><%= portion.ingredient.name %></h3>
       <p class="portion"><%= portion.amount %><%= portion.ingredient.unit %></p>
-      Hello
+      <br />
     </div>
-		<% end %>
+    <% end %>
+
+
+
+
+
 
   </div>
 </div>

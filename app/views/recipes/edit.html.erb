@@ -1,17 +1,26 @@
-<%= form_for(@recipe) do |r| %>  
-	<div class="field"> 
-		Label <%= r.label :recipe %><br> 
-		Name <%= r.text_field :title %><br>
-		Name <%= r.text_area :description %><br>
-	</div>
-	<div class="actions"> 
-		<%= r.submit "Save" %> 
-	</div> 
-<% end %>
 
-<% @portions.each do |portion| %>
-	<div class="portion-block">
-		<p class="portion"><%= portion.amount %> <%= portion.ingredient.unit %> of <%= portion.ingredient.name %></p>
-		<%= link_to "Update", edit_portion_path(portion) %>
-	</div>
+<%= form_for @recipe, html: {class: "form-horizontal"} do |f| %>
+  <fieldset id="recipe-meta">
+    <ol>
+      <li class="control-group">
+        <%= f.label :title, "Recipe Name", class: "control-label" %>
+        <div class="controls"><%= f.text_field :title %></div>
+      </li>
+      <li class="control-group">
+        <%= f.label :description, "A brief description of this recipe", class: "control-label" %>
+        <div class="controls"><%= f.text_area :description, rows: 10 %></div>
+      </li>
+    </ol>
+  </fieldset>
+
+  <fieldset id="recipe-ingredients">
+    <ol>
+      <%= f.fields_for :portions do |portion| %>
+        <%= render 'portion_fields', f: portion %>
+      <% end %>
+    </ol>
+    <%= link_to_add_association 'add ingredient', f, :portions, 'data-association-insertion-node' => "#recipe-ingredients ol", 'data-association-insertion-method' => "append", :wrap_object => Proc.new {|portion| portion.build_ingredient; portion } %>
+  </fieldset>
+
+  <%= f.submit %>
 <% end %>

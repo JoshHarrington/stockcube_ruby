@@ -9,8 +9,16 @@
     </section>
 
 
-    <% @recipes.each do |recipe| %>
-      <%= recipe.title %><br/>
+    <h2>User's Recipes</h2>
+    <% @users_recipes.each do |recipe| %>
+      <p><%= recipe.title %></p>
+    <% end %>
+
+    <br/>
+    <h2>All Recipes</h2>
+
+    <% @all_recipes.each do |recipe| %>
+      <p><%= recipe.title %></p>
     <% end %>
 
   </aside>

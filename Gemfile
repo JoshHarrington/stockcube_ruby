@@ -36,6 +36,9 @@ gem 'sendgrid-ruby'
 
 gem 'dotenv-rails'
 
+gem 'jquery-rails', '~> 4.3', '>= 4.3.1'
+gem 'cocoon'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

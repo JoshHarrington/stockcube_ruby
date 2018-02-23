@@ -12,7 +12,8 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     redirect_to root_url and return unless @user.activated?
     @favourites = @user.favourites
-    @recipes = @user.recipes
+    @users_recipes = @user.recipes
+    @all_recipes = Recipe.all
   end
 
   def new
