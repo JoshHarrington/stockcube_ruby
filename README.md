@@ -42,6 +42,7 @@ I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby en
 	- Simple method of adding ingredients to cupboards with default weight and use by date
 	- Joint (family) account to share cupboards?
 - Recipes functionality
+	- ~~Method to edit a recipes Ingredients and Portions~~
 	- Method to favourite a set of recipes
 	- Default recipes page would be user's favourite recipes, not a listing of all recipes
 	- Method to share recipes between account?
