@@ -124,11 +124,3 @@ me = User.create(name:  "Example User",
                activated: true,
                activated_at: Time.zone.now)
 end
-
-# Build recipe selection
-recipes = Recipe.all
-recipe  = recipes.first
-recipePickTitle  = recipes[2].title
-recipePickObj = Recipe.find_or_create_by(title: recipePickTitle)
-
-me.recipes << recipePickObj

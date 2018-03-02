@@ -9,8 +9,12 @@ class User < ApplicationRecord
 										uniqueness: { case_sensitive: false }
 	has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
-  has_many :favourites
-  has_many :recipes, through: :favourites
+
+  has_many :recipes
+
+  # Favourite recipes of user
+  has_many :favourite_recipes # just the 'relationships'
+  has_many :favourites, through: :favourite_recipes, source: :recipe # the actual recipes a user favourites
 
   class << self
     # Returns the hash digest of the given string.

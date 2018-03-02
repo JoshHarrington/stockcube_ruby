@@ -30,6 +30,23 @@ class RecipesController < ApplicationController
       else
         render 'edit'
       end
+	end
+	# Add and remove favourite recipes
+  # for current_user
+  def favourite
+    type = params[:type]
+    if type == "favourite"
+      current_user.favourites << @recipe
+      redirect_to :back, notice: 'You favourited #{@recipe.name}'
+
+    elsif type == "unfavourite"
+      current_user.favourites.delete(@recipe)
+      redirect_to :back, notice: 'Unfavourited #{@recipe.name}'
+
+    else
+      # Type missing, nothing happens
+      redirect_to :back, notice: 'Nothing happened.'
+    end
   end
 	private 
 		def recipe_params 

@@ -5,6 +5,10 @@
     <div class="recipe">
       <h3><%= recipe.title %></h3>
       <%= link_to "Learn more", recipe_path(recipe) %>
+      <% if current_user %>
+        <%= link_to "favourite",   favourite_recipe_path(@recipe, type: "favourite"), method: :put %>
+        <%= link_to "unfavourite", favourite_recipe_path(@recipe, type: "unfavourite"), method: :put %>
+      <% end %>
     </div>
     <% end %>
   </div>
