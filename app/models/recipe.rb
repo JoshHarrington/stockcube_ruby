@@ -1,8 +1,10 @@
 class Recipe < ApplicationRecord
 	has_many :portions
 	has_many :ingredients, through: :portions
-	has_many :favourites
-	has_many :users, through: :favourites
+
+  belongs_to :users
+  
+  has_reputation :favourites, source: :user, aggregated_by: :sum
 
 
   accepts_nested_attributes_for :portions,

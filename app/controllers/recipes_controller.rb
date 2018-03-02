@@ -30,7 +30,14 @@ class RecipesController < ApplicationController
       else
         render 'edit'
       end
-  end
+	end
+	def favourite
+		value = params[:type] == "favourite" ? 1 : 0
+		@recipe = Recipe.find(params[:id])
+		@recipe.add_or_update_evaluation(:favourites, value, current_user)
+		redirect_back fallback_location: root_path, notice: "Thank you for favouriting"
+	end
+
 	private 
 		def recipe_params 
 			params.require(:recipe).permit(:title, :description, portions_attributes:[:id, :amount, :_destroy]) 

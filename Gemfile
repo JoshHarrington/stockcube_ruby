@@ -39,6 +39,8 @@ gem 'dotenv-rails'
 gem 'jquery-rails', '~> 4.3', '>= 4.3.1'
 gem 'cocoon'
 
+gem 'activerecord-reputation-system', require: 'reputation_system'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

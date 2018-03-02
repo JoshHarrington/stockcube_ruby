@@ -7,10 +7,12 @@ class User < ApplicationRecord
   validates :email, presence: true, length: { maximum: 255 },
 										format: { with: VALID_EMAIL_REGEX },
 										uniqueness: { case_sensitive: false }
-	has_secure_password
+  has_secure_password
+  has_many :recipes
+  has_many :evaluations, class_name: "RSEvaluation", as: :source
+  has_reputation :favourites, source: {reputation: :favourites, of: :recipes}, aggregated_by: :sum
+
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
-  has_many :favourites
-  has_many :recipes, through: :favourites
 
   class << self
     # Returns the hash digest of the given string.
@@ -68,6 +70,10 @@ class User < ApplicationRecord
   # Returns true if a password reset has expired.
   def password_reset_expired?
     reset_sent_at < 2.hours.ago
+  end
+  
+  def favourited?(recipe)
+    evaluations.where(target_type: recipe.class, target_id: recipe.id).present?
   end
   
   private

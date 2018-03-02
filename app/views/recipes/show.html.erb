@@ -7,10 +7,17 @@
         <h3 class="recipe-title"><%= @recipe.title %></h3>
         <p class="recipe-description"><%= recipe_description %></p>
         <%= link_to "Edit recipe", edit_recipe_path(@recipe) %>
+        <br />
+        <br />
+          <%= pluralize @recipe.reputation_for(:favourites).to_i, "favourites" %>
+          | <%= link_to "favourite", favourite_recipe_favourite_path(recipe, value: 1), method: "post" %>
+          | <%= link_to "unfavourite", favourite_recipe_favourite_path(recipe, value: 0), method: "post" %>
       </div>
     </div>
+    <%= form_for @recipe, html: {class: "form-horizontal"} do |f| %>
+      <button>Favourite<%= current_user.name %></button>
+    <% end %>
 
-    <button>Favourite<%= current_user.name %></button>
 
     <% @portions.each do |portion| %>
     <div class="portion-block">
@@ -20,10 +27,6 @@
       <br />
     </div>
     <% end %>
-
-
-
-
 
 
   </div>

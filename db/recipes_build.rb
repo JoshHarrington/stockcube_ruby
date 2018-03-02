@@ -2,14 +2,6 @@ require 'nokogiri'
 require 'set'
 require 'uri'
 
-# # This file should contain all the record creation needed to seed the database with its default values.
-# # The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
-# #
-# # Examples:
-# #
-# #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
-# #   Mayor.create(name: 'Emanuel', city: cities.first)
-
 veggieRecipesXML = File.read("./db/foodDBs/VegetarianRecipes.exl")
 worldRecipesXML = File.read("./db/foodDBs/WorldRecipes.exl")
 
@@ -92,33 +84,3 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
 
 end
 
-
-c1 = Cupboard.create(location: "Fridge Door")
-c2 = Cupboard.create(location: "Fridge Bottom Drawer")
-c3 = Cupboard.create(location: "Fridge Top Shelf")
-c4 = Cupboard.create(location: "Cupboard by the Oven")
-
-# c1.ingredients << [i5, i7, i8]
-# c2.ingredients << [i6, i12, i13, i16]
-# c3.ingredients << [i18, i19, i20, i21]
-# c4.ingredients << [i24, i25, i26, i28, i31]
-
-me = User.create(name:  "Example User",
-             email: ENV['PERSONAL_EMAIL'],
-             password:              ENV['PERSONAL_PASSWORD'],
-						 password_confirmation: ENV['PERSONAL_PASSWORD'],
-             admin: true,
-             activated: true,
-             activated_at: Time.zone.now)
-
-99.times do |n|
-  name  = Faker::Name.name
-  email = "example-#{n+1}@railstutorial.org"
-  password = "password"
-  User.create!(name:  name,
-               email: email,
-               password:              password,
-               password_confirmation: password,
-               activated: true,
-               activated_at: Time.zone.now)
-end
