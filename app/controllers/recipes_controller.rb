@@ -1,4 +1,5 @@
 class RecipesController < ApplicationController
+	include ActionView::Helpers::UrlHelper
 	def index
     @recipes = Recipe.all
 	end
@@ -36,13 +37,16 @@ class RecipesController < ApplicationController
   def favourite
 		type = params[:type]
 		@recipe = Recipe.find(params[:id])		
+		recipe_title = @recipe.title
     if type == "favourite"
-      current_user.favourites << @recipe
-      redirect_back fallback_location: root_path, notice: 'You favourited #{@recipe.title}'
+			current_user.favourites << @recipe
+			@string = "Added the \"#{link_to(@recipe.title, recipe_path(@recipe))}\" recipe to favourites"
+      redirect_back fallback_location: root_path, notice: @string
 
     elsif type == "unfavourite"
-      current_user.favourites.delete(@recipe)
-      redirect_back fallback_location: root_path, notice: 'Unfavourited #{@recipe.title}'
+			current_user.favourites.delete(@recipe)
+			@string = "Removed the \"#{link_to(@recipe.title, recipe_path(@recipe))}\" recipe from favourites"
+			redirect_back fallback_location: root_path, notice: @string
 
     else
       # Type missing, nothing happens

@@ -10,7 +10,11 @@
       </div>
     </div>
 
-    <button>Favourite<%= current_user.name %></button>
+    <% if current_user %>
+      <%= link_to "favourite",   favourite_recipe_path(@recipe, type: "favourite"), method: :put %>
+      <%= link_to "unfavourite", favourite_recipe_path(@recipe, type: "unfavourite"), method: :put %>
+    <% end %>
+
 
     <% @portions.each do |portion| %>
     <div class="portion-block">

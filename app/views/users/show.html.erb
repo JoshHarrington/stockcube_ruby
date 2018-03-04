@@ -8,8 +8,11 @@
       </h1>
     </section>
 
-    <% @user.favourites.each do |favourite| %>
-      <p><%= favourite.title %></p>
+    <% @user.favourites.each do |recipe| %>
+      <p><%= recipe.title %></p>
+      <%= link_to "Learn more", recipe_path(recipe) %>
+      <%= link_to "unfavourite", favourite_recipe_path(recipe, type: "unfavourite"), method: :put %>
+      <br />
     <% end %>
   
 
