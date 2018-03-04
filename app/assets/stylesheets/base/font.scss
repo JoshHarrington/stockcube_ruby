@@ -8,7 +8,7 @@ a, p, label, input, textarea, .alert, .debug_dump {
 	font-size: 1.5em;
 }
 
-p>a {
+p>a, .alert>a, .debug_dump>a {
 	font-size: 1em;
 }
 

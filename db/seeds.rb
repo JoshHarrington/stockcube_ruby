@@ -3928,10 +3928,9 @@ Portion.create!([
 
 me = User.find_or_create_by(name: "Example User")
 
-
-# Build recipe selection
 recipes = Recipe.all
 recipePickTitle  = recipes[0].title
 recipePickObj = Recipe.find_or_create_by(title: recipePickTitle)
 
+# add first recipe to the favourites of the example user
 me.favourites << recipePickObj

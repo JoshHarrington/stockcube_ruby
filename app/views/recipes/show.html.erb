@@ -11,8 +11,11 @@
     </div>
 
     <% if current_user %>
-      <%= link_to "favourite",   favourite_recipe_path(@recipe, type: "favourite"), method: :put %>
-      <%= link_to "unfavourite", favourite_recipe_path(@recipe, type: "unfavourite"), method: :put %>
+      <% unless current_user.favourites.include?(@recipe) %>
+        <%= link_to "favourite", favourite_recipe_path(@recipe, type: "favourite"), method: :put %>
+      <% else %>
+        <%= link_to "unfavourite", favourite_recipe_path(@recipe, type: "unfavourite"), method: :put %>
+      <% end %>
     <% end %>
 
 
