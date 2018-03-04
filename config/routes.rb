@@ -7,11 +7,11 @@ Rails.application.routes.draw do
 
   get 'sessions/new'
 
-  get '/recipes' => 'recipes#index'
-  get '/recipes/new' => 'recipes#new'
-  get '/recipes/:id' => 'recipes#show', as: :recipe
-  get '/recipes/:id/edit' => 'recipes#edit', as: :edit_recipe
-  patch '/recipes/:id' => 'recipes#update'
+  # get '/recipes' => 'recipes#index'
+  # get '/recipes/new' => 'recipes#new'
+  # get '/recipes/:id' => 'recipes#show', as: :recipe
+  # get '/recipes/:id/edit' => 'recipes#edit', as: :edit_recipe
+  # patch '/recipes/:id' => 'recipes#update'
 
   get '/portions/:id' => 'portions#show', as: :portion
   get '/portions/:id/edit' => 'portions#edit', as: :edit_portion
