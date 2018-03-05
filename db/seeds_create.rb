@@ -16,7 +16,7 @@ worldRecipesXML = File.read("./db/foodDBs/WorldRecipes.exl")
 recipes = Nokogiri::XML(veggieRecipesXML)
 worldRecipes = Nokogiri::XML(worldRecipesXML).search('data')
 
-recipes.at('data').add_child(worldRecipes)
+recipes = recipes.at('data').add_child(worldRecipes)
 
 foodRegex = "(, boiled.*)|(, blanched.*)|(, california.*)|(, pan fried.*)|(, braised.*)|(, roasted.*)|(, chuck clod.*)|(, fresh.*)|(, salad or.*)|(, instant.*)|(, prepared.*)|(, sliced.*)|(, canned.*)|(, salted.*)|(, dry roasted.*)|(, plain.*)|(, double acting.*)|(, Eagle.*)|(, from .*)|(, degerminated.*)|(, ground.*)|(, all purpose.*)|(, pastry.*)|(, white.*)|(, cooked.*)|(, grated.*)|(, shredded.*)|(, organic.*)|(, dash.*)|(, whole grain.*)|(, chopped.*)|(, extracted.*)|(, unsweetened.*)|(, frozen.*)|(, red, California.*)|(, old fashioned.*)|(, dry.*)|(, original.*)|(, TSP.*)|(, seedless.*)|(, without seeds.*)|(, table.*)|(, brown.*)|(, with calcium.*)|(, winter.*)|(, powdered.*)|(, silken.*)|(, with nigari.*)|(, unsalted.*)|(, crushed.*)|(, stewed.*)|(, filtered.*)|(, natural.*)|(, municipal.*)|(, regular.*)|(, baked.*)|(, active.*)|(, steamed.*)|(, ready to.*)|(, diced.*)|(, powder.*)|(, defatted.*)|(, toasted.*)|(, hulled.*)|(, oriental.*)|(, daikon.*)|(, halves.*)|(, creamy.*)|(, flakes.*)|(, vital.*)|(, slivered.*)|(, 60 grain.*)|(, raw.*)|(, top round.*)|(, top sirloin.*)|(, chuck.*)|(, dehydrated.*)|(, seasoned.*)|(, low moisture.*)|(, roasted.*)|(, whole.*)|(, kernels.*)|(, 50 grain.*)|(, refrigerated.*)|(, smoked.*)|(, food service.*)|(, elegant.*)|(, chilled.*)"
 recipeRegex = "(Copyright.*)"
@@ -61,7 +61,6 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
 
 
   recipe.children.css('XML_MEMO1').each do |description|
-    # safe_desc = URI.escape(description.inner_text)
     recipe_desc << description.inner_text
   end
 
@@ -72,26 +71,35 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
 	recipe.children.css('RecipeItem').each do |ingredient|
 
 		## define ingredient
-		ingredient_name = ingredient['ItemName']
+    ingredient_name = ingredient['ItemName']
+    ingredient_unit = ingredient['itemMeasureKey']
+    ingredient_portion = ingredient['itemQuantity']
     ingredient_name = ingredient_name.gsub(/#{foodRegex}/, '').downcase
 
+    ## if the ingredient name contains commas then ...
     if ingredient_name.include? ","
+      ## create array from ingredient name
       ingredient_name = ingredient_name.split(', ', 2)
+      ## take first string from ingredient name array and Titleize it
       ingredient_main_title = ingredient_name[0].titleize
+      ## take the second array from the ingredient name and put it inside brackets
       ingredient_title_detail = " (" + ingredient_name[1].titleize + ")"
+      ## combine the ingredient title and detail to form name
       ingredient_name = ingredient_main_title + ingredient_title_detail
     else
+      ## titleize the ingredient name if it doesn't contain commas
       ingredient_name = ingredient_name.titleize
     end
 
+    ## create the ingredient based on its name unless it already exists
     ingredient_obj = Ingredient.find_or_create_by(name: ingredient_name)
 
+    ## add the ingredient to the recipe's ingredients
 		recipe_new.ingredients << ingredient_obj
   end
   
 
 end
-
 
 
 

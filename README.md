@@ -35,6 +35,7 @@ I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby en
 	- Complete [rails tutorial](https://www.railstutorial.org/book/updating_and_deleting_users#sec-updating_what_we_learned_in_this_chapter)
 - Importing XML into db
 	- ~~Import Veggie recipes from `.exl` file into database~~
+		- Import portions of ingredients
 	- ~~Figure out repeatable method to import [esha databases](https://www.esha.com/resources/additional-databases/)~~
 	- Figure out how to seed remote database with esha data
 	- Figure out method to mark ingredients as vegetarian & vegan in database
@@ -43,7 +44,7 @@ I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby en
 	- Joint (family) account to share cupboards?
 - Recipes functionality
 	- ~~Method to edit a recipes Ingredients and Portions~~
-	- Method to favourite a set of recipes
+	- ~~Method to favourite a set of recipes~~
 	- Default recipes page would be user's favourite recipes, not a listing of all recipes
 	- Method to share recipes between account?
 	- Logic to present if recipe is vegetarian / vegan 
