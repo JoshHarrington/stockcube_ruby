@@ -3,7 +3,6 @@ class CreateIngredients < ActiveRecord::Migration[5.1]
     create_table :ingredients do |t|
 			t.string :name
       t.string :image
-      t.string :unit, :default => 'kg'
       
       t.timestamps
     end

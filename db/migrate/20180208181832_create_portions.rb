@@ -5,6 +5,7 @@ class CreatePortions < ActiveRecord::Migration[5.1]
       t.belongs_to :ingredient, index: true
       
       t.string :amount, :default => '0.1'
+      t.string :unit, :default => 'g'
 
       t.timestamps
     end

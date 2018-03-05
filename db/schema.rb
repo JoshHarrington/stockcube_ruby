@@ -30,7 +30,6 @@ ActiveRecord::Schema.define(version: 20180305165339) do
   create_table "ingredients", force: :cascade do |t|
     t.string "name"
     t.string "image"
-    t.string "unit", default: "kg"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -39,6 +38,7 @@ ActiveRecord::Schema.define(version: 20180305165339) do
     t.integer "recipe_id"
     t.integer "ingredient_id"
     t.string "amount", default: "0.1"
+    t.string "unit", default: "g"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ingredient_id"], name: "index_portions_on_ingredient_id"
@@ -60,6 +60,18 @@ ActiveRecord::Schema.define(version: 20180305165339) do
     t.datetime "updated_at", null: false
     t.index ["cupboard_id"], name: "index_stocks_on_cupboard_id"
     t.index ["ingredient_id"], name: "index_stocks_on_ingredient_id"
+  end
+
+  create_table "units", force: :cascade do |t|
+    t.integer "portion_id"
+    t.integer "stock_id"
+    t.string "name"
+    t.string "type"
+    t.decimal "metric_ratio"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["portion_id"], name: "index_units_on_portion_id"
+    t.index ["stock_id"], name: "index_units_on_stock_id"
   end
 
   create_table "users", force: :cascade do |t|
