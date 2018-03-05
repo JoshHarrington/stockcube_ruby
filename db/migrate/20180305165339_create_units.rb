@@ -5,7 +5,7 @@ class CreateUnits < ActiveRecord::Migration[5.1]
       t.belongs_to :stock, index: true
 
       t.string :name
-      t.string :type
+      t.string :unit_type
       t.decimal :metric_ratio, :optional
 
       t.timestamps

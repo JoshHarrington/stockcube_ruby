@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 20180305165339) do
     t.integer "recipe_id"
     t.integer "ingredient_id"
     t.string "amount", default: "0.1"
-    t.string "unit", default: "g"
+    t.string "unit", default: "8"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ingredient_id"], name: "index_portions_on_ingredient_id"
@@ -66,8 +66,9 @@ ActiveRecord::Schema.define(version: 20180305165339) do
     t.integer "portion_id"
     t.integer "stock_id"
     t.string "name"
-    t.string "type"
+    t.string "unit_type"
     t.decimal "metric_ratio"
+    t.decimal "optional"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["portion_id"], name: "index_units_on_portion_id"

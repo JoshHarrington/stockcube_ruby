@@ -1,6 +1,7 @@
 class PortionsController < ApplicationController
 	def show
 		@portion = Portion.find(params[:id])
+		@units =	@portion.units
 	end
 	def edit
 		@portion = Portion.find(params[:id])
