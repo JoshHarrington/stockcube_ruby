@@ -1,4 +1,4 @@
-puts "Including required files"
+puts "Including required files\n\n"
 require 'nokogiri'
 require 'set'
 require 'uri'
@@ -481,7 +481,7 @@ unit79 = Unit.create(
    unit_type: "volume"
 )
 
-puts "Units tables created"
+puts "Units tables created\n\n"
 
 ## recipes
 puts "Starting recipes logic to add ingredients and recipes to tables"
@@ -526,7 +526,7 @@ end
 sorted_ingredients = ingredients_set.sort
 
 sorted_ingredients.to_a.each_with_index do |ingredient, index|
-	ingredient_new = Ingredient.create("name": ingredient)
+	ingredient_new = Ingredient.find_or_create_by(name: ingredient)
 end
 
 puts "Ingredients created"
@@ -569,26 +569,37 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
       ingredient_name = ingredient_name.titleize
     end
 
-    ## create the ingredient based on its name unless it already exists
-    ingredient_obj = Ingredient.find_or_create_by(name: ingredient_name)
+    ingredient_obj = Ingredient.where(name: ingredient_name).first
 
-    ## add the ingredient to the recipe's ingredients
-    recipe_new.ingredients << ingredient_obj
-    portion_obj = Portion.where(:recipe_id => recipe_new.id, :ingredient_id => ingredient_obj.id).first_or_create
+    ## make sure we only use the first ingredient of a name in a recipe list (there are duplicates!)
+    if not recipe_new.ingredients.include?(ingredient_obj)
+      ## create the ingredient based on its name unless it already exists
+      ingredient_obj = Ingredient.where(name: ingredient_name).first
+      
+      ## add the ingredient to the recipe's ingredients
+      recipe_new.ingredients << ingredient_obj
 
-    unit_obj = Unit.find_or_create_by(id: ingredient_unit)
-    unit_obj.portions << portion_obj
-
-    portion_obj.update_attributes(
-      :amount => ingredient_amount
-    )
-
-    
+      ## find the portion for the recipe and ingredient ids
+      portion_obj = Portion.where(recipe_id: recipe_new.id, ingredient_id: ingredient_obj.id).first
+      
+      ## find the unit for this portion
+      unit_obj = Unit.find_or_create_by(id: ingredient_unit)  
+      ## add the portion to the unit
+      unit_obj.portions << portion_obj
+      
+      ## update the portions ingredient amount
+      portion_obj.update_attributes(
+        :amount => ingredient_amount
+      )
+      
+    else
+      puts " -- duplicate data (same ingredient in recipe), skipping"
+    end
   end
 
 end
 
-puts "Recipes and relevant portions created"
+puts "Recipes and relevant portions created\n\n"
 
 
 puts "Creating Cupboards"
@@ -598,7 +609,7 @@ c2 = Cupboard.create(location: "Fridge Bottom Drawer")
 c3 = Cupboard.create(location: "Fridge Top Shelf")
 c4 = Cupboard.create(location: "Cupboard by the Oven")
 
-puts "Cupboards created"
+puts "Cupboards created\n\n"
 
 
 ### todo - setup some ingredients to be added to cupboard locations
