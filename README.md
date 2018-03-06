@@ -35,10 +35,10 @@ I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby en
 	- Complete [rails tutorial](https://www.railstutorial.org/book/updating_and_deleting_users#sec-updating_what_we_learned_in_this_chapter)
 - Importing XML into db
 	- ~~Import Veggie recipes from `.exl` file into database~~
-		- Import portions of ingredients
+		- ~~Import portions of ingredients~~
 	- ~~Figure out repeatable method to import [esha databases](https://www.esha.com/resources/additional-databases/)~~
-	- Figure out how to seed remote database with esha data
 	- Figure out method to mark ingredients as vegetarian & vegan in database
+	- Figure out how to seed remote database with esha data
 - Cupboards functionality
 	- Simple method of adding ingredients to cupboards with default weight and use by date
 	- Joint (family) account to share cupboards?
@@ -55,8 +55,12 @@ I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby en
 	- Should be method for admin to combine the user added ingredients with existing ingredients 
 - Notifications
 	- Notification method for telling user that food is going out of date
+		- Email?
+		- SMS?
 - Hosting
 	- Figure out where to host database
+		- Herkou?
+		- AWS?
 - Physical devices
 	- Order Ardunio/Raspberry Pi kit for physical prototyping
 	- Figure out how physical device would update data in db, api call?
