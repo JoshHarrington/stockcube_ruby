@@ -1,4 +1,4 @@
 class Unit < ApplicationRecord
-  belongs_to :portion
-  belongs_to :stock
+  has_many :portions
+  has_many :stocks
 end

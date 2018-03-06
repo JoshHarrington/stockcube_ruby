@@ -37,12 +37,13 @@ ActiveRecord::Schema.define(version: 20180305165339) do
   create_table "portions", force: :cascade do |t|
     t.integer "recipe_id"
     t.integer "ingredient_id"
-    t.string "amount", default: "0.1"
-    t.string "unit", default: "8"
+    t.integer "unit_id"
+    t.decimal "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ingredient_id"], name: "index_portions_on_ingredient_id"
     t.index ["recipe_id"], name: "index_portions_on_recipe_id"
+    t.index ["unit_id"], name: "index_portions_on_unit_id"
   end
 
   create_table "recipes", force: :cascade do |t|
@@ -55,24 +56,22 @@ ActiveRecord::Schema.define(version: 20180305165339) do
   create_table "stocks", force: :cascade do |t|
     t.integer "cupboard_id"
     t.integer "ingredient_id"
-    t.string "amount", default: "0.1"
+    t.integer "unit_id"
+    t.decimal "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cupboard_id"], name: "index_stocks_on_cupboard_id"
     t.index ["ingredient_id"], name: "index_stocks_on_ingredient_id"
+    t.index ["unit_id"], name: "index_stocks_on_unit_id"
   end
 
   create_table "units", force: :cascade do |t|
-    t.integer "portion_id"
-    t.integer "stock_id"
     t.string "name"
     t.string "unit_type"
     t.decimal "metric_ratio"
     t.decimal "optional"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["portion_id"], name: "index_units_on_portion_id"
-    t.index ["stock_id"], name: "index_units_on_stock_id"
   end
 
   create_table "users", force: :cascade do |t|
