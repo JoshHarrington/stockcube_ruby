@@ -37,7 +37,7 @@ I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby en
 	- ~~Import Veggie recipes from `.exl` file into database~~
 		- ~~Import portions of ingredients~~
 	- ~~Figure out repeatable method to import [esha databases](https://www.esha.com/resources/additional-databases/)~~
-	- Figure out method to mark ingredients as vegetarian & vegan in database
+	- ~~Figure out method to mark ingredients as vegetarian & vegan in database~~
 	- Figure out how to seed remote database with esha data
 - Cupboards functionality
 	- Simple method of adding ingredients to cupboards with default weight and use by date
@@ -48,11 +48,15 @@ I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby en
 	- Default recipes page would be user's favourite recipes, not a listing of all recipes
 	- Method to share recipes between account?
 	- Logic to present if recipe is vegetarian / vegan 
-		- If all ingredients in a recipe are vegetarian then the recipe is vegetarian
+		- ~~If all ingredients in a recipe are vegetarian then the recipe is vegetarian~~
+		- Some ingredients are marked as not vegetarian / vegan when they should be - bad data, needs fixing
+			- eg. Vinegar (Distilled)
 - Ingredients functionality
 	- ~~Ingredients list should only be accessible by admins~~
 	- Ingredients can be added by anyone but adding method should search through and present existing ingredients to ensure that user can see use existing ingredient if possible.
 	- Should be method for admin to combine the user added ingredients with existing ingredients 
+	- Only admins should be able to update an Ingredients details and characteristics
+	- All users should be able to suggest a fix on an ingredient or recipe
 - Notifications
 	- Notification method for telling user that food is going out of date
 		- Email?
