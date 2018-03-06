@@ -39,6 +39,8 @@ I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby en
 	- ~~Figure out repeatable method to import [esha databases](https://www.esha.com/resources/additional-databases/)~~
 	- ~~Figure out method to mark ingredients as vegetarian & vegan in database~~
 	- Figure out how to seed remote database with esha data
+		- Need to switch over to PSQL from SQLite3, see [SO question](https://stackoverflow.com/questions/15371394/rails-populate-heroku-database-with-development-sqlite3-data)
+			- Then can export pg_dump up to Heroku database
 - Cupboards functionality
 	- Simple method of adding ingredients to cupboards with default weight and use by date
 	- Joint (family) account to share cupboards?
