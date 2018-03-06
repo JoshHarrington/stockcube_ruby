@@ -29,7 +29,11 @@ ActiveRecord::Schema.define(version: 20180305165339) do
 
   create_table "ingredients", force: :cascade do |t|
     t.string "name"
-    t.string "image"
+    t.boolean "vegan", default: false
+    t.boolean "vegetarian", default: false
+    t.boolean "gluten_free", default: false
+    t.boolean "dairy_free", default: false
+    t.boolean "kosher", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

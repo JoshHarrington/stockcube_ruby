@@ -4,6 +4,11 @@
     <% @recipes.each do |recipe| %>
     <div class="recipe">
       <h3><%= recipe.title %></h3>
+      <p><% if vegan?(recipe) %>Vegan &check;<% end %></p>
+      <p><% if vegetarian?(recipe) %>Vegetarian &check;<% end %></p>
+      <p><% if gluten_free?(recipe) %>Gluten Free &check;<% end %></p>
+      <p><% if dairy_free?(recipe) %>Dairy Free &check;<% end %></p>
+      <p><% if kosher?(recipe) %>kosher &check;<% end %></p>
       <%= link_to "Learn more", recipe_path(recipe) %>
       <% if current_user %>
         <% unless current_user.favourites.include?(recipe) %>
@@ -13,6 +18,8 @@
         <% end %>
       <% end %>
     </div>
+    <br/>
+    <br/>
     <% end %>
   </div>
 </div>

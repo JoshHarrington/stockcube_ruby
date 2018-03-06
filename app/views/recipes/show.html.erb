@@ -17,12 +17,18 @@
         <%= link_to "unfavourite", favourite_recipe_path(@recipe, type: "unfavourite"), method: :put %>
       <% end %>
     <% end %>
+    <br />
+    <br />
+    <p><% if vegetarian?(@recipe) %>Vegetarian &check;<% end %></p>
+    <br />
+    <br />
 
 
     <% @portions.each do |portion| %>
     <div class="portion-block">
 
       <h3><%= portion.ingredient.name %></h3>
+      <h4><%if portion.ingredient.vegetarian %>Vegetarian &check;<%end%></h4>
 
       <!-- need to tidy up this logic, where to put it? -->
       <% portion_amount = portion.amount.to_r %>

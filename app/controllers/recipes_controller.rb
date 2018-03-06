@@ -2,7 +2,7 @@ class RecipesController < ApplicationController
 	require 'fraction'
 	include ActionView::Helpers::UrlHelper
 	def index
-    @recipes = Recipe.all
+		@recipes = Recipe.all
 	end
 	def show
 		@recipe = Recipe.find(params[:id])
