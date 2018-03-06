@@ -41,6 +41,8 @@ gem 'cocoon'
 
 gem 'seed_dump', '~> 3.2', '>= 3.2.4'
 
+gem 'fraction', '~> 0.3.2'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

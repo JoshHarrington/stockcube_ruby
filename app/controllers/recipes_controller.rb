@@ -1,4 +1,5 @@
 class RecipesController < ApplicationController
+	require 'fraction'
 	include ActionView::Helpers::UrlHelper
 	def index
     @recipes = Recipe.all
