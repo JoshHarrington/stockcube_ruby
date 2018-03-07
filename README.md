@@ -4,16 +4,18 @@ Welcome to this rudamentary prototype for the StockCube App
 
 * Ruby version - 2.5.0  
 
-I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby environments and using [Homebrew](https://brew.sh/) to manage your packages (if you're on a Mac).
+I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby environments and using [Homebrew](https://brew.sh/) to manage your packages (if you're on a Mac).  
+
 If you're using Homebrew on Mac then you use it to install PostgresQL (the database type) with the command `brew install postgres` - there are many guides out there to explain this process in more detail eg [this one](https://gist.github.com/sgnl/609557ebacd3378f3b72)
 
 ## Steps to run
 1. Pull down repo
 2. Run `bundle install` to install Gems
-3. Run `rake db:setup` to setup and seed the databases
-3. Run `rake db:migrate` to migrate the databases
-5. Run `rails server` to run server
-6. See app at [http://localhost:3000](http://localhost:3000)
+3. Run `rake db:create` to create the databases
+4. Run `rake db:migrate` to migrate the databases
+5. Run `rake db:seed` to seed the databases with data (make sure you have the .env file setup first with a personal email, password and Rails environment variable)
+6. Run `rails server` (or `rails s`) to run server
+7. See app at [http://localhost:3000](http://localhost:3000)
 
 ## To dos
 - Units in database
@@ -43,13 +45,19 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 		- ~~Need to switch over to PSQL from SQLite3, see [SO question]~~(https://stackoverflow.com/questions/15371394/rails-populate-heroku-database-with-development-sqlite3-data)
 - Cupboards functionality
 	- Simple method of adding ingredients to cupboards with default weight and use by date
-	- Joint (family) account to share cupboards?
+	- All Cupboards should belong to an individual user
+		- How to share cupboards between users?
+			- ^^ `has_many` vs `has_one`?
+- Stocks functionality
+	- All Stock should belong to an individual user
+		- How to share stock between users?
 - Recipes functionality
 	- ~~Method to edit a recipes Ingredients and Portions~~
 	- ~~Method to favourite a set of recipes~~
 	- Default recipes page would be user's favourite recipes, not a listing of all recipes
 	- Method to share recipes between account?
-	- Logic to present if recipe is vegetarian / vegan 
+	- **Should not** be able to get to recipe edit pages when not logged in
+	- ~~Logic to present if recipe is vegetarian / vegan~~
 		- ~~If all ingredients in a recipe are vegetarian then the recipe is vegetarian~~
 		- Some ingredients are marked as not vegetarian / vegan when they should be - bad data, needs fixing
 			- eg. Vinegar (Distilled)
