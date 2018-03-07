@@ -65,6 +65,7 @@ ActiveRecord::Schema.define(version: 20180305165339) do
   create_table "stocks", force: :cascade do |t|
     t.bigint "cupboard_id"
     t.bigint "ingredient_id"
+    t.date "use_by_date"
     t.decimal "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

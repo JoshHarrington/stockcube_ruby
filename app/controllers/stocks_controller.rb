@@ -19,6 +19,6 @@ class StocksController < ApplicationController
 	end
 	private 
 		def stock_params 
-			params.require(:stock).permit(:amount) 
+			params.require(:stock).permit(:amount, :use_by_date) 
 		end
 end

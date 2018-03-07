@@ -29,16 +29,7 @@
 
       <h3><%= portion.ingredient.name %></h3>
       <h4><%if portion.ingredient.vegetarian %>Vegetarian &check;<%end%></h4>
-
-      <!-- need to tidy up this logic, where to put it? -->
-      <% portion_amount = portion.amount.to_r %>
-      <%  if (portion_amount.to_f % 1 == 0) %>
-        <% portion_amount = portion_amount.to_i %>
-      <%  elsif (portion_amount > 1) %>
-        <% portion_amount = portion_amount.to_whole_fraction %>
-        <% portion_amount = portion_amount[0].to_s + ' ' + portion_amount[1].to_s + '/' + portion_amount[2].to_s %>
-      <% end %>
-      <p class="portion"><%= portion_amount %> <%= portion.unit.name %></p>
+      <p><%= portion_amount(portion) %> <%= portion_unit_and_ingredient(portion) %></p>
       <br />
     </div>
     <% end %>

@@ -2,6 +2,7 @@ puts "Including required files\n\n"
 require 'nokogiri'
 require 'set'
 require 'uri'
+require 'date'
 
 
 ## units
@@ -582,6 +583,11 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
       ## find the portion for the recipe and ingredient ids
       portion_obj = Portion.where(recipe_id: recipe_new.id, ingredient_id: ingredient_obj.id).first
       
+
+      ### - Find units that are very similar to existing units and enter them as the original unit
+      ### - Eg Ounce Equivalent should just be Ounce
+      ### -- Then stop creating the these 'similar' units in the first place ^ units ^
+
       ## find the unit for this portion
       unit_obj = Unit.find_or_create_by(id: ingredient_unit)  
       ## add the portion to the unit
@@ -723,9 +729,13 @@ puts "Creating example stock in cupboards"
 
     ## select the stock object based on it's cupboard and ingredient id
     stocky_obj = Stock.where(cupboard_id: cupboard.id, ingredient_id: ingredient_obj.id).first
-    ## add the stock object to the example user
+
+    random_use_by = Date.today + 2.weeks + n.days
+
+    ## update the stock objects attributes
     stocky_obj.update_attributes(
-      :amount => 0.1
+      :amount => 0.1,
+      :use_by_date => random_use_by
     )
   end
 end
