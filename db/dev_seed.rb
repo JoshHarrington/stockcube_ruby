@@ -673,7 +673,7 @@ puts "Cupboards created\n\n"
 
 ### todo - setup some ingredients to be added to cupboard locations
 
-puts "Creating example user"
+puts "Creating users"
 
 me = User.create(name:  "Example User",
 email: ENV['PERSONAL_EMAIL'],
@@ -683,4 +683,16 @@ admin: true,
 activated: true,
 activated_at: Time.zone.now)
 
-puts "Example user created"
+99.times do |n|
+  name  = Faker::Name.name
+  email = "example-#{n+1}@railstutorial.org"
+  password = "password"
+  User.create!(name:  name,
+  email: email,
+  password:              password,
+  password_confirmation: password,
+  activated: true,
+  activated_at: Time.zone.now)
+end
+
+puts "Users created"
