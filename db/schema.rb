@@ -22,8 +22,8 @@ ActiveRecord::Schema.define(version: 20180305165339) do
   end
 
   create_table "favourite_recipes", force: :cascade do |t|
-    t.integer "recipe_id"
-    t.integer "user_id"
+    t.bigint "recipe_id"
+    t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["recipe_id"], name: "index_favourite_recipes_on_recipe_id"
@@ -42,9 +42,9 @@ ActiveRecord::Schema.define(version: 20180305165339) do
   end
 
   create_table "portions", force: :cascade do |t|
-    t.integer "recipe_id"
-    t.integer "ingredient_id"
-    t.integer "unit_id"
+    t.bigint "recipe_id"
+    t.bigint "ingredient_id"
+    t.bigint "unit_id"
     t.decimal "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -61,9 +61,9 @@ ActiveRecord::Schema.define(version: 20180305165339) do
   end
 
   create_table "stocks", force: :cascade do |t|
-    t.integer "cupboard_id"
-    t.integer "ingredient_id"
-    t.integer "unit_id"
+    t.bigint "cupboard_id"
+    t.bigint "ingredient_id"
+    t.bigint "unit_id"
     t.decimal "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
