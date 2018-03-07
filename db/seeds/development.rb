@@ -585,7 +585,7 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
       ## find the unit for this portion
       unit_obj = Unit.find_or_create_by(id: ingredient_unit)  
       ## add the portion to the unit
-      unit_obj.portions << portion_obj
+      unit_obj.ingredients << ingredient_obj
       
       ## update the portions ingredient amount
       portion_obj.update_attributes(
@@ -602,7 +602,7 @@ end
 puts "Recipes and relevant portions created\n\n"
 
 
-puts "Add special characterists to ingredients eg. gluten free and veggier"
+puts "Add special characterists to ingredients eg. gluten free and veggie"
 
 ## ??? should check if ingredient has previously been edited 
 ## to ensure that it's not overwritten loads of times
@@ -695,4 +695,39 @@ activated_at: Time.zone.now)
   activated_at: Time.zone.now)
 end
 
-puts "Users created"
+puts "Users created\n\n"
+
+puts "Adding cupboards to users"
+
+me.cupboards << [c1, c2, c3, c4]
+
+puts "Cupboards added to users\n\n"
+
+puts "Creating example stock in cupboards"
+
+10.times do |n|
+  ## find one of the first 10 ingredients in the ingredients table
+  ingredient_obj = Ingredient.where(id: n).first
+
+  ## if the ingredient exists then put ingredients in a cupboard
+  if ingredient_obj 
+    ## find the number of cupboards associated with the example user
+    num_of_cupboards = me.cupboards.length
+    ## pick one of these cupboards at random
+    cupboard_pick = 1 + Random.rand(num_of_cupboards)
+    ## select this cupboard
+    cupboard = me.cupboards.where(id: cupboard_pick).first
+
+    ## add the selected ingredient to the cupboard
+    cupboard.ingredients << ingredient_obj
+
+    ## select the stock object based on it's cupboard and ingredient id
+    stocky_obj = Stock.where(cupboard_id: cupboard.id, ingredient_id: ingredient_obj.id).first
+    ## add the stock object to the example user
+    stocky_obj.update_attributes(
+      :amount => 0.1
+    )
+  end
+end
+
+puts "Stock added to cupboards"

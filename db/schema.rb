@@ -39,20 +39,20 @@ ActiveRecord::Schema.define(version: 20180305165339) do
     t.boolean "gluten_free", default: false
     t.boolean "dairy_free", default: false
     t.boolean "kosher", default: false
+    t.bigint "unit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["unit_id"], name: "index_ingredients_on_unit_id"
   end
 
   create_table "portions", force: :cascade do |t|
     t.bigint "recipe_id"
     t.bigint "ingredient_id"
-    t.bigint "unit_id"
     t.decimal "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ingredient_id"], name: "index_portions_on_ingredient_id"
     t.index ["recipe_id"], name: "index_portions_on_recipe_id"
-    t.index ["unit_id"], name: "index_portions_on_unit_id"
   end
 
   create_table "recipes", force: :cascade do |t|
@@ -63,17 +63,13 @@ ActiveRecord::Schema.define(version: 20180305165339) do
   end
 
   create_table "stocks", force: :cascade do |t|
-    t.bigint "user_id"
     t.bigint "cupboard_id"
     t.bigint "ingredient_id"
-    t.bigint "unit_id"
     t.decimal "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cupboard_id"], name: "index_stocks_on_cupboard_id"
     t.index ["ingredient_id"], name: "index_stocks_on_ingredient_id"
-    t.index ["unit_id"], name: "index_stocks_on_unit_id"
-    t.index ["user_id"], name: "index_stocks_on_user_id"
   end
 
   create_table "units", force: :cascade do |t|

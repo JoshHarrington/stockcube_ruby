@@ -45,12 +45,12 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 		- ~~Need to switch over to PSQL from SQLite3, see [SO question]~~(https://stackoverflow.com/questions/15371394/rails-populate-heroku-database-with-development-sqlite3-data)
 - Cupboards functionality
 	- Simple method of adding ingredients to cupboards with default weight and use by date
-	- All Cupboards should belong to an individual user
-		- How to share cupboards between users?
-			- ^^ `has_many` vs `has_one`?
+	- ~~All Cupboards should belong to an individual user~~
+	- How to share cupboards between users?
+		- ^^ `has_many` vs `has_one`?
 - Stocks functionality
-	- All Stock should belong to an individual user
-		- How to share stock between users?
+	- ~~All Stock should belong to an individual user~~
+	- How to share stock between users?
 - Recipes functionality
 	- ~~Method to edit a recipes Ingredients and Portions~~
 	- ~~Method to favourite a set of recipes~~

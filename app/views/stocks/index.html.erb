@@ -1,0 +1,15 @@
+<div class="main">
+  <div class="container">
+  <h2>Current Stock</h2>
+		<% if @stocks.first %>
+			<ul>
+				<% @stocks.each do |stock| %>
+					<li><p><%= stock.amount %> <%= stock.ingredient.unit.name %> of <%= stock.ingredient.name %></p></li>
+					<%= link_to "Learn more", stock_path(stock) %>
+				<% end %>
+			</ul>
+    <% else %>
+			<h3>Nothing in Stock!</h3>
+    <% end %>
+  </div>
+</div>

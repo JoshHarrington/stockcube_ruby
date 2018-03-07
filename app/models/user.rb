@@ -11,9 +11,7 @@ class User < ApplicationRecord
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
 
   has_many :recipes
-
   has_many :cupboards
-  has_many :stocks, through: :cupboards
 
   # Favourite recipes of user
   has_many :favourite_recipes # just the 'relationships'

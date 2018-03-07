@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   get '/portions/:id/edit' => 'portions#edit', as: :edit_portion
   patch '/portions/:id' => 'portions#update'
 
+  get '/stocks' => 'stocks#index'
   get '/stocks/:id' => 'stocks#show', as: :stock
   get '/stocks/:id/edit' => 'stocks#edit', as: :edit_stock
   patch '/stocks/:id' => 'stocks#update'

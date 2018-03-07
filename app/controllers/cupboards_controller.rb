@@ -1,11 +1,12 @@
 class CupboardsController < ApplicationController
+	before_action :correct_user,   only: [:show, :edit, :update, :create]
 	def index
-    @cupboards = Cupboard.all
+		@cupboards = current_user.cupboards
+		# redirect_to root_url and return unless @user.activated?
 	end
 	def show
 		@cupboard = Cupboard.find(params[:id])
 		@stocks = @cupboard.stocks
-    @ingredients = @cupboard.ingredients
 	end
 	def new 
 		@cupboard = cupboard.new 
@@ -34,5 +35,12 @@ class CupboardsController < ApplicationController
 	private 
 		def cupboard_params 
 			params.require(:cupboard).permit(:location) 
+		end
+
+		# Confirms the correct user.
+		def correct_user
+			@cupboard = Cupboard.find(params[:id])
+			@user = @cupboard.user
+			redirect_to(root_url) unless current_user?(@user)
 		end
 end
