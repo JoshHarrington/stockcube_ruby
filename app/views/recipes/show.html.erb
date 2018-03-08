@@ -30,7 +30,7 @@
 
       <h3><%= portion.ingredient.name %></h3>
       <h4><%if portion.ingredient.vegetarian %>Vegetarian &check;<%end%></h4>
-      <p><%= portion_amount(portion) %> <%= portion_unit_and_ingredient(portion) %></p>
+      <p><%= portion_amount(portion) %><%= portion_unit_and_ingredient(portion) %></p>
       <br />
     </div>
     <% end %>
