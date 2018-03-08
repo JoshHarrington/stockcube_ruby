@@ -1,25 +1,91 @@
+<% provide(:title, 'All Recipes') %>
 <div class="main">
   <div class="container">
+  <%= form_tag(recipes_path, :method => "get", id: "search-form") do %>
+    <%= text_field_tag :search, params[:search], placeholder: "Search Recipes" %>
+    <%= submit_tag "Search", :name => nil %>
+    <%= button_tag "Reset", type: :reset %>
+  <% end %>
   <h2>All Recipes</h2>
-    <% @recipes.each do |recipe| %>
-    <div class="recipe">
-      <h3><%= recipe.title %></h3>
-      <p><% if vegan?(recipe) %>Vegan &check;<% end %></p>
-      <p><% if vegetarian?(recipe) %>Vegetarian &check;<% end %></p>
-      <p><% if gluten_free?(recipe) %>Gluten Free &check;<% end %></p>
-      <p><% if dairy_free?(recipe) %>Dairy Free &check;<% end %></p>
-      <p><% if kosher?(recipe) %>kosher &check;<% end %></p>
-      <%= link_to "Learn more", recipe_path(recipe) %>
-      <% if current_user %>
-        <% unless current_user.favourites.include?(recipe) %>
-          <%= link_to "favourite", favourite_recipe_path(recipe, type: "favourite"), method: :put %>
-        <% else %>
-          <%= link_to "unfavourite", favourite_recipe_path(recipe, type: "unfavourite"), method: :put %>
+    <% if @recipes.present? %>
+      <% @recipes.each do |recipe| %>
+      <div class="recipe">
+        <h3><%= recipe.title %></h3>
+        <p><% if vegan?(recipe) %>Vegan &check;<% end %></p>
+        <p><% if vegetarian?(recipe) %>Vegetarian &check;<% end %></p>
+        <p><% if gluten_free?(recipe) %>Gluten Free &check;<% end %></p>
+        <p><% if dairy_free?(recipe) %>Dairy Free &check;<% end %></p>
+        <p><% if kosher?(recipe) %>kosher &check;<% end %></p>
+        <%= link_to "Learn more", recipe_path(recipe) %>
+        <% if current_user %>
+          <% unless current_user.favourites.include?(recipe) %>
+            <%= link_to "favourite", favourite_recipe_path(recipe, type: "favourite"), method: :put %>
+          <% else %>
+            <%= link_to "unfavourite", favourite_recipe_path(recipe, type: "unfavourite"), method: :put %>
+          <% end %>
         <% end %>
+      </div>
+      <br/>
+      <br/>
       <% end %>
-    </div>
-    <br/>
-    <br/>
+      <% if @recipes.length < 3 %>
+        <br>
+        <br>
+        <hr>
+        <p>Here are some more random recipes you might like :)</p>
+        <br>
+        <br>
+
+        <% @fallback_recipes.each do |recipe| %>
+        <div class="recipe">
+          <h3><%= recipe.title %></h3>
+          <p><% if vegan?(recipe) %>Vegan &check;<% end %></p>
+          <p><% if vegetarian?(recipe) %>Vegetarian &check;<% end %></p>
+          <p><% if gluten_free?(recipe) %>Gluten Free &check;<% end %></p>
+          <p><% if dairy_free?(recipe) %>Dairy Free &check;<% end %></p>
+          <p><% if kosher?(recipe) %>kosher &check;<% end %></p>
+          <%= link_to "Learn more", recipe_path(recipe) %>
+          <% if current_user %>
+            <% unless current_user.favourites.include?(recipe) %>
+              <%= link_to "favourite", favourite_recipe_path(recipe, type: "favourite"), method: :put %>
+            <% else %>
+              <%= link_to "unfavourite", favourite_recipe_path(recipe, type: "unfavourite"), method: :put %>
+            <% end %>
+          <% end %>
+        </div>
+        <br/>
+        <br/>
+        <% end %>      
+      <% end %>
+
+    <% else %>
+      <p>There are no recipes containing "<%= params[:search] %>".</p>
+      <br>
+      <br>
+      <p>Here are some random ones you might like :)</p>
+      <br>
+      <br>
+
+      <% @fallback_recipes.each do |recipe| %>
+      <div class="recipe">
+        <h3><%= recipe.title %></h3>
+        <p><% if vegan?(recipe) %>Vegan &check;<% end %></p>
+        <p><% if vegetarian?(recipe) %>Vegetarian &check;<% end %></p>
+        <p><% if gluten_free?(recipe) %>Gluten Free &check;<% end %></p>
+        <p><% if dairy_free?(recipe) %>Dairy Free &check;<% end %></p>
+        <p><% if kosher?(recipe) %>kosher &check;<% end %></p>
+        <%= link_to "Learn more", recipe_path(recipe) %>
+        <% if current_user %>
+          <% unless current_user.favourites.include?(recipe) %>
+            <%= link_to "favourite", favourite_recipe_path(recipe, type: "favourite"), method: :put %>
+          <% else %>
+            <%= link_to "unfavourite", favourite_recipe_path(recipe, type: "unfavourite"), method: :put %>
+          <% end %>
+        <% end %>
+      </div>
+      <br/>
+      <br/>
+      <% end %>
     <% end %>
   </div>
 </div>

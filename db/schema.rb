@@ -39,6 +39,8 @@ ActiveRecord::Schema.define(version: 20180305165339) do
     t.boolean "gluten_free", default: false
     t.boolean "dairy_free", default: false
     t.boolean "kosher", default: false
+    t.boolean "common", default: false
+    t.boolean "searchable", default: true
     t.bigint "unit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -75,9 +77,11 @@ ActiveRecord::Schema.define(version: 20180305165339) do
 
   create_table "units", force: :cascade do |t|
     t.string "name"
+    t.string "short_name"
+    t.decimal "optional"
+    t.integer "unit_number"
     t.string "unit_type"
     t.decimal "metric_ratio"
-    t.decimal "optional"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

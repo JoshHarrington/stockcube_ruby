@@ -39,15 +39,23 @@ module RecipesHelper
 		portion_amount
 	end
 	def portion_unit_and_ingredient(portion)
-		portion_unit = portion.ingredient.unit.name
+		if portion.ingredient.unit.short_name
+			portion_unit = portion.ingredient.unit.short_name.downcase
+		else
+			portion_unit = portion.ingredient.unit.name
+		end
 		portion_amount = portion.amount
 		ingredient = portion.ingredient.name
-		## figure out pluralization at same time, based on portion amount
 		if portion_unit == "Each"
+			## figure out pluralization at same time, based on portion amount
 			ingredient.pluralize(portion_amount)
 		else
-			portion_unit = portion_unit.pluralize(portion_amount)
-			portion_unit.to_s + ' of ' + ingredient.to_s
+			if portion.ingredient.unit.short_name
+				portion_unit.to_s + ' of ' + ingredient.to_s
+			else
+				portion_unit = portion_unit.pluralize(portion_amount)
+				portion_unit.to_s + ' of ' + ingredient.to_s
+			end
 		end
 	end
 end

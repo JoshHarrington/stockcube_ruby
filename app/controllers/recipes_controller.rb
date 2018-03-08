@@ -1,8 +1,14 @@
 class RecipesController < ApplicationController
 	require 'fraction'
-	include ActionView::Helpers::UrlHelper
+	include ActionView::Helpers::UrlHelper	
 	def index
 		@recipes = Recipe.all
+		if params[:search]
+			@recipes = Recipe.search(params[:search]).order("created_at DESC")
+		else
+			@recipes = Recipe.all.order('created_at DESC')
+		end
+		@fallback_recipes = Recipe.all.sample(4)
 	end
 	def show
 		@recipe = Recipe.find(params[:id])
@@ -56,6 +62,6 @@ class RecipesController < ApplicationController
   end
 	private 
 		def recipe_params 
-			params.require(:recipe).permit(:user_id, :title, :description, portions_attributes:[:id, :amount, :_destroy]) 
+			params.require(:recipe).permit(:user_id, :search, :title, :description, portions_attributes:[:id, :amount, :_destroy]) 
 		end
 end
