@@ -24,18 +24,25 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 		- Would ensure that entire database was using the same units so would be easier to do calculations if needed on multiple items.
 		- Esha databases contain many different unusual measures, convert on import?
 			- Could convert on import to ensure same units used everywhere then retain old measures in db to use in recipe if needed?
+	- ~~Abbreviations provided for all possible units~~
 - StockCube brand
 	- ~~Start moving styling closer to StockCube brand~~
 	- Logo needs recreating
 	- Colours need defining
 	- Create elements page to collect all elements together to be styled
 	- HTML Components to be imported on different pages and present different data with same style
+	- Animations for logo on hover?
+		- Little person inside cube could open front of cube and put 'busy' sign on the front then close door 
+		- Little person could peek out if logo only hovered for a short time 
+		- Little person could present food animation or suggest good recipe 
 - Stockcub.es
 	- Get something up on domain
 		- sign up form?
 - User accounts
 	- ~~Start working on user accounts~~
 	- Complete [rails tutorial](https://www.railstutorial.org/book/updating_and_deleting_users#sec-updating_what_we_learned_in_this_chapter)
+	- Users should be able to set which units they want to use
+		- Settings tables that belongs_to user
 - Importing XML into db
 	- ~~Import Veggie recipes from `.exl` file into database~~
 		- ~~Import portions of ingredients~~
@@ -48,6 +55,8 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 	- ~~All Cupboards should belong to an individual user~~
 	- How to share cupboards between users?
 		- ^^ `has_many` vs `has_one`?
+	- Recipe search should be prefilled based on (common and searchable) ingredients in cupboards
+		- Search should allow for adding of ingredients not currently in cupboards
 - Stocks functionality
 	- ~~All Stock should belong to an individual user~~
 	- How to share stock between users?
@@ -61,6 +70,8 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 		- ~~If all ingredients in a recipe are vegetarian then the recipe is vegetarian~~
 		- Some ingredients are marked as not vegetarian / vegan when they should be - bad data, needs fixing
 			- eg. Vinegar (Distilled)
+	- Is there a need for a recipe search outside of cupboards?
+		- User might start search in cupboard then want more options so need more general search, even if functionality the same
 - Ingredients functionality
 	- ~~Ingredients list should only be accessible by admins~~
 	- Ingredients can be added by anyone but adding method should search through and present existing ingredients to ensure that user can see use existing ingredient if possible.
@@ -80,4 +91,5 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 	- Figure out how physical device would update data in db, api call?
 	- What happens if physical device records data but is not connected to a stock ingredient?
 	- The user needs a method of reviewing all physical devices connected with account
-- Sponsorship?
+- Sponsorship / Funding?
+

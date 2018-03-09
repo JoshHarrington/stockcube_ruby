@@ -76,10 +76,10 @@ ActiveRecord::Schema.define(version: 20180305165339) do
   end
 
   create_table "units", force: :cascade do |t|
+    t.integer "unit_number"
     t.string "name"
     t.string "short_name"
     t.decimal "optional"
-    t.integer "unit_number"
     t.string "unit_type"
     t.decimal "metric_ratio"
     t.datetime "created_at", null: false

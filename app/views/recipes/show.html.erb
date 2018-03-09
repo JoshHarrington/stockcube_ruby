@@ -7,12 +7,14 @@
       <div class="info">
         <h3 class="recipe-title"><%= @recipe.title %></h3>
         <p class="recipe-description"><%= recipe_description %></p>
-        <%= link_to "Edit recipe", edit_recipe_path(@recipe) %>
+        <% if current_user && current_user.admin %>
+          <%= link_to "Edit recipe", edit_recipe_path(@recipe) %>
+        <% end %>
       </div>
     </div>
 
     <% if current_user %>
-      <% unless current_user.favourites.include?(@recipe) %>
+      <% if not current_user.favourites.include?(@recipe) %>
         <%= link_to "favourite", favourite_recipe_path(@recipe, type: "favourite"), method: :put %>
       <% else %>
         <%= link_to "unfavourite", favourite_recipe_path(@recipe, type: "unfavourite"), method: :put %>
@@ -28,8 +30,6 @@
     <% @portions.each do |portion| %>
     <div class="portion-block">
 
-      <h3><%= portion.ingredient.name %></h3>
-      <h4><%if portion.ingredient.vegetarian %>Vegetarian &check;<%end%></h4>
       <p><%= portion_amount(portion) %><%= portion_unit_and_ingredient(portion) %></p>
       <br />
     </div>
