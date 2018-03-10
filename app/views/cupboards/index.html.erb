@@ -5,7 +5,7 @@
     <% @cupboards.each do |cupboard| %>
     <div class="cupboard">
       <h3><%= cupboard.location %></h3>
-      <% if cupboard.stocks %>
+      <% if cupboard.stocks.first %>
         <ul>
           <% cupboard.stocks.each do |stock| %>
             <li><p><%= stock.amount %> <%= stock.ingredient.unit.name %> of <%= stock.ingredient.name %></p></li>

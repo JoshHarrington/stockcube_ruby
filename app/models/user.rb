@@ -12,6 +12,7 @@ class User < ApplicationRecord
 
   has_many :recipes
   has_many :cupboards
+  has_many :shopping_lists
 
   # Favourite recipes of user
   has_many :favourite_recipes # just the 'relationships'

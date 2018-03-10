@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get 'shopping_lists' => 'shopping_lists#index'
+  # get 'shopping_lists/new' => 'shopping_lists#new'
+
   get 'password_resets/new'
 
   get 'password_resets/edit'

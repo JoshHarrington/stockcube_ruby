@@ -38,7 +38,7 @@ puts "Create admin and standard users, create cupboards, add stock to cupboards"
 ## load add stock to cupboards from partial
 require('./db/seeds/partials/create_users_cupboards_add_stock.rb')
 
-puts "Stock added to cupboards"
+puts "Stock added to cupboards\n\n"
 
 
 puts "Creating fake test users"
@@ -47,3 +47,13 @@ puts "Creating fake test users"
 require('./db/seeds/partials/dev_create_test_users.rb')
 
 puts "Test users created\n\n"
+
+
+puts "Creating shopping lists"
+
+## load create shopping lists from partial
+require('./db/seeds/partials/create_shopping_lists.rb')
+
+puts "Shopping lists created\n\n"
+
+puts "FINISHED!\n\n"
