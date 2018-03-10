@@ -30,7 +30,9 @@ module RecipesHelper
 	end
 	def portion_amount(portion)
 		portion_amount = portion.amount.to_r
-		if (portion_amount.to_f % 1 == 0)
+		if portion_amount == 0.33
+			portion_amount = 1/3.to_r
+		elsif (portion_amount.to_f % 1 == 0)
 			portion_amount = portion_amount.to_i
 		elsif (portion_amount > 1)
 			portion_amount = portion_amount.to_whole_fraction
@@ -46,13 +48,16 @@ module RecipesHelper
 		end
 		portion_amount = portion.amount
 		ingredient = portion.ingredient.name
+		if portion_amount == 0.33
+			portion_amount = 1/3.to_r
+		end
 		if portion_unit == "Each"
 			## figure out pluralization at same time, based on portion amount
 			' ' + ingredient.pluralize(portion_amount)
 		else
 			if portion.ingredient.unit.short_name
 				if portion_unit.include?("m") || portion_unit.include?("g") || portion_unit.include?("g")
-					portion_unit.to_s + ingredient.to_s
+					portion_unit.to_s + ' ' + ingredient.to_s
 				else
 					' ' + portion_unit.to_s + ' ' + ingredient.to_s
 				end

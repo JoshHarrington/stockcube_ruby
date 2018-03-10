@@ -36,10 +36,23 @@ end
 puts "Ingredients created"
 
 
+food_in_titles = ['Pork', 'Potato', 'Lamb', 'Duck', 'Bean', 'Chicken', 'Beef']
+
 recipes.css('recipe').each_with_index do |recipe, recipe_index|
 
   recipe_title = recipe['description']
   recipe_desc = Array.new
+
+  ### method to restructure recipe titles, adding a cuisine type for each recipe
+  # recipe_title_edit = recipe_title.split(',')
+  # if recipe_title_edit.length > 2
+  #   cuisine_type = recipe_title_edit.last
+  # end
+  # if food_in_titles.include?(recipe_title_edit[0])
+  #   ## build string with food still in title
+  # end
+  # if recipe_title.downcase.include?('vegetarian')
+  # end
 
 
   recipe.children.css('XML_MEMO1').each do |description|
@@ -55,7 +68,7 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
 		## define ingredient
     ingredient_name = ingredient['ItemName']
     ingredient_unit = ingredient['itemMeasureKey'].to_s
-    ingredient_amount = ingredient['itemQuantity'].to_s
+    ingredient_amount = ingredient['itemQuantity']
     ingredient_name = ingredient_name.gsub(/#{foodRegex}/, '').downcase
 
     ## if the ingredient name contains commas then ...
@@ -77,7 +90,7 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
 
     ## make sure we only use the first ingredient of a name in a recipe list (there are duplicates!)
     if not recipe_new.ingredients.include?(ingredient_obj)
-      ## create the ingredient based on its name unless it already exists
+      ## find the ingredient using its name
       ingredient_obj = Ingredient.where(name: ingredient_name).first
       
       ## add the ingredient to the recipe's ingredients
@@ -85,12 +98,12 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
 
       ## find the portion for the recipe and ingredient ids
       portion_obj = Portion.where(recipe_id: recipe_new.id, ingredient_id: ingredient_obj.id).first
-
+      
       ## catch the ingredients with units which already match a more common unit
-      if ingredient_unit == 19 || ingredient_unit == 56 || ingredient_unit == 79
+      if ingredient_unit == '19' || ingredient_unit == '56' || ingredient_unit == '79'
         ## catch ingredients with units the same as ounces (unit3)
         unit_obj = Unit.find_or_create_by(unit_number: 3)  
-      elsif ingredient_unit == 78
+      elsif ingredient_unit.to_s == '78'
         ## catch ingredients with units the same as cups (unit6)
         unit_obj = Unit.find_or_create_by(unit_number: 6)  
       else

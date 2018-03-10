@@ -11,6 +11,14 @@ class Recipe < ApplicationRecord
            :allow_destroy => true
   accepts_nested_attributes_for :ingredients
 
+  def slug
+    title.downcase.gsub(/[\ \,\/]/, ',' => '', ' ' => '_', '/' => '_')
+  end
+
+  def to_param
+    "#{id}-#{slug}"
+  end
+
   def self.search(search)
     where("lower(title) LIKE ?", "%#{search.downcase}%")
     where("lower(description) LIKE ?", "%#{search.downcase}%")
