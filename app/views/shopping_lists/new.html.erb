@@ -1,2 +1,17 @@
-<h1>ShoppingLists#new</h1>
-<p>Find me in app/views/shopping_lists/new.html.erb</p>
+<%= form_for(@shopping_lists) do |i| %>  
+	<div class="field"> 
+		Date <%= i.date_field :date_created %><br> 
+	</div>
+
+
+	<%= @recipes.each do |recipe| %>
+		<label for="<%= recipe.id %>"><%= recipe.title %></label>
+		<input type="checkbox" id="<%= recipe.id %>" />
+		<br>
+	<% end %>
+
+	<div class="actions"> 
+		<%= i.submit "Create" %> 
+	</div> 
+<% end %>
+
