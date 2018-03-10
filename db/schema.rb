@@ -50,6 +50,8 @@ ActiveRecord::Schema.define(version: 20180305165339) do
   create_table "portions", force: :cascade do |t|
     t.bigint "recipe_id"
     t.bigint "ingredient_id"
+    t.integer "unit_number"
+    t.integer "optional"
     t.decimal "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

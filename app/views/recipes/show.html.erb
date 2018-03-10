@@ -6,7 +6,7 @@
       <!-- Display the recipe's info here -->
       <div class="info">
         <h3 class="recipe-title"><%= @recipe.title %></h3>
-        <p class="recipe-description"><%= recipe_description %></p>
+        <p class="recipe-description"><%= recipe_description.html_safe %></p>
         <% if current_user && current_user.admin %>
           <%= link_to "Edit recipe", edit_recipe_path(@recipe) %>
         <% end %>
@@ -30,7 +30,7 @@
     <% @portions.each do |portion| %>
     <div class="portion-block">
 
-      <p><%= portion_amount(portion) %><%= portion_unit_and_ingredient(portion) %></p>
+      <p><%= portion_amount_unit_and_ingredient(portion).html_safe %></p>
       <br />
     </div>
     <% end %>
