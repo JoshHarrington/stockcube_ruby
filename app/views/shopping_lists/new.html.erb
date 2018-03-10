@@ -1,17 +1,20 @@
-<%= form_for(@shopping_lists) do |i| %>  
+<%= form_for(@shopping_lists) do |shopping_list| %>  
 	<div class="field"> 
-		Date <%= i.date_field :date_created %><br> 
+		Date <%= shopping_list.date_field :date_created %><br> 
 	</div>
 
+	<% recipes = Recipe.all %>
 
-	<%= @recipes.each do |recipe| %>
-		<label for="<%= recipe.id %>"><%= recipe.title %></label>
-		<input type="checkbox" id="<%= recipe.id %>" />
+	<%= shopping_list.fields_for :recipes, recipes do |recipe| %>  
+		// resource fields go here
+		<%= recipe.label :title %>
 		<br>
-	<% end %>
+	<% end %> 
+
+
 
 	<div class="actions"> 
-		<%= i.submit "Create" %> 
+		<%= shopping_list.submit "Create" %> 
 	</div> 
 <% end %>
 
