@@ -20,6 +20,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 ## To dos
 - Units in database
 	- ~~Move unit over to ingredient?~~
+		- **BUG** - Portions need separate unit for situations where recipe requires different measure of ingredient eg carrots, recipe 16 & 120
 		- May create issues down the road if importing recipes that don't match the units defined by ingredients, but could be dealt with through conversion.
 		- Would ensure that entire database was using the same units so would be easier to do calculations if needed on multiple items.
 		- Esha databases contain many different unusual measures, convert on import?
