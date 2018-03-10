@@ -20,11 +20,6 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 ## To dos
 - Units in database
 	- ~~Move unit over to ingredient?~~
-		- **BUG** - Portions need separate unit for situations where recipe requires different measure of ingredient eg carrots, recipe 16 & 120
-		- May create issues down the road if importing recipes that don't match the units defined by ingredients, but could be dealt with through conversion.
-		- Would ensure that entire database was using the same units so would be easier to do calculations if needed on multiple items.
-		- Esha databases contain many different unusual measures, convert on import?
-			- Could convert on import to ensure same units used everywhere then retain old measures in db to use in recipe if needed?
 	- ~~Abbreviations provided for all possible units~~
 - StockCube brand
 	- ~~Start moving styling closer to StockCube brand~~
@@ -61,6 +56,16 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 - Stocks functionality
 	- ~~All Stock should belong to an individual user~~
 	- How to share stock between users?
+- Shopping list
+	- Create table for shopping list, owned by a particular user
+	- Join to recipes so that recipes can be added
+		- Shopping list should combine same (or similar?) ingredients into one item
+	- Individual ingredients should be able to be added too ie bread, milk, eggs
+	- History of previous shopping list should exist and be reuseable
+	- Ingredient amounts in shopping list should be able to change?
+		- What if this impacts a recipe
+		- Warning to user if they're about to remove (or reduce) an ingredient that will impact a recipe
+	- Similar functionality to Cupboard - how much of a recipe have you already got in cupboards?
 - Recipes functionality
 	- ~~Method to edit a recipes Ingredients and Portions~~
 	- ~~Method to favourite a set of recipes~~
