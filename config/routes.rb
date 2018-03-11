@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
-  get 'shopping_lists' => 'shopping_lists#index'
-  get 'shopping_lists/new' => 'shopping_lists#new'
+  get '/shopping_lists' => 'shopping_lists#index'
+  get '/shopping_lists/new' => 'shopping_lists#new'
+  get '/shopping_lists/:id' => 'shopping_lists#show', as: :shopping_list
+  post '/shopping_lists' => 'shopping_lists#create'
 
   get 'password_resets/new'
 

@@ -1,0 +1,27 @@
+<div class="main shopping_list-show">
+  <div class="container">
+    <div class="shopping_list">
+      
+      <!-- Display the shopping_list's info here -->
+      <div class="info">
+				<h3>Shopping List - (<%= @shopping_list.date_created.to_s(:long) %>)</h3>
+      </div>
+    </div>
+
+    <% if @recipes.first %>
+    <br />
+      <ul>
+        <% @recipes.each do |recipe| %>
+          <li>
+            <p><%= recipe.title %></p>
+            <%= link_to "See recipe details", recipe_path(recipe) %>
+            <br />
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p>Shopping List currently empty.</p>
+    <% end %>
+
+  </div>
+</div>

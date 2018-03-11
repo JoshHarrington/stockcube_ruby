@@ -10,12 +10,19 @@ class ShoppingListsController < ApplicationController
   def create
     @user_id = current_user.id
     @recipes = Recipe.all
+    @current_date = Date.today.to_s
+    @recipe_pick = Recipe.all[0].id.to_s
     @shopping_lists = ShoppingList.new(shopping_lists_params)
     if @shopping_lists.save
       redirect_to '/shopping_lists'
     else
       render 'new'
     end
+  end
+  
+	def show
+		@shopping_list = ShoppingList.find(params[:id])
+		@recipes = @shopping_list.recipes
 	end
 
   # private
@@ -27,6 +34,6 @@ class ShoppingListsController < ApplicationController
 
   private 
   def shopping_lists_params
-    params.require(:shopping_list).permit(:user_id, :id, :date_created, recipes_attributes:[:id, :title, :description, :destroy]) 
+    params.permit(:user_id, :id, :date_created, recipes_attributes:[:id, :title, :description, :destroy]) 
   end
 end

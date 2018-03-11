@@ -1,15 +1,12 @@
 <%= form_for(@shopping_lists) do |shopping_list| %>  
+
 	<div class="field"> 
-		Date <%= shopping_list.date_field :date_created %><br> 
+		<%= hidden_field_tag :date_created, @current_date %><br> 
+		<%= shopping_list.fields_for :recipes do |recipe| %>
+			<%= hidden_field_tag :recipe_id, @recipe_pick %><br> 
+		<% end %>
+		<%= select("shopping_list", "recipes", Recipe.all.collect {|r| [ r.title, r.id ] }, {include_blank: 'None'}) %>
 	</div>
-
-	<% recipes = Recipe.all %>
-
-	<%= shopping_list.fields_for :recipes, recipes do |recipe| %>  
-		// resource fields go here
-		<%= recipe.label :title %>
-		<br>
-	<% end %> 
 
 
 
