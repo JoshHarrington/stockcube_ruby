@@ -1,13 +1,16 @@
 <%= form_for(@shopping_lists) do |shopping_list| %>  
 
-	<div class="field"> 
-		<%= hidden_field_tag :date_created, @current_date %><br> 
-		<%= shopping_list.fields_for :recipes do |recipe| %>
-			<%= hidden_field_tag :recipe_id, @recipe_pick %><br> 
-		<% end %>
-		<%= select("shopping_list", "recipes", Recipe.all.collect {|r| [ r.title, r.id ] }, {include_blank: 'None'}) %>
-	</div>
 
+	<% for recipe in Recipe.all %>
+	<div>
+		<%= check_box_tag "shopping_list[recipes][id][]", recipe.id %>
+		<%= label_tag "shopping_list[recipes][id][]", recipe.title %>
+	</div>
+	<% end %>
+	<hr>
+	<br>
+	<br>
+	<br>
 
 
 	<div class="actions"> 

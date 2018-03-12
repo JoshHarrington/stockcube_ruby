@@ -8,13 +8,19 @@ class ShoppingListsController < ApplicationController
     @user_id = current_user.id
   end
   def create
+    @user = current_user
     @user_id = current_user.id
     @recipes = Recipe.all
-    @current_date = Date.today.to_s
-    @recipe_pick = Recipe.all[0].id.to_s
-    @shopping_lists = ShoppingList.new(shopping_lists_params)
-    if @shopping_lists.save
-      redirect_to '/shopping_lists'
+    # @recipe_pick = Recipe.all[3..5]
+    @current_date = Date.today
+    @new_shopping_list = ShoppingList.new(shopping_lists_params)
+    @new_shopping_list.update_attributes(
+      :date_created => @current_date
+    )
+    @user.shopping_lists << @new_shopping_list
+
+    if @new_shopping_list.save
+      redirect_to shopping_list_path(@new_shopping_list.id)
     else
       render 'new'
     end
@@ -33,7 +39,7 @@ class ShoppingListsController < ApplicationController
   #   end
 
   private 
-  def shopping_lists_params
-    params.permit(:user_id, :id, :date_created, recipes_attributes:[:id, :title, :description, :destroy]) 
-  end
+    def shopping_lists_params
+      params.require(:shopping_list).permit(:id, :date_created, recipes_attributes:[:id, :title, :description, :destroy]) 
+    end
 end
