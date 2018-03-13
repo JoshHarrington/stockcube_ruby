@@ -85,10 +85,10 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 		- User might start search in cupboard then want more options so need more general search, even if functionality the same
 - Ingredients functionality
 	- ~~Ingredients list should only be accessible by admins~~
-	- Ingredients can be added by anyone (?) but adding method should search through and present existing ingredients to ensure that user can see use existing ingredient if possible.
+	- ~~Ingredients can only be accessed by admins~~
 	- Should be method for admin to combine the user added ingredients with existing ingredients 
-	- Only admins should be able to update an Ingredients details and characteristics
-	- All users should be able to suggest a fix on an ingredient or recipe
+	- ~~Only admins should be able to update an Ingredients details and characteristics~~
+	- All users should be able to suggest a fix on an ingredient or recipe (?)
 - Notifications
 	- Notification method for telling user that food is going out of date
 		- Email?

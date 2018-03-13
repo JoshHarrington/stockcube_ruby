@@ -3,7 +3,7 @@ class RecipesController < ApplicationController
 
 	before_action :logged_in_user, only: [:index, :edit]
 	before_action :user_has_recipes, only: :index
-	before_action :admin_user,     only: :edit
+	before_action :admin_user,     only: [:create, :new, :edit, :update]
 
 	def index
 		@recipes = current_user.favourites
@@ -77,7 +77,7 @@ class RecipesController < ApplicationController
 			unless logged_in?
 				store_location
 				flash[:danger] = "Please log in."
-				redirect_to login_url
+				redirect_to search_recipe_path
 			end
 		end
 

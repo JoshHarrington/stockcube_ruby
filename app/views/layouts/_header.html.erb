@@ -9,8 +9,6 @@
       <% end %>
       <% if logged_in? && current_user %>
         <li><%= link_to "Shopping Lists", shopping_lists_path %></li>
-      <% end %>
-      <% if logged_in? %>
         <li><%= link_to "Cupboard", cupboards_path %></li>
         <li><%= link_to "Users", users_path %></li>
         <li class="dropdown">
@@ -28,6 +26,7 @@
         </li>
       <% else %>
         <li><%= link_to "Log in", login_path %></li>
+        <li><%= link_to "Sign up", signup_path %></li>
       <% end %>
     </ul>
   </nav>
