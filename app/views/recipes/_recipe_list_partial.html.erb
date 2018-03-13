@@ -12,5 +12,7 @@
 		<% else %>
 			<%= link_to "unfavourite", favourite_recipe_path(recipe, type: "unfavourite"), method: :put %>
 		<% end %>
+
+		recipe_path
 	<% end %>
 </div>
