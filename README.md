@@ -58,8 +58,8 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 	- ~~All Stock should belong to an individual user~~
 	- How to share stock between users?
 - Shopping list
-	- Create table for shopping list, owned by a particular user
-	- Join to recipes so that recipes can be added
+	- ~~Create table for shopping list, owned by a particular user~~
+	- ~~Join to recipes so that recipes can be added~~
 		- Shopping list should combine same (or similar?) ingredients into one item
 	- Individual ingredients should be able to be added too ie bread, milk, eggs
 	- Ready meals and snacks should be able to be added as an ingredient without a recipe (or portion?)
