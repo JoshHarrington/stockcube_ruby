@@ -3,8 +3,8 @@
 
 	<% for recipe in Recipe.all %>
 	<div>
-		<%= check_box_tag "shopping_list[recipes][id][]", recipe.id %>
-		<%= label_tag "shopping_list[recipes][id][]", recipe.title %>
+		<%= check_box_tag "shopping_list[recipes][id][]", recipe.id, nil, {:id => recipe.id} %>
+		<%= label_tag "shopping_list[recipes][id][]", recipe.title, {:for => recipe.id} %>
 	</div>
 	<% end %>
 	<hr>
