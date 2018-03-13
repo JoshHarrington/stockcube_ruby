@@ -1,8 +1,15 @@
 class RecipesController < ApplicationController
-	require 'fraction'
 	include ActionView::Helpers::UrlHelper	
+
+	before_action :logged_in_user, only: [:index, :edit]
+	before_action :user_has_recipes, only: :index
+	before_action :admin_user,     only: :edit
+
 	def index
-		@recipes = Recipe.all
+		@recipes = current_user.favourites
+		@fallback_recipes = Recipe.all.sample(4)
+	end
+	def search
 		if params[:search]
 			@recipes = Recipe.search(params[:search]).order("created_at DESC")
 		else
@@ -63,5 +70,25 @@ class RecipesController < ApplicationController
 	private 
 		def recipe_params 
 			params.require(:recipe).permit(:user_id, :search, :title, :description, portions_attributes:[:id, :amount, :_destroy]) 
+		end
+
+		# Confirms a logged-in user.
+		def logged_in_user
+			unless logged_in?
+				store_location
+				flash[:danger] = "Please log in."
+				redirect_to login_url
+			end
+		end
+
+		def user_has_recipes
+			unless current_user.favourites.first
+				redirect_to search_recipe_path
+			end
+		end
+
+		# Confirms an admin user.
+		def admin_user
+			redirect_to(root_url) unless current_user.admin?
 		end
 end

@@ -10,6 +10,7 @@ Rails.application.routes.draw do
 
   get 'sessions/new'
 
+  get '/recipes/search' => 'recipes#search', as: :search_recipe
   # get '/recipes' => 'recipes#index'
   # get '/recipes/new' => 'recipes#new'
   # get '/recipes/:id' => 'recipes#show', as: :recipe

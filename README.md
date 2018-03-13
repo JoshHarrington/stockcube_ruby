@@ -72,9 +72,11 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 - Recipes functionality
 	- ~~Method to edit a recipes Ingredients and Portions~~
 	- ~~Method to favourite a set of recipes~~
-	- Default recipes page would be user's favourite recipes, not a listing of all recipes
+	- ~~Default recipes page would be user's favourite recipes, not a listing of all recipes~~
+	- Search form on index page, pass value through to search page
 	- Method to share recipes between account?
-	- **Should not** be able to get to recipe edit pages when not logged in
+		- Sharing link to page
+	- ~~**Should not** be able to get to recipe edit pages when not logged in~~
 	- ~~Logic to present if recipe is vegetarian / vegan~~
 		- ~~If all ingredients in a recipe are vegetarian then the recipe is vegetarian~~
 		- Some ingredients are marked as not vegetarian / vegan when they should be - bad data, needs fixing
@@ -83,7 +85,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 		- User might start search in cupboard then want more options so need more general search, even if functionality the same
 - Ingredients functionality
 	- ~~Ingredients list should only be accessible by admins~~
-	- Ingredients can be added by anyone but adding method should search through and present existing ingredients to ensure that user can see use existing ingredient if possible.
+	- Ingredients can be added by anyone (?) but adding method should search through and present existing ingredients to ensure that user can see use existing ingredient if possible.
 	- Should be method for admin to combine the user added ingredients with existing ingredients 
 	- Only admins should be able to update an Ingredients details and characteristics
 	- All users should be able to suggest a fix on an ingredient or recipe
@@ -91,6 +93,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 	- Notification method for telling user that food is going out of date
 		- Email?
 		- SMS?
+		- Web Notifications?
 - Hosting
 	- Figure out where to host database
 		- Herkou?

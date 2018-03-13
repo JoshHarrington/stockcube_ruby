@@ -1,0 +1,46 @@
+<% provide(:title, 'Search Recipes') %>
+<div class="main">
+  <div class="container">
+  <%= form_tag(recipes_path, :method => "get", id: "search-form") do %>
+    <%= text_field_tag :search, params[:search], placeholder: "Search Recipes" %>
+    <%= submit_tag "Search", :name => nil %>
+    <%= button_tag "Reset", type: :reset %>
+  <% end %>
+  <h2>All Recipes</h2>
+    <% if @recipes.present? %>
+      <% @recipes.each do |recipe| %>
+        <%= render 'recipe_list_partial', recipe: recipe %>
+      <br/>
+      <br/>
+      <% end %>
+      <% if @recipes.length < 3 %>
+        <br>
+        <br>
+        <hr>
+        <p>Here are some more random recipes you might like :)</p>
+        <br>
+        <br>
+
+        <% @fallback_recipes.each do |recipe| %>
+          <%= render 'recipe_list_partial', recipe: recipe %>
+        <br/>
+        <br/>
+        <% end %>      
+      <% end %>
+
+    <% else %>
+      <p>There are no recipes containing "<%= params[:search] %>".</p>
+      <br>
+      <br>
+      <p>Here are some random ones you might like :)</p>
+      <br>
+      <br>
+
+      <% @fallback_recipes.each do |recipe| %>
+        <%= render 'recipe_list_partial', recipe: recipe %>
+      <br/>
+      <br/>
+      <% end %>
+    <% end %>
+  </div>
+</div>
