@@ -34,6 +34,11 @@ class ShoppingListsController < ApplicationController
 		@shopping_list = ShoppingList.find(params[:id])
 		@recipes = @shopping_list.recipes
   end
+	def show_ingredients
+		@shopping_list = ShoppingList.find(params[:id])
+		@recipes = @shopping_list.recipes
+		# recipes = @shopping_list.recipes
+  end
   
   def edit
 		@shopping_list = ShoppingList.find(params[:id])

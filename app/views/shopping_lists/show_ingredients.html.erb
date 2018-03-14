@@ -1,0 +1,38 @@
+<div class="main shopping_list-show">
+  <div class="container">
+    <div class="shopping_list">
+      
+      <!-- Display the shopping_list's info here -->
+      <div class="info">
+				<h3>Shopping List - #<%= shoppingListIndex(@shopping_list) %> (<%= @shopping_list.created_at.to_date.to_s(:long) %>)</h3>
+      </div>
+    </div>
+
+    
+
+    <% if @recipes.first %>
+			<p><%= ingredientsIn(@shopping_list.recipes) %></p>
+
+			<% @recipes.each_with_index do |recipe, recipe_index| %>
+				<% recipe.portions.each_with_index do |portion, portion_index| %>
+					<% same_ingredients = Portion.where(ingredient_id: portion.ingredient_id, unit_number: portion.unit_number) %>
+					<% total_portion_amount = 0 %>
+					<% same_ingredients.each_with_index do |ingredient, ingredient_index| %>
+						<% total_portion_amount += ingredient.amount %>
+						<% if ingredient_index+1 == same_ingredients.length %>
+							<p><%=	total_portion_amount.to_s + portion.ingredient.unit.name.to_s + ' of ' + portion.ingredient.name.to_s %></p>
+						<%	end %>
+					<%	end %>
+				<% end %>
+			<% end %>
+
+    <% else %>
+      <p>Shopping List currently empty.</p>
+    <% end %>
+<br>
+<br>
+<br>
+    <%= link_to "Edit", edit_shopping_list_path(@shopping_list) %>
+
+  </div>
+</div>

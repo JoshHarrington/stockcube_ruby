@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   get '/shopping_lists' => 'shopping_lists#index'
   get '/shopping_lists/new' => 'shopping_lists#new'
   get '/shopping_lists/:id' => 'shopping_lists#show', as: :shopping_list
+  get '/shopping_lists/:id/ingredients' => 'shopping_lists#show_ingredients', as: :shopping_list_ingredients
   get '/shopping_lists/:id/edit' => 'shopping_lists#edit', as: :edit_shopping_list
   patch '/shopping_lists/:id' => 'shopping_lists#update'
   post '/shopping_lists' => 'shopping_lists#create'

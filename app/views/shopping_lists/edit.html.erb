@@ -1,13 +1,13 @@
 <%= form_for @shopping_list, html: {class: "form-horizontal"} do |f| %>
+	<%= f.submit %>
 	<% for recipe in Recipe.all %>
 	<div>
 		<% if @recipes.include?(recipe) %>
 			<%= check_box_tag "shopping_list[recipes][id][]", recipe.id, {:id => recipe.id} %>
-			<%= label_tag "shopping_list[recipes][id][]", recipe.title, {:for => recipe.id} %>
 		<% else %>
 			<%= check_box_tag "shopping_list[recipes][id][]", recipe.id, nil, {:id => recipe.id} %>
-			<%= label_tag "shopping_list[recipes][id][]", recipe.title, {:for => recipe.id} %>
 		<% end %>
+		<%= label_tag "shopping_list[recipes][id][]", recipe.title, {:for => recipe.id} %>
 	</div>
 	<% end %>
 	<%= f.submit %>
