@@ -121,7 +121,28 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
       )
       
     else
-      puts " -- duplicate data (same ingredient in recipe), skipping"
+      puts " -- same ingredient in recipe, need to update same ingredient portion amount"
+
+      # original_ingredient = recipe_new.ingredients.find(name: ingredient_name).first
+      # original_ingredient_unit = original_ingredient.unit_id
+
+      # original_ingredient_portion = Portion.where(recipe_id: recipe_new.id, ingredient_id: original_ingredient.id).first
+
+      # if ingredient_obj.unit_id == original_ingredient_unit
+      #   original_ingredient_amount = original_ingredient_portion.amount
+      #   additional_ingredient_amount = ingredient_amount
+      #   new_total_ingredient_amount = additional_ingredient_amount + original_ingredient_amount
+
+      #   original_ingredient_portion.update_attributes(
+      #     :amount => new_total_ingredient_amount
+      #   )
+      # end
+
+      ### check if additional ingredient has the same unit as the other ingredient
+      ### if it does match then update the portion amount by adding the new amount
+      ### if it does not match then could convert using the unit ratio and then update the amount total
+      ### ...or just skip over for the moment and record how often it happens (unlikely to be often)
+      
     end
   end
 

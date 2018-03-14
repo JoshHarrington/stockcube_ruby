@@ -7,7 +7,7 @@ class Recipe < ApplicationRecord
   has_many :users, through: :favourite_recipes # the actual users favouriting a recipe
 
   has_many :shopping_list_recipes
-  has_many :shopping_lists_added_to, through: :shopping_list_recipes, source: :shopping_list
+  has_many :shopping_lists, through: :shopping_list_recipes
 
   accepts_nested_attributes_for :portions,
            :reject_if => :all_blank,

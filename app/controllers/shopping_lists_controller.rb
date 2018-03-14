@@ -17,9 +17,6 @@ class ShoppingListsController < ApplicationController
     @recipe_pick = Recipe.find(@recipe_ids)
     @current_date = Date.today
     @new_shopping_list = ShoppingList.new(shopping_lists_params)
-    @new_shopping_list.update_attributes(
-      :date_created => @current_date
-    )
     @user.shopping_lists << @new_shopping_list
     
     @new_shopping_list.recipes << @recipe_pick

@@ -67,22 +67,16 @@ ActiveRecord::Schema.define(version: 20180313144733) do
   end
 
   create_table "shopping_list_recipes", force: :cascade do |t|
-    t.integer "recipe_id"
-    t.integer "shopping_list_id"
+    t.bigint "recipe_id"
+    t.bigint "shopping_list_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "shopping_list_recipes", force: :cascade do |t|
-    t.integer "recipe_id"
-    t.integer "shopping_list_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.index ["recipe_id"], name: "index_shopping_list_recipes_on_recipe_id"
+    t.index ["shopping_list_id"], name: "index_shopping_list_recipes_on_shopping_list_id"
   end
 
   create_table "shopping_lists", force: :cascade do |t|
     t.bigint "user_id"
-    t.date "date_created"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_shopping_lists_on_user_id"
