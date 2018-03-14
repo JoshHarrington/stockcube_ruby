@@ -4,9 +4,11 @@
       
       <!-- Display the shopping_list's info here -->
       <div class="info">
-				<h3>Shopping List - (<%= @shopping_list.created_at.to_s(:long) %>)</h3>
+				<h3>Shopping List - #<%= shoppingListIndex(@shopping_list) %> (<%= @shopping_list.created_at.to_date.to_s(:long) %>)</h3>
       </div>
     </div>
+
+    
 
     <% if @recipes.first %>
     <br />
@@ -22,6 +24,10 @@
     <% else %>
       <p>Shopping List currently empty.</p>
     <% end %>
+<br>
+<br>
+<br>
+    <%= link_to "Edit", edit_shopping_list_path(@shopping_list) %>
 
   </div>
 </div>

@@ -6,7 +6,7 @@
 		<br/>
 		<% @shopping_lists.each_with_index do |shopping_list, index| %>
 			<div class="shopping_list">
-				<h3>Shopping List <%= link_to "##{index + 1} (#{shopping_list.created_at.to_s(:long)})", shopping_list_path(shopping_list) %></h3>
+				<h3>Shopping List <%= link_to "##{shoppingListIndex(shopping_list)} (#{shopping_list.created_at.to_date.to_s(:long)})", shopping_list_path(shopping_list) %></h3>
 				<% if shopping_list.recipes.first %>
 					<% shopping_list.recipes.each do |recipe| %>
 						<h4><%= recipe.title %></h4>

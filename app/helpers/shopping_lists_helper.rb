@@ -7,4 +7,10 @@ module ShoppingListsHelper
 	def recipes
 		Recipe.all
 	end
+	def shoppingListIndex(shopping_list)
+		userShoppingLists = current_user.shopping_lists
+		plain_index = userShoppingLists.index(shopping_list)
+		final_index = plain_index + 1
+		final_index
+	end
 end
