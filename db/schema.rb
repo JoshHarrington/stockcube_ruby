@@ -73,6 +73,13 @@ ActiveRecord::Schema.define(version: 20180313144733) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "shopping_list_recipes", force: :cascade do |t|
+    t.integer "recipe_id"
+    t.integer "shopping_list_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "shopping_lists", force: :cascade do |t|
     t.bigint "user_id"
     t.date "date_created"

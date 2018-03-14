@@ -2,16 +2,23 @@
 <div class="main">
   <div class="container">
 		<h2>All Shopping Lists</h2>
+		<br/>
+		<br/>
 		<% @shopping_lists.each_with_index do |shopping_list, index| %>
 			<div class="shopping_list">
-				<h3>Shopping List #<%= index + 1 %> (<%= shopping_list.date_created.to_s(:long) %>)</h3>
-				<% if shopping_list.shopping_list_add.first %>
-					<% shopping_list.shopping_list_add.each do |recipe| %>
+				<h3>Shopping List <%= link_to "##{index + 1} (#{shopping_list.date_created.to_s(:long)})", shopping_list_path(shopping_list) %></h3>
+				<% if shopping_list.recipes.first %>
+					<% shopping_list.recipes.each do |recipe| %>
 						<h4><%= recipe.title %></h4>
 						<%= link_to "See Recipe Detail", recipe_path(recipe) %>
 					<% end %>
 				<% end %>
 			</div>
+		<br/>
+		<br/>
 		<% end %>
+		<br/>
+		<br/>
+		<%= link_to "Make new Shopping List", shopping_lists_new_path %>
   </div>
 </div>

@@ -1,8 +1,8 @@
 class ShoppingList < ApplicationRecord
   belongs_to :user
   has_many :recipes
-  
-  # Favourite recipes of user
-  has_many :shopping_list_recipes # just the 'relationships'
-  has_many :shopping_list_add, through: :shopping_list_recipes, source: :recipe # the actual recipes a shopping_list addition
+
+  accepts_nested_attributes_for :recipes,
+  :reject_if => :all_blank,
+  :allow_destroy => true
 end
