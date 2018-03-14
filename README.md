@@ -69,7 +69,9 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 		- What if this impacts a recipe
 		- Warning to user if they're about to remove (or reduce) an ingredient that will impact a recipe
 	- Similar functionality to Cupboard - how much of a recipe have you already got in cupboards?
-	- Keep style functionality to tick off items in shopping list and see them struck-through under list
+	- 'Keep' style functionality to tick off items in shopping list and see them struck-through under list
+	- Shopping list should show all portions as totals for that ingredient
+	- Check if ingredients in shopping list already exist in Cupboard
 - Recipes functionality
 	- ~~Method to edit a recipes Ingredients and Portions~~
 	- ~~Method to favourite a set of recipes~~
