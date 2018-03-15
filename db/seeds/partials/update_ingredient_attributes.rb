@@ -59,10 +59,10 @@ recipes.css('ingredient').each_with_index do |ingredient, ingredient_index|
         )
       end
     end
-    # if ingredient_obj.recipes.length > 5
-    #   ingredient_obj.update_attributes(
-    #     :common => true
-    #   )
-    # end
+    if ingredient_obj.recipes.length > 5
+      ingredient_obj.update_attributes(
+        :common => true
+      )
+    end
   end
 end

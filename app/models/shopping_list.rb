@@ -4,6 +4,9 @@ class ShoppingList < ApplicationRecord
   has_many :shopping_list_recipes
   has_many :recipes, through: :shopping_list_recipes
 
+  has_many :shopping_list_portions
+  has_many :ingredients, through: :shopping_list_portions
+
   accepts_nested_attributes_for :shopping_list_recipes,
   :reject_if => :all_blank,
   :allow_destroy => true

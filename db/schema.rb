@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180313144733) do
+ActiveRecord::Schema.define(version: 20180315114932) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -51,7 +51,6 @@ ActiveRecord::Schema.define(version: 20180313144733) do
     t.bigint "recipe_id"
     t.bigint "ingredient_id"
     t.integer "unit_number"
-    t.integer "optional"
     t.decimal "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -66,6 +65,16 @@ ActiveRecord::Schema.define(version: 20180313144733) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "shopping_list_portions", force: :cascade do |t|
+    t.bigint "ingredient_id"
+    t.bigint "shopping_list_id"
+    t.decimal "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ingredient_id"], name: "index_shopping_list_portions_on_ingredient_id"
+    t.index ["shopping_list_id"], name: "index_shopping_list_portions_on_shopping_list_id"
+  end
+
   create_table "shopping_list_recipes", force: :cascade do |t|
     t.bigint "recipe_id"
     t.bigint "shopping_list_id"
@@ -77,6 +86,7 @@ ActiveRecord::Schema.define(version: 20180313144733) do
 
   create_table "shopping_lists", force: :cascade do |t|
     t.bigint "user_id"
+    t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_shopping_lists_on_user_id"
@@ -97,7 +107,6 @@ ActiveRecord::Schema.define(version: 20180313144733) do
     t.integer "unit_number"
     t.string "name"
     t.string "short_name"
-    t.decimal "optional"
     t.string "unit_type"
     t.decimal "metric_ratio"
     t.datetime "created_at", null: false
