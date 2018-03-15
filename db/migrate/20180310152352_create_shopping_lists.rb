@@ -3,7 +3,7 @@ class CreateShoppingLists < ActiveRecord::Migration[5.1]
     create_table :shopping_lists do |t|
       t.belongs_to :user, foreign_key: true
 
-      t.string :name, :optional
+      t.string :name
       t.timestamps
     end
   end

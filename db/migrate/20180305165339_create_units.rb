@@ -4,9 +4,9 @@ class CreateUnits < ActiveRecord::Migration[5.1]
       t.integer :unit_number
       
       t.string :name
-      t.string :short_name, :optional
+      t.string :short_name
       t.string :unit_type
-      t.decimal :metric_ratio, :optional
+      t.decimal :metric_ratio
 
       t.timestamps
     end
