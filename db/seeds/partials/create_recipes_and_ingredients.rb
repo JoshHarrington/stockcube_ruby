@@ -91,7 +91,10 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
     ## make sure we only use the first ingredient of a name in a recipe list (there are duplicates!)
     if not recipe_new.ingredients.include?(ingredient_obj)
       ## find the ingredient using its name
+
+      #### duplicate, needed??
       ingredient_obj = Ingredient.where(name: ingredient_name).first
+      #### duplicate, needed??
       
       ## add the ingredient to the recipe's ingredients
       recipe_new.ingredients << ingredient_obj

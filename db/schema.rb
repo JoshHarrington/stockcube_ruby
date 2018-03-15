@@ -68,6 +68,7 @@ ActiveRecord::Schema.define(version: 20180315114932) do
   create_table "shopping_list_portions", force: :cascade do |t|
     t.bigint "ingredient_id"
     t.bigint "shopping_list_id"
+    t.integer "unit_number"
     t.decimal "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

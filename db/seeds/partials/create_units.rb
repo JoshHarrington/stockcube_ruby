@@ -3,16 +3,16 @@ unit1 = Unit.create(
   unit_number: 1, 
   name: "Teaspoon",
   short_name: "Tsp",
-  metric_ratio: 5,
-  unit_type: "mass"
+  metric_ratio: 5.9,
+  unit_type: "volume"
 )
 
 unit2 = Unit.create(
   unit_number: 2, 
   name: "Tablespoon",
   short_name: "Tbsp",
-  metric_ratio: 15,
-  unit_type: "mass"
+  metric_ratio: 17.8,
+  unit_type: "volume"
 )
 
 unit3 = Unit.create(

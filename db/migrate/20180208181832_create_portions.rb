@@ -5,7 +5,6 @@ class CreatePortions < ActiveRecord::Migration[5.1]
       t.belongs_to :ingredient, index: true
       
       t.integer :unit_number
-
       t.decimal :amount
 
       t.timestamps
