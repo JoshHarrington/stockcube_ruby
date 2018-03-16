@@ -86,7 +86,8 @@ module ShoppingListsHelper
 
 	def metric_transform_portion_update(shopping_list_portion, portion_unit_obj, portion_obj, ingredient_obj)
 		if portion_unit_obj.metric_ratio
-
+			
+			metric_amount = portion_obj.amount * portion_unit_obj.metric_ratio
 			metric_transform(portion_obj, portion_unit_obj)
 
 			shopping_list_portion.update_attributes(
