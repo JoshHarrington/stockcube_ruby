@@ -5,6 +5,7 @@ class CreateShoppingListPortions < ActiveRecord::Migration[5.1]
       t.belongs_to :shopping_list, index: true
       
       t.integer :unit_number
+      t.integer :recipe_number
       t.decimal :amount
 
       t.timestamps

@@ -1,4 +1,5 @@
 class ShoppingListsController < ApplicationController
+  require 'set'
   before_action :logged_in_user
 	before_action :user_has_shopping_lists, only: :index
 
@@ -17,14 +18,36 @@ class ShoppingListsController < ApplicationController
     @user_id = current_user.id
     @recipes = Recipe.all
     @recipe_pick = Recipe.find(@recipe_ids)
-    @current_date = Date.today
-    @new_shopping_list = ShoppingList.new(shopping_list_params)
-    @user.shopping_lists << @new_shopping_list
-    
-    @new_shopping_list.recipes << @recipe_pick
 
-    if @new_shopping_list.save
-      redirect_to shopping_list_path(@new_shopping_list.id)
+    @current_date = Date.today
+    @shopping_list = ShoppingList.new(shopping_list_params)
+
+    @user.shopping_lists << @shopping_list
+    @shopping_list.recipes << @recipe_pick
+
+    shopping_list_portion_ids = []
+    @shopping_list.recipes.each do |recipe|
+      recipe.portions.each do |portion|
+        shopping_list_portion_ids.push(portion.id)
+      end
+    end
+
+    shopping_list_portion_ids.each do |portion_id|
+      portion_obj = Portion.where(id: portion_id).first
+      ingredient_obj = Ingredient.where(id: portion_obj.ingredient_id).first
+      if ingredient_obj
+        @shopping_list.ingredients << ingredient_obj
+        shopping_list_portion_obj = ShoppingListPortion.where(ingredient_id: ingredient_obj.id, shopping_list_id: @shopping_list.id)
+        portion_unit_obj = Unit.where(id: portion_obj.unit_number).first
+    
+        shopping_list_portion_obj.each do |shopping_list_portion|
+          view_context.portion_unit_metric_transform(shopping_list_portion, portion_unit_obj, portion_obj, ingredient_obj)
+        end
+      end
+    end
+
+    if @shopping_list.save
+      redirect_to shopping_list_path(@shopping_list.id)
     else
       render 'new'
     end
@@ -36,8 +59,12 @@ class ShoppingListsController < ApplicationController
   end
 	def show_ingredients
 		@shopping_list = ShoppingList.find(params[:id])
-		@recipes = @shopping_list.recipes
-		# recipes = @shopping_list.recipes
+    @recipes = @shopping_list.recipes
+    @shopping_list_portions = @shopping_list.shopping_list_portions
+    @ingredient_ids_set = Set[]
+    @shopping_list_portions.each do |portion|
+      @ingredient_ids_set.add(portion.ingredient_id)
+    end
   end
   
   def edit
@@ -46,6 +73,7 @@ class ShoppingListsController < ApplicationController
 	end
 	def update
     @shopping_list = ShoppingList.find(params[:id])
+    @shopping_list_portions = @shopping_list.shopping_list_portions
     @recipes = @shopping_list.recipes
     @existing_recipe_ids = []
     @recipes.each do |recipe|
@@ -57,13 +85,37 @@ class ShoppingListsController < ApplicationController
     @recipes_to_remove = @existing_recipe_ids - @form_recipe_ids
     @recipes_to_add = @form_recipe_ids - @existing_recipe_ids
 
-    @recipe_pick = Recipe.find(@recipes_to_add)
     @recipe_unpick = Recipe.find(@recipes_to_remove)
+    @recipe_pick = Recipe.find(@recipes_to_add)
 
     @recipes.delete(@recipe_unpick)
-    # @recipes.destroy(@recipes_to_remove)
     @recipes << @recipe_pick
 
+    @recipes_to_remove.each do |recipe_id|
+      @shopping_list_portions_to_delete = @shopping_list_portions.where(recipe_number: recipe_id)
+      @shopping_list_portions.delete(@shopping_list_portions_to_delete)
+    end
+
+    shopping_list_portion_ids = []
+    @recipe_pick.each do |recipe|
+      recipe.portions.each do |portion|
+        shopping_list_portion_ids.push(portion.id)
+      end
+    end
+
+    shopping_list_portion_ids.each do |portion_id|
+      portion_obj = Portion.where(id: portion_id).first
+      ingredient_obj = Ingredient.where(id: portion_obj.ingredient_id).first
+      if ingredient_obj
+        @shopping_list.ingredients << ingredient_obj
+        shopping_list_portion_obj = ShoppingListPortion.where(ingredient_id: ingredient_obj.id, shopping_list_id: @shopping_list.id)
+        portion_unit_obj = Unit.where(id: portion_obj.unit_number).first
+    
+        shopping_list_portion_obj.each do |shopping_list_portion|
+          view_context.portion_unit_metric_transform(shopping_list_portion, portion_unit_obj, portion_obj, ingredient_obj)
+        end
+      end
+    end
 
 
     if @shopping_list.update(shopping_list_params)

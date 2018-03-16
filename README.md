@@ -19,6 +19,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 8. See app at [http://localhost:3000](http://localhost:3000)
 
 ## To dos
+- Allow Seeds file to skip over existing database content, or overwrite, rather than resetting and reseeding each time
 - Units in database
 	- ~~Move unit over to ingredient?~~
 	- ~~Abbreviations provided for all possible units~~
@@ -48,6 +49,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 	- ~~Figure out how to seed remote database with esha data~~
 		- ~~Need to switch over to PSQL from SQLite3, see [SO question]~~(https://stackoverflow.com/questions/15371394/rails-populate-heroku-database-with-development-sqlite3-data)
 	- Check if ingredients added twice are actually used in the recipe in two different amounts? If yes then add the amounts together, assuming the unit is the same and update portion of relevant ingredient in recipe
+	- Add other recipes into database
 - Cupboards functionality
 	- Simple method of adding ingredients to cupboards with default weight and use by date
 	- ~~All Cupboards should belong to an individual user~~

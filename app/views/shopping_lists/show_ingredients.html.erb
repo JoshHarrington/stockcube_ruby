@@ -8,13 +8,14 @@
       </div>
     </div>
 
-    
+    <%= link_to "See Recipes in this Shopping List", shopping_list_path(@shopping_list) %>
 
-    <% if @recipes.first %>
+    <% if @shopping_list_portions.first %>
 
-			<% @recipes.ingredients.each do |ingredient| %>
-			<p><%= ingredient.name  %></p>
-			<% end  %>
+
+      <% @ingredient_ids_set.each do |ingredient_id| %>
+        <p><%= shopping_list_portions_output(ingredient_id) %></p>
+      <% end %>
 
 
     <% else %>
@@ -23,7 +24,7 @@
 <br>
 <br>
 <br>
-    <%= link_to "Edit", edit_shopping_list_path(@shopping_list) %>
+    <%= link_to "Edit", edit_shopping_list_path(@shopping_list.id) %>
 
   </div>
 </div>
