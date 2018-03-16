@@ -12,9 +12,10 @@
 
     <% if @shopping_list_portions.first %>
 
-
       <% @ingredient_ids_set.each do |ingredient_id| %>
-        <p><%= shopping_list_portions_output(ingredient_id) %></p>
+        <p><%= shopping_list_portions_output(ingredient_id, @shopping_list.id) %></p>
+        <p><%= stock_in_cupboard_proportion(ingredient_id, @shopping_list.id, @cupboard_stock_ids) %></p>
+        <br>
       <% end %>
 
 

@@ -19,10 +19,8 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 8. See app at [http://localhost:3000](http://localhost:3000)
 
 ## To dos
-- Allow Seeds file to skip over existing database content, or overwrite, rather than resetting and reseeding each time
-- Units in database
-	- ~~Move unit over to ingredient?~~
-	- ~~Abbreviations provided for all possible units~~
+- Database seeding
+	- Allow Seeds file to skip over existing database content, or overwrite, rather than resetting and reseeding each time
 - StockCube brand
 	- ~~Start moving styling closer to StockCube brand~~
 	- Logo needs recreating
@@ -42,14 +40,8 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 	- Users should be able to set which units they want to use
 		- Settings tables that belongs_to user
 - Importing XML into db
-	- ~~Import Veggie recipes from `.exl` file into database~~
-		- ~~Import portions of ingredients~~
-	- ~~Figure out repeatable method to import [esha databases](https://www.esha.com/resources/additional-databases/)~~
-	- ~~Figure out method to mark ingredients as vegetarian & vegan in database~~
-	- ~~Figure out how to seed remote database with esha data~~
-		- ~~Need to switch over to PSQL from SQLite3, see [SO question]~~(https://stackoverflow.com/questions/15371394/rails-populate-heroku-database-with-development-sqlite3-data)
 	- Check if ingredients added twice are actually used in the recipe in two different amounts? If yes then add the amounts together, assuming the unit is the same and update portion of relevant ingredient in recipe
-	- Add other recipes into database
+	- Add new recipes into database
 - Cupboards functionality
 	- Simple method of adding ingredients to cupboards with default weight and use by date
 	- ~~All Cupboards should belong to an individual user~~
@@ -63,7 +55,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 - Shopping list
 	- ~~Create table for shopping list, owned by a particular user~~
 	- ~~Join to recipes so that recipes can be added~~
-		- Shopping list should combine same (or similar?) ingredients into one item
+		- ~~Shopping list should combine same (or similar?) ingredients into one item~~
 	- Individual ingredients should be able to be added too ie bread, milk, eggs
 	- Ready meals and snacks should be able to be added as an ingredient without a recipe (or portion?)
 	- History of previous shopping list should exist and be reuseable
@@ -73,7 +65,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 	- Similar functionality to Cupboard - how much of a recipe have you already got in cupboards?
 	- 'Keep' style functionality to tick off items in shopping list and see them struck-through under list
 	- Shopping list should show all portions as totals for that ingredient
-	- Check if ingredients in shopping list already exist in Cupboard
+	- ~~Check if ingredients in shopping list already exist in Cupboard~~
 - Recipes functionality
 	- ~~Method to edit a recipes Ingredients and Portions~~
 	- ~~Method to favourite a set of recipes~~

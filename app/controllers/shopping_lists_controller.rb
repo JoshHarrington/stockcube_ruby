@@ -41,7 +41,7 @@ class ShoppingListsController < ApplicationController
         portion_unit_obj = Unit.where(id: portion_obj.unit_number).first
     
         shopping_list_portion_obj.each do |shopping_list_portion|
-          view_context.portion_unit_metric_transform(shopping_list_portion, portion_unit_obj, portion_obj, ingredient_obj)
+          view_context.metric_transform_portion_update(shopping_list_portion, portion_unit_obj, portion_obj, ingredient_obj)
         end
       end
     end
@@ -65,6 +65,29 @@ class ShoppingListsController < ApplicationController
     @shopping_list_portions.each do |portion|
       @ingredient_ids_set.add(portion.ingredient_id)
     end
+
+    @cupboard_ids = []
+    current_user.cupboards.each do |cupboard|
+      @cupboard_ids.push(cupboard.id)
+    end
+
+    @cupboards = Cupboard.find(@cupboard_ids)
+
+    @cupboard_stock_ids = []
+    @cupboards.each do |cupboard|
+      @cupboard_stocks = Stock.where(cupboard_id: cupboard.id)
+      @cupboard_stocks.each do |stock|
+      # @cupboard.stocks.each do |stock|
+        @cupboard_stock_ids.push(stock.id)
+      end
+    end
+
+		# @cupboards.each do |cupboard|
+		# 	cupboard.stocks do |stock|
+		# 	end
+		# end
+
+		@cupboard_stock = Stock.find(@cupboard_stock_ids)
   end
   
   def edit
@@ -112,7 +135,7 @@ class ShoppingListsController < ApplicationController
         portion_unit_obj = Unit.where(id: portion_obj.unit_number).first
     
         shopping_list_portion_obj.each do |shopping_list_portion|
-          view_context.portion_unit_metric_transform(shopping_list_portion, portion_unit_obj, portion_obj, ingredient_obj)
+          view_context.metric_transform_portion_update(shopping_list_portion, portion_unit_obj, portion_obj, ingredient_obj)
         end
       end
     end
