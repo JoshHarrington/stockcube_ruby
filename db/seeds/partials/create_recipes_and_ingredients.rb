@@ -61,7 +61,7 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
 
   recipe_desc = recipe_desc.join('').gsub(/#{recipeRegex}/, '')
 
-	recipe_new = Recipe.create(title: recipe_title, description: recipe_desc.to_s)
+	recipe_new = Recipe.create(title: recipe_title, description: recipe_desc.to_s, live: true)
 
 	recipe.children.css('RecipeItem').each do |ingredient|
 

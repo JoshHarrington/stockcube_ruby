@@ -61,6 +61,7 @@ ActiveRecord::Schema.define(version: 20180315114932) do
   create_table "recipes", force: :cascade do |t|
     t.string "title"
     t.string "description"
+    t.boolean "live", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
