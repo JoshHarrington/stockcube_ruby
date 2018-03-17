@@ -2,12 +2,13 @@ class CupboardsController < ApplicationController
 	before_action :logged_in_user
 	before_action :correct_user,   only: [:show, :edit, :update, :create]
 	def index
-		@cupboards = current_user.cupboards
+		@cupboards = current_user.cupboards.order(location: :asc)
 		# redirect_to root_url and return unless @user.activated?
 	end
 	def show
 		@cupboard = Cupboard.find(params[:id])
-		@stocks = @cupboard.stocks
+		@stocks = @cupboard.stocks.order(use_by_date: :asc)
+		
 	end
 	def new 
 		@cupboard = cupboard.new 

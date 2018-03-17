@@ -7,8 +7,13 @@
       <h3><%= cupboard.location %></h3>
       <% if cupboard.stocks.first %>
         <ul>
-          <% cupboard.stocks.each do |stock| %>
-            <li><p><%= stock.amount %> <%= stock.ingredient.unit.name %> of <%= stock.ingredient.name %></p></li>
+          <% cupboard.stocks.order(use_by_date: :asc).each do |stock| %>
+            <li>
+              <p><%= stock.amount %> <%= stock.ingredient.unit.name %> of <%= stock.ingredient.name %></p>
+              <p><%= use_by_date(stock) %></p>
+              <br>
+              <br>
+            </li>
           <% end %>
         </ul>
       <% end %>

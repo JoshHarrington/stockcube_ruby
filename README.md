@@ -44,6 +44,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 	- Add new recipes into database
 - Cupboards functionality
 	- Simple method of adding ingredients to cupboards with default weight and use by date
+	- ~~All items presented with human readable use by date information~~
 	- ~~All Cupboards should belong to an individual user~~
 	- How to share cupboards between users?
 		- ^^ `has_many` vs `has_one`?
@@ -70,6 +71,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 	- ~~Method to edit a recipes Ingredients and Portions~~
 	- ~~Method to favourite a set of recipes~~
 	- ~~Default recipes page would be user's favourite recipes, not a listing of all recipes~~
+	- Allow all users to suggest recipes, let them be checked by admin and added to database if they pass
 	- Search form on index page, pass value through to search page
 	- Method to share recipes between account?
 		- Sharing link to page
