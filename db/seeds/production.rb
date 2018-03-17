@@ -4,7 +4,6 @@ require 'set'
 require 'uri'
 require 'date'
 
-load(Rails.root.join( 'db', 'seeds', 'partials', "create_units.rb"))
 
 ## units
 puts "Creating Units and adding to table"
@@ -20,7 +19,7 @@ puts "Starting recipes logic to add ingredients and recipes to tables"
 
 ## include recipe global variables
 # require('./db/seeds/partials/_recipe_global_vars.rb')
-load(Rails.root.join( 'db', 'seeds', 'partials', "_recipe_global_vars.rb"))
+load(Rails.root.join( 'db', 'seeds', 'partials', "_recipe_global_vars_prod.rb"))
 
 ## load create recipes and ingredients from partial
 # require('./db/seeds/partials/create_recipes_and_ingredients.rb')
