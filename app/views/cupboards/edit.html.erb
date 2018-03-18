@@ -1,10 +1,20 @@
-<%= form_for(@cupboard) do |c| %>  
+<%= form_for(@cupboard) do |f| %>  
 	<div class="field"> 
-		Label <%= c.label :cupboard %><br> 
-		Location <%= c.text_field :location %><br>
+		Label <%= f.label :cupboard %><br> 
+		Location <%= f.text_field :location %><br>
 	</div>
+	<fieldset id="cupboard-ingredients">
+		<ol>
+			<%= f.fields_for :stocks do |stock| %>
+				<%= render 'stock_fields', f: stock %>
+			<% end %>
+		</ol>
+		<%= link_to_add_association 'add ingredient', f, :stocks, 'data-association-insertion-node' => "#cupboard-ingredients ol", 'data-association-insertion-method' => "append", :wrap_object => Proc.new {|stock| stock.build_ingredient; stock } %>
+	</fieldset>
+	<br>
+	<br>
 	<div class="actions"> 
-		<%= c.submit "Save" %> 
+		<%= f.submit "Save" %> 
 	</div> 
 <% end %>
 
@@ -14,3 +24,5 @@
 		<%= link_to "Update stock details", edit_stock_path(stock) %>
 	</div>
 <% end %>
+
+
