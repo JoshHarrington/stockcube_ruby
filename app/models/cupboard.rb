@@ -5,7 +5,7 @@ class Cupboard < ApplicationRecord
 	belongs_to :user
 
 	accepts_nested_attributes_for :stocks,
-	:reject_if => :all_blank,
-	:allow_destroy => true
+					:reject_if => :all_blank,
+					:allow_destroy => true
 	accepts_nested_attributes_for :ingredients
 end

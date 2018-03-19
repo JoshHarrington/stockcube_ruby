@@ -69,7 +69,7 @@ class RecipesController < ApplicationController
   end
 	private 
 		def recipe_params 
-			params.require(:recipe).permit(:user_id, :search, :title, :description, portions_attributes:[:id, :amount, :_destroy]) 
+			params.require(:recipe).permit(:user_id, :search, :title, :description, portions_attributes:[:id, :amount, :_destroy], ingredients_attributes:[:id, :name, :image, :unit, :_destroy]) 
 		end
 
 		# Confirms a logged-in user.

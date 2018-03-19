@@ -23,11 +23,11 @@ class CupboardsController < ApplicationController
 	end
 	def edit
 		@cupboard = Cupboard.find(params[:id])
-		@stocks = @cupboard.stocks
+		@stocks = @cupboard.stocks.order(use_by_date: :asc)
 	end
 	def update
 		@cupboard = Cupboard.find(params[:id])
-		@stocks = @cupboard.stocks
+		@stocks = @cupboard.stocks.order(use_by_date: :asc)
       if @cupboard.update(cupboard_params)
         redirect_to @cupboard
       else
@@ -36,7 +36,7 @@ class CupboardsController < ApplicationController
   end
 	private 
 		def cupboard_params 
-			params.require(:cupboard).permit(:location) 
+			params.require(:cupboard).permit(:location, stocks_attributes:[:id, :amount, :use_by_date, :_destroy]) 
 		end
 
 		# Confirms a logged-in user.

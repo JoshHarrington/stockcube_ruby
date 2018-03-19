@@ -17,6 +17,6 @@ class PortionsController < ApplicationController
 	end
 	private 
 		def portion_params 
-			params.require(:portion).permit(:amount, ingredients_attributes: [:id, :name, :image, :unit, :_destroy]) 
+			params.require(:portion).permit(:amount, ingredients_attributes:[:id, :name, :image, :unit, :_destroy]) 
 		end
 end

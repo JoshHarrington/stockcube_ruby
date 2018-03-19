@@ -19,6 +19,6 @@ class StocksController < ApplicationController
 	end
 	private 
 		def stock_params 
-			params.require(:stock).permit(:amount, :use_by_date) 
+			params.require(:stock).permit(:amount, :use_by_date, ingredients_attributes: [:id, :name, :image, :unit, :_destroy])
 		end
 end

@@ -4,9 +4,9 @@
     <%= f.text_field :amount %>
 
     <%= f.fields_for :ingredient do |portion_ingredient| %>
-      <%# TODO: preselect unit for ingredient %>
-      <%# = collection_select(:portion_ingredient, :unit_id, Unit.all, :id, :name, {:selected => 2}) %>
-      <%= portion_ingredient.text_field :name %>
+      <%= portion_ingredient.select :unit_id, Unit.all.collect { |unit| [ unit.name, unit.unit_number ] } %>
+			<%= portion_ingredient.select :id, Ingredient.all.collect { |ingredient| [ ingredient.name, ingredient.id ] } %>
+
     <% end %>
 
     <%= link_to_remove_association "remove", f %>
