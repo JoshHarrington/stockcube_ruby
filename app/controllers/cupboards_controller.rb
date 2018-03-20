@@ -24,15 +24,55 @@ class CupboardsController < ApplicationController
 	def edit
 		@cupboard = Cupboard.find(params[:id])
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)
+		@units = Unit.all
 	end
 	def update
 		@cupboard = Cupboard.find(params[:id])
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)
-      if @cupboard.update(cupboard_params)
-        redirect_to @cupboard
-      else
-        render 'edit'
-      end
+		@units = Unit.all
+
+		@stock_ids = []
+		@stocks.each do |stock|
+			@stock_ids.push(stock.id)
+		end
+
+		@delete_stock_check_ids = params[:cupboard][:stock][:id]
+		@form_stock_ids = params[:cupboard][:stock_ids]
+		@form_stock_amounts = params[:cupboard][:stock][:amount]
+		@form_stock_ingredient_units = params[:cupboard][:stock][:ingredient][:unit]
+
+		# Rails.logger.debug @delete_stock_check_ids
+		if @delete_stock_check_ids
+			@stock_unpick = Stock.find(@delete_stock_check_ids)
+			@stocks.delete(@stock_unpick)
+			# @stock_ids_for_edit = @form_stock_ids - @delete_stock_check_ids
+		else
+			# @stock_ids_for_edit = @form_stock_ids
+		end
+			
+		if @form_stock_amounts.length == @stocks.length
+			@stocks.each_with_index do |stock, index|
+				if not stock[:amount].to_f == @form_stock_amounts[index].to_f
+					stock.update_attributes(
+						:amount => @form_stock_amounts[index].to_f
+					)
+				end
+				if @form_stock_ingredient_units.length == @stocks.length
+					if not stock.ingredient.unit_id.to_f == @form_stock_ingredient_units[index].to_f
+						stock.ingredient.update_attributes(
+							:unit_id => @form_stock_ingredient_units[index].to_f
+						)
+					end
+				end
+			end
+		end
+
+
+		if @cupboard.update(cupboard_params)
+			redirect_to @cupboard
+		else
+			render 'edit'
+		end
   end
 	private 
 		def cupboard_params 

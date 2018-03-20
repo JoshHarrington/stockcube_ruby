@@ -39,6 +39,11 @@ unless Recipe.exists?(id: 3) && Ingredient.exists?(id: 3)
 	puts "Finished updating ingredient attributes\n\n"
 end
 
+## ## ## Cupboard.all.destroy_all
+## ## ## Stock.all.destroy_all
+## ## ## ShoppingList.all.destroy_all
+## ## ## User.all.destroy_all
+
 unless User.exists?(admin: true) && Cupboard.exists?(id: 1)
 
 	puts "Create admin and standard users, create cupboards, add stock to cupboards"

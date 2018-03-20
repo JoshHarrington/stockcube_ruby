@@ -1,28 +1,25 @@
-<%= form_for(@cupboard) do |f| %>  
-	<div class="field"> 
-		Label <%= f.label :cupboard %><br> 
-		Location <%= f.text_field :location %><br>
+<%= form_for @cupboard do |f| %>
+	<%= f.submit "Save" %>
+	<div class="field">
+		<h2>Stock Location</h2> <%= f.text_field :location %><br>
 	</div>
-	<fieldset id="cupboard-ingredients">
-
-  <fieldset id="cupboard-ingredients">
-    <ol>
-      <%= f.fields_for :stocks do |stock| %>
-        <%= render 'stock_fields', f: stock %>
-      <% end %>
-    </ol>
-		<%= link_to_add_association 'add ingredient', f, :stocks, 'data-association-insertion-node' => "#cupboard-ingredients ol", 'data-association-insertion-method' => "append", :wrap_object => Proc.new {|stock| stock.build_ingredient; stock } %>
-  </fieldset>
-	<div class="actions"> 
-		<%= f.submit "Save" %> 
-	</div> 
+	<br>
+	<br>
+	<br>
+	<% for stock in @stocks %>
+		<p><%= stock.ingredient.name %></p>
+		<br>
+		<%= hidden_field_tag "cupboard[stock_ids][]", stock.id %>
+		<%= text_field_tag "cupboard[stock][amount][]", stock.amount %>
+		<%= select_tag "cupboard[stock][ingredient][unit][]", options_from_collection_for_select(@units, "id", "name", stock.ingredient.unit.id), :id => stock.ingredient.id %>
+		<br>
+		<%= check_box_tag "cupboard[stock][id][]", stock.id, nil, {:id => stock.id} %>
+		<%= label_tag "cupboard[stock][id][]", "Bin it!", {:for => stock.id} %>
+		<br>
+		<br>
+	<% end %>
+	<%= link_to "Add Stock", stock_new_path(:cupboard_id => params[:id]) %>
+	<br>
+	<br>
+	<%= f.submit %>
 <% end %>
-
-<% @stocks.each do |stock| %>
-	<div class="stock-block">
-		<p><%= stock.amount %> <%= stock.ingredient.unit.name %> of <%= stock.ingredient.name %></p>
-		<%= link_to "Update stock details", edit_stock_path(stock) %>
-	</div>
-<% end %>
-
-
