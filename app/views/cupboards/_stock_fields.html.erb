@@ -6,7 +6,7 @@
 
     <%= f.fields_for :ingredient do |stock_ingredient| %>
 			<%= stock_ingredient.select :unit_id, Unit.all.collect { |unit| [ unit.name, unit.unit_number ] } %>
-			<%= stock_ingredient.select :id, Ingredient.all.collect { |ingredient| [ ingredient.name, ingredient.id ] } %>
+			<%= stock_ingredient.text_field :name, :readonly => true %>
     <% end %>
 
 
