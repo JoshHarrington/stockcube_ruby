@@ -4,6 +4,11 @@
 		<%= s.label :stock %><br> 
 		Amount <%= s.text_field :amount %><br>
 		Use by Date <%= s.date_field :use_by_date %><br>
+
+		<%= s.hidden_field :cupboard_id, value: params['cupboard_id'] %>
+
+		<%= select_tag "cupboards[]", options_from_collection_for_select(@cupboards, "id", "location", params['cupboard_id']) %>
+
 		
 	</div>
 	<div class="actions"> 

@@ -1,1 +1,16 @@
-create some stock
+<%= form_for @stock, :validate => true do |s| %>  
+	<div class="field"> 
+		<%= s.label :stock %><br> 
+		<%= select_tag "ingredient[]", options_from_collection_for_select(@ingredients, "id", "name"), prompt: "--Pick your poison--" %>
+		Amount <%= s.text_field :amount %><br>
+		Use by Date <%= s.date_field :use_by_date %><br>
+		<%= s.hidden_field :cupboard_id, value: params['cupboard_id'] %>
+
+		<%= select_tag "cupboards[]", options_from_collection_for_select(@cupboards, "id", "location", params['cupboard_id']) %>
+		
+	</div>
+	<div class="actions"> 
+		<%= s.submit "Save" %> 
+	</div> 
+<% end %>
+

@@ -16,7 +16,7 @@
           <li>
             <p><%= stock.amount %> <%= stock.ingredient.unit.name %> of <%= stock.ingredient.name %></p>
             <p>Use by <%= stock.use_by_date.to_s(:long) %></p>
-            <%= link_to "Update stock details", edit_stock_path(stock) %>
+            <%= link_to "Update stock details", edit_stock_path(stock, :cupboard_id => params[:id]) %>
             <br />
           </li>
         <% end %>

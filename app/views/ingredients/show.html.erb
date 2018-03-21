@@ -42,7 +42,7 @@
       <!-- Display each location's info here -->
       <% @portions.each do |portion| %>
       <div class="recipe">
-        <h3 class="portion-amount"><%= portion.amount %> <%= portion.ingredient.unit %></h3>
+        <h3 class="portion-amount"><%= portion.amount %> <%= portion.ingredient.unit.name %></h3>
       </div>
       <% end %>
     <% else %>

@@ -6,4 +6,7 @@ class Stock < ApplicationRecord
 	accepts_nested_attributes_for :ingredient,
 	:reject_if => :all_blank
 	accepts_nested_attributes_for :unit
+
+	validates :amount, presence: true
+	validates :use_by_date, presence: true
 end

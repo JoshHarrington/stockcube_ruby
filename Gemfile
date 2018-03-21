@@ -46,6 +46,8 @@ gem 'fraction', '~> 0.3.2'
 # Use postgres as the database for Active Record
 gem 'pg', '0.20.0'
 
+gem 'client_side_validations'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
