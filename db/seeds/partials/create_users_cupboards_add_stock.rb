@@ -40,6 +40,7 @@ ingredient_picks.each_with_index do |ingredient, index|
   ## update the stock objects attributes
   stocky_obj.update_attributes(
     :amount => 0.1,
-    :use_by_date => test_use_by_date
+    :use_by_date => test_use_by_date,
+    :unit_number => ingredient_obj.unit.unit_number
   )
 end

@@ -48,6 +48,8 @@ gem 'pg', '0.20.0'
 
 gem 'client_side_validations'
 
+gem 'jquery-ui-rails'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

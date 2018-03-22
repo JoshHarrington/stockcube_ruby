@@ -1,6 +1,6 @@
 <%= form_for @stock, :validate => true do |s| %>  
 	<div class="field"> 
-		<%= s.label :stock %><br> 
+		<%= s.label :stock %><br>
 		<div class="datalist-select-fallback">
 			<%= select_tag :ingredient_id, options_from_collection_for_select(@ingredients, "id", "name"), prompt: "Pick your ingredient", required: true %>
 		</div>
@@ -13,7 +13,9 @@
 			</datalist>
 		</div>
 
-		Amount <%= text_field_tag :amount, '', placeholder: "1" %><br>
+		Amount <%= text_field_tag :amount, '', placeholder: "250" %><br>
+		Units <%= select_tag "unit_number", options_from_collection_for_select(@units, "unit_number", "name", 1) %>
+		<br>
 		Use by Date <%= s.date_field :use_by_date, min: Date.current, placeholder: "dd/mm/yyyy", value: @two_weeks_from_now %><br>
 		<%= s.hidden_field :cupboard_id, value: params['cupboard_id'] %>
 

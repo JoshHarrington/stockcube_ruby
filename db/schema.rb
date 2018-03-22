@@ -99,7 +99,8 @@ ActiveRecord::Schema.define(version: 20180315114932) do
     t.bigint "cupboard_id"
     t.bigint "ingredient_id"
     t.date "use_by_date"
-    t.decimal "amount"
+    t.integer "unit_number"
+    t.decimal "amount", default: "1.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cupboard_id"], name: "index_stocks_on_cupboard_id"

@@ -5,7 +5,8 @@ class CreateStocks < ActiveRecord::Migration[5.1]
       t.belongs_to :ingredient, index: true
 
       t.date :use_by_date
-      t.decimal :amount
+      t.integer :unit_number
+      t.decimal :amount, :default => 1
       
       t.timestamps
     end

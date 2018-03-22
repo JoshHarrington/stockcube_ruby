@@ -4,6 +4,11 @@
 
 
 $ ->
-	if !(Modernizr.input.list)
+	if (!Modernizr.input.list)
 		$('html').removeClass('input-list-supported').addClass('input-list-not-supported')
-  return
+	if (!Modernizr.inputtypes.date)
+		$('html').addClass('input-type-date-not-supported')
+		$('input[type="date"]').datepicker dateFormat: 'yy-mm-dd'
+	else
+		$('html').addClass('input-type-date-supported')
+return
