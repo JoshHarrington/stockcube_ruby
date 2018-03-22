@@ -1,6 +1,6 @@
 class StocksController < ApplicationController
 	before_action :logged_in_user
-	before_action :cupboard_id_param_check, only: [:create, :new, :edit, :update]
+	# before_action :cupboard_id_param_check, only: [:create, :new, :edit, :update]
 	def index
 		@stocks = Stock.all
 	end
@@ -25,13 +25,17 @@ class StocksController < ApplicationController
 		@stock = Stock.new
 		@cupboards = current_user.cupboards
 		@ingredients = Ingredient.all.order('name ASC')
+		@two_weeks_from_now = Date.current + 2.weeks
 	end
 	def create
     @stock = Stock.new(stock_params)
 		@cupboards = current_user.cupboards
 		@ingredients = Ingredient.all.order('name ASC')
+		@two_weeks_from_now = Date.current + 2.weeks
 
-		@selected_ingredient_id = params[:ingredient]
+		@selected_ingredient_name = params[:ingredient][:name]
+		@selected_ingredient = Ingredient.where(name: @selected_ingredient_name).first
+		@fallback_selected_ingredient_id = params[:ingredient_id]
 
 		@original_cupboard_id = params[:cupboard_id]
 		@selected_cupboard_id = params[:cupboards]
@@ -43,6 +47,7 @@ class StocksController < ApplicationController
 		# 	@final_cupboard_id = @original_cupboard_id
 		# end
 		
+		Rails.logger.debug @selected_ingredient.id
 
     if @stock.save
       redirect_to @cupboards_path
@@ -53,7 +58,7 @@ class StocksController < ApplicationController
 	end
 	private 
 		def stock_params 
-			params.require(:stock).permit(:cupboard_id, :amount, :use_by_date, ingredient_attributes: [:id, :name, :image, :unit, :_destroy])
+			params.require(:stock).permit(:cupboard_id, :amount, :use_by_date, :ingredient_id, ingredient_attributes: [:id, :name, :image, :unit, :_destroy])
 		end
 
 		# Confirms a logged-in user.

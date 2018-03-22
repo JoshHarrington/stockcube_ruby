@@ -1,0 +1,11 @@
+.input-list-not-supported {
+	.datalist-input {
+		display: none;
+	}
+}
+
+.input-list-supported {
+	.datalist-select-fallback {
+		display: none;
+	}
+}
