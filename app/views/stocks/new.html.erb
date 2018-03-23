@@ -1,11 +1,11 @@
-<%= form_for @stock, :validate => true do |s| %>  
-	<div class="field"> 
+<%= form_for @stock, :validate => true do |s| %>
+	<div class="field">
 		<%= s.label :stock %><br>
 		<div class="datalist-select-fallback">
 			<%= select_tag :ingredient_id, options_from_collection_for_select(@ingredients, "id", "name"), prompt: "Pick your ingredient", required: true %>
 		</div>
 		<div class="datalist-input">
-			<%= text_field_tag "ingredient[name]", '',  placeholder: "Pick your ingredient", list: "ingredient_list" %>
+			<%= text_field_tag "ingredient[name]", '', placeholder: "Pick your ingredient", list: "ingredient_list" %>
 			<datalist id="ingredient_list">
 			<% @ingredients.each do |ingredient|  %>
 				<option><%= ingredient.name %></option>
@@ -13,19 +13,19 @@
 			</datalist>
 		</div>
 
-		Amount <%= text_field_tag :amount, '', placeholder: "250" %><br>
+		Amount <%= s.text_field(:amount, value: '', placeholder: '250', validate: true) %><br>
 		Units <%= select_tag "unit_number", options_from_collection_for_select(@units, "unit_number", "name", 1) %>
 		<br>
-		Use by Date <%= s.date_field :use_by_date, min: Date.current, placeholder: @two_weeks_from_now, value: @two_weeks_from_now %><br>
+		Use by Date <%= s.date_field :use_by_date, min: Date.current, placeholder: @two_weeks_from_now, value: @two_weeks_from_now, validate: true %><br>
 		<% if params['cupboard_id'].present? %>
 			<%= s.hidden_field "cupboards[]", value: params['cupboard_id'] %>
 		<% end %>
 
 		<%= select_tag :cupboard_id, options_from_collection_for_select(@cupboards, "id", "location", params['cupboard_id']) %>
-		
+
 	</div>
-	<div class="actions"> 
-		<%= s.submit "Save" %> 
-	</div> 
+	<div class="actions">
+		<%= s.submit "Save" %>
+	</div>
 <% end %>
 

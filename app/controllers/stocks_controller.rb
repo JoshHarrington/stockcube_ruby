@@ -10,18 +10,41 @@ class StocksController < ApplicationController
 	def edit
 		@stock = Stock.find(params[:id])
 		@cupboards = current_user.cupboards
+		@current_cupboard = @stock.cupboard
+		@ingredients = Ingredient.all.order('name ASC')
+		@current_ingredient = @stock.ingredient
+		@units = Unit.all
 	end
 	def update
 		@stock = Stock.find(params[:id])
 		@cupboards = current_user.cupboards
-		@cupboard = @stock.cupboard
+		@current_cupboard = @stock.cupboard
+		@ingredients = Ingredient.all.order('name ASC')
+		@current_ingredient = @stock.ingredient
+		@units = Unit.all
+		@current_unit = @stock.ingredient.unit.unit_number
+		@new_unit = Unit.where(unit_number: params[:unit_number]).first
+
+		if not params[:cupboard_id] == @current_cupboard.id
+			@stock.update_attributes(
+				cupboard_id: params[:cupboard_id]
+			)
+			@current_cupboard = Cupboard.where(id: params[:cupboard_id]).first
+		end
+
+		if not params[:unit_number] == @current_unit
+			@stock.update_attributes(
+				unit_number: params[:unit_number]
+			)
+		end
+
 		if @stock.update(stock_params)
-			redirect_to cupboard_path(@cupboard)
+			redirect_to cupboard_path(@current_cupboard)
 		else
 			render 'edit'
 		end
 	end
-	def new 
+	def new
 		@stock = Stock.new
 		@cupboards = current_user.cupboards
 		@ingredients = Ingredient.all.order('name ASC')
@@ -29,13 +52,12 @@ class StocksController < ApplicationController
 		@two_weeks_from_now = Date.current + 2.weeks
 	end
 	def create
-		# @stock = Stock.new(stock_params)
 		@cupboards = current_user.cupboards
 		@ingredients = Ingredient.all.order('name ASC')
 		@units = Unit.all
 		@two_weeks_from_now = Date.current + 2.weeks
-		
-		
+
+		Rails.logger.debug params[:stock_ingredient][:name]
 		if params[:ingredient][:name].present?
 			@selected_ingredient_name = params[:ingredient][:name]
 			@selected_ingredient = Ingredient.where(name: @selected_ingredient_name).first
@@ -44,8 +66,6 @@ class StocksController < ApplicationController
 			@selected_ingredient_id = params[:ingredient_id]
 		end
 
-		
-	
 		if params[:cupboard_id].present?
 			@selected_cupboard_id = params[:cupboard_id]
 		elsif params[:cupboards].present?
@@ -58,23 +78,21 @@ class StocksController < ApplicationController
 			@selected_cupboard_id = @cupboards.first
 		end
 
-
-
-		
 		@stock_amount = params[:amount]
 		@stock_use_by_date = params[:stock][:use_by_date]
 		@stock_unit = params[:unit_number]
-		
-		
-		@stock = Stock.create(    
+
+
+		@stock = Stock.create(
 			amount: @stock_amount,
 			use_by_date: @stock_use_by_date,
 			unit_number: @stock_unit,
 			cupboard_id: @selected_cupboard_id,
 			ingredient_id: @selected_ingredient_id
-		)
-			
-		# Rails.logger.debug @stock_amount
+			)
+
+			# Rails.logger.debug @stock_amount
+
 
 		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first
 
@@ -85,8 +103,8 @@ class StocksController < ApplicationController
 			flash[:danger] = "Make sure you select an ingredient"
     end
 	end
-	private 
-		def stock_params 
+	private
+		def stock_params
 			params.require(:stock).permit(:amount, :use_by_date, :unit_number, ingredient_attributes: [:id, :name, :image, :unit, :_destroy])
 		end
 

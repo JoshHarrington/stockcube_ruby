@@ -19,4 +19,9 @@ module CupboardHelper
 			return "Out of date"
 		end
 	end
+	def stock_unit(stock)
+		unit_number = stock.unit_number
+		correct_unit = Unit.where(unit_number: unit_number).first
+		return correct_unit.name
+	end
 end

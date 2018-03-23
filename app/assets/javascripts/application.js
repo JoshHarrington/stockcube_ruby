@@ -14,5 +14,7 @@
 //= require turbolinks
 //= require jquery
 //= require jquery-ui
+//= require moment
+//= require rails.validations
 //= require cocoon
 //= require_tree .

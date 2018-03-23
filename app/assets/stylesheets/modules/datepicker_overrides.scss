@@ -1,0 +1,15 @@
+.ui-datepicker {
+	width: auto;
+	.ui-datepicker-title {
+		line-height: 2.5em;
+	}
+}
+
+.ui-datepicker-calendar {
+	td {
+		font-size: 14px;
+		a {
+			font-size: inherit;
+		}
+	}
+}

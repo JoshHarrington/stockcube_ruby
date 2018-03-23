@@ -1,7 +1,7 @@
 <div class="main cupboard-show">
   <div class="container">
     <div class="cupboard">
-      
+
       <!-- Display the cupboard's info here -->
       <div class="info">
         <h3 class="cupboard-location"><%= @cupboard.location %></h3>
@@ -14,9 +14,9 @@
       <ul>
         <% @stocks.each do |stock| %>
           <li>
-            <p><%= stock.amount %> <%= stock.ingredient.unit.name %> of <%= stock.ingredient.name %></p>
+            <p><%= stock.amount %> <%= stock_unit(stock) %> of <%= stock.ingredient.name %></p>
             <p>Use by <%= stock.use_by_date.to_s(:long) %></p>
-            <%= link_to "Update stock details", edit_stock_path(stock, :cupboard_id => params[:id]) %>
+            <%= link_to "Update stock details", edit_stock_path(stock) %>
             <br />
           </li>
         <% end %>

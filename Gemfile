@@ -50,6 +50,8 @@ gem 'client_side_validations'
 
 gem 'jquery-ui-rails'
 
+gem 'momentjs-rails'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

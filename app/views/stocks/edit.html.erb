@@ -1,18 +1,21 @@
-<h1><%= @stock.ingredient.name %></h1>
-<%= form_for(@stock) do |s| %>  
-	<div class="field"> 
-		<%= s.label :stock %><br> 
-		Amount <%= s.text_field :amount %><br>
-		Use by Date <%= s.date_field :use_by_date %><br>
+<h1><%= @current_ingredient.name %></h1>
+<%= form_for(@stock) do |s| %>
+	<div class="field">
+		<%= s.label :stock %><br>
 
-		<%= s.hidden_field :cupboard_id, value: params['cupboard_id'] %>
+		Amount <%= s.text_field(:amount, validate: true) %><br>
+		Use by Date <%= s.date_field :use_by_date, min: Date.current, value: @stock.use_by_date, validate: true %>
 
-		<%= select_tag "cupboards[]", options_from_collection_for_select(@cupboards, "id", "location", params['cupboard_id']) %>
+		<br>
+		<br>
 
-		
+		Units <%= select_tag "unit_number", options_from_collection_for_select(@units, "unit_number", "name", @current_unit) %>
+
+		<%= select_tag :cupboard_id, options_from_collection_for_select(@cupboards, "id", "location", @current_cupboard) %>
+
 	</div>
-	<div class="actions"> 
-		<%= s.submit "Save" %> 
-	</div> 
+	<div class="actions">
+		<%= s.submit "Save" %>
+	</div>
 <% end %>
 
