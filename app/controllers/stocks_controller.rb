@@ -35,28 +35,37 @@ class StocksController < ApplicationController
 		@units = Unit.all
 		@two_weeks_from_now = Date.current + 2.weeks
 		
-		@selected_ingredient_name = params[:ingredient][:name]
-		@selected_ingredient = Ingredient.where(name: @selected_ingredient_name).first
-		@selected_ingredient_id = @selected_ingredient.id
-		@fallback_selected_ingredient_id = params[:ingredient_id]
-
-		if not @selected_ingredient_id.present?
-			@selected_ingredient_id = @fallback_selected_ingredient_id
+		
+		if params[:ingredient][:name].present?
+			@selected_ingredient_name = params[:ingredient][:name]
+			@selected_ingredient = Ingredient.where(name: @selected_ingredient_name).first
+			@selected_ingredient_id = @selected_ingredient.id
+		elsif params[:ingredient_id].present?
+			@selected_ingredient_id = params[:ingredient_id]
 		end
 
 		
-		@original_cupboard_id = params[:cupboards]
-		if @original_cupboard_id.present? && @original_cupboard_id.length > 1
-			@original_cupboard_id = @original_cupboard_id.join
+	
+		if params[:cupboard_id].present?
+			@selected_cupboard_id = params[:cupboard_id]
+		elsif params[:cupboards].present?
+			@selected_cupboard_id = params[:cupboards]
+			if @selected_cupboard_id.length > 1
+				@selected_cupboard_id = @selected_cupboard_id.join
+			end
+		else
+			## falls back to adding stock to the first of the users cupboards if not selected
+			@selected_cupboard_id = @cupboards.first
 		end
-		@selected_cupboard_id = params[:cupboard_id]
+
+
+
 		
 		@stock_amount = params[:amount]
 		@stock_use_by_date = params[:stock][:use_by_date]
 		@stock_unit = params[:unit_number]
 		
-		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first
-
+		
 		@stock = Stock.create(    
 			amount: @stock_amount,
 			use_by_date: @stock_use_by_date,
@@ -64,7 +73,8 @@ class StocksController < ApplicationController
 			cupboard_id: @selected_cupboard_id,
 			ingredient_id: @selected_ingredient_id
 		)
-
+			
+		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first
 
     if @stock.save
       redirect_to cupboard_path(@cupboard_for_stock)

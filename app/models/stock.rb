@@ -8,8 +8,6 @@ class Stock < ApplicationRecord
 	accepts_nested_attributes_for :unit
 
 	validates :amount, presence: true
-	# validates :ingredient, presence: true, on: :create
-	# validates :cupboard_id, presence: true
 	validates_numericality_of :amount, on: :create
 	validates :use_by_date, presence: true
 end
