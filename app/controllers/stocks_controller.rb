@@ -74,6 +74,8 @@ class StocksController < ApplicationController
 			ingredient_id: @selected_ingredient_id
 		)
 			
+		# Rails.logger.debug @stock_amount
+
 		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first
 
     if @stock.save
