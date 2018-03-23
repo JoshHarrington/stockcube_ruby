@@ -43,7 +43,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 	- Check if ingredients added twice are actually used in the recipe in two different amounts? If yes then add the amounts together, assuming the unit is the same and update portion of relevant ingredient in recipe
 	- Add new recipes into database
 - Cupboards functionality
-	- Simple method of adding ingredients to cupboards with default weight and use by date
+	- ~~Simple method of adding ingredients to cupboards with default weight and use by date~~
 	- ~~All items presented with human readable use by date information~~
 	- ~~All Cupboards should belong to an individual user~~
 	- How to share cupboards between users?
@@ -52,6 +52,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 		- Search should allow for adding of ingredients not currently in cupboards
 - Stocks functionality
 	- ~~All Stock should belong to an individual user~~
+	- Method to update stock to change cupboard or details
 	- How to share stock between users?
 - Shopping list
 	- ~~Create table for shopping list, owned by a particular user~~
