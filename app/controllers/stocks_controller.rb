@@ -25,44 +25,49 @@ class StocksController < ApplicationController
 		@stock = Stock.new
 		@cupboards = current_user.cupboards
 		@ingredients = Ingredient.all.order('name ASC')
-		@units = Unit.all.order('name ASC')
+		@units = Unit.all
 		@two_weeks_from_now = Date.current + 2.weeks
 	end
 	def create
-    # @stock = Stock.new(stock_params)
+		# @stock = Stock.new(stock_params)
 		@cupboards = current_user.cupboards
 		@ingredients = Ingredient.all.order('name ASC')
-		@units = Unit.all.order('name ASC')
+		@units = Unit.all
 		@two_weeks_from_now = Date.current + 2.weeks
-
+		
 		@selected_ingredient_name = params[:ingredient][:name]
 		@selected_ingredient = Ingredient.where(name: @selected_ingredient_name).first
 		@selected_ingredient_id = @selected_ingredient.id
 		@fallback_selected_ingredient_id = params[:ingredient_id]
 
-		@original_cupboard_id = params[:cupboard_id]
-		@selected_cupboard_id = params[:cupboards]
-		@selected_cupboard_id = @selected_cupboard_id.join
+		if not @selected_ingredient_id.present?
+			@selected_ingredient_id = @fallback_selected_ingredient_id
+		end
 
-		@stock_amount = params[:stock][:amount]
+		
+		@original_cupboard_id = params[:cupboards]
+		if @original_cupboard_id.present? && @original_cupboard_id.length > 1
+			@original_cupboard_id = @original_cupboard_id.join
+		end
+		@selected_cupboard_id = params[:cupboard_id]
+		
+		@stock_amount = params[:amount]
 		@stock_use_by_date = params[:stock][:use_by_date]
 		@stock_unit = params[:unit_number]
-
-		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first
-		@cupboard_for_stock.ingredients << @selected_ingredient
-		@stock = Stock.where(cupboard_id: @selected_cupboard_id, ingredient_id: @selected_ingredient.id).first
-		@stock.update_attributes(
-			:amount => @stock_amount,
-			:use_by_date => @stock_use_by_date,
-			:unit_number => @stock_unit
-		)
 		
-		Rails.logger.debug Date.current ## 2018-03-22
-		Rails.logger.debug @stock_use_by_date ## 2018-04-05
+		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first
+
+		@stock = Stock.create(    
+			amount: @stock_amount,
+			use_by_date: @stock_use_by_date,
+			unit_number: @stock_unit,
+			cupboard_id: @selected_cupboard_id,
+			ingredient_id: @selected_ingredient_id
+		)
 
 
     if @stock.save
-      redirect_to @cupboards_path
+      redirect_to cupboard_path(@cupboard_for_stock)
     else
 			render 'new'
 			flash[:danger] = "Make sure you select an ingredient"

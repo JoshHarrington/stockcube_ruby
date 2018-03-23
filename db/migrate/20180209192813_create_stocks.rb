@@ -6,7 +6,7 @@ class CreateStocks < ActiveRecord::Migration[5.1]
 
       t.date :use_by_date
       t.integer :unit_number
-      t.decimal :amount, :default => 1
+      t.decimal :amount
       
       t.timestamps
     end

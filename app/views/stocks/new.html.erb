@@ -16,10 +16,12 @@
 		Amount <%= text_field_tag :amount, '', placeholder: "250" %><br>
 		Units <%= select_tag "unit_number", options_from_collection_for_select(@units, "unit_number", "name", 1) %>
 		<br>
-		Use by Date <%= s.date_field :use_by_date, min: Date.current, placeholder: "dd/mm/yyyy", value: @two_weeks_from_now %><br>
-		<%= s.hidden_field :cupboard_id, value: params['cupboard_id'] %>
+		Use by Date <%= s.date_field :use_by_date, min: Date.current, placeholder: @two_weeks_from_now, value: @two_weeks_from_now %><br>
+		<% if params['cupboard_id'].present? %>
+			<%= s.hidden_field "cupboards[]", value: params['cupboard_id'] %>
+		<% end %>
 
-		<%= select_tag "cupboards[]", options_from_collection_for_select(@cupboards, "id", "location", params['cupboard_id']) %>
+		<%= select_tag :cupboard_id, options_from_collection_for_select(@cupboards, "id", "location", params['cupboard_id']) %>
 		
 	</div>
 	<div class="actions"> 

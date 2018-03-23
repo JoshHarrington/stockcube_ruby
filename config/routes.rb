@@ -31,7 +31,7 @@ Rails.application.routes.draw do
   get '/stocks/:id' => 'stocks#show', as: :stock
   get '/stocks/:id/edit' => 'stocks#edit', as: :edit_stock
   patch '/stocks/:id' => 'stocks#update'
-  post 'stocks' => 'stocks#create'
+  post '/stocks' => 'stocks#create'
 
   get '/cupboards' => 'cupboards#index'
   get '/cupboards/:id' => 'cupboards#show', as: :cupboard
@@ -43,7 +43,7 @@ Rails.application.routes.draw do
   get '/ingredients/:id' => 'ingredients#show', as: :ingredient
   get '/ingredients/:id/edit' => 'ingredients#edit', as: :edit_ingredient
   patch '/ingredients/:id' => 'ingredients#update'
-  post 'ingredients' => 'ingredients#create'
+  post '/ingredients' => 'ingredients#create'
 
   get  '/signup',  to: 'users#new', as: :users_new
   post '/signup',  to: 'users#create'
