@@ -1,5 +1,5 @@
 <h1><%= @current_ingredient.name %></h1>
-<%= form_for(@stock) do |s| %>
+<%= form_for @stock, :validate => true do |s| %>
 	<div class="field">
 		<%= s.label :stock %><br>
 
@@ -9,7 +9,7 @@
 		<br>
 		<br>
 
-		Units <%= select_tag "unit_number", options_from_collection_for_select(@units, "unit_number", "name", @current_unit) %>
+		Units <%= select_tag "unit_number", options_from_collection_for_select(@units_select, "unit_number", "name") %>
 
 		<%= select_tag :cupboard_id, options_from_collection_for_select(@cupboards, "id", "location", @current_cupboard) %>
 

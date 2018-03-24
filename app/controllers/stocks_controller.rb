@@ -14,6 +14,19 @@ class StocksController < ApplicationController
 		@ingredients = Ingredient.all.order('name ASC')
 		@current_ingredient = @stock.ingredient
 		@units = Unit.all
+		@units_select_volume = Unit.where(:unit_type => 'volume')
+		@units_select_mass = Unit.where(unit_type: "mass")
+		@units_select_other = Unit.where(unit_type: "other")
+		@current_ingredient_unit = @stock.ingredient.unit.unit_number
+		@current_unit = @stock.unit_number
+
+		if @current_ingredient.unit.unit_type == "volume"
+			@units_select = @units_select_volume
+		elsif @current_ingredient.unit.unit_type == "mass"
+			@units_select = @units_select_mass
+		else
+			@units_select = @units_select_other
+		end
 	end
 	def update
 		@stock = Stock.find(params[:id])
@@ -21,9 +34,20 @@ class StocksController < ApplicationController
 		@current_cupboard = @stock.cupboard
 		@ingredients = Ingredient.all.order('name ASC')
 		@current_ingredient = @stock.ingredient
-		@units = Unit.all
-		@current_unit = @stock.ingredient.unit.unit_number
-		@new_unit = Unit.where(unit_number: params[:unit_number]).first
+		@units_select_volume = Unit.where(:unit_type => 'volume')
+		@units_select_mass = Unit.where(unit_type: "mass")
+		@units_select_other = Unit.where(unit_type: "other")
+		@current_ingredient_unit = @stock.ingredient.unit.unit_number
+		@current_unit = @stock.unit_number
+
+		if @current_ingredient.unit.unit_type == "volume"
+			@units_select = @units_select_volume
+		elsif @current_ingredient.unit.unit_type == "mass"
+			@units_select = @units_select_mass
+		else
+			@units_select = @units_select_other
+		end
+
 
 		if not params[:cupboard_id] == @current_cupboard.id
 			@stock.update_attributes(
@@ -50,14 +74,44 @@ class StocksController < ApplicationController
 		@ingredients = Ingredient.all.order('name ASC')
 		@units = Unit.all
 		@two_weeks_from_now = Date.current + 2.weeks
+		@unit_select = []
+
+		@units.each do |unit|
+			if unit.unit_number == 5
+				@unit_select << unit
+			elsif unit.unit_number == 8
+				@unit_select << unit
+			elsif unit.unit_number == 11
+				@unit_select << unit
+			elsif unit.unit_number == 22
+				@unit_select << unit
+			elsif unit.unit_number == 25
+				@unit_select << unit
+			end
+		end
 	end
 	def create
+		@stock = Stock.new(stock_params)
 		@cupboards = current_user.cupboards
 		@ingredients = Ingredient.all.order('name ASC')
 		@units = Unit.all
 		@two_weeks_from_now = Date.current + 2.weeks
+		@unit_select = []
 
-		Rails.logger.debug params[:stock_ingredient][:name]
+		@units.each do |unit|
+			if unit.unit_number == 5
+				@unit_select << unit
+			elsif unit.unit_number == 8
+				@unit_select << unit
+			elsif unit.unit_number == 11
+				@unit_select << unit
+			elsif unit.unit_number == 22
+				@unit_select << unit
+			elsif unit.unit_number == 25
+				@unit_select << unit
+			end
+		end
+
 		if params[:ingredient][:name].present?
 			@selected_ingredient_name = params[:ingredient][:name]
 			@selected_ingredient = Ingredient.where(name: @selected_ingredient_name).first
@@ -83,16 +137,11 @@ class StocksController < ApplicationController
 		@stock_unit = params[:unit_number]
 
 
-		@stock = Stock.create(
-			amount: @stock_amount,
-			use_by_date: @stock_use_by_date,
+		@stock.update_attributes(
 			unit_number: @stock_unit,
 			cupboard_id: @selected_cupboard_id,
 			ingredient_id: @selected_ingredient_id
-			)
-
-			# Rails.logger.debug @stock_amount
-
+		)
 
 		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first
 

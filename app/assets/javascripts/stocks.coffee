@@ -30,4 +30,26 @@ $ ->
 			return
 	else
 		$('html').addClass('input-type-date-supported')
+	if $('form[method="post"]')
+		$('form input').keyup ->
+			empty = false
+			$('form input').each ->
+				if $(this).val() == ''
+					empty = true
+				return
+			if empty
+				$('input[type="submit"]').attr 'disabled', 'disabled'
+			else
+				$('input[type="submit"]').removeAttr 'disabled'
+		$('form input').blur ->
+			empty = false
+			$('form input').each ->
+				if $(this).val() == ''
+					empty = true
+				return
+			if empty
+				$('input[type="submit"]').attr 'disabled', 'disabled'
+			else
+				$('input[type="submit"]').removeAttr 'disabled'
+
 return
