@@ -8,10 +8,10 @@ class CupboardsController < ApplicationController
 	def show
 		@cupboard = Cupboard.find(params[:id])
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)
-		
+
 	end
-	def new 
-		@cupboard = cupboard.new 
+	def new
+		@cupboard = cupboard.new
   end
   def create
     @cupboard = Cupboard.new(cupboard_params)
@@ -45,11 +45,8 @@ class CupboardsController < ApplicationController
 		if @delete_stock_check_ids
 			@stock_unpick = Stock.find(@delete_stock_check_ids)
 			@stocks.delete(@stock_unpick)
-			# @stock_ids_for_edit = @form_stock_ids - @delete_stock_check_ids
-		else
-			# @stock_ids_for_edit = @form_stock_ids
 		end
-			
+
 		if @form_stock_amounts.length == @stocks.length
 			@stocks.each_with_index do |stock, index|
 				if not stock[:amount].to_f == @form_stock_amounts[index].to_f
@@ -67,16 +64,15 @@ class CupboardsController < ApplicationController
 			end
 		end
 
-
 		if @cupboard.update(cupboard_params)
 			redirect_to @cupboard
 		else
 			render 'edit'
 		end
   end
-	private 
-		def cupboard_params 
-			params.require(:cupboard).permit(:location, stocks_attributes:[:id, :amount, :use_by_date, :_destroy]) 
+	private
+		def cupboard_params
+			params.require(:cupboard).permit(:location, stocks_attributes:[:id, :amount, :use_by_date, :_destroy])
 		end
 
 		# Confirms a logged-in user.

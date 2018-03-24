@@ -6,6 +6,7 @@
 		</div>
 		<div class="datalist-input">
 			<%= text_field_tag "ingredient[name]", '', placeholder: "Pick your ingredient", list: "ingredient_list" %>
+			<label for="stock_amount" class="message-special" hidden>can't be blank</label>
 			<datalist id="ingredient_list">
 			<% @ingredients.each do |ingredient|  %>
 				<option><%= ingredient.name %></option>

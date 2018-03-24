@@ -6,6 +6,12 @@
 $ ->
 	if (!Modernizr.input.list)
 		$('html').removeClass('input-list-supported').addClass('input-list-not-supported')
+		# 	to do:
+		# 	when ingredient select blur check whether ingredient is volume / mass / other
+		# 	show a unit selection tailored to ingredient type
+		# else
+		# 	when ingredient input list blur check whether ingredient is volume / mass / other
+		# 	show a unit selection tailored to ingredient type
 	if (!Modernizr.inputtypes.date)
 		$('html').addClass('input-type-date-not-supported')
 		$('input[type="date"]').datepicker
@@ -31,7 +37,7 @@ $ ->
 	else
 		$('html').addClass('input-type-date-supported')
 	if $('form[method="post"]')
-		$('form input').keyup ->
+		do ->
 			empty = false
 			$('form input').each ->
 				if $(this).val() == ''
@@ -39,9 +45,7 @@ $ ->
 				return
 			if empty
 				$('input[type="submit"]').attr 'disabled', 'disabled'
-			else
-				$('input[type="submit"]').removeAttr 'disabled'
-		$('form input').blur ->
+		$('form input').on 'keyup blur', (e) ->
 			empty = false
 			$('form input').each ->
 				if $(this).val() == ''
@@ -49,7 +53,11 @@ $ ->
 				return
 			if empty
 				$('input[type="submit"]').attr 'disabled', 'disabled'
+				$(this).siblings('.message-special').removeAttr 'hidden'
 			else
 				$('input[type="submit"]').removeAttr 'disabled'
+		$('form input').on 'keyup blur', (e) ->
+			if $(this).val() != ''
+				$(this).siblings('.message-special').attr 'hidden', 'hidden'
 
 return

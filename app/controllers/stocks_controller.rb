@@ -13,19 +13,23 @@ class StocksController < ApplicationController
 		@current_cupboard = @stock.cupboard
 		@ingredients = Ingredient.all.order('name ASC')
 		@current_ingredient = @stock.ingredient
-		@units = Unit.all
-		@units_select_volume = Unit.where(:unit_type => 'volume')
-		@units_select_mass = Unit.where(unit_type: "mass")
-		@units_select_other = Unit.where(unit_type: "other")
-		@current_ingredient_unit = @stock.ingredient.unit.unit_number
-		@current_unit = @stock.unit_number
+		@current_ingredient_unit = @stock.ingredient.unit
+		@current_ingredient_unit_number = @current_ingredient_unit.unit_number
+		@current_unit_number = @stock.unit_number
+		@current_unit = Unit.where(unit_number: @current_unit_number).first
 
-		if @current_ingredient.unit.unit_type == "volume"
-			@units_select = @units_select_volume
-		elsif @current_ingredient.unit.unit_type == "mass"
-			@units_select = @units_select_mass
+		if @current_ingredient_unit.unit_type == "volume"
+			@units_select = Unit.where(:unit_type => "volume")
+		elsif @current_ingredient_unit.unit_type == "mass"
+			@units_select = Unit.where(unit_type: "mass")
 		else
-			@units_select = @units_select_other
+			@units_select = Unit.where(unit_type: "other")
+		end
+
+		if @current_unit.unit_type == @current_ingredient_unit.unit_type
+			@preselect_unit = @current_unit
+		else
+			@preselect_unit = @unit_select.first
 		end
 	end
 	def update
@@ -34,19 +38,10 @@ class StocksController < ApplicationController
 		@current_cupboard = @stock.cupboard
 		@ingredients = Ingredient.all.order('name ASC')
 		@current_ingredient = @stock.ingredient
-		@units_select_volume = Unit.where(:unit_type => 'volume')
-		@units_select_mass = Unit.where(unit_type: "mass")
-		@units_select_other = Unit.where(unit_type: "other")
-		@current_ingredient_unit = @stock.ingredient.unit.unit_number
-		@current_unit = @stock.unit_number
-
-		if @current_ingredient.unit.unit_type == "volume"
-			@units_select = @units_select_volume
-		elsif @current_ingredient.unit.unit_type == "mass"
-			@units_select = @units_select_mass
-		else
-			@units_select = @units_select_other
-		end
+		@current_ingredient_unit = @stock.ingredient.unit
+		@current_ingredient_unit_number = @current_ingredient_unit.unit_number
+		@current_unit_number = @stock.unit_number
+		@current_unit = Unit.where(unit_number: @current_unit_number).first
 
 
 		if not params[:cupboard_id] == @current_cupboard.id
@@ -56,7 +51,21 @@ class StocksController < ApplicationController
 			@current_cupboard = Cupboard.where(id: params[:cupboard_id]).first
 		end
 
-		if not params[:unit_number] == @current_unit
+		if @current_ingredient_unit.unit_type == "volume"
+			@units_select = Unit.where(:unit_type => "volume")
+		elsif @current_ingredient_unit.unit_type == "mass"
+			@units_select = Unit.where(unit_type: "mass")
+		else
+			@units_select = Unit.where(unit_type: "other")
+		end
+
+		if @current_unit.unit_type == @current_ingredient_unit.unit_type
+			@preselect_unit = @current_unit
+		else
+			@preselect_unit = @units_select.first
+		end
+
+		if not params[:unit_number] == @current_unit_number
 			@stock.update_attributes(
 				unit_number: params[:unit_number]
 			)
