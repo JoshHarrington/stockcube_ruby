@@ -2,9 +2,9 @@
 
 Welcome to this rudamentary prototype for the StockCube App
 
-* Ruby version - 2.5.0  
+* Ruby version - 2.5.0
 
-I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby environments and using [Homebrew](https://brew.sh/) to manage your packages (if you're on a Mac).  
+I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby environments and using [Homebrew](https://brew.sh/) to manage your packages (if you're on a Mac).
 
 If you're using Homebrew on Mac then you use it to install PostgresQL (the database type) with the command `brew install postgres` - there are many guides out there to explain this process in more detail eg [this one](https://gist.github.com/sgnl/609557ebacd3378f3b72)
 
@@ -19,6 +19,10 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 8. See app at [http://localhost:3000](http://localhost:3000)
 
 ## To dos
+- Front end work
+	- responsive, accessible navigation
+	- fix text sizing errors
+	- build elements page to style from elements (plus all others) in similar style
 - Database seeding
 	- Allow Seeds file to skip over existing database content, or overwrite, rather than resetting and reseeding each time
 - StockCube brand
@@ -28,9 +32,9 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 	- Create elements page to collect all elements together to be styled
 	- HTML Components to be imported on different pages and present different data with same style
 	- Animations for logo on hover?
-		- Little person inside cube could open front of cube and put 'busy' sign on the front then close door 
-		- Little person could peek out if logo only hovered for a short time 
-		- Little person could present food animation or suggest good recipe 
+		- Little person inside cube could open front of cube and put 'busy' sign on the front then close door
+		- Little person could peek out if logo only hovered for a short time
+		- Little person could present food animation or suggest good recipe
 - Stockcub.es
 	- Get something up on domain
 		- sign up form?
@@ -48,12 +52,13 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 	- ~~All Cupboards should belong to an individual user~~
 	- How to share cupboards between users?
 		- ^^ `has_many` vs `has_one`?
-	- Recipe search should be prefilled based on (common and searchable) ingredients in cupboards
+	- How to share stock between users?
+		- Share a cupboard and all stock will come attached, need to adjust cupboard setup to have a has many relationship with users
+	- Recipe search should be prefilled based on (common and searchable) ingredients current in cupboards (as stock)
 		- Search should allow for adding of ingredients not currently in cupboards
 - Stocks functionality
 	- ~~All Stock should belong to an individual user~~
-	- Method to update stock to change cupboard or details
-	- How to share stock between users?
+	- ~~Method to update stock to change cupboard or details~~
 - Shopping list
 	- ~~Create table for shopping list, owned by a particular user~~
 	- ~~Join to recipes so that recipes can be added~~
@@ -86,7 +91,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 - Ingredients functionality
 	- ~~Ingredients list should only be accessible by admins~~
 	- ~~Ingredients can only be accessed by admins~~
-	- Should be method for admin to combine the user added ingredients with existing ingredients 
+	- Should be method for admin to combine the user added ingredients with existing ingredients
 	- ~~Only admins should be able to update an Ingredients details and characteristics~~
 	- All users should be able to suggest a fix on an ingredient or recipe (?)
 - Notifications
