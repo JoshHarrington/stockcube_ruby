@@ -19,6 +19,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 8. See app at [http://localhost:3000](http://localhost:3000)
 
 ## To dos
+- Move all to dos over to issues and add to project with labels
 - Front end work
 	- responsive, accessible navigation
 	- fix text sizing errors
