@@ -20,13 +20,13 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 
 ## To dos
 - Move all to dos over to issues and add to project with labels
-- [ ] Front end work
+- [X] Front end work
 	- responsive, accessible navigation
 	- fix text sizing errors
 	- build elements page to style from elements (plus all others) in similar style
-- Database seeding
+- [X] Database seeding
 	- Allow Seeds file to skip over existing database content, or overwrite, rather than resetting and reseeding each time
-- StockCube brand
+- [X] StockCube brand
 	- ~~Start moving styling closer to StockCube brand~~
 	- Logo needs recreating
 	- Colours need defining
@@ -36,18 +36,18 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 		- Little person inside cube could open front of cube and put 'busy' sign on the front then close door
 		- Little person could peek out if logo only hovered for a short time
 		- Little person could present food animation or suggest good recipe
-- Stockcub.es
+- [X] Stockcub.es
 	- Get something up on domain
 		- sign up form?
-- User accounts
+- [X] User accounts
 	- ~~Start working on user accounts~~
 	- Complete [rails tutorial](https://www.railstutorial.org/book/updating_and_deleting_users#sec-updating_what_we_learned_in_this_chapter)
 	- Users should be able to set which units they want to use
 		- Settings tables that belongs_to user
-- Importing XML into db
+- [X] Importing XML into db
 	- Check if ingredients added twice are actually used in the recipe in two different amounts? If yes then add the amounts together, assuming the unit is the same and update portion of relevant ingredient in recipe
 	- Add new recipes into database
-- Cupboards functionality
+- [X] Cupboards functionality
 	- ~~Simple method of adding ingredients to cupboards with default weight and use by date~~
 	- ~~All items presented with human readable use by date information~~
 	- ~~All Cupboards should belong to an individual user~~
