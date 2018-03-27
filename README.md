@@ -20,7 +20,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 
 ## To dos
 - Move all to dos over to issues and add to project with labels
-- Front end work
+- [ ] Front end work
 	- responsive, accessible navigation
 	- fix text sizing errors
 	- build elements page to style from elements (plus all others) in similar style
