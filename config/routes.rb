@@ -13,6 +13,8 @@ Rails.application.routes.draw do
 
   root 'static_pages#home'
 
+  get '/elements' => 'static_pages#elements'
+
   get 'sessions/new'
 
   get '/recipes/search' => 'recipes#search', as: :search_recipe
