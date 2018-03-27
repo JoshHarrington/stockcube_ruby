@@ -40,7 +40,7 @@
   }
 }
 
-.nav-btn {
+.open-btn {
   display: block;
   width: 2.625em;
   height: 2.25em;
@@ -64,17 +64,17 @@
 }
 
 .nav-quick-link,
-.nav-btn {
+.open-btn {
 	overflow: hidden;
 	white-space: nowrap;
 	text-indent: 100%;
 }
 
-.no-svg .nav-btn {
+.no-svg .open-btn {
   background-image: url("../img/nav-icon.png");
 }
 
-.nav-btn {
+.open-btn {
   &:hover, &:focus {
     filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
     opacity: 1;
@@ -165,7 +165,7 @@
     text-align: center;
     white-space: nowrap;
   }
-  .nav-btn {
+  .open-btn {
     // position: absolute;
     // top: 1.5em;
     // left: 1.875em;
@@ -184,7 +184,7 @@ footer[role="contentinfo"] {
 }
 
 @media screen and (min-width: 45.0625em) {
-  #top .nav-btn {
+  #top .open-btn {
     border: 0;
     clip: rect(0 0 0 0);
     height: 1px;
