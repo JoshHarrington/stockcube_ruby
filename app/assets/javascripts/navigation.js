@@ -90,7 +90,7 @@
                 nav_open = false;
             };
 
-            app.closeNav =function()
+            app.closeNav = function()
             {
                 if (nav_open) {
                     // close navigation after transition or immediately
@@ -137,7 +137,13 @@
                 if (nav_open && !hasParent(e.target, 'nav')) {
                     e.preventDefault();
                     app.closeNav();
+                    console.log("click not in nav");
                 }
+                // if (nav_open && hasParent(e.target, 'nav')) {
+                //     app.closeNav();
+                //     console.log("click in nav");
+                // }
+
             },
             true);
 

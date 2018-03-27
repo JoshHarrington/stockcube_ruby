@@ -1,7 +1,9 @@
 <header id="top" role="banner">
   <div class="block">
+
+    <%= link_to "Site Navigation", "#nav", id: "nav-open-btn", class: "nav-btn", data: { turbolinks: 'false' } %>
     <h1><%= link_to "Stock Cube", root_path, id: "logo" %></h1>
-    <a class="nav-btn" id="nav-open-btn" href="#nav">Site Navigation</a>
+    <a class="nav-quick-link" id="nav-quick-link" href="#na">Quick Link</a>
     </div>
 </header>
 
@@ -34,7 +36,7 @@
       --><li><%= link_to "Sign up", signup_path %></li>
       <% end %>
     </ul>
-    <a class="close-btn" id="nav-close-btn" href="#top">Return to Content</a>
+    <%= link_to "Return to Content", "#top", id: "nav-close-btn", class: "close-btn", data: { turbolinks: 'false' } %>
   </div>
 </nav>
 <br>
