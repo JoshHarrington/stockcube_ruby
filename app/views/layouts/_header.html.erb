@@ -1,44 +1,56 @@
-<header id="top" role="banner">
-  <div class="block">
+<div class="header-nav-banner">
+  <header id="top" role="banner">
+    <div class="block">
 
-    <%= link_to "Site Navigation", "#nav", id: "nav-open-btn", class: "nav-btn open-btn", data: { turbolinks: 'false' } %>
-    <h1><%= link_to "Stock Cube", root_path, id: "logo" %></h1>
-    <a class="nav-quick-link" id="nav-quick-link" href="#na">Quick Link</a>
-    </div>
-</header>
-
-<nav id="nav" role="navigation">
-  <div class="block">
-    <h2 class="block-title">Sections</h2>
-    <ul>
-      <li><%= link_to "Home", root_path %></li><!--
-    --><li><%= link_to "Recipes", recipes_path %></li><!--
-    --><% if logged_in? && current_user.admin? %><!--
-    --><li><%= link_to "Ingredients", ingredients_path %></li><!--
-    --><% end %><!--
-    --><% if logged_in? && current_user %><!--
-    --><li><%= link_to "Shopping Lists", shopping_lists_path %></li><!--
-    --><li><%= link_to "Cupboard", cupboards_path %></li><!--
-    --><li><%= link_to "Users", users_path %></li><!--
-    --><li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-            Account <b class="caret"></b>
-          </a>
-          <ul class="dropdown-menu">
-            <li><%= link_to "Profile", current_user %></li><!--
-        --><li><%= link_to "Settings", edit_user_path(current_user) %></li><!--
-        --><li class="divider"></li><!--
-        --><li><%= link_to "Log out", logout_path, method: :delete %></li>
-          </ul>
-        </li><!--
-    --><% else %><!--
-      --><li><%= link_to "Log in", login_path %></li><!--
-      --><li><%= link_to "Sign up", signup_path %></li>
+      <%= link_to "Site Navigation", href: "#nav", id: "nav-open-btn", class: "nav-btn open-btn svg-btn", data: { turbolinks: 'false' } do %>
+        <%= icomoon('menu') %>
       <% end %>
-    </ul>
-    <%= link_to "Return to Content", "#top", id: "nav-close-btn", class: "nav-btn close-btn", data: { turbolinks: 'false' } %>
-  </div>
-</nav>
+      <h1><%= link_to "Stock Cube", root_path, id: "logo" %></h1>
+      <a class="nav-quick-link svg-btn" id="nav-quick-link" href="#na">
+        <%= icomoon('calendar') %>
+      </a>
+
+
+
+    </div>
+  </header>
+
+  <nav id="nav" role="navigation">
+    <div class="block">
+      <h2 class="block-title">Sections</h2>
+      <ul>
+        <li><%= link_to "Home", root_path %></li><!--
+      --><li><%= link_to "Recipes", recipes_path %></li><!--
+      --><% if logged_in? && current_user.admin? %><!--
+      --><li><%= link_to "Ingredients", ingredients_path %></li><!--
+      --><% end %><!--
+      --><% if logged_in? && current_user %><!--
+      --><li><%= link_to "Shopping Lists", shopping_lists_path %></li><!--
+      --><li><%= link_to "Cupboard", cupboards_path %></li><!--
+      --><li><%= link_to "Users", users_path %></li><!--
+      --><li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              Account <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+              <li><%= link_to "Profile", current_user %></li><!--
+          --><li><%= link_to "Settings", edit_user_path(current_user) %></li><!--
+          --><li class="divider"></li><!--
+          --><li><%= link_to "Log out", logout_path, method: :delete %></li>
+            </ul>
+          </li><!--
+      --><% else %><!--
+        --><li><%= link_to "Log in", login_path %></li><!--
+        --><li><%= link_to "Sign up", signup_path %></li>
+        <% end %>
+      </ul>
+      <%= link_to "Return to Content", href: "#top", id: "nav-close-btn", class: "nav-btn close-btn svg-btn", data: { turbolinks: 'false' } do %>
+        <%= icomoon('close') %>
+      <% end %>
+    </div>
+  </nav>
+</div>
+
 <br>
 <br>
 <br>

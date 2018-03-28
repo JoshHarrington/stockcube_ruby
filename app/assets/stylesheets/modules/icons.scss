@@ -1,0 +1,22 @@
+.icomoon-icon {
+	max-width: 100%;
+	max-height: 100%;
+	width: auto;
+	height: auto;
+	pointer-events: none;
+}
+
+@supports (pointer-events: none) {
+	.icomoon-icon {
+		pointer-events: none;
+  }
+}
+
+@supports not (pointer-events: none) {
+	.icomoon-icon {
+		display: none;
+	}
+	.svg-btn {
+		background-color: white;
+	}
+}
