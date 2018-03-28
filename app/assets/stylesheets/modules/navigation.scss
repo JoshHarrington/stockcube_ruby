@@ -17,18 +17,16 @@
   padding: 0;
   border: 0;
   outline: none;
-  background: purple;
-  // background: #333333 url("../img/close-btn.svg") left center no-repeat;
-  background-size: 1.875em 1.875em;
-  // overflow: hidden;
   white-space: nowrap;
-  // text-indent: 100%;
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
   opacity: 1;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	color: white;
 }
 
 .no-svg .close-btn {
+	// to do ...
+	// fallback to png when no svg
   background-image: url("../img/close-btn.png");
 }
 
@@ -45,28 +43,24 @@
   height: 2.25em;
   padding: 0;
   border: 0;
-  outline: none;
-  background: red;
-  // background: #333333 url("../img/nav-icon.svg") left center no-repeat;
-  background-size: 1.875em 1.5em;
-  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70);
-  opacity: 0.7;
+	outline: none;
+	color: $black-90;
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
+  opacity: 0.8;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 .nav-quick-link {
 	width: 2.625em;
 	height: 2.25em;
-	background: aqua;
+	color: $black-90;
 	border: 0;
 	outline: none;
 }
 
 .nav-quick-link,
 .open-btn {
-	// overflow: hidden;
 	white-space: nowrap;
-	// text-indent: 100%;
 }
 
 .no-svg .open-btn {
