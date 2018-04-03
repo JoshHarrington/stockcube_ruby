@@ -22,7 +22,7 @@
 	}
 }
 
-.no-svg .svg-btn {
+.no-inlinesvg .svg-btn {
 	position: relative;
 	.icomoon-icon {
 		display: none;
@@ -31,7 +31,7 @@
 
 .icomoon-icon + img.icon-png {
 	display: none;
-	.no-svg & {
+	.no-inlinesvg & {
 		display: inline-block;
     position: absolute;
     width: 100%;
