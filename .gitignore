@@ -24,3 +24,6 @@
 
 .DS_Store
 .env
+
+# Ignore all assets compiled locally
+public/assets/**
