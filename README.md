@@ -18,6 +18,14 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 7. Run `rails server` (or `rails s`) to run server
 8. See app at [http://localhost:3000](http://localhost:3000)
 
+## Steps to run with [Browser Sync](https://browsersync.io)
+1. Run the app as described above with `rails server` (or `rails s`)
+2. Open a new terminal window
+3. Naviagte to the '/browser-sync' folder inside this repo
+4. For first use, run `npm install && npm start`
+5. At all other times, only run `npm start`
+6. Use proxy address provided, shown in terminal window
+
 ## To dos
 Find all to dos on the [General tasks project](https://github.com/JoshHarrington/stockcube_ruby/projects/1) board
 

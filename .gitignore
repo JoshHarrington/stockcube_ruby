@@ -18,11 +18,13 @@
 !/tmp/.keep
 
 /node_modules
+*/node_modules
 /yarn-error.log
 
 .byebug_history
 
 .DS_Store
+*/.DS_Store
 .env
 
 # Ignore all assets compiled locally

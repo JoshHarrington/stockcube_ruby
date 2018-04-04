@@ -13,8 +13,6 @@ development:
   <<: *default
   encoding: unicode
   database: stockCube_dev_db
-  username: josh
-  password:
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -24,8 +22,6 @@ test:
   <<: *default
   encoding: unicode
   database: stockCube_test_db
-  username: josh
-  password:
 
 production:
   <<: *default
