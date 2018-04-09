@@ -219,6 +219,11 @@ footer[role="contentinfo"] {
     }
     &:target .close-btn {
       display: block;
+      .no-js & {
+        left: 1em;
+        background: $teal-100;
+        color: #333333;
+      }
     }
     .close-btn {
       position: absolute;
