@@ -24,7 +24,7 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
 		## define ingredient
     ingredient_name = ingredient['ItemName']
     ingredient_name = ingredient_name.gsub(/#{foodRegex}/, '').downcase
-    
+
     if ingredient_name.include? ","
       ingredient_name = ingredient_name.split(', ', 2)
       ingredient_main_title = ingredient_name[0].titleize
@@ -73,9 +73,29 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
     recipe_desc << description.inner_text
   end
 
-  recipe_desc = recipe_desc.join('').gsub(/#{recipeRegex}/, '')
+  recipe_desc = recipe_desc.join('').gsub(/#{recipeRegex}/, '').strip
 
-	recipe_new = Recipe.create(title: recipe_title, description: recipe_desc.to_s, live: true)
+  recipe_new = Recipe.create(title: recipe_title, description: recipe_desc.to_s, live: true)
+
+  recipe_commas = recipe_title.scan(/\,/).count
+  if recipe_commas >= 2
+    recipe_cuisine = recipe_title.split(', ').last
+    recipe_new.update_attributes(cuisine: recipe_cuisine)
+  end
+
+
+  ### only currently adding attribute where string is on first line of description
+  if recipe_desc.include? "PREP TIME: "
+    recipe_prep_time = recipe_desc[/PREP TIME\:\ (.*?)\n/m, 1]
+    recipe_new.update_attributes(prep_time: recipe_prep_time)
+  elsif recipe_desc.include? "COOK TIME: "
+    recipe_cook_time = recipe_desc[/COOK TIME\:\ (.*?)\n/m, 1]
+    recipe_new.update_attributes(cook_time: recipe_cook_time)
+  elsif recipe_desc.include? "YIELDS: "
+    recipe_yield = recipe_desc[/YIELDS\:\ (.*?)\n/m, 1]
+    recipe_new.update_attributes(yield: recipe_yield)
+  end
+
 
 	recipe.children.css('RecipeItem').each do |ingredient|
 
@@ -109,13 +129,13 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
       #### duplicate, needed??
       ingredient_obj = Ingredient.where(name: ingredient_name).first
       #### duplicate, needed??
-      
+
       ## add the ingredient to the recipe's ingredients
       recipe_new.ingredients << ingredient_obj
 
       ## find the portion for the recipe and ingredient ids
       portion_obj = Portion.where(recipe_id: recipe_new.id, ingredient_id: ingredient_obj.id).first
-      
+
       ## catch the ingredients with units which already match a more common unit
       if ingredient_unit == '19' || ingredient_unit == '56' || ingredient_unit == '79'
         ## catch ingredients with units the same as ounces (unit3)
@@ -126,17 +146,17 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
         ## otherwise find the correct unit object
       end
 
-      unit_obj = Unit.find_or_create_by(unit_number: ingredient_unit)  
+      unit_obj = Unit.find_or_create_by(unit_number: ingredient_unit)
 
       ## link the units and ingredients tables on the correct unit
       unit_obj.ingredients << ingredient_obj
-      
+
       ## update the portions ingredient amount
       portion_obj.update_attributes(
         :amount => ingredient_amount,
         :unit_number => ingredient_unit
       )
-      
+
     else
       puts " -- same ingredient in recipe, need to update same ingredient portion amount"
 
@@ -159,7 +179,7 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
       ### if it does match then update the portion amount by adding the new amount
       ### if it does not match then could convert using the unit ratio and then update the amount total
       ### ...or just skip over for the moment and record how often it happens (unlikely to be often)
-      
+
     end
   end
 
