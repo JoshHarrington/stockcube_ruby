@@ -86,13 +86,15 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
 
   ### only currently adding attribute where string is on first line of description
   if recipe_desc.include? "PREP TIME: "
-    recipe_prep_time = recipe_desc[/PREP TIME\:\ (.*?)\n/m, 1]
+    recipe_prep_time = recipe_desc.match(/.*PREP TIME\:\ (.*?)\n/m)[1]
     recipe_new.update_attributes(prep_time: recipe_prep_time)
-  elsif recipe_desc.include? "COOK TIME: "
-    recipe_cook_time = recipe_desc[/COOK TIME\:\ (.*?)\n/m, 1]
+  end
+  if recipe_desc.include? "COOK TIME: "
+    recipe_cook_time = recipe_desc.match(/.*COOK TIME\:\ (.*?)\n/m)[1]
     recipe_new.update_attributes(cook_time: recipe_cook_time)
-  elsif recipe_desc.include? "YIELDS: "
-    recipe_yield = recipe_desc[/YIELDS\:\ (.*?)\n/m, 1]
+  end
+  if recipe_desc.include? "YIELDS: "
+    recipe_yield = recipe_desc.match(/.*YIELDS\:\ (.*?)\n/m)[1]
     recipe_new.update_attributes(yield: recipe_yield)
   end
 
