@@ -68,6 +68,7 @@ ActiveRecord::Schema.define(version: 20180412065142) do
     t.string "prep_time"
     t.string "cook_time"
     t.string "yield"
+    t.string "note"
   end
 
   create_table "shopping_list_portions", force: :cascade do |t|

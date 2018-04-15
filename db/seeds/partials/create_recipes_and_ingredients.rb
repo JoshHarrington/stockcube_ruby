@@ -57,18 +57,6 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
   recipe_title = recipe['description']
   recipe_desc = Array.new
 
-  ### method to restructure recipe titles, adding a cuisine type for each recipe
-  # recipe_title_edit = recipe_title.split(',')
-  # if recipe_title_edit.length > 2
-  #   cuisine_type = recipe_title_edit.last
-  # end
-  # if food_in_titles.include?(recipe_title_edit[0])
-  #   ## build string with food still in title
-  # end
-  # if recipe_title.downcase.include?('vegetarian')
-  # end
-
-
   recipe.children.css('XML_MEMO1').each do |description|
     recipe_desc << description.inner_text
   end
@@ -81,23 +69,57 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
   if recipe_commas >= 2
     recipe_cuisine = recipe_title.split(', ').last
     recipe_new.update_attributes(cuisine: recipe_cuisine)
+    recipe_cuisine_pattern = ", " + recipe_cuisine.to_s
+    recipe_title_edit = recipe_title.gsub(recipe_cuisine_pattern, "")
+  else
+    recipe_title_edit = recipe_title
   end
 
+  if recipe_title_edit.include? "Dish,"
+    recipe_title_edit = recipe_title_edit.gsub(/Dish\,\s*/, "")
+  end
 
-  ### only currently adding attribute where string is on first line of description
-  if recipe_desc.include? "PREP TIME: "
-    recipe_prep_time = recipe_desc.match(/.*PREP TIME\:\ (.*?)\n/m)[1]
+  recipe_title_array = recipe_title_edit.split(/\,\s*/)
+  order_recipe_title = ""
+  recipe_title_array.reverse.each_with_index do |recipe_title_part, index|
+    order_recipe_title += recipe_title_part.titleize
+    unless index == recipe_title_array.length - 1
+      order_recipe_title += " "
+    end
+  end
+
+  recipe_title_edit = order_recipe_title
+
+  recipe_new.update_attributes(title: recipe_title_edit)
+
+  if recipe_desc.include? "PREP TIME"
+    recipe_prep_time = recipe_desc.match(/.*PREP\s*TIME\:*\s*(.*?)\n/m)[1]
     recipe_new.update_attributes(prep_time: recipe_prep_time)
+    recipe_desc = recipe_desc.gsub(/.*PREP\s*TIME.*\n/, "")
   end
-  if recipe_desc.include? "COOK TIME: "
-    recipe_cook_time = recipe_desc.match(/.*COOK TIME\:\ (.*?)\n/m)[1]
+  if recipe_desc.include? "COOK TIME"
+    recipe_cook_time = recipe_desc.match(/.*COOK\s*TIME\:\ (.*?)\n/m)[1]
     recipe_new.update_attributes(cook_time: recipe_cook_time)
+    recipe_desc = recipe_desc.gsub(/.*COOK\s*TIME.*\n/, "")
   end
-  if recipe_desc.include? "YIELDS: "
-    recipe_yield = recipe_desc.match(/.*YIELDS\:\ (.*?)\n/m)[1]
+  if recipe_desc.downcase.include? "yield"
+    recipe_yield = recipe_desc.match(/.*yield[s]*\:*\s*(.*?)\n/i)[1]
     recipe_new.update_attributes(yield: recipe_yield)
+    recipe_desc = recipe_desc.gsub(/.*yield.*\n/i, "")
+  end
+  if recipe_desc.include? "NOTE:"
+    # puts recipe_desc.scan(/.*NOTE\:\s(.*?)\n/)
+    recipe_note = recipe_desc.scan(/.*NOTE\:\s(.*?)\n/)
+    recipe_note = recipe_note.join(" ")
+    # recipe_note = recipe_desc.match(/.*NOTE\:\s(.*?)\n/m)[0]
+    recipe_new.update_attributes(note: recipe_note)
+    recipe_desc = recipe_desc.gsub(/.*NOTE\:.*\n/, "")
   end
 
+  recipe_desc = recipe_desc.gsub(/.*METHOD.*\n/, "")
+  recipe_desc = recipe_desc.gsub(/STEP/, "Step")
+
+  recipe_new.update_attributes(description: recipe_desc.strip)
 
 	recipe.children.css('RecipeItem').each do |ingredient|
 

@@ -2,10 +2,14 @@
 <div class="main recipe-show">
   <div class="container">
     <div class="recipe">
-      
+
       <!-- Display the recipe's info here -->
       <div class="info">
         <h3 class="recipe-title"><%= @recipe.title %></h3>
+        <p class="recipe-cuisine"><%= @recipe.cuisine.to_s %></p>
+        <p class="recipe-serving"><%= @recipe.yield.to_s %></p>
+        <p class="recipe-prep_time">Prep Time: <%= @recipe.prep_time.to_s %></p>
+        <p class="recipe-cook_time">Cook Time: <%= @recipe.cook_time.to_s %></p>
         <p class="recipe-description"><%= recipe_description.html_safe %></p>
         <% if current_user && current_user.admin %>
           <%= link_to "Edit recipe", edit_recipe_path(@recipe) %>
