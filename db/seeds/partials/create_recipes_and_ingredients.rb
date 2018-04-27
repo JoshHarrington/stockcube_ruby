@@ -104,14 +104,13 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
   end
   if recipe_desc.downcase.include? "yield"
     recipe_yield = recipe_desc.match(/.*yield[s]*\:*\s*(.*?)\n/i)[1]
+
     recipe_new.update_attributes(yield: recipe_yield)
     recipe_desc = recipe_desc.gsub(/.*yield.*\n/i, "")
   end
   if recipe_desc.include? "NOTE:"
-    # puts recipe_desc.scan(/.*NOTE\:\s(.*?)\n/)
     recipe_note = recipe_desc.scan(/.*NOTE\:\s(.*?)\n/)
     recipe_note = recipe_note.join(" ")
-    # recipe_note = recipe_desc.match(/.*NOTE\:\s(.*?)\n/m)[0]
     recipe_new.update_attributes(note: recipe_note)
     recipe_desc = recipe_desc.gsub(/.*NOTE\:.*\n/, "")
   end

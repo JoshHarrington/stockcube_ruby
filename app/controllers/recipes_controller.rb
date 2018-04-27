@@ -1,13 +1,18 @@
 class RecipesController < ApplicationController
-	include ActionView::Helpers::UrlHelper	
+	include ActionView::Helpers::UrlHelper
 
 	before_action :logged_in_user, only: [:index, :edit]
 	before_action :user_has_recipes, only: :index
 	before_action :admin_user,     only: [:create, :new, :edit, :update]
 
 	def index
-		@recipes = current_user.favourites
+		@recipes = Recipe.all
 		@fallback_recipes = Recipe.all.sample(4)
+		# if params[:search]
+		# 	@recipes = Recipe.search(params[:search]).order('created_at DESC')
+		# else
+		# 	@recipes = Recipe.all.order('created_at DESC')
+		# end
 	end
 	def search
 		if params[:search]
@@ -22,8 +27,8 @@ class RecipesController < ApplicationController
 		@portions = @recipe.portions
 		@ingredients = @recipe.ingredients
 	end
-	def new 
-		@recipe = Recipe.new 
+	def new
+		@recipe = Recipe.new
   end
   def create
     @recipe = Recipe.new(recipe_params)
@@ -50,7 +55,7 @@ class RecipesController < ApplicationController
   # for current_user
   def favourite
 		type = params[:type]
-		@recipe = Recipe.find(params[:id])		
+		@recipe = Recipe.find(params[:id])
 		recipe_title = @recipe.title
     if type == "favourite"
 			current_user.favourites << @recipe
@@ -67,9 +72,9 @@ class RecipesController < ApplicationController
       redirect_back fallback_location: root_path, notice: 'Nothing happened.'
     end
   end
-	private 
-		def recipe_params 
-			params.require(:recipe).permit(:user_id, :search, :title, :description, portions_attributes:[:id, :amount, :_destroy], ingredients_attributes:[:id, :name, :image, :unit, :_destroy]) 
+	private
+		def recipe_params
+			params.require(:recipe).permit(:user_id, :search, :title, :description, portions_attributes:[:id, :amount, :_destroy], ingredients_attributes:[:id, :name, :image, :unit, :_destroy])
 		end
 
 		# Confirms a logged-in user.

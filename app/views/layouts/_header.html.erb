@@ -17,6 +17,7 @@
       <h2 class="block-title">Sections</h2>
       <ul>
         <li><%= link_to "Recipes", recipes_path %></li><!--
+      --><li><%= link_to "Recipe Search", search_recipe_path %></li><!--
       --><% if logged_in? && current_user %><!--
       --><li><%= link_to "Shopping Lists", shopping_lists_path %></li><!--
       --><li><%= link_to "Cupboard", cupboards_path %></li><!--

@@ -1,12 +1,17 @@
 <% provide(:title, 'Search Recipes') %>
 <div class="main">
   <div class="container">
-  <%= form_tag(recipes_path, :method => "get", id: "search-form") do %>
+  <%= form_tag(search_recipe_path, :method => "get", id: "search-form") do %>
     <%= text_field_tag :search, params[:search], placeholder: "Search Recipes" %>
     <%= submit_tag "Search", :name => nil %>
     <%= button_tag "Reset", type: :reset %>
   <% end %>
-  <h2>All Recipes</h2>
+  <br />
+  <%= link_to "All recipes", recipes_path %>
+  <br />
+  <br />
+  <br />
+
     <% if @recipes.present? %>
       <% @recipes.each do |recipe| %>
         <%= render 'recipe_list_partial', recipe: recipe %>
@@ -25,7 +30,7 @@
           <%= render 'recipe_list_partial', recipe: recipe %>
         <br/>
         <br/>
-        <% end %>      
+        <% end %>
       <% end %>
 
     <% else %>
