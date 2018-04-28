@@ -4,6 +4,7 @@
 		<h2>All Shopping Lists</h2>
 		<br/>
 		<br/>
+		<%= will_paginate(@shopping_lists) %>
 		<% @shopping_lists.each_with_index do |shopping_list, index| %>
 			<div class="shopping_list">
 				<h3>Shopping List <%= link_to "##{shoppingListIndex(shopping_list)} (#{shopping_list.created_at.to_date.to_s(:long)})", shopping_list_path(shopping_list) %></h3>

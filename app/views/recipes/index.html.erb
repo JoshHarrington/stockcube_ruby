@@ -1,37 +1,40 @@
-<% provide(:title, 'Your Recipes') %>
+<% provide(:title, 'Stock Cube Recipes') %>
 <div class="main">
   <div class="container">
-    <h2>All Recipes</h2>
+
 
     <%= form_tag(search_recipe_path, :method => "get", id: "search-form") do %>
       <%= text_field_tag :search, params[:search], placeholder: "Search Recipes" %>
       <%= submit_tag "Search", :name => nil %>
       <%= button_tag "Reset", type: :reset %>
     <% end %>
+    <br />
 <br />
-<br />
+    <h2>Your favourited recipes</h2>
 
-    <% @recipes.each do |recipe| %>
+    <% @your_recipes_sample.each do |recipe| %>
 
       <%= render 'recipe_list_partial', recipe: recipe %>
 
       <br/>
       <br/>
     <% end %>
+    <% if @your_recipes_length > 4 %>
+      <p>See all <%= link_to "your favourites recipes", favourite_recipes_path %></p>
+    <% end %>
 
-    <% if @recipes.length < 3 %>
-      <br>
-      <br>
-      <hr>
-      <p>Here are some more random recipes you might like :)</p>
-      <br>
-      <br>
+    <br />
+    <hr>
+    <h2>All Recipes</h2>
+    <br />
+    <br />
+    <%= will_paginate(@recipes) %>
+    <% @recipes.each do |recipe| %>
 
-      <% @fallback_recipes.each do |recipe| %>
-        <%= render 'recipe_list_partial', recipe: recipe %>
+      <%= render 'recipe_list_partial', recipe: recipe %>
+
       <br/>
       <br/>
-      <% end %>
     <% end %>
 
     <%= link_to "Search for more recipes", search_recipe_path %>

@@ -1,11 +1,9 @@
 module ShoppingListsHelper
 	def shoppingListIndex(shopping_list)
 		userShoppingLists = current_user.shopping_lists
-		plain_index = userShoppingLists.index(shopping_list)
-		final_index = plain_index + 1
-		final_index
+		zero_base_index = userShoppingLists.index(shopping_list)
+		return zero_base_index + 1
 	end
-
 	def shopping_list_portions_output(ingredient_id, shopping_list_id)
 		ingredient_name = Ingredient.where(id: ingredient_id).first.name
 		portion_unit_number = ShoppingListPortion.where(ingredient_id: ingredient_id, shopping_list_id: shopping_list_id).first.unit_number
@@ -72,7 +70,7 @@ module ShoppingListsHelper
 
 	def metric_transform(portion_obj, portion_unit_obj)
 		metric_amount = portion_obj.amount * portion_unit_obj.metric_ratio
-			
+
 		if metric_amount < 20
 			metric_amount = metric_amount.ceil
 		elsif metric_amount < 400
@@ -86,7 +84,7 @@ module ShoppingListsHelper
 
 	def metric_transform_portion_update(shopping_list_portion, portion_unit_obj, portion_obj, ingredient_obj)
 		if portion_unit_obj.metric_ratio
-			
+
 			metric_amount = portion_obj.amount * portion_unit_obj.metric_ratio
 			metric_transform(portion_obj, portion_unit_obj)
 

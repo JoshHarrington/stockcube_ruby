@@ -6,17 +6,14 @@ class RecipesController < ApplicationController
 	before_action :admin_user,     only: [:create, :new, :edit, :update]
 
 	def index
-		@recipes = Recipe.all
+		@recipes = Recipe.paginate(:page => params[:page], :per_page => 20)
 		@fallback_recipes = Recipe.all.sample(4)
-		# if params[:search]
-		# 	@recipes = Recipe.search(params[:search]).order('created_at DESC')
-		# else
-		# 	@recipes = Recipe.all.order('created_at DESC')
-		# end
+		@your_recipes_length = current_user.favourites.length
+		@your_recipes_sample = current_user.favourites.first(4)
 	end
 	def search
 		if params[:search]
-			@recipes = Recipe.search(params[:search]).order('created_at DESC')
+			@recipes = Recipe.search(params[:search]).order('created_at DESC').paginate(:page => params[:page], :per_page => 20)
 		else
 			@recipes = Recipe.all.order('created_at DESC')
 		end
@@ -26,6 +23,9 @@ class RecipesController < ApplicationController
 		@recipe = Recipe.find(params[:id])
 		@portions = @recipe.portions
 		@ingredients = @recipe.ingredients
+	end
+	def favourites
+		@your_recipes = current_user.favourites.paginate(:page => params[:page], :per_page => 5)
 	end
 	def new
 		@recipe = Recipe.new
@@ -71,11 +71,63 @@ class RecipesController < ApplicationController
       # Type missing, nothing happens
       redirect_back fallback_location: root_path, notice: 'Nothing happened.'
     end
-  end
+	end
+	def add_to_shopping_list
+		@recipe = Recipe.find(params[:id])
+		recipe_title = @recipe.title
+
+		# if at least one shopping list exists
+		if current_user.shopping_lists.length
+
+			# add recipe to the last edited(?) shopping list
+			last_shopping_list = current_user.shopping_lists.order('created_at DESC').first
+			last_shopping_list.recipes << @recipe
+			@recipe.ingredients.each do |ingredient|
+				last_shopping_list.ingredients << ingredient
+			end
+
+			# find index of shopping list
+			userShoppingLists = current_user.shopping_lists
+			zero_base_index = userShoppingLists.index(last_shopping_list)
+			shopping_list_index = zero_base_index + 1
+			shopping_list_ref = "#" + shopping_list_index.to_s + " " + last_shopping_list.created_at.to_date.to_s(:long)
+
+			# give notice that the recipe has been added with link to shopping list
+			@string = "Added the #{@recipe.title} to shopping list from #{link_to(shopping_list_ref, shopping_list_path(last_shopping_list))}"
+			redirect_back fallback_location: root_path, notice: @string
+
+		# if no shopping lists exist
+		else
+			# create a new shopping list
+			@shopping_list = ShoppingList.new(shopping_list_params)
+			current_user.shopping_lists << @shopping_list
+
+			# add the recipe to that shopping list
+			@shopping_list.recipes << @recipe
+			@recipe.ingredients.each do |ingredient|
+				@shopping_list.ingredients << ingredient
+			end
+
+			# find index of shopping list
+			userShoppingLists = current_user.shopping_lists
+			zero_base_index = userShoppingLists.index(@shopping_list)
+			shopping_list_index = zero_base_index + 1
+			shopping_list_ref = "#" + shopping_list_index.to_s + " " + @shopping_list.created_at.to_date.to_s(:long)
+
+			# give notice that the recipe has been added with link to shopping list
+			@string = "Added the #{@recipe.title} to shopping list #{link_to(shopping_list_ref, shopping_list_path(@shopping_list))}"
+			redirect_back fallback_location: root_path, notice: @string
+		end
+	end
+
 	private
 		def recipe_params
 			params.require(:recipe).permit(:user_id, :search, :title, :description, portions_attributes:[:id, :amount, :_destroy], ingredients_attributes:[:id, :name, :image, :unit, :_destroy])
 		end
+
+		def shopping_list_params
+      params.require(:shopping_list).permit(:id, :date_created, recipes_attributes:[:id, :title, :description, :_destroy])
+    end
 
 		# Confirms a logged-in user.
 		def logged_in_user

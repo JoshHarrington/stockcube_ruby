@@ -1,0 +1,15 @@
+<% provide(:title, 'Your favourite recipes') %>
+<div class="main">
+  <div class="container">
+
+    <%= will_paginate(@your_recipes) %>
+    <% @your_recipes.each do |recipe| %>
+
+      <%= render 'recipe_list_partial', recipe: recipe %>
+
+      <br/>
+      <br/>
+    <% end %>
+
+	</div>
+</div>

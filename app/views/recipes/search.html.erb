@@ -13,11 +13,14 @@
   <br />
 
     <% if @recipes.present? %>
+      <%= will_paginate(@recipes) %>
       <% @recipes.each do |recipe| %>
         <%= render 'recipe_list_partial', recipe: recipe %>
       <br/>
       <br/>
       <% end %>
+      <%= will_paginate(@recipes) %>
+
       <% if @recipes.length < 3 %>
         <br>
         <br>

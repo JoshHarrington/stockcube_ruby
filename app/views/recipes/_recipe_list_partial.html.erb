@@ -13,4 +13,14 @@
 			<%= link_to "unfavourite", favourite_recipe_path(recipe, type: "unfavourite"), method: :put %>
 		<% end %>
 	<% end %>
+	<br />
+	<% if current_user %>
+		<% if current_user.shopping_lists.length > 0 %>
+			<% unless recipe.shopping_lists.include?(current_user.shopping_lists.order('created_at DESC').first) %>
+				<%= link_to "add to shopping list", add_to_shopping_list_recipe_path(recipe), method: :put %>
+			<% end %>
+		<% else  %>
+			<%= link_to "add to shopping list", add_to_shopping_list_recipe_path(recipe), method: :put %>
+		<% end %>
+	<% end %>
 </div>

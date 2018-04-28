@@ -22,19 +22,9 @@ class Recipe < ApplicationRecord
     "#{id}-#{slug}"
   end
 
-  # ingredients_list = ""
-  # self.ingredients.each do |ingredient|
-  #   ingredients_list += ingredient.name.to_s + " "
-  # end
-  # ingredients_list = ingredients_list.strip
-
-
 
   def self.search(search)
     where("lower(title) LIKE :search OR lower(description) LIKE :search OR lower(cuisine) LIKE :search", search: "%#{search.downcase}%")
-    # where("lower(description) LIKE ?", "%#{search.downcase}%")
-    # where("lower(cuisine) LIKE ?", "%#{search.downcase}%")
-    # where("lower(ingredients_list) LIKE ?", "%#{search.downcase}%")
   end
 end
 

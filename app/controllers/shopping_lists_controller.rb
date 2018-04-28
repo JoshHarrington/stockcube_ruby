@@ -4,9 +4,9 @@ class ShoppingListsController < ApplicationController
 	before_action :user_has_shopping_lists, only: :index
 
   def index
-    @shopping_lists = current_user.shopping_lists
+    @shopping_lists = current_user.shopping_lists.order('created_at DESC').paginate(:page => params[:page], :per_page => 3)
   end
-	def new 
+	def new
     @shopping_lists = ShoppingList.new
     @recipes = Recipe.all
     @user_id = current_user.id
@@ -39,7 +39,7 @@ class ShoppingListsController < ApplicationController
         @shopping_list.ingredients << ingredient_obj
         shopping_list_portion_obj = ShoppingListPortion.where(ingredient_id: ingredient_obj.id, shopping_list_id: @shopping_list.id)
         portion_unit_obj = Unit.where(id: portion_obj.unit_number).first
-    
+
         shopping_list_portion_obj.each do |shopping_list_portion|
           view_context.metric_transform_portion_update(shopping_list_portion, portion_unit_obj, portion_obj, ingredient_obj)
         end
@@ -52,7 +52,7 @@ class ShoppingListsController < ApplicationController
       render 'new'
     end
   end
-  
+
 	def show
 		@shopping_list = ShoppingList.find(params[:id])
 		@recipes = @shopping_list.recipes
@@ -89,7 +89,7 @@ class ShoppingListsController < ApplicationController
 
 		@cupboard_stock = Stock.find(@cupboard_stock_ids)
   end
-  
+
   def edit
 		@shopping_list = ShoppingList.find(params[:id])
 		@recipes = @shopping_list.recipes
@@ -133,7 +133,7 @@ class ShoppingListsController < ApplicationController
         @shopping_list.ingredients << ingredient_obj
         shopping_list_portion_obj = ShoppingListPortion.where(ingredient_id: ingredient_obj.id, shopping_list_id: @shopping_list.id)
         portion_unit_obj = Unit.where(id: portion_obj.unit_number).first
-    
+
         shopping_list_portion_obj.each do |shopping_list_portion|
           view_context.metric_transform_portion_update(shopping_list_portion, portion_unit_obj, portion_obj, ingredient_obj)
         end
@@ -155,9 +155,9 @@ class ShoppingListsController < ApplicationController
   #     redirect_to(root_url) unless current_user?(@user)
   #   end
 
-  private 
+  private
     def shopping_list_params
-      params.require(:shopping_list).permit(:id, :date_created, recipes_attributes:[:id, :title, :description, :_destroy]) 
+      params.require(:shopping_list).permit(:id, :date_created, recipes_attributes:[:id, :title, :description, :_destroy])
     end
 
     def user_has_shopping_lists
