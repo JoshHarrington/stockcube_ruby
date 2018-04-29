@@ -55,7 +55,7 @@ class RecipesController < ApplicationController
   # for current_user
   def favourite
 		type = params[:type]
-		@recipe = Recipe.find(params[:id])
+		@recipe = Recipe.where(id: params[:id])
 		recipe_title = @recipe.title
     if type == "favourite"
 			current_user.favourites << @recipe
@@ -76,48 +76,28 @@ class RecipesController < ApplicationController
 		@recipe = Recipe.find(params[:id])
 		recipe_title = @recipe.title
 
-		# if at least one shopping list exists
-		if current_user.shopping_lists.length
+		this_shopping_list = ShoppingList.where(user_id: current_user.id).order('created_at DESC').first_or_create
 
-			# add recipe to the last edited(?) shopping list
-			last_shopping_list = current_user.shopping_lists.order('created_at DESC').first
-			last_shopping_list.recipes << @recipe
-			@recipe.ingredients.each do |ingredient|
-				last_shopping_list.ingredients << ingredient
-			end
+		puts this_shopping_list.to_s + ' this shopping list'
+		puts @recipe.to_s + ' the recipe'
 
-			# find index of shopping list
-			userShoppingLists = current_user.shopping_lists
-			zero_base_index = userShoppingLists.index(last_shopping_list)
-			shopping_list_index = zero_base_index + 1
-			shopping_list_ref = "#" + shopping_list_index.to_s + " " + last_shopping_list.created_at.to_date.to_s(:long)
-
-			# give notice that the recipe has been added with link to shopping list
-			@string = "Added the #{@recipe.title} to shopping list from #{link_to(shopping_list_ref, shopping_list_path(last_shopping_list))}"
-			redirect_back fallback_location: root_path, notice: @string
-
-		# if no shopping lists exist
-		else
-			# create a new shopping list
-			@shopping_list = ShoppingList.new(shopping_list_params)
-			current_user.shopping_lists << @shopping_list
-
-			# add the recipe to that shopping list
-			@shopping_list.recipes << @recipe
-			@recipe.ingredients.each do |ingredient|
-				@shopping_list.ingredients << ingredient
-			end
-
-			# find index of shopping list
-			userShoppingLists = current_user.shopping_lists
-			zero_base_index = userShoppingLists.index(@shopping_list)
-			shopping_list_index = zero_base_index + 1
-			shopping_list_ref = "#" + shopping_list_index.to_s + " " + @shopping_list.created_at.to_date.to_s(:long)
-
-			# give notice that the recipe has been added with link to shopping list
-			@string = "Added the #{@recipe.title} to shopping list #{link_to(shopping_list_ref, shopping_list_path(@shopping_list))}"
-			redirect_back fallback_location: root_path, notice: @string
+		this_shopping_list.recipes << @recipe
+		@recipe.portions.each do |portion|
+			shopping_list_portion = ShoppingListPortion.new(shopping_list_id: this_shopping_list.id, recipe_number: @recipe.id)
+			shopping_list_portion.update_attributes(amount: portion.amount, ingredient_id: portion.ingredient_id, unit_number: portion.unit_number)
 		end
+
+
+		# find index of shopping list
+		userShoppingLists = current_user.shopping_lists
+		zero_base_index = userShoppingLists.index(this_shopping_list)
+		shopping_list_index = zero_base_index + 1
+		shopping_list_ref = "#" + shopping_list_index.to_s + " " + this_shopping_list.created_at.to_date.to_s(:long)
+
+		# give notice that the recipe has been added with link to shopping list
+		@string = "Added the #{@recipe.title} to shopping list from #{link_to(shopping_list_ref, shopping_list_path(this_shopping_list))}"
+		redirect_back fallback_location: root_path, notice: @string
+
 	end
 
 	private
