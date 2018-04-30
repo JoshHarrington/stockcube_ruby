@@ -1,7 +1,7 @@
 class RecipesController < ApplicationController
 	include ActionView::Helpers::UrlHelper
 
-	before_action :logged_in_user, only: [:index, :edit]
+	before_action :logged_in_user, only: [:index, :edit, :new]
 	before_action :user_has_recipes, only: :index
 	before_action :admin_user,     only: [:create, :new, :edit, :update]
 

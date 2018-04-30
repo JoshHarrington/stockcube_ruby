@@ -1,7 +1,8 @@
 class ShoppingListsController < ApplicationController
   require 'set'
   before_action :logged_in_user
-	before_action :user_has_shopping_lists, only: :index
+  before_action :user_has_shopping_lists, only: :index
+  before_action :correct_user, only: [:show, :edit]
 
   def index
     @shopping_lists = current_user.shopping_lists.order('created_at DESC').paginate(:page => params[:page], :per_page => 3)
@@ -140,20 +141,27 @@ class ShoppingListsController < ApplicationController
       end
     end
 
-
     if @shopping_list.update(shopping_list_params)
       redirect_to shopping_list_path(@shopping_list)
     else
       render 'edit'
     end
-	end
+  end
 
-  # private
-  ### need to update for show, new, update, check that this shopping list user is the current user
-  #   def correct_user
-  #     @user = User.find(params[:id])
-  #     redirect_to(root_url) unless current_user?(@user)
-  #   end
+  def delete
+    @shopping_list = ShoppingList.find(params[:id])
+    if current_user == @shopping_list.user
+        @shopping_list.shopping_list_portions.destroy_all
+        @shopping_list.shopping_list_recipes.destroy_all
+        @shopping_list.destroy
+        if current_user.shopping_lists.first
+          redirect_to shopping_lists_path
+        else
+          redirect_to recipes_path
+        end
+    end
+  end
+
 
   private
     def shopping_list_params
@@ -173,5 +181,13 @@ class ShoppingListsController < ApplicationController
 				flash[:danger] = "Please log in."
 				redirect_to search_recipe_path
 			end
-		end
+    end
+    def correct_user
+      @shopping_list = ShoppingList.find(params[:id])
+      unless current_user == @shopping_list.user
+        store_location
+        flash[:danger] = "That's not your shopping list!"
+        redirect_to shopping_lists_path
+      end
+    end
 end

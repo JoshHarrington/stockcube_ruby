@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   get '/shopping_lists/:id/edit' => 'shopping_lists#edit', as: :edit_shopping_list
   patch '/shopping_lists/:id' => 'shopping_lists#update'
   post '/shopping_lists' => 'shopping_lists#create'
+  delete '/shopping_lists/:id/delete' => 'shopping_lists#delete', as: :delete_shopping_list
+
 
   get 'password_resets/new'
 
