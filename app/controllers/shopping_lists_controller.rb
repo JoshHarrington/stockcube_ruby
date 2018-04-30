@@ -61,10 +61,10 @@ class ShoppingListsController < ApplicationController
 	def show_ingredients
 		@shopping_list = ShoppingList.find(params[:id])
     @recipes = @shopping_list.recipes
-    @shopping_list_portions = @shopping_list.shopping_list_portions
+    @shopping_list_ingredients = @shopping_list.ingredients.order('name ASC')
     @ingredient_ids_set = Set[]
-    @shopping_list_portions.each do |portion|
-      @ingredient_ids_set.add(portion.ingredient_id)
+    @shopping_list_ingredients.each do |ingredient|
+      @ingredient_ids_set.add(ingredient.id)
     end
 
     @cupboard_ids = []

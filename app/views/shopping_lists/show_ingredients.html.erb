@@ -1,7 +1,7 @@
 <div class="main shopping_list-show">
   <div class="container">
     <div class="shopping_list">
-      
+
       <!-- Display the shopping_list's info here -->
       <div class="info">
 				<h3>Shopping List - #<%= shoppingListIndex(@shopping_list) %> (<%= @shopping_list.created_at.to_date.to_s(:long) %>)</h3>
@@ -10,14 +10,14 @@
 
     <%= link_to "See Recipes in this Shopping List", shopping_list_path(@shopping_list) %>
 
-    <% if @shopping_list_portions.first %>
+    <% if @shopping_list_ingredients.first %>
 
-      <% @ingredient_ids_set.each do |ingredient_id| %>
-        <p><%= shopping_list_portions_output(ingredient_id, @shopping_list.id) %></p>
-        <p><%= stock_in_cupboard_proportion(ingredient_id, @shopping_list.id, @cupboard_stock_ids) %></p>
-        <br>
+      <% shopping_list_portions_list_output(@ingredient_ids_set, @shopping_list.id, @cupboard_stock_ids).each do |shopping_list_portion| %>
+        <% shopping_list_portion.each do |text| %>
+          <p><%= text %></p>
+        <% end %>
+        <br />
       <% end %>
-
 
     <% else %>
       <p>Shopping List currently empty.</p>
