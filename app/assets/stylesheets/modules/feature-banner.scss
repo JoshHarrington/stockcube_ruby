@@ -1,0 +1,49 @@
+.feature-banner--collection {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	padding: 0 2em;
+}
+
+.feature-banner--title {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 4em;
+	h1 {
+		font-size: 3em;
+		margin-bottom: .4em;
+	}
+	p {
+		font-size: 1.7em;
+	}
+}
+
+.feature-banner {
+	max-width: 60em;
+	width: 80%;
+	display: flex;
+	flex-wrap: wrap;
+	margin: 3em 0;
+	p {
+		font-size: 2.4em;
+	}
+}
+
+.feature-banner--img {
+	flex: 1 0 35%;
+	background-color: aqua;
+	margin-right: 2em;
+	height: 5em; // remove when svg complete
+	margin-bottom: 2em;
+}
+
+.feature-banner--content {
+	flex: 1 0 55%;
+	min-width: 25em;
+	p:first-child ~ p {
+		margin-top: .2rem;
+		font-size: 1.8em;
+		color: $black-80;
+	}
+}

@@ -2,26 +2,38 @@
 <div class="main">
   <div class="container">
   <%= form_tag(search_recipe_path, :method => "get", id: "search-form") do %>
+    <p>Search recipes</p>
+    <br />
     <%= text_field_tag :search, params[:search], placeholder: "Search Recipes" %>
+    <br />
+    <br />
+    <p>Search ingredients</p>
+    <br />
+    <%= text_field_tag :search_ingredients, params[:search_ingredients], placeholder: "Search Ingredients" %>
+    <br />
+    <br />
     <%= submit_tag "Search", :name => nil %>
-    <%= button_tag "Reset", type: :reset %>
   <% end %>
+  <%= link_to "Clear form", search_recipe_path %>
   <br />
   <%= link_to "All recipes", recipes_path %>
   <br />
   <br />
   <br />
 
-    <% if @recipes.present? %>
-      <%= will_paginate(@recipes) %>
-      <% @recipes.each do |recipe| %>
-        <%= render 'recipe_list_partial', recipe: recipe %>
-      <br/>
-      <br/>
-      <% end %>
-      <%= will_paginate(@recipes) %>
+    <br />
+    <br />
 
-      <% if @recipes.length < 3 %>
+    <% if @final_recipes.present? %>
+      <%= will_paginate(@final_recipes) %>
+      <% @final_recipes.each do |recipe| %>
+          <%= render 'recipe_list_partial', recipe: recipe %>
+        <br/>
+        <br/>
+      <% end %>
+      <%= will_paginate(@final_recipes) %>
+
+      <% if @final_recipes.length < 3 %>
         <br>
         <br>
         <hr>
