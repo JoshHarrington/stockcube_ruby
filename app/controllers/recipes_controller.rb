@@ -12,6 +12,20 @@ class RecipesController < ApplicationController
 		@your_recipes_sample = current_user.favourites.first(4)
 	end
 	def search
+
+		# _Resolved search method_
+		## should only take one params search
+		## then split the string based on commas, stripping out everything that isn't words
+		#### should it expect that strings are always separated by commas or that each word should be searched separately?
+
+		## then search through all recipes [title, cuisine, description?] and return ones that match, create set of matching recipes
+		## make list of search strings that are not recipe [title, cuisine, description?]
+		## these search strings should be expected to be ingredients
+		## find matching ingredients set
+		## of the matched recipes set, search through them to find those which contain all ingredients mentioned
+		## remove all search strings (that could be matched to something in the database) and display them below the search as removable tags
+		## if the tags are removed then a new search should be run to update the results, could be done with ajax
+
 		if params[:search]
 			@recipes = Recipe.search(params[:search]).order('created_at DESC').paginate(:page => params[:page], :per_page => 20)
 			if params[:search_ingredients]
