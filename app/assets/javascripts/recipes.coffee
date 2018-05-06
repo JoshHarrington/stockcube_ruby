@@ -5,7 +5,6 @@
 $ ->
   # $('#search-form #search').focus()
   cuisine = ''
-  ingredients = ''
   ingredientsArray = []
   cuisine_tag_container = $('.cuisine_tag_container')
   $('#cuisine_dl, #cuisine').change ->
@@ -30,30 +29,32 @@ $ ->
     cuisine_tag_container.attr 'hidden', 'hidden'
     $('#cuisine_dl option, #cuisine option').removeAttr('disabled')
     $('#cuisine option').first().attr 'selected', 'selected'
+    $('#cuisine_h').val cuisine
     return
 
   $('#ingredients_dl, #ingredients').change ->
     ingredients_tags_container = $('.ingredients_tags')
     val = $(this).val()
-    val_element = '<span class="ingredient_tag">' + val + '<span class="button">X</span></span>'
+    val_element = '<span class="ingredient_tag"><span class="ingredient_tag_content">' + val + '</span><span class="button">X</span></span>'
     option_value = ' option[value\=\"'+val+'\"]'
-    if !ingredients.includes(val)
-      if ingredients == ''
-        ingredients += val
-        ingredientsArray.push(val)
-        ingredients_tags_container.append(val_element)
-      else
-        ingredients += '|'
-        ingredients += val
-        ingredientsArray.push(val)
-        ingredients_tags_container.append(val_element)
 
     $('#ingredients' + option_value).attr 'disabled', 'disabled'
     $('#ingredient_list' + option_value).attr 'disabled', 'disabled'
+
+    ingredientsArray.push(val)
+    ingredients_tags_container.append(val_element)
+
     ingredients_tags_container.removeAttr('hidden')
     $('#ingredients_dl').val('')
-    $('#ingredients_h').val ingredients
+    $('#ingredients_h').val ingredientsArray.join('|')
+    return
 
-    # need to add method to remove ingredients from search
-
+  $('body').on 'click', '.ingredients_tags .button', ->
+    val = $(this).siblings('.ingredient_tag_content').text()
+    $(this).parent().attr 'hidden', 'hidden'
+    i = ingredientsArray.indexOf(val)
+    if i != -1
+      ingredientsArray.splice i, 1
+    $('#ingredients_h').val ingredientsArray.join('|')
+    $(this).parent().remove()
   return
