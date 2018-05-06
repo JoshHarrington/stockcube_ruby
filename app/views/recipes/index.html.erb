@@ -2,12 +2,7 @@
 <div class="main">
   <div class="container">
 
-
-    <%= form_tag(search_recipe_path, :method => "get", id: "search-form") do %>
-      <%= text_field_tag :search, params[:search], placeholder: "Search Recipes" %>
-      <%= submit_tag "Search", :name => nil %>
-      <%= button_tag "Reset", type: :reset %>
-    <% end %>
+    <%= render 'search_form' %>
     <br />
     <br />
     <h2>Your favourited recipes</h2>

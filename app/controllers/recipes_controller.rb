@@ -10,8 +10,47 @@ class RecipesController < ApplicationController
 		@fallback_recipes = Recipe.all.sample(4)
 		@your_recipes_length = current_user.favourites.length
 		@your_recipes_sample = current_user.favourites.first(4)
+		@cuisines = Set[]
+		Recipe.all.each do |recipe|
+			if recipe.cuisine
+				@cuisines.add(recipe.cuisine)
+			end
+		end
+
+		@cuisines = @cuisines.to_a.sort_by{ |c| c.to_s.downcase }
+
+		@ingredients = Set[]
+		Recipe.all.each do |recipe|
+			if recipe.ingredients.first
+				recipe.ingredients.each do |ingredient|
+					@ingredients.add(ingredient.name)
+				end
+			end
+		end
+
+		@ingredients = @ingredients.to_a.sort_by{ |c| c.to_s.downcase }
 	end
 	def search
+
+		@cuisines = Set[]
+		Recipe.all.each do |recipe|
+			if recipe.cuisine
+				@cuisines.add(recipe.cuisine)
+			end
+		end
+
+		@cuisines = @cuisines.to_a.sort_by{ |c| c.to_s.downcase }
+
+		@ingredients = Set[]
+		Recipe.all.each do |recipe|
+			if recipe.ingredients.first
+				recipe.ingredients.each do |ingredient|
+					@ingredients.add(ingredient.name)
+				end
+			end
+		end
+
+		@ingredients = @ingredients.to_a.sort_by{ |c| c.to_s.downcase }
 
 		# _Resolved search method_
 		## should only take one params search
@@ -56,7 +95,9 @@ class RecipesController < ApplicationController
 						end
 					end
 				end
-				@final_recipes = @final_recipes.order('created_at DESC').paginate(:page => params[:page], :per_page => 20)
+				if @final_recipes.length > 1
+					@final_recipes = @final_recipes.order('created_at DESC').paginate(:page => params[:page], :per_page => 20)
+				end
 			else
 				@final_recipes = @recipes
 			end
