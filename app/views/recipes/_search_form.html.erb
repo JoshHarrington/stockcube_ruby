@@ -1,4 +1,4 @@
-  <%= form_tag(search_recipe_path, :method => "get", id: "search-form") do %>
+  <%= form_tag(search_recipe_path, :method => "get", id: "search-form", validate: true) do %>
     <p>Search recipes</p>
     <br />
     <%= text_field_tag :recipes, params[:recipes], placeholder: "Search Recipes" %>
@@ -7,35 +7,35 @@
     <p>Search Cuisine</p>
     <br />
 		<div class="datalist-select-fallback">
-			<%= select_tag :cuisine_select, options_for_select(@cuisines, selected = params[:cuisine]), prompt: "Pick your cuisine" %>
+			<%= select_tag :cuisine_select, options_for_select(@cuisines, selected = params[:cuisine]), prompt: "Pick your cuisine", class: "ignore"  %>
 		</div>
 		<div class="datalist-input">
-			<%= text_field_tag "cuisine_dl", params[:cuisine], placeholder: "Pick your cuisine", list: "cuisine_list" %>
+			<%= text_field_tag "cuisine_dl", params[:cuisine], placeholder: "Pick your cuisine", list: "cuisine_list", class: "ignore"  %>
 			<datalist id="cuisine_list">
 			<% @cuisines.each do |cuisine|  %>
 				<option value="<%= cuisine.to_s %>"><%= cuisine.to_s %></option>
 			<% end %>
 			</datalist>
 		</div>
-		<%= hidden_field_tag 'cuisine', params[:cuisine] %>
+		<%= hidden_field_tag 'cuisine', params[:cuisine], class: "ignore" %>
 		<div class="cuisine_tag_container" hidden></div>
     <br />
     <br />
     <p>Search ingredients</p>
     <br />
 		<div class="datalist-select-fallback">
-			<%= select_tag :ingredients_select, options_for_select(@ingredients), prompt: "Pick your ingredients" %>
+			<%= select_tag :ingredients_select, options_for_select(@ingredients), prompt: "Pick your ingredients", class: "ignore"  %>
 		</div>
 		<div class="datalist-input">
-			<%= text_field_tag "ingredients_dl", '', placeholder: "Pick your ingredients", list: "ingredient_list" %>
+			<%= text_field_tag "ingredients_dl", '', placeholder: "Pick your ingredients", list: "ingredient_list", class: "ignore" %>
 			<datalist id="ingredient_list">
 			<% @ingredients.each do |ingredient_name|  %>
 				<option value="<%= ingredient_name.to_s %>"><%= ingredient_name.to_s %></option>
 			<% end %>
 			</datalist>
 		</div>
-		<%= hidden_field_tag 'ingredients', params[:ingredients] %>
+		<%= hidden_field_tag 'ingredients', params[:ingredients], class: "ignore"  %>
 		<div class="ingredients_tags" hidden></div>
     <br />
-    <%= submit_tag "Search", :name => nil, :id => 'submit', :data => { disable_with: false } %>
+    <%= submit_tag "Search", :name => nil, :id => 'submit', formnovalidate: "formnovalidate" %>
   <% end %>

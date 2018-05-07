@@ -37,7 +37,7 @@ gem 'sendgrid-ruby'
 
 gem 'dotenv-rails'
 
-gem 'jquery-rails'
+gem 'jquery-rails', '~> 4.3', '>= 4.3.1'
 gem 'cocoon'
 
 gem 'seed_dump', '~> 3.2', '>= 3.2.4'

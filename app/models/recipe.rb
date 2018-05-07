@@ -1,4 +1,6 @@
 class Recipe < ApplicationRecord
+
+
 	has_many :portions
 	has_many :ingredients, through: :portions
 
@@ -10,8 +12,8 @@ class Recipe < ApplicationRecord
   has_many :shopping_lists, through: :shopping_list_recipes
 
   accepts_nested_attributes_for :portions,
-           :reject_if => :all_blank,
-           :allow_destroy => true
+  :reject_if => :all_blank,
+  :allow_destroy => true
   accepts_nested_attributes_for :ingredients
 
   def slug
@@ -21,7 +23,6 @@ class Recipe < ApplicationRecord
   def to_param
     "#{id}-#{slug}"
   end
-
 
   # def self.search(search)
   #   where("lower(title) LIKE :search OR lower(description) LIKE :search OR lower(cuisine) LIKE :search", search: "%#{search.downcase}%")
