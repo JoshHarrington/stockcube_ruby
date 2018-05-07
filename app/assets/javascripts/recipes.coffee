@@ -55,4 +55,11 @@ $ ->
     $('#ingredients').val ingredientsArray.join('|')
     $('#ingredients_dl' + option_value + ', #ingredients_select' + option_value).removeAttr('disabled')
     $(this).parent().remove()
+    return
+
+  setTimeout (->
+    $('#search-form #submit').removeAttr('disabled')
+    $('#search-form #submit').prop('disabled', false)
+    console.log 'hi'
+  ), 3000
   return

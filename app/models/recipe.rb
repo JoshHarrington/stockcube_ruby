@@ -23,8 +23,8 @@ class Recipe < ApplicationRecord
   end
 
 
-  def self.search(search)
-    where("lower(title) LIKE :search OR lower(description) LIKE :search OR lower(cuisine) LIKE :search", search: "%#{search.downcase}%")
-  end
+  # def self.search(search)
+  #   where("lower(title) LIKE :search OR lower(description) LIKE :search OR lower(cuisine) LIKE :search", search: "%#{search.downcase}%")
+  # end
 end
 

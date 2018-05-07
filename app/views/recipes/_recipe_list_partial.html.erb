@@ -5,6 +5,9 @@
 	<p><% if gluten_free?(recipe) %>Gluten Free &check;<% end %></p>
 	<p><% if dairy_free?(recipe) %>Dairy Free &check;<% end %></p>
 	<p><% if kosher?(recipe) %>kosher &check;<% end %></p>
+	<% if recipe.cuisine %>
+		<p><span class="tag"><%= recipe.cuisine %></span></p>
+	<% end %>
 	<%= link_to "Learn more", recipe_path(recipe) %>
 	<% if current_user %>
 		<% unless current_user.favourites.include?(recipe) %>

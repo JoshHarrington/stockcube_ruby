@@ -23,12 +23,11 @@
     <br />
     <p>Search ingredients</p>
     <br />
-    <br />
 		<div class="datalist-select-fallback">
-			<%= select_tag :ingredients_select, options_for_select(@ingredients, selected = params[:ingredients]), prompt: "Pick your ingredients" %>
+			<%= select_tag :ingredients_select, options_for_select(@ingredients), prompt: "Pick your ingredients" %>
 		</div>
 		<div class="datalist-input">
-			<%= text_field_tag "ingredients_dl", params[:ingredients], placeholder: "Pick your ingredients", list: "ingredient_list" %>
+			<%= text_field_tag "ingredients_dl", '', placeholder: "Pick your ingredients", list: "ingredient_list" %>
 			<datalist id="ingredient_list">
 			<% @ingredients.each do |ingredient_name|  %>
 				<option value="<%= ingredient_name.to_s %>"><%= ingredient_name.to_s %></option>
@@ -38,5 +37,5 @@
 		<%= hidden_field_tag 'ingredients', params[:ingredients] %>
 		<div class="ingredients_tags" hidden></div>
     <br />
-    <%= submit_tag "Search", :name => nil %>
+    <%= submit_tag "Search", :name => nil, :id => 'submit', :data => { disable_with: false } %>
   <% end %>

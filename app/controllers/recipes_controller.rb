@@ -52,6 +52,29 @@ class RecipesController < ApplicationController
 
 		@ingredients = @ingredients.to_a.sort_by{ |c| c.to_s.downcase }
 
+
+
+		#####
+		if params[:recipes] or (params[:recipes] and params[:cuisine]) or params[:cuisine]
+			Rails.logger.debug 'recipe params = ' + params[:recipes]
+			Rails.logger.debug 'cuisine params = ' + params[:cuisine]
+			if params[:ingredients]
+				Rails.logger.debug 'ingredients params = ' + params[:ingredients]
+			end
+		end
+		if params[:ingredients]
+			Rails.logger.debug params[:ingredients]
+			Rails.logger.debug 'ingredients params = ' + params[:ingredients]
+		end
+		if not params[:recipes] or params[:cuisine] or params[:ingredients]
+			Rails.logger.debug '__nothing to see here__'
+		end
+
+		#####
+
+
+
+
 		# _Resolved search method_
 		## should only take one params search
 		## then split the string based on commas, stripping out everything that isn't words
@@ -65,45 +88,45 @@ class RecipesController < ApplicationController
 		## remove all search strings (that could be matched to something in the database) and display them below the search as removable tags
 		## if the tags are removed then a new search should be run to update the results, could be done with ajax
 
-		if params[:search]
-			@recipes = Recipe.search(params[:search]).order('created_at DESC').paginate(:page => params[:page], :per_page => 20)
-			if params[:search_ingredients]
-				@ingredient_ids_from_search = []
-				ingredient_search = params[:search_ingredients]
-				if ingredient_search.to_s.include? ','
-					ingredient_search_array = ingredient_search.to_s.split(',')
-					ingredient_search_array.collect(&:strip!)
-					ingredient_search_array.each do |ingredient_name|
-						ingredients_from_search = Ingredient.where("lower(name) LIKE :ingredient_search", ingredient_search: "%#{ingredient_name.downcase}%")
-						ingredients_from_search.each do |ingredient|
-							@ingredient_ids_from_search << ingredient.id
-						end
-					end
-				else
-					ingredients_from_search = Ingredient.where("lower(name) LIKE :ingredient_search", ingredient_search: "%#{ingredient_search.downcase}%")
-					ingredients_from_search.each do |ingredient|
-						@ingredient_ids_from_search << ingredient.id
-					end
-				end
-				@final_recipes = Set[]
-				@recipes.each do |recipe|
-					recipe.portions.each do |portion|
-						@ingredient_ids_from_search.each do |ingredient_id_from_search|
-							if portion.ingredient_id == ingredient_id_from_search
-								@final_recipes.add(recipe)
-							end
-						end
-					end
-				end
-				if @final_recipes.length > 1
-					@final_recipes = @final_recipes.order('created_at DESC').paginate(:page => params[:page], :per_page => 20)
-				end
-			else
-				@final_recipes = @recipes
-			end
-		else
-			@final_recipes = Recipe.all.order('created_at DESC')
-		end
+		# if params[:search]
+		# 	@recipes = Recipe.search(params[:search]).order('created_at DESC').paginate(:page => params[:page], :per_page => 20)
+		# 	if params[:search_ingredients]
+		# 		@ingredient_ids_from_search = []
+		# 		ingredient_search = params[:search_ingredients]
+		# 		if ingredient_search.to_s.include? ','
+		# 			ingredient_search_array = ingredient_search.to_s.split(',')
+		# 			ingredient_search_array.collect(&:strip!)
+		# 			ingredient_search_array.each do |ingredient_name|
+		# 				ingredients_from_search = Ingredient.where("lower(name) LIKE :ingredient_search", ingredient_search: "%#{ingredient_name.downcase}%")
+		# 				ingredients_from_search.each do |ingredient|
+		# 					@ingredient_ids_from_search << ingredient.id
+		# 				end
+		# 			end
+		# 		else
+		# 			ingredients_from_search = Ingredient.where("lower(name) LIKE :ingredient_search", ingredient_search: "%#{ingredient_search.downcase}%")
+		# 			ingredients_from_search.each do |ingredient|
+		# 				@ingredient_ids_from_search << ingredient.id
+		# 			end
+		# 		end
+		# 		@final_recipes = Set[]
+		# 		@recipes.each do |recipe|
+		# 			recipe.portions.each do |portion|
+		# 				@ingredient_ids_from_search.each do |ingredient_id_from_search|
+		# 					if portion.ingredient_id == ingredient_id_from_search
+		# 						@final_recipes.add(recipe)
+		# 					end
+		# 				end
+		# 			end
+		# 		end
+		# 		if @final_recipes.length > 1
+		# 			@final_recipes = @final_recipes.order('created_at DESC').paginate(:page => params[:page], :per_page => 20)
+		# 		end
+		# 	else
+		# 		@final_recipes = @recipes
+		# 	end
+		# else
+		# 	@final_recipes = Recipe.all.order('created_at DESC')
+		# end
 		@fallback_recipes = Recipe.all.sample(4)
 	end
 	def show
