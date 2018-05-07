@@ -56,8 +56,12 @@ class RecipesController < ApplicationController
 
 		#####
 		if params[:recipes] or (params[:recipes] and params[:cuisine]) or params[:cuisine]
-			Rails.logger.debug 'recipe params = ' + params[:recipes]
-			Rails.logger.debug 'cuisine params = ' + params[:cuisine]
+			if params[:recipes]
+				Rails.logger.debug 'recipe params = ' + params[:recipes]
+			end
+			if params[:cuisine]
+				Rails.logger.debug 'cuisine params = ' + params[:cuisine]
+			end
 			if params[:ingredients]
 				Rails.logger.debug 'ingredients params = ' + params[:ingredients]
 			end

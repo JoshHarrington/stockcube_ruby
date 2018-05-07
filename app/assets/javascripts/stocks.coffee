@@ -36,18 +36,18 @@ $ ->
 			return
 	else
 		$('html').addClass('input-type-date-supported')
-	if $('form[method="post"]')
+	if $('#stock-form[method="post"]')
 		do ->
 			empty = false
-			$('form input').each ->
+			$('#stock-form input').each ->
 				if $(this).val() == ''
 					empty = true
 				return
 			if empty
 				$('input[type="submit"]').attr 'disabled', 'disabled'
-		$('form input').on 'keyup blur', (e) ->
+		$('#stock-form input').on 'keyup blur', (e) ->
 			empty = false
-			$('form input').each ->
+			$('#stock-form input').each ->
 				if $(this).val() == ''
 					empty = true
 				return
@@ -56,7 +56,7 @@ $ ->
 				$(this).siblings('.message-special').removeAttr 'hidden'
 			else
 				$('input[type="submit"]').removeAttr 'disabled'
-		$('form input').on 'keyup blur', (e) ->
+		$('#stock-form input').on 'keyup blur', (e) ->
 			if $(this).val() != ''
 				$(this).siblings('.message-special').attr 'hidden', 'hidden'
 

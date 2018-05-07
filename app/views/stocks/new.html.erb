@@ -1,4 +1,4 @@
-<%= form_for @stock, :validate => true do |s| %>
+<%= form_for @stock, id: "stock-form", :validate => true do |s| %>
 	<div class="field">
 		<%= s.label :stock %><br>
 		<div class="datalist-select-fallback">

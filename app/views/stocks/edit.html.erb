@@ -1,5 +1,5 @@
 <h1><%= @current_ingredient.name %></h1>
-<%= form_for @stock, :validate => true do |s| %>
+<%= form_for @stock, id: "stock-form", :validate => true do |s| %>
 	<div class="field">
 		<%= s.label :stock %><br>
 
