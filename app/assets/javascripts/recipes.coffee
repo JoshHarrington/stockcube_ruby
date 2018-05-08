@@ -70,30 +70,34 @@ $ ->
     return
 
   if $('#ingredients').val() != ''
-    val = $('#ingredients').val()
-    if val.includes('|')
-      ingredientsArray = val.split('|')
-    else
-      ingredientsArray = [val]
-    i = 0
-    while i < ingredientsArray.length
-      ingredients_val = ingredientsArray[i]
-      console.log ingredients_val
-      val_element = '<span class="cuisine_tag">' + ingredients_val + '<span class="button">X</span></span>'
-      option_value = ' option[value\=\"' + ingredients_val + '\"]'
-      $('#ingredients_select' + option_value + ', #ingredient_list' + option_value).attr 'disabled', 'disabled'
-      ingredients_tags_container.append(val_element)
-      i++
-    ingredients_tags_container.removeAttr('hidden')
-    $('#ingredients_dl, #ingredients_select').val('')
+    ingredientsArray_processed = false
+    if ingredientsArray_processed == false
+      val = $('#ingredients').val()
+      if val.includes('|')
+        ingredientsArray = val.split('|')
+      else
+        ingredientsArray = [val]
+      i = 0
+      while i < ingredientsArray.length
+        ingredients_val = ingredientsArray[i]
+        val_element = '<span class="cuisine_tag"><span class="ingredient_tag_content">' + ingredients_val + '</span><span class="button">X</span></span>'
+        option_value = ' option[value\=\"' + ingredients_val + '\"]'
+        $('#ingredients_select' + option_value + ', #ingredient_list' + option_value).attr 'disabled', 'disabled'
+        ingredients_tags_container.append(val_element)
+        i++
+      ingredients_tags_container.removeAttr('hidden')
+      $('#ingredients_dl, #ingredients_select').val('')
+    ingredientsArray_processed = true
 
 
   $('#search-form').submit ->
-    # if $('#recipes').is(':empty')
-    #   $('#recipes').prop 'disabled', true
-    # if $('#cuisine').is(':empty')
-    #   $('#cuisine').prop 'disabled', true
-    # if $('#ingredients').is(':empty')
-    #   $('#ingredients').prop 'disabled', true
+    ## need method to check if #recipes is empty on submit
+    # if !$('#recipes').text()
+      # $('#recipes').prop 'disabled', true
+
+    if !cuisine
+      $('#cuisine').prop 'disabled', true
+    if !ingredientsArray.join()
+      $('#ingredients').prop 'disabled', true
     $('#ingredients_dl, #ingredients_select, #cuisine_dl, #cuisine_select').prop 'disabled', true
     return

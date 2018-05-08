@@ -52,10 +52,19 @@ class RecipesController < ApplicationController
 
 		@ingredients = @ingredients.to_a.sort_by{ |c| c.to_s.downcase }
 
-
+		recipe_cuisine_joint_search = ''
+		if params[:recipes] and params[:cuisine]
+			recipe_cuisine_joint_search = params[:recipes] + ' ' + params[:cuisine]
+		elsif	params[:cuisine]
+			recipe_cuisine_joint_search = params[:cuisine]
+		elsif params[:recipes]
+			recipe_cuisine_joint_search = params[:recipes]
+		end
 
 		#####
 		if params[:recipes] or (params[:recipes] and params[:cuisine]) or params[:cuisine]
+			@recipes = Recipe.search(recipe_cuisine_joint_search).order('created_at DESC').paginate(:page => params[:page], :per_page => 20)
+
 			if params[:recipes]
 				Rails.logger.debug 'recipe params = ' + params[:recipes]
 			end
