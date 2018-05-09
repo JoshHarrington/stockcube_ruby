@@ -2,7 +2,7 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
-$ ->
+$(document).on 'turbolinks:load', ->
   $('#search-form #recipes').focus()
   cuisine = ''
   ingredientsArray = []
@@ -23,16 +23,15 @@ $ ->
 
   if $('#cuisine').val() != ''
     dl_val = $('#cuisine_dl').val()
-    select_val = $('#cuisine_select').val()
-    val_element = '<span class="cuisine_tag">' + select_val + '<span class="button">X</span></span>'
-    option_value = ' option[value\=\"'+select_val+'\"]'
-    cuisine = select_val
+    cuisine_tag_container.empty()
+    cuisine_val = $('#cuisine').val()
+    val_element = '<span class="cuisine_tag">' + cuisine_val + '<span class="button">X</span></span>'
+    option_value = ' option[value\=\"'+cuisine_val+'\"]'
     cuisine_tag_container.append(val_element)
     $('#cuisine_dl, #cuisine_select').attr 'hidden', 'hidden'
     $('#cuisine_select' + option_value + ', #cuisine_list' + option_value).attr 'disabled', 'disabled'
     cuisine_tag_container.removeAttr('hidden')
     $('#cuisine_dl, #cuisine_select').val('')
-    $('#cuisine').val cuisine
 
   $('body').on 'click', '.cuisine_tag_container .button', ->
     $('#cuisine_dl, #cuisine_select').removeAttr('hidden')
@@ -72,6 +71,7 @@ $ ->
   if $('#ingredients').val() != ''
     ingredientsArray_processed = false
     if ingredientsArray_processed == false
+      ingredients_tags_container.empty()
       val = $('#ingredients').val()
       if val.includes('|')
         ingredientsArray = val.split('|')

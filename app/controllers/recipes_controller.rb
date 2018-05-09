@@ -11,6 +11,7 @@ class RecipesController < ApplicationController
 		@fallback_recipes = Recipe.all.sample(4)
 		@your_recipes_length = current_user.favourites.length
 		@your_recipes_sample = current_user.favourites.first(4)
+
 		@cuisines = Set[]
 		Recipe.all.each do |recipe|
 			if recipe.cuisine
@@ -30,9 +31,10 @@ class RecipesController < ApplicationController
 		end
 
 		@ingredients = @ingredients.to_a.sort_by{ |c| c.to_s.downcase }
+		@ingredients = @ingredients.reject {|a| @ingredients.any? {|b| b != a and b =~ /#{a}/}}
 	end
 	def search
-
+		@recipes = Recipe.all
 		@cuisines = Set[]
 		Recipe.all.each do |recipe|
 			if recipe.cuisine
@@ -46,47 +48,122 @@ class RecipesController < ApplicationController
 		Recipe.all.each do |recipe|
 			if recipe.ingredients.first
 				recipe.ingredients.each do |ingredient|
-					@ingredients.add(ingredient.name)
+					if ingredient.searchable == true
+						@ingredients.add(ingredient.name)
+					end
 				end
 			end
 		end
 
 		@ingredients = @ingredients.to_a.sort_by{ |c| c.to_s.downcase }
+		@ingredients = @ingredients.reject {|a| @ingredients.any? {|b| b != a and b =~ /#{a}/}}
 
-		@recipe_cuisine_joint_search = ''
-		if params[:recipes].to_s != '' && params[:cuisine]
-			@recipe_cuisine_joint_search = params[:recipes].to_s + ' ' + params[:cuisine].to_s
-		elsif	params[:cuisine]
-			@recipe_cuisine_joint_search = params[:cuisine].to_s
-		elsif params[:recipes].to_s != ''
-			@recipe_cuisine_joint_search = params[:recipes].to_s
-		end
-
-		if params[:recipes].to_s != ''
+		if params.has_key?(:recipes)
 			Rails.logger.debug '!!** recipe params = ' + params[:recipes].to_s
 			@title_search_recipes = Set[]
-			searched_recipes = Recipe.where("lower(title) LIKE :search", search: "%#{params[:recipes].downcase}%")
+			searched_recipes = Recipe.where("lower(title) LIKE :search", search: "%#{params[:recipes].to_s.downcase}%")
 			searched_recipes.each do |recipe|
 				@title_search_recipes.add(recipe)
 			end
 		end
 
-		if params[:cuisine]
-			Rails.logger.debug '!!** cuisine params = ' + params[:cuisine].to_s
+		if params.has_key?(:cuisine)
+			Rails.logger.debug '!!** cuisine params = ' + params.has_key?(:cuisine).to_s
 			@cuisine_search_recipes = Set[]
-			searched_recipes = Recipe.where("lower(cuisine) LIKE :search", search: "%#{params[:cuisine].downcase}%")
+			searched_recipes = Recipe.where("lower(cuisine) LIKE :search", search: "%#{params[:cuisine].to_s.downcase}%")
 			searched_recipes.each do |recipe|
 				@cuisine_search_recipes.add(recipe)
 			end
 		end
-		if params[:recipes].to_s != '' && params[:cuisine]
-			@final_recipes = @title_search_recipes.to_a & @cuisine_search_recipes.to_a
+
+		if @cuisine_search_recipes && @title_search_recipes
+			@final_recipes = @cuisine_search_recipes.to_a & @title_search_recipes.to_a
+		elsif @cuisine_search_recipes
+			@final_recipes = @cuisine_search_recipes.to_a
+		elsif @title_search_recipes
+			@final_recipes = @title_search_recipes.to_a
 		end
-		if params[:recipes].to_s != '' && !params[:cuisine]
-			@final_recipes = @title_search_recipes
+
+		Rails.logger.debug '!!** final recipes = ' + @final_recipes.to_s
+
+		# if params.has_key?(:recipes) && params.has_key?(:cuisine)
+		# 	@final_recipes = @title_search_recipes.to_a & @cuisine_search_recipes.to_a
+		# end
+		# if params.has_key?(:recipes) && !params.has_key?(:cuisine)
+		# 	@final_recipes = @title_search_recipes.to_a
+		# end
+		# if !params.has_key?(:recipes) && params.has_key?(:cuisine)
+		# 	@final_recipes = @cuisine_search_recipes.to_a
+		# end
+
+		if params.has_key?(:ingredients)
+			ingredient_search = params[:ingredients]
+			@ingredients_search_recipes = Set[]
+			@ingredients_from_search = Set[]
+			Rails.logger.debug '!!** ingredients params = ' + params[:ingredients].to_s
+			if params[:ingredients].include?('|')
+				ingredient_search_array = ingredient_search.to_s.split('|')
+				ingredient_search_array.collect(&:strip!)
+				ingredient_search_array.each do |ingredient_name|
+					ingredients_lookup = Ingredient.where('searchable' => true).where("lower(name) LIKE :ingredient_search", ingredient_search: "%#{ingredient_name.downcase}%")
+					# ingredients_lookup = Ingredient.where("lower(name) LIKE :ingredient_search", ingredient_search: "%#{ingredient_name.downcase}%")
+					ingredients_lookup.each do |ingredient|
+						@ingredients_from_search.add(ingredient)
+					end
+				end
+			else
+				ingredients_lookup = Ingredient.where('searchable' => true).where("lower(name) LIKE :ingredient_search", ingredient_search: "%#{ingredient_search.downcase}%")
+				# ingredients_lookup = Ingredient.where("lower(name) LIKE :ingredient_search", ingredient_search: "%#{ingredient_search.downcase}%")
+				ingredients_lookup.each do |ingredient|
+					@ingredients_from_search.add(ingredient)
+				end
+			end
+
+
+			@finalSet = Set[]
+
+			@recipes.each do |recipe|
+				@ingredients_from_search.each do |ingredient|
+					recipe.portions.each do |portion|
+						if portion.ingredient_id == ingredient.id
+							@finalSet.add(recipe)
+						end
+					end
+				end
+			end
+
+			# @recipes.each do |recipe|
+			# 	firstSet = Set[]
+			# 	laterSet = Set[]
+			# 	@ingredients_from_search.each_with_index do |ingredient, index|
+			# 		if index == 0
+			# 			recipe.portions.each do |portion|
+			# 				if portion.ingredient_id == ingredient.id
+			# 					firstSet.add(recipe)
+			# 				end
+			# 			end
+			# 		else
+			# 			recipe.portions.each do |portion|
+			# 				if portion.ingredient_id == ingredient.id
+			# 					laterSet.add(recipe)
+			# 				end
+			# 			end
+			# 		end
+			# 	end
+			# 	if laterSet
+			# 		@finalSet = firstSet.to_a & laterSet.to_a
+			# 	else
+			# 		@finalSet = firstSet.to_a
+			# 	end
+			# end
 		end
-		if params[:recipes].to_s == '' && params[:cuisine]
-			@final_recipes = @cuisine_search_recipes
+
+		Rails.logger.debug 'final ingredient set = ' + @finalSet.to_s
+
+		if @final_recipes && @finalSet.to_s != ''
+			@final_recipes = @final_recipes & @finalSet.to_a
+		elsif @finalSet.to_s != ''
+			@final_recipes = @finalSet.to_a
 		end
 
 		@final_recipes = @final_recipes.sort_by{ |c| c.to_s.downcase }.paginate(:page => params[:page], :per_page => 20)
@@ -96,15 +173,17 @@ class RecipesController < ApplicationController
 
 
 
+
+
 		# #####
-		# if params[:recipes] || (params[:recipes] and params[:cuisine]) || params[:cuisine]
+		# if params[:recipes] || (params[:recipes] and params.has_key?(:cuisine)) || params.has_key?(:cuisine)
 		# 	@final_recipes = Recipe.search(@recipe_cuisine_joint_search).order('created_at DESC').paginate(:page => params[:page], :per_page => 20)
 
 		# 	if params[:recipes]
 		# 		# Rails.logger.debug 'recipe params = ' + params[:recipes]
 		# 	end
-		# 	if params[:cuisine]
-		# 		# Rails.logger.debug 'cuisine params = ' + params[:cuisine]
+		# 	if params.has_key?(:cuisine)
+		# 		# Rails.logger.debug 'cuisine params = ' + params.has_key?(:cuisine)
 		# 	end
 		# 	if params[:ingredients]
 		# 		# Rails.logger.debug 'ingredients params = ' + params[:ingredients]
@@ -114,7 +193,7 @@ class RecipesController < ApplicationController
 		# 	Rails.logger.debug params[:ingredients]
 		# 	# Rails.logger.debug 'ingredients params = ' + params[:ingredients]
 		# end
-		# if not params[:recipes] or params[:cuisine] or params[:ingredients]
+		# if not params[:recipes] or params.has_key?(:cuisine) or params[:ingredients]
 		# 	# Rails.logger.debug '__nothing to see here__'
 		# end
 
