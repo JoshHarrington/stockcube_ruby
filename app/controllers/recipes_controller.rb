@@ -25,7 +25,9 @@ class RecipesController < ApplicationController
 		Recipe.all.each do |recipe|
 			if recipe.ingredients.first
 				recipe.ingredients.each do |ingredient|
-					@ingredients.add(ingredient.name)
+					if ingredient.searchable == true
+						@ingredients.add(ingredient.name)
+					end
 				end
 			end
 		end
@@ -84,18 +86,6 @@ class RecipesController < ApplicationController
 			@final_recipes = @title_search_recipes.to_a
 		end
 
-		Rails.logger.debug '!!** final recipes = ' + @final_recipes.to_s
-
-		# if params.has_key?(:recipes) && params.has_key?(:cuisine)
-		# 	@final_recipes = @title_search_recipes.to_a & @cuisine_search_recipes.to_a
-		# end
-		# if params.has_key?(:recipes) && !params.has_key?(:cuisine)
-		# 	@final_recipes = @title_search_recipes.to_a
-		# end
-		# if !params.has_key?(:recipes) && params.has_key?(:cuisine)
-		# 	@final_recipes = @cuisine_search_recipes.to_a
-		# end
-
 		if params.has_key?(:ingredients)
 			ingredient_search = params[:ingredients]
 			@ingredients_search_recipes = Set[]
@@ -106,14 +96,12 @@ class RecipesController < ApplicationController
 				ingredient_search_array.collect(&:strip!)
 				ingredient_search_array.each do |ingredient_name|
 					ingredients_lookup = Ingredient.where('searchable' => true).where("lower(name) LIKE :ingredient_search", ingredient_search: "%#{ingredient_name.downcase}%")
-					# ingredients_lookup = Ingredient.where("lower(name) LIKE :ingredient_search", ingredient_search: "%#{ingredient_name.downcase}%")
 					ingredients_lookup.each do |ingredient|
 						@ingredients_from_search.add(ingredient)
 					end
 				end
 			else
 				ingredients_lookup = Ingredient.where('searchable' => true).where("lower(name) LIKE :ingredient_search", ingredient_search: "%#{ingredient_search.downcase}%")
-				# ingredients_lookup = Ingredient.where("lower(name) LIKE :ingredient_search", ingredient_search: "%#{ingredient_search.downcase}%")
 				ingredients_lookup.each do |ingredient|
 					@ingredients_from_search.add(ingredient)
 				end
