@@ -24,8 +24,16 @@ class Recipe < ApplicationRecord
     "#{id}-#{slug}"
   end
 
-  def self.search(search)
-    where("lower(title) LIKE :search OR lower(cuisine) LIKE :search", search: "%#{search.downcase}%")
-  end
+  # def self.search(search)
+  #   where("lower(title) LIKE :search OR lower(cuisine) LIKE :search", search: "%#{search.downcase}%")
+  # end
+
+  # def self.search(search)
+  #   searchArray = search.split(%r{\s+})
+  #   searchArray.each do |search_item|
+  #     where("lower(title) LIKE :search OR lower(cuisine) LIKE :search", search: "%#{search_item.downcase}%")
+  #   end
+  # end
+
 end
 
