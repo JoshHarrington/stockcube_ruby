@@ -7,7 +7,7 @@ class RecipesController < ApplicationController
 	before_action :admin_user,     only: [:create, :new, :edit, :update]
 
 	def index
-		@recipes = Recipe.paginate(:page => params[:page], :per_page => 20)
+		@recipes = Recipe.paginate(:page => params[:page], :per_page => 10)
 		@fallback_recipes = Recipe.all.sample(4)
 		@your_recipes_length = current_user.favourites.length
 		@your_recipes_sample = current_user.favourites.first(4)
@@ -119,31 +119,6 @@ class RecipesController < ApplicationController
 					end
 				end
 			end
-
-			# @recipes.each do |recipe|
-			# 	firstSet = Set[]
-			# 	laterSet = Set[]
-			# 	@ingredients_from_search.each_with_index do |ingredient, index|
-			# 		if index == 0
-			# 			recipe.portions.each do |portion|
-			# 				if portion.ingredient_id == ingredient.id
-			# 					firstSet.add(recipe)
-			# 				end
-			# 			end
-			# 		else
-			# 			recipe.portions.each do |portion|
-			# 				if portion.ingredient_id == ingredient.id
-			# 					laterSet.add(recipe)
-			# 				end
-			# 			end
-			# 		end
-			# 	end
-			# 	if laterSet
-			# 		@finalSet = firstSet.to_a & laterSet.to_a
-			# 	else
-			# 		@finalSet = firstSet.to_a
-			# 	end
-			# end
 		end
 
 		Rails.logger.debug 'final ingredient set = ' + @finalSet.to_s
@@ -154,7 +129,12 @@ class RecipesController < ApplicationController
 			@final_recipes = @finalSet.to_a
 		end
 
-		@final_recipes = @final_recipes.sort_by{ |c| c.to_s.downcase }.paginate(:page => params[:page], :per_page => 20)
+		if @final_recipes
+			@final_recipes = @final_recipes.sort_by{ |c| c.to_s.downcase }.paginate(:page => params[:page], :per_page => 10)
+		else
+			@no_matches = true
+			@final_recipes = @recipes.paginate(:page => params[:page], :per_page => 10)
+		end
 		## if no recipes matching, remove cuisine and ingredients to try and provide results
 		## show feedback that there are no recipes with that string in title even with cuisine and ingredients removed
 
@@ -165,7 +145,7 @@ class RecipesController < ApplicationController
 
 		# #####
 		# if params[:recipes] || (params[:recipes] and params.has_key?(:cuisine)) || params.has_key?(:cuisine)
-		# 	@final_recipes = Recipe.search(@recipe_cuisine_joint_search).order('created_at DESC').paginate(:page => params[:page], :per_page => 20)
+		# 	@final_recipes = Recipe.search(@recipe_cuisine_joint_search).order('created_at DESC').paginate(:page => params[:page], :per_page => 10)
 
 		# 	if params[:recipes]
 		# 		# Rails.logger.debug 'recipe params = ' + params[:recipes]
@@ -204,7 +184,7 @@ class RecipesController < ApplicationController
 		## if the tags are removed then a new search should be run to update the results, could be done with ajax
 
 		# if params[:search]
-		# 	@recipes = Recipe.search(params[:search]).order('created_at DESC').paginate(:page => params[:page], :per_page => 20)
+		# 	@recipes = Recipe.search(params[:search]).order('created_at DESC').paginate(:page => params[:page], :per_page => 10)
 		# 	if params[:search_ingredients]
 		# 		@ingredient_ids_from_search = []
 		# 		ingredient_search = params[:search_ingredients]
@@ -234,7 +214,7 @@ class RecipesController < ApplicationController
 		# 			end
 		# 		end
 		# 		if @final_recipes.length > 1
-		# 			@final_recipes = @final_recipes.order('created_at DESC').paginate(:page => params[:page], :per_page => 20)
+		# 			@final_recipes = @final_recipes.order('created_at DESC').paginate(:page => params[:page], :per_page => 10)
 		# 		end
 		# 	else
 		# 		@final_recipes = @recipes

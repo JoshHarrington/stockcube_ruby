@@ -12,6 +12,14 @@
     <br />
     <br />
 
+
+    <% if @no_matches == true %>
+      <p>Nothing matching, so here are all the recipes</p>
+      <br />
+      <br />
+      <br />
+    <% end %>
+
     <% if @final_recipes.present? %>
       <% if @final_recipes.length > 1 %>
         <%= will_paginate(@final_recipes) %>
