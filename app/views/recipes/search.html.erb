@@ -13,14 +13,27 @@
     <br />
 
 
-    <% if @no_matches == true %>
-      <p>Nothing matching, so here are all the recipes</p>
-      <br />
-      <br />
-      <br />
-    <% end %>
-
     <% if @final_recipes.present? %>
+
+
+
+      <% if @recipe_search_logic_step == 0 %>
+        <p>Something went wrong!</p>
+      <% elsif @recipe_search_logic_step == 1 %>
+        <%# ## all params produce a result and there are more than two results %>
+      <% elsif @recipe_search_logic_step == 2 %>
+        <%# ## there are more than 2 results for title and cuisine combo %>
+        <%# ## there are results for all params but it's less than 2 %>
+      <% elsif @recipe_search_logic_step == 3 %>
+        <%# ## there are more than 2 results for ingredients search %>
+        <%# ## there are results for title and cuisine combo but it's less than 2 %>
+      <% elsif @recipe_search_logic_step == 4 %>
+        <%# ## there are more than 2 results for first ingredient search %>
+        <%# ## there are results for ingredient search but it's less than 2 %>
+      <% elsif @recipe_search_logic_step == 5 %>
+        <%# ## fallback recipes %>
+      <% end %>
+
       <% if @final_recipes.length > 1 %>
         <%= will_paginate(@final_recipes) %>
       <% end %>

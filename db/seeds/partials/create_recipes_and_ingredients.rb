@@ -35,11 +35,8 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
     end
 
 		ingredients_set.add(ingredient_name)
-
 	end
-
 end
-
 
 sorted_ingredients = ingredients_set.sort
 
