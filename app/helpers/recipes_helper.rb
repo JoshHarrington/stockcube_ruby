@@ -74,12 +74,17 @@ module RecipesHelper
 		else
 			if portion.ingredient.unit.short_name
 				if portion_unit.include?("m") || portion_unit.include?("g") || portion_unit.include?("g")
-					portion_amount.to_s + portion_unit.to_s + ' ' + ingredient.to_s
+					portion_amount.to_s + portion_unit.to_s.titleize + ' ' + ingredient.to_s
 				else
-					portion_amount.to_s + ' ' + portion_unit.to_s + ' ' + ingredient.to_s
+					portion_amount.to_s + ' ' + portion_unit.to_s.titleize + ' ' + ingredient.to_s
 				end
 			else
-				portion_unit = portion_unit.pluralize(portion_amount.to_i)
+
+				if portion_unit.to_s.downcase == "tbsp" || portion_unit.to_s.downcase == "tsp" || portion_unit.to_s.downcase == "oz"
+					portion_unit = portion_unit.to_s.titleize
+				else
+					portion_unit = portion_unit.to_s.pluralize(portion_amount.to_i)
+				end
 				portion_amount.to_s + ' ' + portion_unit.to_s + ' ' + ingredient.to_s
 			end
 		end

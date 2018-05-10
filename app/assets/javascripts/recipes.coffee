@@ -95,8 +95,9 @@ $(document).on 'turbolinks:load', ->
     # if !$('#recipes').text()
       # $('#recipes').prop 'disabled', true
 
-    if !cuisine
-      $('#cuisine').prop 'disabled', true
+    ## need method to check if #cuisine is empty on submit
+    # if cuisine == ''
+    #   $('#cuisine').prop 'disabled', true
     if !ingredientsArray.join()
       $('#ingredients').prop 'disabled', true
     $('#ingredients_dl, #ingredients_select, #cuisine_dl, #cuisine_select').prop 'disabled', true

@@ -38,6 +38,7 @@ class RecipesController < ApplicationController
 	def search
 		@recipes = Recipe.all
 		@cuisines = Set[]
+
 		Recipe.all.each do |recipe|
 			if recipe.cuisine
 				@cuisines.add(recipe.cuisine)
@@ -60,46 +61,33 @@ class RecipesController < ApplicationController
 		@ingredients = @ingredients.to_a.sort_by{ |c| c.to_s.downcase }
 		@ingredients = @ingredients.reject {|a| @ingredients.any? {|b| b != a and b =~ /#{a}/}}
 
-		if params.has_key?(:recipes)
+		@title_search_recipes = Set[]
+		@cuisine_search_recipes = Set[]
+		@ingredients_search_recipes = Set[]
+
+		if params.has_key?(:recipes) && params[:recipes].to_s != ''
 			Rails.logger.debug '!!** recipe params = ' + params[:recipes].to_s
-			@title_search_recipes = Set[]
 			searched_recipes = Recipe.where("lower(title) LIKE :search", search: "%#{params[:recipes].to_s.downcase}%")
 			searched_recipes.each do |recipe|
 				@title_search_recipes.add(recipe)
 			end
-			if @title_search_recipes.to_s != ''
-				@title_gives_results = true
-			end
 		end
 
-		if params.has_key?(:cuisine)
+		if params.has_key?(:cuisine) && params[:cuisine].to_s != ''
 			Rails.logger.debug '!!** cuisine params = ' + params.has_key?(:cuisine).to_s
-			@cuisine_search_recipes = Set[]
 			searched_recipes = Recipe.where("lower(cuisine) LIKE :search", search: "%#{params[:cuisine].to_s.downcase}%")
 			searched_recipes.each do |recipe|
 				@cuisine_search_recipes.add(recipe)
 			end
-			if @cuisine_search_recipes.to_s != ''
-				@cuisine_gives_results = true
-			end
-
 		end
 
-		if @cuisine_search_recipes && @title_search_recipes
-			@final_recipes = @cuisine_search_recipes.to_a & @title_search_recipes.to_a
-		elsif @cuisine_search_recipes
-			@final_recipes = @cuisine_search_recipes.to_a
-		elsif @title_search_recipes
-			@final_recipes = @title_search_recipes.to_a
-		end
-
-		if params.has_key?(:ingredients)
+		if params.has_key?(:ingredients) && params[:ingredients].to_s != ''
 			ingredient_search = params[:ingredients]
-			@ingredients_search_recipes = Set[]
+
 			@ingredients_from_search = Set[]
 			@first_ingredient_search_recipes = Set[]
 
-			if params[:ingredients].include?('|')
+			if params[:ingredients].include?('|') || params[:ingredients].include?('%7')
 				ingredient_search_array = ingredient_search.to_s.split('|')
 				ingredient_search_array.collect(&:strip!)
 				ingredient_search_array.each do |ingredient_name|
@@ -117,6 +105,7 @@ class RecipesController < ApplicationController
 				end
 			end
 
+			@recipes_to_check = Set[]
 
 			@recipes.each do |recipe|
 				recipe.portions.each do |portion|
@@ -130,68 +119,104 @@ class RecipesController < ApplicationController
 					end
 				end
 			end
-			if @ingredients_search_recipes.to_s != ''
-				@ingredients_gives_results = true
+		end
+
+
+		@title_cuisine_ingredients_combo = Set[]
+		@title_cuisine_combo = Set[]
+		@title_ingredients_combo = Set[]
+		@cuisine_ingredients_combo = Set[]
+
+
+		if params.has_key?(:recipes) && params[:recipes].to_s != ''
+			if params.has_key?(:cuisine) && params[:cuisine].to_s != ''
+				if params.has_key?(:ingredients) && params[:ingredients].to_s != ''
+					# 3 - title + cuisine + ingredients
+					@final_recipes = @title_search_recipes.to_a & @cuisine_search_recipes.to_a & @ingredients_search_recipes.to_a
+				else
+					# 2 - title + cuisine only
+					@final_recipes = @title_search_recipes.to_a & @cuisine_search_recipes.to_a
+				end
+			elsif params.has_key?(:ingredients) && params[:ingredients].to_s != ''
+				# 4 - title + ingredients only
+				@final_recipes = @title_search_recipes.to_a & @ingredients_search_recipes.to_a
+			else
+				@final_recipes = @title_search_recipes
+				# 1 - just title
+			end
+		elsif params.has_key?(:cuisine) && params[:cuisine].to_s != ''
+			if params.has_key?(:ingredients) && params[:ingredients].to_s != ''
+				# 6 - cuisine and ingredients only
+				@final_recipes = @cuisine_search_recipes.to_a & @ingredients_search_recipes.to_a
+			else
+				# 5 - just cuisine
+				@final_recipes = @cuisine_search_recipes
+			end
+		elsif params.has_key?(:ingredients) && params[:ingredients].to_s != ''
+			# 7 - just ingredients
+			@final_recipes = @ingredients_search_recipes
+		end
+
+		if params.has_key?(:recipes) && params[:recipes].to_s != '' && params.has_key?(:cuisine) && params[:cuisine].to_s != '' && params.has_key?(:ingredients) && params[:ingredients].to_s != ''
+			# 3 - title + cuisine + ingredients
+			@title_cuisine_ingredients_combo = @title_search_recipes.to_a & @cuisine_search_recipes.to_a & @ingredients_search_recipes.to_a
+		end
+		if params.has_key?(:recipes) && params[:recipes].to_s != '' && params.has_key?(:cuisine) && params[:cuisine].to_s != ''
+			# 2 - title + cuisine
+			@title_cuisine_combo = @title_search_recipes.to_a & @cuisine_search_recipes.to_a
+		end
+		if params.has_key?(:recipes) && params[:recipes].to_s != '' && params.has_key?(:ingredients) && params[:ingredients].to_s != ''
+			# 4 - title + ingredients
+			@title_ingredients_combo = @title_search_recipes.to_a & @ingredients_search_recipes.to_a
+		end
+		if params.has_key?(:cuisine) && params[:cuisine].to_s != '' && params.has_key?(:ingredients) && params[:ingredients].to_s != ''
+			# 6 - cuisine and ingredients
+			@cuisine_ingredients_combo = @cuisine_search_recipes.to_a & @ingredients_search_recipes.to_a
+		end
+
+		all_params = params
+		selected_params = all_params.slice!(:recipes, :cuisine, :ingredients)
+
+		@cleaned_params = []
+		selected_params.values.each do |value|
+			if value != ''
+				@cleaned_params.push(value)
 			end
 		end
 
-		if not @ingredients_search_recipes
-			@ingredients_search_recipes = []
-		end
+		@number_of_params = @cleaned_params.length
 
-		@title_cuisine_combo = @title_search_recipes.to_a & @cuisine_search_recipes.to_a
-		@title_cuisine_ingredients_combo = @title_search_recipes.to_a & @cuisine_search_recipes.to_a & @ingredients_search_recipes.to_a
+		@all_recipe_searches = [
+			@title_search_recipes.to_a,
+			@title_cuisine_combo.to_a,
+			@title_cuisine_ingredients_combo.to_a,
+			@title_ingredients_combo.to_a,
+			@cuisine_search_recipes.to_a,
+			@cuisine_ingredients_combo.to_a,
+			@ingredients_search_recipes.to_a
+		]
 
+		if @final_recipes.present?
+			@final_recipes = @final_recipes.sort_by{ |c| c.to_s.downcase }.paginate(:page => params[:page], :per_page => 10)
+			if @number_of_params > 1
+				if @final_recipes.length < 2
+					@find_max_length_array = true
+					@final_recipes = @all_recipe_searches.max_by{|x|x.length}
+					@all_recipe_searches.each_with_index do |recipes_searches, index|
+						if @final_recipes == recipes_searches
+							@which_recipe_search_won = index
+						end
+					end
 
-
-		@recipe_search_logic_step = 0
-
-		if (not @title_cuisine_ingredients_combo.empty?) && (@title_cuisine_ingredients_combo.length > 2)
-			## all params produce a result and there are more than two results
-			@final_recipes = @title_cuisine_ingredients_combo.sort_by{ |c| c.to_s.downcase }.paginate(:page => params[:page], :per_page => 10)
-			@recipe_search_logic_step = 1
-		elsif (not @title_cuisine_ingredients_combo.empty?) && (not @title_cuisine_combo.empty?) && (@title_cuisine_ingredients_combo.length < 2) && (@title_cuisine_combo.length > 2)
-			## there are results for all params but it's less than 2
-			## there are more than 2 results for title and cuisine combo
-			@final_recipes = @title_cuisine_combo.sort_by{ |c| c.to_s.downcase }.paginate(:page => params[:page], :per_page => 10)
-			@recipe_search_logic_step = 2
-
-		elsif (not @title_cuisine_combo.empty?) && (not @ingredients_search_recipes.empty?) && (@title_cuisine_combo.length < 2) && (@ingredients_search_recipes.length > 2)
-			## there are results for title and cuisine combo but it's less than 2
-			## there are more than 2 results for ingredients search
-			@final_recipes = @ingredients_search_recipes.sort_by{ |c| c.to_s.downcase }.paginate(:page => params[:page], :per_page => 10)
-			@recipe_search_logic_step = 3
-
-		elsif (not @ingredients_search_recipes.empty?) && (@ingredients_search_recipes.length < 2) && (@first_ingredient_search_recipes.length > 2)
-			## there are results for ingredient search but it's less than 2
-			## there are more than 2 results for first ingredient search
-			@final_recipes = @first_ingredient_search_recipes.sort_by{ |c| c.to_s.downcase }.paginate(:page => params[:page], :per_page => 10)
-			@recipe_search_logic_step = 4
+					@final_recipes = @final_recipes.sort_by{ |c| c.to_s.downcase }.paginate(:page => params[:page], :per_page => 10)
+					puts
+				end
+			end
 		else
-			## fallback recipes
 			@final_recipes = Recipe.all.sample(4).paginate(:page => params[:page], :per_page => 10)
-			@recipe_search_logic_step = 5
+			@fallback = true
 		end
 
-
-
-		# if @title_gives_results && @cuisine_gives_results && @ingredients_gives_results
-		# 	@final_recipes
-		# end
-
-		# if @final_recipes && @ingredients_search_recipes.to_s != ''
-		# 	@final_recipes = @final_recipes & @ingredients_search_recipes.to_a
-		# elsif @ingredients_search_recipes.to_s != ''
-		# 	@final_recipes = @ingredients_search_recipes.to_a
-		# end
-
-		# if @final_recipes
-		# 	@final_recipes = @final_recipes.sort_by{ |c| c.to_s.downcase }.paginate(:page => params[:page], :per_page => 10)
-		# else
-		# 	@no_matches = true
-		# 	@final_recipes = @recipes.paginate(:page => params[:page], :per_page => 10)
-		# end
-		# @fallback_recipes = Recipe.all.sample(4)
 	end
 	def show
 		@recipe = Recipe.find(params[:id])
