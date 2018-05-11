@@ -42,7 +42,7 @@
       <br />
 
       <% if @fallback.present? && @fallback == true %>
-      <p>Fallback!!</p>
+      <p>You need to provide some search terms, you might search for all the <a href="/recipes/search?utf8=%E2%9C%93&cuisine=Chinese">Chinese recipes</a> or all <a href="/recipes/search?utf8=%E2%9C%93&ingredients=peppers">recipes with Peppers</a></p>
       <% end %>
 
       <% if @find_max_length_array.present? && @find_max_length_array == true %>
@@ -83,7 +83,7 @@
         <br />
       <% end %>
 
-      <% if params[:ingredients].include?('|') || params[:ingredients].include?('%7') %>
+      <% if params[:ingredients].to_s.include?('|') || params[:ingredients].to_s.include?('%7') %>
         <p>(Showing all recipes matching ingredients from search)</p>
       <% end %>
         <br />

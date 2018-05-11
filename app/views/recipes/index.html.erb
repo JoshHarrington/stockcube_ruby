@@ -5,8 +5,8 @@
     <%= render 'search_form' %>
     <br />
     <br />
+    <% if current_user && current_user.favourites %>
     <h2>Your favourited recipes</h2>
-
     <% @your_recipes_sample.each do |recipe| %>
 
       <%= render 'recipe_list_partial', recipe: recipe %>
@@ -16,6 +16,7 @@
     <% end %>
     <% if @your_recipes_length > 4 %>
       <p>See all <%= link_to "your favourites recipes", favourite_recipes_path %></p>
+    <% end %>
     <% end %>
 
     <br />

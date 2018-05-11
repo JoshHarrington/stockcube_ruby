@@ -2,15 +2,16 @@ require 'will_paginate/array'
 class RecipesController < ApplicationController
 	include ActionView::Helpers::UrlHelper
 
-	before_action :logged_in_user, only: [:index, :edit, :new]
-	before_action :user_has_recipes, only: :index
+	before_action :logged_in_user, only: [:edit, :new]
 	before_action :admin_user,     only: [:create, :new, :edit, :update]
 
 	def index
 		@recipes = Recipe.paginate(:page => params[:page], :per_page => 10)
 		@fallback_recipes = Recipe.all.sample(4)
-		@your_recipes_length = current_user.favourites.length
-		@your_recipes_sample = current_user.favourites.first(4)
+		if current_user && current_user.favourites
+			@your_recipes_length = current_user.favourites.length
+			@your_recipes_sample = current_user.favourites.first(4)
+		end
 
 		@cuisines = Set[]
 		Recipe.all.each do |recipe|
@@ -213,7 +214,7 @@ class RecipesController < ApplicationController
 				end
 			end
 		else
-			@final_recipes = Recipe.all.sample(4).paginate(:page => params[:page], :per_page => 10)
+			@final_recipes = Recipe.all.paginate(:page => params[:page], :per_page => 10)
 			@fallback = true
 		end
 
@@ -313,12 +314,6 @@ class RecipesController < ApplicationController
 			unless logged_in?
 				store_location
 				flash[:danger] = "Please log in."
-				redirect_to search_recipe_path
-			end
-		end
-
-		def user_has_recipes
-			unless current_user.favourites.first
 				redirect_to search_recipe_path
 			end
 		end
