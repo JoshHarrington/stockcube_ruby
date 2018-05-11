@@ -255,8 +255,8 @@ class RecipesController < ApplicationController
   # for current_user
   def favourite
 		type = params[:type]
-		@recipe = Recipe.where(id: params[:id])
-		recipe_title = @recipe.title
+		@recipe = Recipe.where(id: params[:id]).first
+		recipe_title = @recipe.title.to_s
     if type == "favourite"
 			current_user.favourites << @recipe
 			@string = "Added the \"#{link_to(@recipe.title, recipe_path(@recipe))}\" recipe to favourites"
