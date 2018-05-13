@@ -1,4 +1,4 @@
-  <%= form_tag(search_recipe_path, :method => "get", id: "search-form", validate: true) do %>
+  <%= form_tag(search_recipe_path, :method => "get", id: "recipe-search-form", validate: true) do %>
     <p>Search recipes</p>
     <br />
     <%= text_field_tag :recipes, params[:recipes], placeholder: "Search Recipes" %>
