@@ -8,9 +8,17 @@
         <h3 class="recipe-title"><%= @recipe.title %></h3>
         <p class="recipe-cuisine"><%= @recipe.cuisine.to_s %></p>
         <p class="recipe-serving"><%= @recipe.yield.to_s %></p>
-        <p class="recipe-prep_time">Prep Time: <%= @recipe.prep_time.to_s %></p>
-        <p class="recipe-cook_time">Cook Time: <%= @recipe.cook_time.to_s %></p>
-        <p class="recipe-description"><%= recipe_description.html_safe %></p>
+        <% if @recipe.prep_time %>
+          <p class="recipe-prep_time">Prep Time: <%= @recipe.prep_time.to_s %></p>
+        <% end %>
+        <% if @recipe.cook_time %>
+          <p class="recipe-cook_time">Cook Time: <%= @recipe.cook_time.to_s %></p>
+        <% end %>
+        <% if @recipe.description.to_s.include?('\n') %>
+          <p class="recipe-description"><%= recipe_description.html_safe %></p>
+        <% else %>
+          <p class="recipe-description"><%= @recipe.description.to_s %></p>
+        <% end %>
         <% if current_user && current_user.admin %>
           <%= link_to "Edit recipe", edit_recipe_path(@recipe) %>
         <% end %>

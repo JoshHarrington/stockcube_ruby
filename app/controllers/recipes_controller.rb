@@ -231,9 +231,10 @@ class RecipesController < ApplicationController
 		@recipe = Recipe.new
   end
   def create
-    @recipe = Recipe.new(recipe_params)
+		@recipe = Recipe.new(recipe_params)
+		@portions = @recipe.portions
     if @recipe.save
-      redirect_to '/recipes'
+      redirect_to recipe_path(@recipe)
     else
       render 'new'
     end
@@ -302,8 +303,16 @@ class RecipesController < ApplicationController
 
 	private
 		def recipe_params
-			params.require(:recipe).permit(:user_id, :search, :search_ingredients, :title, :description, portions_attributes:[:id, :amount, :_destroy], ingredients_attributes:[:id, :name, :image, :unit, :_destroy])
+			params.require(:recipe).permit(:user_id, :search, :search_ingredients, :title, :description, :portions_attributes)
 		end
+
+		# def portion_params
+		# 	params.require(:portion).permit(:amount, ingredients_attributes:[:id, :name, :image, :unit, :_destroy])
+		# end
+
+		# def ingredient_params
+		# 	params.require(:ingredient).permit(:name, :image, :unit, units_attributes:[:id, :unit_number, :name, :short_name, :unit_type, :_destroy])
+		# end
 
 		def shopping_list_params
       params.require(:shopping_list).permit(:id, :date_created, recipes_attributes:[:id, :title, :description, :_destroy])
