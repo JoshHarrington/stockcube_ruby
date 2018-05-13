@@ -223,13 +223,13 @@ footer[role="contentinfo"] {
         top: 100%;
         left: 0;
         border-top: 1px solid $black-20;
-        a {
-          color: $black-10;
-        }
       }
     }
     .current_section {
       background-color: $black-80;
+      a {
+        color: white;
+      }
     }
     li {
       display: inline-block;
@@ -239,6 +239,7 @@ footer[role="contentinfo"] {
       }
       a {
         padding: em(12) em(14);
+        color: black;
       }
     }
   }
