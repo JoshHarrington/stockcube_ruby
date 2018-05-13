@@ -88,7 +88,6 @@ $(document).on 'turbolinks:load', ->
         i++
       ingredients_tags_container.removeAttr('hidden')
       $('#ingredients_dl, #ingredients_select').val('')
-      console.log ingredientsArray
     ingredientsArray_processed = true
 
 
