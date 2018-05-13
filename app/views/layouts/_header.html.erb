@@ -18,6 +18,9 @@
       <ul>
         <li><%= link_to "Recipes", recipes_path %></li><!--
       --><% if logged_in? && current_user %><!--
+      --><li><%= link_to "Ingredients", ingredients_path %></li><!--
+      --><% end %><!--
+      --><% if logged_in? && current_user %><!--
       --><li><%= link_to "Shopping Lists", shopping_lists_path %></li><!--
       --><li><%= link_to "Cupboard", cupboards_path %></li><!--
       --><li><%= link_to "Settings", edit_user_path(current_user) %></li><!--
