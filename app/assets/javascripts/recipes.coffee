@@ -73,7 +73,8 @@ $(document).on 'turbolinks:load', ->
     if ingredientsArray_processed == false
       ingredients_tags_container.empty()
       val = $('#ingredients').val()
-      if val.includes('|')
+      decodeVal = decodeURI(val)
+      if decodeVal.includes('|')
         ingredientsArray = val.split('|')
       else
         ingredientsArray = [val]
@@ -87,6 +88,7 @@ $(document).on 'turbolinks:load', ->
         i++
       ingredients_tags_container.removeAttr('hidden')
       $('#ingredients_dl, #ingredients_select').val('')
+      console.log ingredientsArray
     ingredientsArray_processed = true
 
 

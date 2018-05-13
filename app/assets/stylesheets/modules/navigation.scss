@@ -1,7 +1,7 @@
 .block {
   position: relative;
   margin: 0 auto;
-  padding: 1.5em 1.25em;
+  // padding: 1.5em 1.25em;
 	width: 100%;
 	header & {
 		display: flex;
@@ -91,7 +91,7 @@
   position: relative;
   overflow: hidden;
   width: 100%;
-	color: #fff;
+	// color: #fff;
 	a {
 		text-decoration: none;
 	}
@@ -111,8 +111,8 @@
   .block {
     z-index: 2;
     position: relative;
-    padding: 0.75em 1.25em;
-    background: #333333;
+    // padding: 0.75em 1.25em;
+    // background: #333333;
   }
   ul {
     *zoom: 1;
@@ -189,11 +189,47 @@ footer[role="contentinfo"] {
 		padding: 0;
 		position: absolute;
 		width: 1px;
-	}
+  }
+  #top {
+    display: none;
+  }
+  .nav-spacer {
+    margin-bottom: em(44);
+  }
   #nav {
+    overflow: initial;
+    background: $teal-100;
+    .block {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: em(20) em(20) 0;
+    }
+    .svg-btn {
+      display: block;
+      width: em(22);
+    }
     ul {
       text-align: center;
       white-space: nowrap;
+    }
+    >.block>ul {
+      >li {
+        position: relative;
+      }
+      ul {
+        position: absolute;
+        background-color: $black-80;
+        top: 100%;
+        left: 0;
+        border-top: 1px solid $black-20;
+        a {
+          color: $black-10;
+        }
+      }
+    }
+    .current_section {
+      background-color: $black-80;
     }
     li {
       display: inline-block;
@@ -202,17 +238,23 @@ footer[role="contentinfo"] {
         border-right: none;
       }
       a {
-        padding: 0.42857em 0.85714em;
+        padding: em(12) em(14);
       }
     }
   }
 }
 
 @media screen and (max-width: 45em) {
+  #top .block {
+    padding: em(12) em(14);
+  }
   #nav {
     position: absolute;
     top: 0;
     padding-top: 6.25em;
+    h1 {
+      display: none;
+    }
     &:not(:target) {
       z-index: 1;
       height: 0;

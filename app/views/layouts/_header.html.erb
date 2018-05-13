@@ -1,4 +1,5 @@
 <div class="header-nav-banner">
+  <% current_section = request.path_parameters[:controller] %>
   <header id="top" role="banner">
     <div class="block">
 
@@ -12,24 +13,44 @@
     </div>
   </header>
 
-  <nav id="nav" role="navigation">
+  <nav id="nav" role="navigation" <% if current_section == "recipes" || current_section == "shopping_lists" %>class="nav-spacer"<% end %>>
     <div class="block">
+    <h1><%= link_to "Stock Cube", root_path, id: "logo" %></h1>
       <h2 class="block-title">Sections</h2>
       <ul>
-        <li><%= link_to "Recipes", recipes_path %></li><!--
-      --><% if logged_in? && current_user %><!--
-      --><li><%= link_to "Ingredients", ingredients_path %></li><!--
+      <% unless current_section == "recipes" %>
+        <li><%= link_to "Recipes", recipes_path %>
+      <% else %>
+        <li class="current_section"><%= link_to "Recipes", recipes_path %>
+          <ul>
+            <li><%= link_to "Add recipe", new_recipe_path %></li>
+          </ul>
+          <% end %>
+        </li><!--
+      --><% if logged_in? && current_user && current_user.admin %><!--
+      --><li <% if current_section == "ingredients" %>class="current_section"<% end %>><%= link_to "Ingredients", ingredients_path %></li><!--
       --><% end %><!--
       --><% if logged_in? && current_user %><!--
-      --><li><%= link_to "Shopping Lists", shopping_lists_path %></li><!--
-      --><li><%= link_to "Cupboard", cupboards_path %></li><!--
-      --><li><%= link_to "Settings", edit_user_path(current_user) %></li><!--
+      --><% unless current_section == "shopping_lists" %>
+        <li><%= link_to "Shopping Lists", shopping_lists_path %>
+            <% else %><!--
+      --><li class="current_section"><%= link_to "Shopping Lists", shopping_lists_path %>
+      <ul>
+        <li><%= link_to "Add shopping list", shopping_lists_new_path %></li>
+      </ul>
+      </li><!--
+      --><% end %><!--
+      --><li <% if current_section == "cupboards" %>class="current_section"<% end %>><%= link_to "Cupboard", cupboards_path %></li><!--
+      --><li <% if current_section == "users" %>class="current_section"<% end %>><%= link_to "Settings", edit_user_path(current_user) %></li><!--
       --><li><%= link_to "Log out", logout_path, method: :delete %></li><!--
       --><% else %><!--
         --><li><%= link_to "Sign in", login_path %></li><!--
         --><li><%= link_to "Sign up", signup_path %></li>
         <% end %>
       </ul>
+      <%= link_to(cupboards_path, class: "nav-quick-link svg-btn") do %>
+        <%= icomoon('notifications') %>
+      <% end %>
       <%= link_to "Return to Content", href: "#top", id: "nav-close-btn", class: "nav-btn close-btn svg-btn", data: { turbolinks: 'false' } do %>
         <%= icomoon('close') %>
       <% end %>
