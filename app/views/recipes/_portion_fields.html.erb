@@ -1,13 +1,14 @@
 <li class="control-group nested-fields">
   <div class="controls">
-    <%= f.label :amount, "Amount:" %>
-    <%= f.text_field :amount %>
+    <br />
+    <br />
+    <p>Amount:</p>
+    <%= number_field_tag :amount, "", placeholder: "How much of the ingredient does the recipe need?" %>
 
-    <%= f.fields_for :ingredient do |portion_ingredient| %>
-      <%= portion_ingredient.select :unit_id, Unit.all.collect { |unit| [ unit.name, unit.unit_number ] } %>
-			<%= portion_ingredient.select :id, Ingredient.all.collect { |ingredient| [ ingredient.name, ingredient.id ] } %>
-    <% end %>
+    <p>Units</p>
+    <%= select_tag :unit_select, options_from_collection_for_select(Unit.all, "unit_number", "name", 8) %>
+    <p>Ingredient</p>
+    <%= select_tag :ingredient_select, options_from_collection_for_select(Ingredient.all, "id", "name"), prompt: "Pick your ingredient", required: true %>
 
-    <%= link_to_remove_association "remove", f %>
   </div>
 </li>

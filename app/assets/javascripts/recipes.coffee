@@ -104,3 +104,15 @@ $(document).on 'turbolinks:load', ->
         $('#ingredients').prop 'disabled', true
       $('#ingredients_dl, #ingredients_select, #cuisine_dl, #cuisine_select').prop 'disabled', true
       return
+    return
+
+  if $('.new-recipe-form').length > 0
+    $('#add_ingredient_button').click (e) ->
+      e.preventDefault()
+      e.stopPropagation()
+      console.log 'hi'
+      $('#hidden-new-portion li').clone().appendTo('#recipe-ingredients ol')
+
+    $('.new-recipe-form').submit ->
+      $('#hidden-new-portion').remove()
+    return

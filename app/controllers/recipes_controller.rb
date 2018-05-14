@@ -232,6 +232,8 @@ class RecipesController < ApplicationController
   end
   def create
 		@recipe = Recipe.new(recipe_params)
+		@ingredients = Ingredient.all
+		@units = Unit.all
 		@portions = @recipe.portions
     if @recipe.save
       redirect_to recipe_path(@recipe)
