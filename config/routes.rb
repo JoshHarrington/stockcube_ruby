@@ -19,12 +19,16 @@ Rails.application.routes.draw do
 
   get 'sessions/new'
 
+  get '/recipes/new' => 'recipes#new'
   get '/recipes/search' => 'recipes#search', as: :search_recipe
   get '/recipes/favourites' => 'recipes#favourites', as: :favourite_recipes
+  post '/recipes' => 'recipes#create'
 
+  get '/portions/new' => 'portions#new'
   get '/portions/:id' => 'portions#show', as: :portion
   get '/portions/:id/edit' => 'portions#edit', as: :edit_portion
   patch '/portions/:id' => 'portions#update'
+  post '/portions' => 'portions#create'
 
   get '/stocks' => 'stocks#index'
   get '/stocks/new' => 'stocks#new'

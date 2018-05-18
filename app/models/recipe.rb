@@ -1,7 +1,6 @@
 class Recipe < ApplicationRecord
-  has_many :portions, inverse_of: :recipe, autosave: true, dependent: :destroy
-  validates :portions, presence: true
-  has_many :ingredients, through: :portions, autosave: true, dependent: :destroy
+  has_many :portions
+  has_many :ingredients, through: :portions
 
   # Favourited by users
   has_many :favourite_recipes # just the 'relationships'

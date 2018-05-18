@@ -6,5 +6,8 @@ class Unit < ApplicationRecord
   accepts_nested_attributes_for :stocks,
   :reject_if => :all_blank,
   :allow_destroy => true
+  accepts_nested_attributes_for :portions,
+  :reject_if => :all_blank,
+  :allow_destroy => true
   accepts_nested_attributes_for :ingredients
 end
