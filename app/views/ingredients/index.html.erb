@@ -2,21 +2,27 @@
       <div class="container">
         <div class="row">
 
+          <%= link_to 'New Ingredient', ingredients_new_path %>
+
+          <br />
+          <br />
+          <br />
           <% @ingredients.sort_by {|ingredient| ingredient.recipes.length}.reverse.each do |ingredient| %>
 
-          <div class="ingredient col-xs-2">
-            <% if ingredient.searchable %>
-              <h3><%= link_to "#{ingredient.name} - (Currently searchable)", ingredient_path(ingredient) %></h3>
-            <% else %>
-              <h3><%= link_to "#{ingredient.name}", ingredient_path(ingredient) %></h3>
-            <% end %>
-            <%= link_to "Edit Ingredient", edit_ingredient_path(ingredient) %>
-            <br />
-            <br />
-          </div>
-            <br />
-          <% end  %>
-					<%= link_to 'New Ingredient', ingredients_new_path %>
+          <% unless ingredient.hidden %>
+            <div class="ingredient col-xs-2">
+              <% if ingredient.searchable %>
+                <h3><%= link_to "#{ingredient.name} - (Currently searchable)", ingredient_path(ingredient) %></h3>
+              <% else %>
+                <h3><%= link_to "#{ingredient.name}", ingredient_path(ingredient) %></h3>
+              <% end %>
+              <%= link_to "Edit Ingredient", edit_ingredient_path(ingredient) %>
+              <br />
+              <br />
+            </div>
+              <br />
+            <% end  %>
+          <% end %>
 
       </div>
 </div>

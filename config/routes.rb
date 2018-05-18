@@ -34,9 +34,11 @@ Rails.application.routes.draw do
   post '/stocks' => 'stocks#create'
 
   get '/cupboards' => 'cupboards#index'
+  get '/cupboards/new' => 'cupboards#new'
   get '/cupboards/:id' => 'cupboards#show', as: :cupboard
   get '/cupboards/:id/edit' => 'cupboards#edit', as: :edit_cupboard
   patch '/cupboards/:id' => 'cupboards#update'
+  post '/cupboards' => 'cupboards#create'
 
   get '/ingredients' => 'ingredients#index'
   get '/ingredients/new' => 'ingredients#new'

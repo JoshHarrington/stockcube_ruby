@@ -1,8 +1,7 @@
 class Recipe < ApplicationRecord
-
-	has_many :portions
-  has_many :ingredients, through: :portions
-  has_many :units, through: :ingredients
+  has_many :portions, inverse_of: :recipe, autosave: true, dependent: :destroy
+  validates :portions, presence: true
+  has_many :ingredients, through: :portions, autosave: true, dependent: :destroy
 
   # Favourited by users
   has_many :favourite_recipes # just the 'relationships'
@@ -14,7 +13,7 @@ class Recipe < ApplicationRecord
   accepts_nested_attributes_for :portions,
   :reject_if => :all_blank,
   :allow_destroy => true
-  accepts_nested_attributes_for :ingredients, :units
+  accepts_nested_attributes_for :ingredients
 
   def slug
     title.downcase.gsub(/[\ \,\/]/, ',' => '', ' ' => '_', '/' => '_')

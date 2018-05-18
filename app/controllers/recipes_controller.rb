@@ -229,6 +229,7 @@ class RecipesController < ApplicationController
 	end
 	def new
 		@recipe = Recipe.new
+		# 3.times { @recipe.portions.build}
 		@cuisines = Set[]
 		Recipe.all.each do |recipe|
 			if recipe.cuisine.to_s != ''
@@ -238,17 +239,8 @@ class RecipesController < ApplicationController
   end
   def create
 		@recipe = Recipe.new(recipe_params)
-		@portions = Portion.new(portion_params)
-		@cuisines = Set[]
-		Recipe.all.each do |recipe|
-			if recipe.cuisine.to_s != ''
-				@cuisines.add(recipe.cuisine)
-			end
-		end
-
-		# @recipe << @portions
-    if @recipe.save
-      redirect_to recipe_path(@recipe)
+		if @recipe.save
+			redirect_to portions_new_path(:recipe_id => @recipe.id)
     else
       render new_recipe_path
     end
@@ -259,7 +251,7 @@ class RecipesController < ApplicationController
 	end
 	def update
 		@recipe = Recipe.find(params[:id])
-		@portions = @recipe.portions
+		# @portions = @recipe.portions
       if @recipe.update(recipe_params)
         redirect_to recipe_path(@recipe)
       else
@@ -317,7 +309,7 @@ class RecipesController < ApplicationController
 
 	private
 		def recipe_params
-			params.require(:recipe).permit(:user_id, :search, :search_ingredients, :title, :description, portions_attributes:[:id, :amount, :_destroy, ingredient_attributes:[:id, :unit_id]])
+			params.require(:recipe).permit(:user_id, :search, :search_ingredients, :title, :description, portions_attributes:[:amount, :_destroy, ingredient_attributes:[:id, :unit_id, :_destroy]])
 		end
 
 		# def portion_params

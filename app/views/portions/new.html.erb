@@ -1,0 +1,25 @@
+<%= form_for @portion, id: "portion-form", :validate => true do |p| %>
+	<div class="field">
+		<%= p.label :portion %><br>
+		<div class="datalist-select-fallback">
+			<%= select_tag :ingredient_id, options_from_collection_for_select(@ingredients, "id", "name"), prompt: "Pick your ingredient", required: true %>
+		</div>
+		<div class="datalist-input">
+			<%= text_field_tag "ingredient[name]", '', placeholder: "Pick your ingredient", list: "ingredient_list" %>
+			<label for="portion_amount" class="message-special" hidden>can't be blank</label>
+			<datalist id="ingredient_list">
+			<% @ingredients.each do |ingredient|  %>
+				<option><%= ingredient.name %></option>
+			<% end %>
+			</datalist>
+		</div>
+
+		Amount <%= p.text_field(:amount, value: '', placeholder: '250', validate: true) %><br>
+		Units <%= select_tag "unit_number", options_from_collection_for_select(@unit_select, "unit_number", "name", 8) %>
+		<br>
+	</div>
+	<div class="actions">
+		<%= p.submit "Save" %>
+	</div>
+<% end %>
+

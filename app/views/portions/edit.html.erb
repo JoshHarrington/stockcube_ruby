@@ -1,12 +1,31 @@
 <h1><%= @portion.ingredient.name %></h1>
-<%= form_for(@portion) do |p| %>  
-	<div class="field"> 
-		<%= p.label :portion %><br> 
+<%= form_for(@portion) do |p| %>
+	<div class="field">
+		<%= p.label :portion %><br>
 		Amount <%= p.text_field :amount %><br>
-		
+
 	</div>
-	<div class="actions"> 
-		<%= p.submit "Save" %> 
-	</div> 
+	<div class="actions">
+		<%= p.submit "Save" %>
+	</div>
+<% end %>
+
+<h1><%= @current_ingredient.name %></h1>
+<%= form_for @portion, id: "portion-form", :validate => true do |s| %>
+	<div class="field">
+		<%= s.label :portion %><br>
+
+		Amount <%= s.text_field(:amount, validate: true) %><br>
+
+		<br>
+		<br>
+
+		Units <%= select_tag "unit_number", options_from_collection_for_select(@units_select, "unit_number", "name", @preselect_unit) %>
+
+
+	</div>
+	<div class="actions">
+		<%= s.submit "Save" %>
+	</div>
 <% end %>
 

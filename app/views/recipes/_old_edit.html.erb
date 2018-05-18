@@ -1,0 +1,26 @@
+
+<%= form_for @recipe, html: {class: "form-horizontal"} do |f| %>
+  <fieldset id="recipe-meta">
+    <ol>
+      <li class="control-group">
+        <%= f.label :title, "Recipe Name", class: "control-label" %>
+        <div class="controls"><%= f.text_field :title %></div>
+      </li>
+      <li class="control-group">
+        <%= f.label :description, "A brief description of this recipe", class: "control-label" %>
+        <div class="controls"><%= f.text_area :description, rows: 10 %></div>
+      </li>
+    </ol>
+  </fieldset>
+
+  <fieldset id="recipe-ingredients">
+    <ol>
+      <%= f.fields_for :portions do |portion| %>
+        <%= render 'portion_fields', f: portion %>
+      <% end %>
+    </ol>
+    <%= link_to_add_association 'add ingredient', f, :portions, 'data-association-insertion-node' => "#recipe-ingredients ol", 'data-association-insertion-method' => "append", :wrap_object => Proc.new {|portion| portion.build_ingredient; portion } %>
+  </fieldset>
+
+  <%= f.submit %>
+<% end %>

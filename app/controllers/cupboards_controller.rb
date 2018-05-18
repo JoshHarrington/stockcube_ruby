@@ -1,6 +1,6 @@
 class CupboardsController < ApplicationController
 	before_action :logged_in_user
-	before_action :correct_user,   only: [:show, :edit, :update, :create]
+	before_action :correct_user,   only: [:show, :edit, :update]
 	def index
 		@cupboards = current_user.cupboards.order(location: :asc)
 		# redirect_to root_url and return unless @user.activated?
@@ -11,12 +11,15 @@ class CupboardsController < ApplicationController
 
 	end
 	def new
-		@cupboard = cupboard.new
+		@cupboard = Cupboard.new
   end
   def create
-    @cupboard = Cupboard.new(cupboard_params)
+		@cupboard = Cupboard.new(cupboard_params)
+		if current_user
+			current_user.cupboards << @cupboard
+		end
     if @cupboard.save
-      redirect_to '/cupboards'
+			redirect_to stocks_new_path(:cupboard_id => @cupboard.id)
     else
       render 'new'
     end

@@ -1,0 +1,8 @@
+<%= form_for @cupboard do |f| %>
+	<div class="field">
+		<h2>Stock Location</h2> <%= f.text_field :location %><br>
+	</div>
+	<br>
+	<br>
+	<%= f.submit "Add stock" %>
+<% end %>

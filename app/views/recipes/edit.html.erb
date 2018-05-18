@@ -1,26 +1,26 @@
-
-<%= form_for @recipe, html: {class: "form-horizontal"} do |f| %>
-  <fieldset id="recipe-meta">
-    <ol>
-      <li class="control-group">
-        <%= f.label :title, "Recipe Name", class: "control-label" %>
-        <div class="controls"><%= f.text_field :title %></div>
-      </li>
-      <li class="control-group">
-        <%= f.label :description, "A brief description of this recipe", class: "control-label" %>
-        <div class="controls"><%= f.text_area :description, rows: 10 %></div>
-      </li>
-    </ol>
-  </fieldset>
-
-  <fieldset id="recipe-ingredients">
-    <ol>
-      <%= f.fields_for :portions do |portion| %>
-        <%= render 'portion_fields', f: portion %>
-      <% end %>
-    </ol>
-    <%= link_to_add_association 'add ingredient', f, :portions, 'data-association-insertion-node' => "#recipe-ingredients ol", 'data-association-insertion-method' => "append", :wrap_object => Proc.new {|portion| portion.build_ingredient; portion } %>
-  </fieldset>
-
-  <%= f.submit %>
+<%= form_for @recipe do |f| %>
+	<%= f.submit "Save" %>
+  <br />
+	<div class="field">
+		<h2>Recipe title</h2> <%= f.text_field :title %><br>
+	</div>
+	<br>
+	<br>
+	<br>
+	<% for portion in @portions %>
+		<p><%= portion.ingredient.name %></p>
+		<br>
+		<%= hidden_field_tag "recipe[portion_ids][]", portion.id %>
+		<%= text_field_tag "recipe[portion][amount][]", portion.amount %>
+		<%= select_tag "recipe[portion][ingredient][unit][]", options_from_collection_for_select(@units, "id", "name", portion.ingredient.unit.id), :id => portion.ingredient.id %>
+		<br>
+		<%= check_box_tag "recipe[portion][id][]", portion.id, nil, {:id => portion.id} %>
+		<%= label_tag "recipe[portion][id][]", "Remove from recipe", {:for => portion.id} %>
+		<br>
+		<br>
+	<% end %>
+	<%= link_to "Add Ingredient", portions_new_path(:recipe_id => params[:id]) %>
+	<br>
+	<br>
+	<%= f.submit %>
 <% end %>

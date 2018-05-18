@@ -1,11 +1,10 @@
-    <%= form_for(@ingredient) do |i| %>  
-      <div class="field"> 
-        Label <%= i.label :ingredient %><br> 
+    <%= form_for(@ingredient) do |i| %>
+      <div class="field">
+        Label <%= i.label :ingredient %><br>
         Name <%= i.text_field :name %><br>
-        Image Src <%= i.text_field :image %> 
-        Unit <%= i.text_field :unit %> 
-      </div> 
-      <div class="actions"> 
-        <%= i.submit "Create" %> 
-      </div> 
+        <%= i.select :unit_id, Unit.all.collect { |unit| [ unit.name, unit.unit_number ] } %>
+      </div>
+      <div class="actions">
+        <%= i.submit "Create" %>
+      </div>
     <% end %>
