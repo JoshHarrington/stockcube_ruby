@@ -11,13 +11,13 @@ class IngredientsController < ApplicationController
 		@cupboards = @ingredient.cupboards
 		@portions = @ingredient.portions
 	end
-	def new 
-    @ingredient = Ingredient.new 
+	def new
+    @ingredient = Ingredient.new
   end
   def create
     @ingredient = Ingredient.new(ingredient_params)
     if @ingredient.save
-      redirect_to '/ingredients'
+      redirect_to ingredients_path
     else
       render 'new'
     end
@@ -30,14 +30,14 @@ class IngredientsController < ApplicationController
 		@ingredient = Ingredient.find(params[:id])
 		@portions = @ingredient.portions
 			if @ingredient.update(ingredient_params)
-				redirect_to @ingredient
+				redirect_to ingredients_path
 			else
 				render 'edit'
 			end
 	end
-	private 
-		def ingredient_params 
-			params.require(:ingredient).permit(:name, :image, :unit, units_attributes:[:id, :unit_number, :name, :short_name, :unit_type, :_destroy])
+	private
+		def ingredient_params
+			params.require(:ingredient).permit(:name, :image, :searchable, :unit, units_attributes:[:id, :unit_number, :name, :short_name, :unit_type, :_destroy])
 		end
 
 		# Confirms a logged-in user.

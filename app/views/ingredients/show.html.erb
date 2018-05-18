@@ -1,6 +1,6 @@
 <div class="main ingredient-show">
   <div class="container">
-    
+
     <!-- Display an ingredient's info here -->
     <div class="ingredient">
 
@@ -9,6 +9,10 @@
         <%= link_to "Edit Ingredient", edit_ingredient_path(@ingredient) %>
       </div>
     </div>
+
+    <br />
+    <br />
+    <br />
 
     <% if @recipes.first %>
       <h2>recipes</h2>
@@ -24,6 +28,10 @@
       <p>Ingredient not used in any recipes. Check out <%= link_to "all recipes", recipes_path %>.</p>
     <% end %>
 
+    <br />
+    <br />
+    <br />
+
     <% if @cupboards.first %>
       <h2>Cupboard</h2>
       <!-- Display each location's info here -->
@@ -35,18 +43,6 @@
       <% end %>
     <% else %>
       <p>Ingredient not currently in stock. Check everything <%= link_to "currently in stock", cupboards_path %>.</p>
-    <% end %>
-  
-    <% if @portions.first %>
-      <h2>Portion</h2>
-      <!-- Display each location's info here -->
-      <% @portions.each do |portion| %>
-      <div class="recipe">
-        <h3 class="portion-amount"><%= portion.amount %> <%= portion.ingredient.unit.name %></h3>
-      </div>
-      <% end %>
-    <% else %>
-      <p>Portions not currently in stock. Check everything <%= link_to "currently in stock", cupboards_path %>.</p>
     <% end %>
 
   </div>

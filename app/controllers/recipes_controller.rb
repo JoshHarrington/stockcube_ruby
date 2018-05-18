@@ -229,16 +229,28 @@ class RecipesController < ApplicationController
 	end
 	def new
 		@recipe = Recipe.new
+		@cuisines = Set[]
+		Recipe.all.each do |recipe|
+			if recipe.cuisine.to_s != ''
+				@cuisines.add(recipe.cuisine)
+			end
+		end
   end
   def create
 		@recipe = Recipe.new(recipe_params)
-		@ingredients = Ingredient.all
-		@units = Unit.all
-		@portions = @recipe.portions
+		@portions = Portion.new(portion_params)
+		@cuisines = Set[]
+		Recipe.all.each do |recipe|
+			if recipe.cuisine.to_s != ''
+				@cuisines.add(recipe.cuisine)
+			end
+		end
+
+		# @recipe << @portions
     if @recipe.save
       redirect_to recipe_path(@recipe)
     else
-      render 'new'
+      render new_recipe_path
     end
 	end
 	def edit
@@ -305,19 +317,15 @@ class RecipesController < ApplicationController
 
 	private
 		def recipe_params
-			params.require(:recipe).permit(:user_id, :search, :search_ingredients, :title, :description, :portions_attributes)
+			params.require(:recipe).permit(:user_id, :search, :search_ingredients, :title, :description, portions_attributes:[:id, :amount, :_destroy, ingredient_attributes:[:id, :unit_id]])
 		end
 
 		# def portion_params
-		# 	params.require(:portion).permit(:amount, ingredients_attributes:[:id, :name, :image, :unit, :_destroy])
-		# end
-
-		# def ingredient_params
-		# 	params.require(:ingredient).permit(:name, :image, :unit, units_attributes:[:id, :unit_number, :name, :short_name, :unit_type, :_destroy])
+		# 	params.require(:portion).permit(:amount, ingredients_attributes:[:id, :name, :image, :unit])
 		# end
 
 		def shopping_list_params
-      params.require(:shopping_list).permit(:id, :date_created, recipes_attributes:[:id, :title, :description, :_destroy])
+      params.require(:shopping_list).permit(:id, :date_created, recipes_attributes:[:id, :title, :description])
     end
 
 		# Confirms a logged-in user.
