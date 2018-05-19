@@ -22,6 +22,14 @@ class Recipe < ApplicationRecord
     "#{id}-#{slug}"
   end
 
+  searchable do
+    text :title, :boost => 5
+    text :description, :cuisine
+    text :ingredients do
+      ingredients.map { |ingredient| ingredient.name }
+    end
+  end
+
   # def self.search(search)
   #   where("lower(title) LIKE :search OR lower(cuisine) LIKE :search", search: "%#{search.downcase}%")
   # end

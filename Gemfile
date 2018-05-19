@@ -53,6 +53,8 @@ gem 'jquery-ui-rails'
 
 gem 'momentjs-rails'
 
+gem 'sunspot_rails'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
@@ -64,6 +66,8 @@ group :development, :test do
   gem 'selenium-webdriver'
   gem 'rails-controller-testing'
   gem 'faker',          '1.7.3'
+  gem 'sunspot_solr'
+  gem 'progress_bar'
 end
 
 group :development do

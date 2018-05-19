@@ -2,37 +2,21 @@
 <div class="main">
   <div class="container">
 
-    <%= render 'search_form' %>
+    <form action="<%= recipes_path %>" method="get">
+    <p>
+    <%= text_field_tag :search, params[:search] %>
+    <%= submit_tag "Search", :name => nil %>
+    </p>
+    </form>
     <br />
     <br />
-    <% if current_user && current_user.favourites %>
-    <h2>Your favourited recipes</h2>
-    <% @your_recipes_sample.each do |recipe| %>
-
-      <%= render 'recipe_list_partial', recipe: recipe %>
-
-      <br/>
-      <br/>
-    <% end %>
-    <% if @your_recipes_length > 4 %>
-      <p>See all <%= link_to "your favourites recipes", favourite_recipes_path %></p>
-    <% end %>
-    <% end %>
-
-    <br />
-    <hr>
-    <h2>All Recipes</h2>
     <br />
     <br />
-    <%= will_paginate(@recipes) %>
-    <% @recipes.each do |recipe| %>
+    <br />
+  <%= will_paginate(@search.hits) %>
+  <% @recipes.each do |recipe| %>
+    <%= render 'recipe_list_partial', recipe: recipe %>
+  <% end %>
 
-      <%= render 'recipe_list_partial', recipe: recipe %>
-
-      <br/>
-      <br/>
-    <% end %>
-
-    <%= link_to "Search for more recipes", search_recipe_path %>
   </div>
 </div>
