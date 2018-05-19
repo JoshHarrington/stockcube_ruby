@@ -1,5 +1,5 @@
 <%= form_for @recipe do |f| %>
-	<%= f.submit "Save" %>
+	<%= f.submit "Save Recipe" %>
   <br />
 	<div class="field">
 		<h2>Recipe title</h2> <%= f.text_field :title %><br>
@@ -22,5 +22,8 @@
 	<%= link_to "Add Ingredient", portions_new_path(:recipe_id => params[:id]) %>
 	<br>
 	<br>
-	<%= f.submit %>
+	<br>
+	<br>
+	<br>
+	<%= f.submit "Save Recipe" %>
 <% end %>

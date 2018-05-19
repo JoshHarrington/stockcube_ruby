@@ -20,8 +20,17 @@
           <p class="recipe-description"><%= @recipe.description.to_s %></p>
         <% end %>
         <% if current_user && current_user.admin %>
+        <br />
+        <br />
+        <br />
+        <br />
           <%= link_to "Edit recipe", edit_recipe_path(@recipe) %>
+        <br />
+        <br />
+        <br />
+        <br />
         <% end %>
+
       </div>
     </div>
 

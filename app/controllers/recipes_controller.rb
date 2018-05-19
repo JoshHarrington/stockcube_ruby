@@ -223,6 +223,15 @@ class RecipesController < ApplicationController
 		@recipe = Recipe.find(params[:id])
 		@portions = @recipe.portions
 		@ingredients = @recipe.ingredients
+		similar_portions_count = 0
+		@portions.each do |portion|
+			if Portion.where(recipe_id: params[:id], ingredient_id: portion.ingredient_id).length > 1
+				similar_portions_count = similar_portions_count + 1
+			end
+		end
+		if similar_portions_count != 0
+			flash.alert = "Looks like there are similar ingredients, #{link_to('edit and combine', edit_recipe_path(@recipe))} these similar ingredients into one and delete the others"
+		end
 	end
 	def favourites
 		@your_recipes = current_user.favourites.paginate(:page => params[:page], :per_page => 5)
@@ -248,15 +257,60 @@ class RecipesController < ApplicationController
 	def edit
 		@recipe = Recipe.find(params[:id])
 		@portions = @recipe.portions
+		@units = Unit.all
+		similar_portions_count = 0
+		@portions.each do |portion|
+			if Portion.where(recipe_id: params[:id], ingredient_id: portion.ingredient_id).length > 1
+				similar_portions_count = similar_portions_count + 1
+			end
+		end
+		if similar_portions_count != 0
+			flash.alert = "Looks like there are similar ingredients, combine these similar ingredients into one and delete the others"
+		end
 	end
 	def update
 		@recipe = Recipe.find(params[:id])
-		# @portions = @recipe.portions
-      if @recipe.update(recipe_params)
-        redirect_to recipe_path(@recipe)
-      else
-        render 'edit'
-      end
+		@portions = @recipe.portions
+		@units = Unit.all
+
+		@portion_ids = []
+		@portions.each do |portion|
+			@portion_ids.push(portion.id)
+		end
+
+		@delete_portion_check_ids = params[:recipe][:portion][:id]
+		@form_portion_ids = params[:recipe][:portion_ids]
+		@form_portion_amounts = params[:recipe][:portion][:amount]
+		@form_portion_ingredient_units = params[:recipe][:portion][:ingredient][:unit]
+
+		# Rails.logger.debug @delete_portion_check_ids
+		if @delete_portion_check_ids
+			@portion_unpick = Portion.find(@delete_portion_check_ids)
+			@portions.delete(@portion_unpick)
+		end
+
+		if @form_portion_amounts.length == @portions.length
+			@portions.each_with_index do |portion, index|
+				if not portion[:amount].to_f == @form_portion_amounts[index].to_f
+					portion.update_attributes(
+						:amount => @form_portion_amounts[index].to_f
+					)
+				end
+				if @form_portion_ingredient_units.length == @portions.length
+					if not portion.ingredient.unit_id.to_f == @form_portion_ingredient_units[index].to_f
+						portion.ingredient.update_attributes(
+							:unit_id => @form_portion_ingredient_units[index].to_f
+						)
+					end
+				end
+			end
+		end
+
+		if @recipe.update(recipe_params)
+			redirect_to recipe_path(@recipe)
+		else
+			render 'edit'
+		end
 	end
 	# Add and remove favourite recipes
   # for current_user
