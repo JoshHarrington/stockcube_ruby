@@ -72,7 +72,7 @@ class StocksController < ApplicationController
 		end
 
 		if @stock.update(stock_params)
-			redirect_to cupboard_path(@current_cupboard)
+			redirect_to cupboards_path
 		else
 			render 'edit'
 		end
@@ -155,7 +155,7 @@ class StocksController < ApplicationController
 		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first
 
     if @stock.save
-      redirect_to cupboard_path(@cupboard_for_stock)
+      redirect_to cupboards_path
     else
 			render 'new'
 			flash[:danger] = "Make sure you select an ingredient"

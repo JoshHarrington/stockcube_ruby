@@ -131,12 +131,10 @@
     display: block;
     a {
       display: block;
-      color: #eee;
       font-size: 1.4em;
       line-height: 1.28571em;
       outline: none;
       &:focus, &:hover {
-        color: #fff;
         background: rgba(255, 255, 255, 0.1);
       }
     }
@@ -158,11 +156,6 @@
     text-align: center;
     white-space: nowrap;
   }
-  .open-btn {
-    // position: absolute;
-    // top: 1.5em;
-    // left: 1.875em;
-  }
 }
 
 #main {
@@ -174,6 +167,20 @@
 
 footer[role="contentinfo"] {
   background: #ddd;
+}
+
+.header-nav-banner h1 {
+  display: flex;
+  align-items: center;
+  a {
+    color: black;
+  }
+}
+
+.header-nav-banner .icon-logo {
+  width: em(50, 19);
+  height: em(36, 19);
+  margin-right: em(10, 19);
 }
 
 @media screen and (min-width: 45.0625em) {
@@ -203,7 +210,7 @@ footer[role="contentinfo"] {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: em(20) em(20) 0;
+      padding: em(20) em(30);
     }
     .svg-btn {
       display: block;
@@ -214,22 +221,18 @@ footer[role="contentinfo"] {
       white-space: nowrap;
     }
     >.block>ul {
-      >li {
-        position: relative;
-      }
       ul {
         position: absolute;
-        background-color: $black-80;
+        background-color: $teal-70;
         top: 100%;
+        width: 100%;
+        z-index: -5;
         left: 0;
-        border-top: 1px solid $black-20;
+        border-top: 1px solid $teal-110;
       }
     }
-    .current_section {
-      background-color: $black-80;
-      a {
-        color: white;
-      }
+    .current_section >a {
+      background-color: $teal-70;
     }
     li {
       display: inline-block;

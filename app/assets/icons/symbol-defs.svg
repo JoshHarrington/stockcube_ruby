@@ -1,5 +1,15 @@
 <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <defs>
+<symbol id="icon-logo" viewBox="0 0 38 20">
+<title>logo</title>
+<path fill="#75d2cb" style="fill: var(--color1, #75d2cb)" d="M11.363 2.283l10.619-2.274v11.002l-10.619 2.743z"></path>
+<path fill="#87d8d2" style="fill: var(--color2, #87d8d2)" d="M11.364 13.749l10.616-2.739 9.417 3.082-10.747 2.916z"></path>
+<path fill="#98dcd8" style="fill: var(--color3, #98dcd8)" d="M11.353 2.245l9.298 2.725v12.039l-9.298-3.277z"></path>
+<path fill="#8fd9d5" style="fill: var(--color4, #8fd9d5)" d="M0.019 16.501l11.334-2.779 9.299 3.286-11.832 2.977z"></path>
+<path fill="#7ed4ce" style="fill: var(--color5, #7ed4ce)" d="M21.987 0.011l9.411 2.483v11.601l-9.411-3.085z"></path>
+<path fill="#c3ebe9" style="fill: var(--color6, #c3ebe9)" d="M22.012 0.018l9.389 2.482-10.721 2.482-9.338-2.749z"></path>
+<path fill="#aae2de" style="fill: var(--color7, #aae2de)" d="M26.992 3.517l10.646-2.446v11.381l-10.646 2.829z"></path>
+</symbol>
 <symbol id="icon-calendar" viewBox="0 0 20 20">
 <title>calendar</title>
 <path d="M1 4c0-1.1 0.9-2 2-2h14c1.105 0 2 0.895 2 2v0 14c0 1.105-0.895 2-2 2v0h-14c-1.105 0-2-0.895-2-2v0-14zM3 6v12h14v-12h-14zM5 0h2v2h-2v-2zM13 0h2v2h-2v-2zM5 9h2v2h-2v-2zM5 13h2v2h-2v-2zM9 9h2v2h-2v-2zM9 13h2v2h-2v-2zM13 9h2v2h-2v-2zM13 13h2v2h-2v-2z"></path>
