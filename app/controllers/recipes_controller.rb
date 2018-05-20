@@ -6,35 +6,11 @@ class RecipesController < ApplicationController
 	before_action :admin_user,     only: [:create, :new, :edit, :update]
 
 	def index
-		@recipes = Recipe.paginate(:page => params[:page], :per_page => 10)
-		@fallback_recipes = Recipe.all.sample(4)
-		if current_user && current_user.favourites
-			@your_recipes_length = current_user.favourites.length
-			@your_recipes_sample = current_user.favourites.first(4)
+		if params[:search].present?
+			@recipes = Recipe.search(params[:search], :page => params[:page], :per_page => 10)
+		else
+			@recipes = Recipe.all.paginate(:page => params[:page], :per_page => 10)
 		end
-
-		@cuisines = Set[]
-		Recipe.all.each do |recipe|
-			if recipe.cuisine
-				@cuisines.add(recipe.cuisine)
-			end
-		end
-
-		@cuisines = @cuisines.to_a.sort_by{ |c| c.to_s.downcase }
-
-		@ingredients = Set[]
-		Recipe.all.each do |recipe|
-			if recipe.ingredients.first
-				recipe.ingredients.each do |ingredient|
-					if ingredient.searchable == true
-						@ingredients.add(ingredient.name)
-					end
-				end
-			end
-		end
-
-		@ingredients = @ingredients.to_a.sort_by{ |c| c.to_s.downcase }
-		@ingredients = @ingredients.reject {|a| @ingredients.any? {|b| b != a and b =~ /#{a}/}}
 	end
 	def search
 		@recipes = Recipe.all

@@ -53,6 +53,8 @@ gem 'jquery-ui-rails'
 
 gem 'momentjs-rails'
 
+gem 'searchkick'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

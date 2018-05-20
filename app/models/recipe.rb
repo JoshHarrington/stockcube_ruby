@@ -22,6 +22,8 @@ class Recipe < ApplicationRecord
     "#{id}-#{slug}"
   end
 
+  searchkick
+
   # def self.search(search)
   #   where("lower(title) LIKE :search OR lower(cuisine) LIKE :search", search: "%#{search.downcase}%")
   # end
