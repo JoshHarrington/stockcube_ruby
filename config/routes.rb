@@ -20,7 +20,6 @@ Rails.application.routes.draw do
   get 'sessions/new'
 
   get '/recipes/new' => 'recipes#new'
-  get '/recipes/search' => 'recipes#search', as: :search_recipe
   get '/recipes/favourites' => 'recipes#favourites', as: :favourite_recipes
   post '/recipes' => 'recipes#create'
 

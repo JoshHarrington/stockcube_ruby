@@ -7,5 +7,4 @@ class Ingredient < ApplicationRecord
 	has_many :shopping_list_portions
 	has_many :shopping_lists, through: :shopping_list_portions
 
-	# accepts_nested_attributes_for :unit, :stocks, :portions, :recipes, :cupboards
 end
