@@ -9,7 +9,6 @@
           <br />
           <% @ingredients.sort_by {|ingredient| ingredient.recipes.length}.reverse.each do |ingredient| %>
 
-          <% unless ingredient.hidden %>
             <div class="ingredient col-xs-2">
               <% if ingredient.searchable %>
                 <h3><%= link_to "#{ingredient.name} - (Currently searchable)", ingredient_path(ingredient) %></h3>
@@ -20,9 +19,8 @@
               <br />
               <br />
             </div>
-              <br />
-            <% end  %>
-          <% end %>
+            <br />
+          <% end  %>
 
       </div>
 </div>
