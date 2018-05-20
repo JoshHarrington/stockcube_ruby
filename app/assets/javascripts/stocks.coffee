@@ -3,9 +3,13 @@
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
 
-$ ->
-	if (!Modernizr.input.list)
-		$('html').removeClass('input-list-supported').addClass('input-list-not-supported')
+$(document).on 'turbolinks:load', ->
+	$('html').removeClass('no-js')
+	if (Modernizr.input.list)
+		$('html').removeClass('input-list-supported')
+	else
+		$('html').addClass('input-list-not-supported')
+		return
 		# 	to do:
 		# 	when ingredient select blur check whether ingredient is volume / mass / other
 		# 	show a unit selection tailored to ingredient type

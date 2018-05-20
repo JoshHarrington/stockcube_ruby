@@ -156,6 +156,9 @@
     text-align: center;
     white-space: nowrap;
   }
+  a {
+    text-decoration: none;
+  }
 }
 
 #main {
@@ -255,7 +258,7 @@ footer[role="contentinfo"] {
   #nav {
     position: absolute;
     top: 0;
-    padding-top: 6.25em;
+    padding-top: 5.25em;
     h1 {
       display: none;
     }
@@ -263,22 +266,35 @@ footer[role="contentinfo"] {
       z-index: 1;
       height: 0;
     }
-    &:target .close-btn {
-      display: block;
-      .no-js & {
-        left: 1em;
-        background: $teal-100;
-        color: #333333;
-      }
-    }
     .close-btn {
+      display: block;
+      left: 1em;
+      color: $black-80;
       position: absolute;
-			top: -3.1em;
-			left: 1.25em;
+      top: em(-42, 15);
+      left: em(10, 15);
+      .no-js & {
+        background: $teal-100;
+      }
     }
     .block {
       position: relative;
       padding: 0;
+    }
+    ul ul {
+      background-color: $teal-80;
+      li:first-child {
+        border-top: 1px solid $teal-120;
+      }
+      li:last-child {
+        border-bottom: 1px solid $teal-120;
+      }
+    }
+    .no-js & >.block>ul {
+      background-color: $teal-110;
+    }
+    .current_section + li {
+      border-top: none;
     }
     li {
       position: relative;
@@ -299,15 +315,19 @@ footer[role="contentinfo"] {
         border-right: 0.625em white solid;
       }
       a {
-				padding: .8em 1.4em;
+        padding: .8em 1.4em;
+        color: black;
       }
     }
+    .nav-quick-link {
+      display: none;
+    }
   }
-  .js-ready {
+  html.js {
     #nav {
       height: 100%;
       width: 70%;
-      background: #333333;
+      background: $teal-110;
       -webkit-box-shadow: inset -1.5em 0 1.5em -0.75em rgba(0, 0, 0, 0.25);
       -moz-box-shadow: inset -1.5em 0 1.5em -0.75em rgba(0, 0, 0, 0.25);
       box-shadow: inset -1.5em 0 1.5em -0.75em rgba(0, 0, 0, 0.25);
@@ -317,7 +337,7 @@ footer[role="contentinfo"] {
       .close-btn {
         display: block;
         filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70);
-        opacity: 0.7;
+        // opacity: 0.7;
         &:focus, &:hover {
           filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
           opacity: 1;
