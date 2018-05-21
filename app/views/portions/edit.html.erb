@@ -20,7 +20,7 @@
 		<br>
 		<br>
 
-		Units <%= select_tag "unit_number", options_from_collection_for_select(@units_select, "unit_number", "name", @preselect_unit) %>
+		Units <%= select_tag "unit_number", options_from_collection_for_select(@units_select, "unit_number", "name", @preselect_unit.id) %>
 
 
 	</div>
