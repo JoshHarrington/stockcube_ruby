@@ -20,11 +20,11 @@
       <%= will_paginate(@recipes) %>
     <% end %>
 
-    <% @recipes.each do |recipe| %>
-      <%= render 'recipe_list_partial', recipe: recipe %>
-      <br />
-      <br />
-    <% end %>
+      <div class="list_block--collection list_block--collection__tight">
+        <% @recipes.each do |recipe| %>
+          <%= render 'recipe_list_partial', recipe: recipe %>
+        <% end %>
+      </div>
     </div>
 
   </div>

@@ -1,0 +1,47 @@
+.pagination {
+	padding: em(12, 10) em(17, 10);
+	display: flex;
+	justify-content: center;
+	position: relative;
+	>*[class*="_page"] {
+		@media (max-width: 600px) {
+			&.disabled {
+				display: none;
+			}
+		}
+	}
+	.previous_page {
+		margin-right: auto;
+	}
+	.next_page {
+		margin-left: auto;
+	}
+	>* {
+		font-size: em(18, 10);
+		border: 1px solid $teal-70;
+		border-radius: em(3, 18);
+		padding: em(5, 18);
+		background-color: $teal-10;
+		&[href] {
+			color: black;
+			text-decoration: none;
+		}
+		&:not([class*="_page"]) {
+			margin: 0 em(4, 18);
+		}
+		&.current {
+			background-color: $teal-110;
+			color: white;
+			cursor: default;
+		}
+		&.disabled {
+			color: $teal-70;
+			cursor: not-allowed;
+			border-color: $teal-40;
+		}
+	}
+	a:hover {
+		background-color: $teal-20;
+	}
+
+}

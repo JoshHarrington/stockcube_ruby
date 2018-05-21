@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   get 'password_resets/edit'
 
   root 'static_pages#home'
+  get '/about' => 'static_pages#about'
 
   get '/elements' => 'static_pages#elements'
 

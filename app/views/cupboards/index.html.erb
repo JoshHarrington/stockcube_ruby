@@ -9,7 +9,7 @@
     <% end %>
     <div class="list_block--collection">
       <% @cupboards.each do |cupboard| %>
-      <div class="cupboard list_block<%= cupboard_empty_class(cupboard) %>">
+      <div class="cupboard list_block list_block__grid<%= cupboard_empty_class(cupboard) %>">
         <h3 class="list_block--title"><%= cupboard.location %></h3>
         <% if cupboard.stocks.first %>
           <% cupboard.stocks.order(use_by_date: :desc).each do |stock| %>

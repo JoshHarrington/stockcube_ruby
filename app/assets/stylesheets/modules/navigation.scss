@@ -232,6 +232,7 @@ footer[role="contentinfo"] {
         z-index: -5;
         left: 0;
         border-top: 1px solid $teal-110;
+        padding: em(5) 0;
       }
     }
     .current_section >a {
@@ -239,7 +240,8 @@ footer[role="contentinfo"] {
     }
     li {
       display: inline-block;
-      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 0 em(2);
       &:last-child {
         border-right: none;
       }

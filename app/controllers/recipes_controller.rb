@@ -7,13 +7,13 @@ class RecipesController < ApplicationController
 
 	def index
 		if params[:search].present?
-			@recipes = Recipe.search(params[:search], :page => params[:page], :per_page => 10)
+			@recipes = Recipe.search(params[:search], :page => params[:page], :per_page => 12)
 			if @recipes.empty?
 				@no_results = true
-				@recipes = Recipe.all.sample(5)
+				@recipes = Recipe.all.sample(6)
 			end
 		else
-			@recipes = Recipe.all.paginate(:page => params[:page], :per_page => 10)
+			@recipes = Recipe.all.paginate(:page => params[:page], :per_page => 12)
 		end
 	end
 	def show
