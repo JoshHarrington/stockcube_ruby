@@ -47,13 +47,14 @@
     <br />
     <br />
 
+    <% if @portions.first %>
+      <% @portions.each do |portion| %>
+      <div class="portion-block">
 
-    <% @portions.each do |portion| %>
-    <div class="portion-block">
-
-      <p><%= portion_amount_unit_and_ingredient(portion).html_safe %></p>
-      <br />
-    </div>
+        <p><%= portion_amount_unit_and_ingredient(portion).html_safe %></p>
+        <br />
+      </div>
+      <% end %>
     <% end %>
 
 
