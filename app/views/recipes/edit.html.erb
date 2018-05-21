@@ -27,26 +27,26 @@
 		<%= f.text_area :note, rows: 5, style: 'width: 90%; min-height: 150px;' %>
 		<br />
 	</div>
-	<br>
-	<br>
-	<br>
+	<br />
+	<br />
+	<br />
 	<% for portion in @portions %>
 		<p><%= portion.ingredient.name %></p>
-		<br>
+		<br />
 		<%= hidden_field_tag "recipe[portion_ids][]", portion.id %>
 		<%= text_field_tag "recipe[portion][amount][]", portion.amount %>
 		<%= select_tag "recipe[portion][ingredient][unit][]", options_from_collection_for_select(@units, "id", "name", portion.ingredient.unit.id), :id => portion.ingredient.id %>
-		<br>
+		<br />
 		<%= check_box_tag "recipe[portion][id][]", portion.id, nil, {:id => portion.id} %>
 		<%= label_tag "recipe[portion][id][]", "Remove from recipe", {:for => portion.id} %>
-		<br>
-		<br>
+		<br />
+		<br />
 	<% end %>
 	<%= link_to "Add Ingredient", portions_new_path(:recipe_id => params[:id]) %>
-	<br>
-	<br>
-	<br>
-	<br>
-	<br>
+	<br />
+	<br />
+	<br />
+	<br />
+	<br />
 	<%= f.submit "Save Recipe" %>
 <% end %>

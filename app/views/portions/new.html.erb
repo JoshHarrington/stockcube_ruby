@@ -1,12 +1,12 @@
 <%= form_for @portion, id: "portion-form", :validate => true do |p| %>
 	<div class="field">
-		<%= p.label :portion %><br>
+		<%= p.label :portion %><br/>
 		<%= select_tag :ingredient_id, options_from_collection_for_select(@ingredients, "id", "name"), prompt: "Pick your ingredient", required: true %>
 
 		<%= hidden_field_tag "recipe_id", params[:recipe_id] %>
-		Amount <%= p.text_field(:amount, value: '', placeholder: '250', validate: true) %><br>
+		Amount <%= p.text_field(:amount, value: '', placeholder: '250', validate: true) %><br/>
 		Units <%= select_tag "unit_number", options_from_collection_for_select(@unit_select, "unit_number", "name", 8) %>
-		<br>
+		<br/>
 	</div>
 	<div class="actions">
 		<%= p.submit "Save" %>
