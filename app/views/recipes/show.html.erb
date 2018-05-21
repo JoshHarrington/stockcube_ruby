@@ -47,7 +47,7 @@
     <br />
     <br />
 
-    <% if @portions.first %>
+    <% if @portions.present? %>
       <% @portions.each do |portion| %>
       <div class="portion-block">
 
