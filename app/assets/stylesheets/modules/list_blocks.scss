@@ -8,7 +8,7 @@
 	.list_block {
 		flex-basis: calc(25% - 14px);
 		@media (max-width: 1200px) {
-			flex-basis: calc(33% - 14px);
+			flex-basis: calc(33.3% - 14px);
 		}
 		@media (max-width: 700px) {
 			flex-basis: calc(50% - 14px);
@@ -96,7 +96,7 @@ a.list_block {
 	padding: em(5, 10);
 	flex-basis: calc(50% - 6px);
 	@media (min-width: 1900px), (max-width: 1200px) and (min-width: 900px), (max-width: 700px) and (min-width: 450px)  {
-		flex-basis: calc(33% - 6px);
+		flex-basis: calc(33.3% - 6px);
 	}
 	&.date-part-warning {
 		background-color: $warning-amber;
