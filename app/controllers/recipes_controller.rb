@@ -7,7 +7,7 @@ class RecipesController < ApplicationController
 
 	def index
 		if params[:search].present?
-			@recipes = Recipe.search(params[:search], :page => params[:page], :per_page => 12)
+			@recipes = Recipe.search(params[:search], {fields: ["title^30", "cuisine^20", "description^1", "ingredient_names^10"]}).results.paginate(:page => params[:page], :per_page => 12)
 			if @recipes.empty?
 				@no_results = true
 				@recipes = Recipe.all.sample(6)
@@ -55,6 +55,12 @@ class RecipesController < ApplicationController
 		@recipe = Recipe.find(params[:id])
 		@portions = @recipe.portions
 		@units = Unit.all
+		@cuisines = Set[]
+		Recipe.all.each do |recipe|
+			if recipe.cuisine.to_s != ''
+				@cuisines.add(recipe.cuisine)
+			end
+		end
 		similar_portions_count = 0
 		@portions.each do |portion|
 			if Portion.where(recipe_id: params[:id], ingredient_id: portion.ingredient_id).length > 1
@@ -160,12 +166,8 @@ class RecipesController < ApplicationController
 
 	private
 		def recipe_params
-			params.require(:recipe).permit(:user_id, :search, :search_ingredients, :title, :description, portions_attributes:[:amount, :_destroy])
+			params.require(:recipe).permit(:user_id, :search, :cuisine, :search_ingredients, :title, :description, portions_attributes:[:amount, :_destroy])
 		end
-
-		# def portion_params
-		# 	params.require(:portion).permit(:amount, ingredients_attributes:[:id, :name, :image, :unit])
-		# end
 
 		def shopping_list_params
       params.require(:shopping_list).permit(:id, :date_created, recipes_attributes:[:id, :title, :description])

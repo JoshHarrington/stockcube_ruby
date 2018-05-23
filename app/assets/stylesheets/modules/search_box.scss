@@ -1,0 +1,28 @@
+.search_box--form {
+	display: flex;
+	padding: em(20, 10) em(17, 10) 0;
+	justify-content: center;
+}
+
+.search_box {
+	border: 1px solid $black-20;
+	display: flex;
+	align-items: center;
+	padding: 0;
+	width: em(890, 10);
+	max-width: 100%;
+	input[name="search"] {
+		font-size: em(20, 10);
+		border: none;
+		min-height: em(50, 20);
+		padding-left: em(13, 20);
+		flex-grow: 1;
+	}
+	button {
+		width: em(50, 11);
+		height: em(50, 11);
+		padding: em(12, 11);
+		background: none;
+		border: none;
+	}
+}

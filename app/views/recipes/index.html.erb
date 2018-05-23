@@ -2,9 +2,13 @@
 <div class="main">
   <div class="container">
 
-    <%= form_tag recipes_path, method: :get do %>
-      <%= text_field_tag :search, params[:search] %>
-      <%= submit_tag "Search", name: nil %>
+    <%= form_tag recipes_path, class: 'search_box--form',  method: :get do %>
+      <div class="search_box">
+        <%= text_field_tag :search, params[:search] %>
+        <%= button_tag "Search", name: nil do %>
+          <%= icomoon('search') %>
+        <% end %>
+      </div>
     <% end %>
     <br />
     <br />

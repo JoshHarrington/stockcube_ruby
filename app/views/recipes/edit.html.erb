@@ -1,32 +1,7 @@
 <%= form_for @recipe do |f| %>
 	<%= f.submit "Save Recipe" %>
   <br />
-	<div class="field">
-		<h2>Recipe title</h2>
-		<br />
-		<%= f.text_field :title %>
-		<br />
-		<br />
-		<p>Description (Method):</p>
-		<%= f.text_area :description, rows: 10, style: 'width: 90%; min-height: 300px;'%>
-		<br />
-		<br />
-		<p>Prep time:</p>
-		<%= f.text_field :prep_time %>
-		<br />
-		<br />
-		<p>Cook time:</p>
-		<%= f.text_field :cook_time %>
-		<br />
-		<br />
-		<p>Yield (Number of servings):</p>
-		<%= f.text_field :yield %>
-		<br />
-		<br />
-		<p>Extra notes:</p>
-		<%= f.text_area :note, rows: 5, style: 'width: 90%; min-height: 150px;' %>
-		<br />
-	</div>
+	<%= render 'recipe_form_partial', f: f %>
 	<br />
 	<br />
 	<br />

@@ -24,5 +24,14 @@ class Recipe < ApplicationRecord
 
   searchkick
 
+  def search_data
+    {
+      title: title,
+      cuisine: cuisine,
+      description: description,
+      ingredient_names: ingredients.name
+    }
+  end
+
 end
 
