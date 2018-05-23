@@ -72,7 +72,7 @@ module RecipesHelper
 			## figure out pluralization at same time, based on portion amount
 			portion_amount.to_s + ' ' + ingredient.pluralize(portion_amount.to_i)
 		else
-			if portion.ingredient.unit.short_name
+			if portion.ingredient.unit.short_name.present?
 				if portion_unit.include?("m") || portion_unit.include?("g") || portion_unit.include?("g")
 					portion_amount.to_s + portion_unit.to_s.titleize + ' ' + ingredient.to_s
 				else
