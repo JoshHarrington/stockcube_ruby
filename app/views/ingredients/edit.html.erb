@@ -2,7 +2,7 @@
 	<div class="field">
 		Label <%= i.label :ingredient %><br>
 		Name <%= i.text_field :name %><br>
-		Searchable <%= i.check_box :searchable %>
+		<%= select_tag "unit_number", options_from_collection_for_select(@units, "unit_number", "name") %>
 		<br />
 		<%# Remove from /ingredients list? <%= i.check_box :hidden %>
 	</div>

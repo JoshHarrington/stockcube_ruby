@@ -13,9 +13,15 @@ class IngredientsController < ApplicationController
 	end
 	def new
     @ingredient = Ingredient.new
+		@units = Unit.all
   end
   def create
-    @ingredient = Ingredient.new(ingredient_params)
+		@ingredient = Ingredient.new(ingredient_params)
+		@units = Unit.all
+		if params[:unit_number]
+			ingredient_unit = Unit.where(unit_number: params[:unit_number]).first
+			ingredient_unit.ingredients << @ingredient
+		end
     if @ingredient.save
       redirect_to ingredients_path
     else
@@ -25,9 +31,15 @@ class IngredientsController < ApplicationController
 	def edit
 		@ingredient = Ingredient.find(params[:id])
 		@portions = @ingredient.portions
+		@units = Unit.all
 	end
 	def update
 		@ingredient = Ingredient.find(params[:id])
+		@units = Unit.all
+		if params[:unit_number]
+			ingredient_unit = Unit.where(unit_number: params[:unit_number]).first
+			ingredient_unit.ingredients << @ingredient
+		end
 		@portions = @ingredient.portions
 			if @ingredient.update(ingredient_params)
 				redirect_to ingredients_path

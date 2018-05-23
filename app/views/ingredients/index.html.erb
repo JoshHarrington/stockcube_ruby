@@ -10,11 +10,7 @@
           <% @ingredients.sort_by {|ingredient| ingredient.recipes.length}.reverse.each do |ingredient| %>
 
             <div class="ingredient col-xs-2">
-              <% if ingredient.searchable %>
-                <h3><%= link_to "#{ingredient.name} - (Currently searchable)", ingredient_path(ingredient) %></h3>
-              <% else %>
-                <h3><%= link_to "#{ingredient.name}", ingredient_path(ingredient) %></h3>
-              <% end %>
+              <h3><%= link_to "#{ingredient.name}", ingredient_path(ingredient) %></h3>
               <%= link_to "Edit Ingredient", edit_ingredient_path(ingredient) %>
               <br />
               <br />

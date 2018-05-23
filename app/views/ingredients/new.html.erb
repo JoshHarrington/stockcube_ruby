@@ -2,7 +2,7 @@
       <div class="field">
         Label <%= i.label :ingredient %><br>
         Name <%= i.text_field :name %><br>
-        <%= i.select :unit_id, Unit.all.collect { |unit| [ unit.name, unit.unit_number ] } %>
+        <%= select_tag "unit_number", options_from_collection_for_select(@units, "unit_number", "name") %>
       </div>
       <div class="actions">
         <%= i.submit "Create" %>
