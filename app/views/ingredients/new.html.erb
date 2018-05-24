@@ -1,9 +1,5 @@
     <%= form_for(@ingredient) do |i| %>
-      <div class="field">
-        Label <%= i.label :ingredient %><br>
-        Name <%= i.text_field :name %><br>
-        <%= select_tag "unit_number", options_from_collection_for_select(@units, "unit_number", "name") %>
-      </div>
+      <%= render 'form_partial', i: i %>
       <div class="actions">
         <%= i.submit "Create" %>
       </div>

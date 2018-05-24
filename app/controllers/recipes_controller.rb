@@ -166,7 +166,7 @@ class RecipesController < ApplicationController
 
 	private
 		def recipe_params
-			params.require(:recipe).permit(:user_id, :search, :cuisine, :search_ingredients, :title, :description, portions_attributes:[:amount, :_destroy])
+			params.require(:recipe).permit(:user_id, :search, :cuisine, :search_ingredients, :title, :description, :prep_time, :cook_time, :yield, :note, portions_attributes:[:amount, :_destroy])
 		end
 
 		def shopping_list_params

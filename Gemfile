@@ -55,6 +55,8 @@ gem 'momentjs-rails'
 
 gem 'searchkick'
 
+gem 'pgsync'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
