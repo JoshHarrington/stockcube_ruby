@@ -1,4 +1,7 @@
     <%= form_for(@ingredient) do |i| %>
+      <h3>New Ingredient</h3>
+      <br />
+      <br />
       <%= render 'form_partial', i: i %>
       <div class="actions">
         <%= i.submit "Create" %>
