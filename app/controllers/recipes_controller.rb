@@ -15,6 +15,8 @@ class RecipesController < ApplicationController
 		else
 			@recipes = Recipe.all.paginate(:page => params[:page], :per_page => 12)
 		end
+		@fav_recipes = current_user.favourites
+		@fav_recipes_limit = current_user.favourites.first(6)
 	end
 	def show
 		@recipe = Recipe.find(params[:id])

@@ -1,0 +1,18 @@
+.alert {
+	&.alert-notice {
+		font-size: em(14, 10);
+		padding: em(16, 14);
+    position: fixed;
+    bottom: em(20, 14);
+    right: em(17, 14);
+    z-index: 2;
+    border-radius: 2px;
+		background: hsl(0, 0%, 19%);
+		background-color: $black-90;
+    color: white;
+		box-shadow: 0 2px 7px 0 #00000087;
+		a {
+			color: $teal-100;
+		}
+	}
+}
