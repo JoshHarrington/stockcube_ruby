@@ -7,16 +7,21 @@
 .list-block--collection--wrap {
 	margin-bottom: em(20, 10);
 	padding-bottom: em(20, 10);
-	&:not(:last-child) {
-		border-bottom: 1px solid black;
-	}
 	.list-block--collection--sibling {
 		padding-left: em(17, 10);
 		padding-right: em(17, 10);
 	}
 	& ~ & {
+		border-top: 1px solid black;
 		padding-top: em(20, 10);
 	}
+}
+
+.list-block--collection--sibling {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	flex-wrap: wrap;
 }
 
 .list_block--collection__tight {
@@ -34,7 +39,6 @@
 	}
 }
 
-
 .list_block {
 	display: flex;
 	flex-wrap: wrap;
@@ -42,8 +46,7 @@
 	border: 1px solid $teal-80;
 	margin: em(7, 10);
 	flex: 0 0 calc(50% - 20px);
-	font-size: inherit;
-	min-height: em(100, 10);
+	min-height: em(60, 10);
 	order: 1;
 	@media (min-width: 1201px) {
 		flex-basis: calc(25% - 14px);
@@ -55,12 +58,18 @@
 		order: 2;
 	}
 	&:not(.list_block__column), .list_block--content  {
-		padding: em(12, 10) em(8, 10) em(8, 10);
+		padding: em(12, 10) em(8, 10) em(16, 10);
 	}
 }
 a.list_block {
+	margin: em(7, 15);
+	&:not(.list_block__column) {
+		padding: em(12, 15) em(8, 15) em(16, 15);
+	}
 	background-color: $teal-10;
 	order: 3;
+	text-decoration: none;
+	color: black;
 	&:hover {
 		background-color: $teal-20;
 	}
@@ -106,11 +115,14 @@ a.list_block {
 }
 
 .list_block--item {
-	margin: em(3, 10);
+	margin: em(3, 15);
 	background-color: $teal-40;
-	border-radius: em(3, 10);
-	padding: em(5, 10);
+	border-radius: em(3, 15);
+	padding: em(7, 15);
 	flex-basis: calc(50% - 6px);
+	* {
+		font-size: inherit;
+	}
 	@media (min-width: 1900px), (max-width: 1200px) and (min-width: 900px), (max-width: 700px) and (min-width: 450px)  {
 		flex-basis: calc(33.3% - 6px);
 	}
@@ -122,14 +134,30 @@ a.list_block {
 	}
 }
 
+a.list_block--item {
+	text-decoration: none;
+	color: black;
+	&:hover {
+		background-color: $teal-20;
+		&.date-part-warning {
+			background-color: $warning-amber-40;
+		}
+		&.date-full-warning {
+			background-color: $warning-red-40;
+		}
+
+	}
+}
+
 .list_block--item-new {
-	background-color: $teal-10;
-	min-height: em(40);
+	background-color: white;
+	min-height: em(40, 15);
 	color: black;
 	text-decoration: none;
 	display: flex;
 	align-items: center;
-	&:hover {
-		background-color: $teal-20;
+	border: 1px solid $teal-110;
+	&.list_block--item:hover {
+		background-color: $teal-5;
 	}
 }

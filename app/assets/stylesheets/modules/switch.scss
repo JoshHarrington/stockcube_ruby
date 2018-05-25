@@ -1,0 +1,39 @@
+.switch--wrap {
+	display: flex;
+	align-items: center;
+}
+
+.switch {
+	position: relative;
+	width: em(30, 15);
+	margin-left: em(8, 15);
+	background-color: $teal-110;
+	height: em(24, 15);
+	border-radius: em(15, 15);
+	border: 1px solid $teal-110;
+	overflow: hidden;
+	text-indent: em(1000, 15);
+	transition: background-color .3s;
+	&:before {
+		content: " ";
+		position: absolute;
+		width: em(18, 15);
+		height: em(18, 15);
+		border-radius: 50%;
+		background-color: white;
+		border: 1px solid $teal-110;
+		left: em(2, 15);
+		top: em(2, 15);
+	}
+	&:hover {
+		background-color: $teal-70;
+	}
+	&.status_off {
+		background-color: $teal-10;
+		border-color: $teal-40;
+		&:before {
+			border-color: $teal-40;
+			left: em(8, 15);
+		}
+	}
+}

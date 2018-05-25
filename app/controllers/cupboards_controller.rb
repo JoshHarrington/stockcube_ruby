@@ -3,12 +3,22 @@ class CupboardsController < ApplicationController
 	before_action :correct_user,   only: [:show, :edit, :update]
 	def index
 		@cupboards = current_user.cupboards.order(location: :asc)
+		@out_of_date_exist = false
+		@cupboards.each do |cupboard|
+			cupboard.stocks.each do |stock|
+				if (stock.use_by_date - Date.current).to_i <= -3
+					@out_of_date_exist = true
+					break if @out_of_date_exist == true
+				end
+				break if @out_of_date_exist == true
+			end
+			break if @out_of_date_exist == true
+		end
 		# redirect_to root_url and return unless @user.activated?
 	end
 	def show
 		@cupboard = Cupboard.find(params[:id])
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)
-
 	end
 	def new
 		@cupboard = Cupboard.new
@@ -23,6 +33,9 @@ class CupboardsController < ApplicationController
     else
       render 'new'
     end
+	end
+	def edit_all
+		@cupboards = current_user.cupboards.order(location: :asc)
 	end
 	def edit
 		@cupboard = Cupboard.find(params[:id])
