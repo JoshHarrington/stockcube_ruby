@@ -54,6 +54,9 @@
 	@media (max-width: 700px) {
 		flex-basis: calc(100% - 14px);
 	}
+	&.empty .list_block--action {
+		display: none;
+	}
 	&.empty, &.all-out-of-date {
 		order: 2;
 	}
@@ -75,6 +78,20 @@ a.list_block {
 	}
 }
 
+.list_block.edit_mode .list_block--item_show,
+.list_block.edit_mode .list_block--item-new,
+.list_block.edit_mode .edit_cupboard_button,
+.list_block:not(.edit_mode) .list_block--item_edit,
+.list_block:not(.edit_mode) .finish_editing_cupboard_button {
+	display: none;
+}
+
+.list_block input[type="checkbox"] {
+	position: absolute;
+	left: -100000vw;
+	visibility: hidden;
+}
+
 .list_block__column {
 	align-content: space-between;
 	> * {
@@ -90,11 +107,36 @@ a.list_block {
 .list_block--title {
 	flex-basis: calc(100% - 6px);
 	flex-shrink: 0;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 	.list_block__grid & {
 		margin: 0 em(3, 17) em(10, 17);
 	}
-	display: flex;
-	justify-content: space-between;
+	h3 {
+		flex-grow: 1;
+	}
+	input[type="text"] {
+		font-size: em(17, 17);
+		border: 1px solid transparent;
+		padding: em(3, 17);
+		width: 100%;
+		&:focus {
+			border-color: $black-30;
+			outline: none;
+		}
+	}
+	.list_block--action {
+		width: em(35, 15);
+		height: em(35, 15);
+		padding: em(5, 15);
+		color: $black-30;
+		margin-left: em(10, 15);
+		font-size: em(17, 17);
+		&:hover {
+			color: $black-80;
+		}
+	}
 }
 
 .list-block--actions {
@@ -120,6 +162,8 @@ a.list_block {
 	border-radius: em(3, 15);
 	padding: em(7, 15);
 	flex-basis: calc(50% - 6px);
+	position: relative;
+	border: 1px solid $teal-40;
 	* {
 		font-size: inherit;
 	}
@@ -128,9 +172,11 @@ a.list_block {
 	}
 	&.date-part-warning {
 		background-color: $warning-amber;
+		border-color: $warning-amber;
 	}
 	&.date-full-warning {
 		background-color: $warning-red;
+		border-color: $warning-red;
 	}
 }
 
@@ -147,6 +193,40 @@ a.list_block--item {
 		}
 
 	}
+}
+
+.list_block--item_edit--checkbox:checked + .list_block--item_edit {
+	border-width: 5px;
+}
+
+.list_block--item_edit {
+	background-color: white;
+	padding-right: em(30, 15);
+	transition: border .3s;
+	border-color: $teal-40;
+	&.date-part-warning {
+		background-color: $warning-amber-40;
+	}
+	&.date-full-warning {
+		background-color: $warning-red-40;
+	}
+	&:hover {
+		cursor: pointer;
+	}
+}
+
+.list_block--item_edit_marker {
+	position: absolute;
+	top: em(7, 15);
+	right: em(7, 15);
+	width: em(20, 15);
+	height: em(20, 15);
+	opacity: .7;
+	color: $teal-110;
+}
+
+.finish_editing_cupboard_button {
+	cursor: pointer;
 }
 
 .list_block--item-new {

@@ -14,7 +14,7 @@
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload', :defer => "defer" %>
   </head>
 
-  <body>
+  <body class="<%= controller_name %>_controller <%= action_name %>_page">
     <div id="outer-wrap">
       <div id="inner-wrap">
         <%= render 'layouts/header' %>

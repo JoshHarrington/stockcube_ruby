@@ -17,4 +17,5 @@
 //= require moment
 //= require rails.validations
 //= require cocoon
-//= require_tree .
+//= require app.cupboard
+

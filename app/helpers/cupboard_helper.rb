@@ -33,7 +33,9 @@ module CupboardHelper
 		return correct_unit.name
 	end
 	def cupboard_empty_class(cupboard)
-		if cupboard.stocks.empty?
+		Rails.logger.debug 'stock number: ' + cupboard.stocks.where(hidden:false).length.to_s
+		Rails.logger.debug 'cupboard id: ' + cupboard.id.to_s
+		if cupboard.stocks.empty? || cupboard.stocks.where(hidden:false).length == 0
 			return ' empty'
 		else
 			stocks = cupboard.stocks.order(use_by_date: :desc)

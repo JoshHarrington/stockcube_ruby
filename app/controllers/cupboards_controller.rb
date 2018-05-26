@@ -37,6 +37,24 @@ class CupboardsController < ApplicationController
 	def edit_all
 		@cupboards = current_user.cupboards.order(location: :asc)
 	end
+	def autosave
+		if params.has_key?(:cupboard_location) && params[:cupboard_location].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
+			@cupboard_id = params[:cupboard_id]
+			@cupboard_title = params[:cupboard_location]
+			@cupboard_to_edit = current_user.cupboards.find(@cupboard_id)
+			@cupboard_to_edit.update_attributes(
+				location: @cupboard_title
+			)
+		end
+		if params.has_key?(:stock_id) && params[:stock_id].to_s != ''
+			@stock_to_delete = Stock.find(params[:stock_id])
+			@stock_to_delete.each do |stock|
+				stock.update_attributes(
+					hidden: true
+				)
+			end
+		end
+	end
 	def edit
 		@cupboard = Cupboard.find(params[:id])
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)
