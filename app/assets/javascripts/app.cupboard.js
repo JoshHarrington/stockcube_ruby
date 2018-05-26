@@ -1,7 +1,7 @@
-const cupboard = function() {
+var cupboard = function() {
 
 	$('#cupboard-list input').change(function(){
-		const $cupboard_block_inputs = $(this).closest('.list_block').find('input');
+		var $cupboard_block_inputs = $(this).closest('.list_block').find('input');
 		$.ajax({
 			type: "POST",
 			url: "/cupboards/autosave",
@@ -16,18 +16,18 @@ const cupboard = function() {
 	});
 	$('.edit_cupboard_button').click(function(e){
 		e.preventDefault();
-		const $cupboard_block = $(this).closest('.list_block');
+		var $cupboard_block = $(this).closest('.list_block');
 		$('.list_block.edit_mode').removeClass('edit_mode');
 		$cupboard_block.toggleClass('edit_mode');
 	});
 	$('.finish_editing_cupboard_button').click(function(e){
-		const $cupboard_block = $(this).closest('.list_block');
-		const $cupboard_block_checkbox_inputs = $(this).closest('.list_block').find('input[type="checkbox"]:checked');
+		var $cupboard_block = $(this).closest('.list_block');
+		var $cupboard_block_checkbox_inputs = $(this).closest('.list_block').find('input[type="checkbox"]:checked');
 		$cupboard_block_checkbox_inputs.each(function(i){
-			const stock_edit_id = $(this).attr('id');
+			var stock_edit_id = $(this).attr('id');
 			$('label[for="'+ stock_edit_id +'"]').attr('hidden', 'hidden');
 			$('.'+ stock_edit_id).attr('hidden', 'hidden');
-			const list_block = $('.'+ stock_edit_id).closest('.list_block');
+			var list_block = $('.'+ stock_edit_id).closest('.list_block');
 			if (!($(list_block).hasClass('empty')) && (!($(list_block).find('.list_block--item_show:not([hidden])').length > 0))){
 				$('.'+ stock_edit_id).closest('.list_block').addClass('empty');
 			}
