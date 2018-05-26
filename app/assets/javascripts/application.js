@@ -18,4 +18,9 @@
 //= require rails.validations
 //= require cocoon
 //= require app.cupboard
+//= require general
+//= require alert
+//= require navigation
+//= require stocks
+//= require recipes
 
