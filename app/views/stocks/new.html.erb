@@ -1,19 +1,7 @@
 <%= form_for @stock, id: "stock-form", :validate => true do |s| %>
 	<div class="field">
 		<%= s.label :stock %><br>
-		<div class="datalist-select-fallback">
-			<%= select_tag :ingredient_id, options_from_collection_for_select(@ingredients, "id", "name"), prompt: "Pick your ingredient", required: true %>
-		</div>
-		<div class="datalist-input">
-			<%= text_field_tag "ingredient[name]", '', placeholder: "Pick your ingredient", list: "ingredient_list" %>
-			<label for="stock_amount" class="message-special" hidden>can't be blank</label>
-			<datalist id="ingredient_list">
-			<% @ingredients.each do |ingredient|  %>
-				<option><%= ingredient.name %></option>
-			<% end %>
-			</datalist>
-		</div>
-
+		<%= select_tag :ingredient_id, options_from_collection_for_select(@ingredients, "id", "name"), prompt: "Pick your ingredient", required: true %>
 		Amount <%= s.text_field(:amount, value: '', placeholder: '250', validate: true) %><br>
 		Units <%= select_tag "unit_number", options_from_collection_for_select(@unit_select, "unit_number", "name", 8) %>
 		<br>

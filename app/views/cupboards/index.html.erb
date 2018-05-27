@@ -18,7 +18,7 @@
   </div>
   <div id="cupboard-list" class="list_block--collection">
     <% @cupboards.each do |cupboard| %>
-      <div class="cupboard list_block list_block__grid<% cupboard_empty_class(cupboard) %>">
+      <div class="cupboard list_block list_block__grid<%= cupboard_empty_class(cupboard) %>">
         <div class="list_block--title">
           <h3>
             <%= hidden_field_tag "cupboard_id", cupboard.id %>
@@ -30,27 +30,33 @@
           <span class="finish_editing_cupboard_button list_block--action">
             <%= icomoon('bin') %>
           </span>
+          <span class="close_without_edit_cupboard_button list_block--action">
+            <%= icomoon('close') %>
+          </span>
+          <span class="delete_cupboard_button list_block--action">
+            <%= icomoon('bin') %>
+          </span>
         </div>
         <% if cupboard.stocks.first %>
-          <% cupboard.stocks.where(hidden: false).order(use_by_date: :desc).each do |stock| %>
+          <% cupboard_stocks_selection(cupboard).each do |stock| %>
             <% if params[:show_all] == 'true' || (stock.use_by_date - Date.current).to_i >= -2 %>
-              <%= link_to edit_stock_path(stock.id), class: "list_block--item list_block--item_show#{date_warning_class(stock)} stock_#{stock.id}" do %>
-                <p><%= stock.ingredient.name %></p>
-                <p><%= stock.amount %> <%= stock.ingredient.unit.name %></p>
-              <% end %>
-              <%= check_box_tag "stock_id[]", value = "#{stock.id}", checked = false, id: "stock_#{stock.id}", class: "list_block--item_edit--checkbox" %>
-              <%= label_tag "stock_#{stock.id}", class: "list_block--item list_block--item_edit#{date_warning_class(stock)}" do %>
-                <span class="list_block--item_edit_marker"><%= icomoon('bin') %></span>
-                <p><%= stock.ingredient.name %></p>
-                <p><%= stock.amount %> <%= stock.ingredient.unit.name %></p>
-              <% end %>
+                <%= link_to edit_stock_path(stock.id), class: "list_block--item list_block--item_show#{date_warning_class(stock)} stock_#{stock.id}" do %>
+                  <p><%= stock.ingredient.name %></p>
+                  <p><%= stock.amount %> <%= stock.ingredient.unit.name %></p>
+                <% end %>
+                <%= check_box_tag "stock_id[]", value = "#{stock.id}", checked = false, id: "stock_#{stock.id}", class: "list_block--item_edit--checkbox" %>
+                <%= label_tag "stock_#{stock.id}", class: "list_block--item list_block--item_edit#{date_warning_class(stock)}" do %>
+                  <span class="list_block--item_edit_marker"><%= icomoon('bin') %></span>
+                  <p><%= stock.ingredient.name %></p>
+                  <p><%= stock.amount %> <%= stock.ingredient.unit.name %></p>
+                <% end %>
             <% end %>
           <% end %>
         <% end %>
-        <%= link_to "Add more stock", stocks_new_path(:cupboard_id => cupboard.id), {:class => "list_block--item list_block--item-new"} %>
+        <%= link_to "Add more stock", stocks_new_path(:cupboard_id => cupboard.id), class: "list_block--item list_block--item-new" %>
       </div>
     <% end %>
-    <%= link_to cupboards_new_path, {:class => "list_block"} do %>
+    <%= link_to cupboards_new_path, class: "list_block" do %>
       <span>Add a new cupboard / storage location</span>
     <% end %>
   </div>

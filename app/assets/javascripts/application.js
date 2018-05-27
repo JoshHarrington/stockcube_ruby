@@ -17,9 +17,9 @@
 //= require moment
 //= require rails.validations
 //= require cocoon
-//= require app.cupboard
 //= require general
 //= require alert
+//= require cupboard
 //= require navigation
 //= require stocks
 //= require recipes

@@ -7,6 +7,86 @@ class StocksController < ApplicationController
 	def show
 		@stock = Stock.find(params[:id])
 	end
+	def new
+		@stock = Stock.new
+		@cupboards = current_user.cupboards
+		@ingredients = Ingredient.all.order('name ASC')
+		@units = Unit.all
+		@two_weeks_from_now = Date.current + 2.weeks
+		@unit_select = []
+
+		@units.each do |unit|
+			if unit.unit_number == 5
+				@unit_select << unit
+			elsif unit.unit_number == 8
+				@unit_select << unit
+			elsif unit.unit_number == 11
+				@unit_select << unit
+			elsif unit.unit_number == 22
+				@unit_select << unit
+			elsif unit.unit_number == 25
+				@unit_select << unit
+			end
+		end
+	end
+	def create
+		@stock = Stock.new(stock_params)
+		@cupboards = current_user.cupboards
+		@ingredients = Ingredient.all.order('name ASC')
+		@units = Unit.all
+		@two_weeks_from_now = Date.current + 2.weeks
+		@unit_select = []
+
+		@units.each do |unit|
+			if unit.unit_number == 5
+				@unit_select << unit
+			elsif unit.unit_number == 8
+				@unit_select << unit
+			elsif unit.unit_number == 11
+				@unit_select << unit
+			elsif unit.unit_number == 22
+				@unit_select << unit
+			elsif unit.unit_number == 25
+				@unit_select << unit
+			end
+		end
+
+		if params.has_key?(:ingredient_id) && params[:ingredient_id].present?
+			@selected_ingredient_id = params[:ingredient_id]
+		end
+
+		if params.has_key?(:cupboard_id) && params[:cupboard_id].present?
+			@selected_cupboard_id = params[:cupboard_id]
+		elsif params.has_key?(:cupboards) && params[:cupboards].present?
+			@selected_cupboard_id = params[:cupboards]
+			if @selected_cupboard_id.length > 1
+				@selected_cupboard_id = @selected_cupboard_id.join
+			end
+		else
+			## falls back to adding stock to the first of the users cupboards if not selected
+			@selected_cupboard_id = @cupboards.first
+		end
+
+		@stock_amount = params[:amount]
+		@stock_use_by_date = params[:stock][:use_by_date]
+		@stock_unit = params[:unit_number]
+
+
+		@stock.update_attributes(
+			unit_number: @stock_unit,
+			cupboard_id: @selected_cupboard_id,
+			ingredient_id: @selected_ingredient_id
+		)
+
+		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first
+
+    if @stock.save
+      redirect_to cupboards_path
+    else
+			render 'new'
+			flash[:danger] = "Make sure you select an ingredient"
+    end
+	end
 	def edit
 		@stock = Stock.find(params[:id])
 		@cupboards = current_user.cupboards
@@ -76,90 +156,6 @@ class StocksController < ApplicationController
 		else
 			render 'edit'
 		end
-	end
-	def new
-		@stock = Stock.new
-		@cupboards = current_user.cupboards
-		@ingredients = Ingredient.all.order('name ASC')
-		@units = Unit.all
-		@two_weeks_from_now = Date.current + 2.weeks
-		@unit_select = []
-
-		@units.each do |unit|
-			if unit.unit_number == 5
-				@unit_select << unit
-			elsif unit.unit_number == 8
-				@unit_select << unit
-			elsif unit.unit_number == 11
-				@unit_select << unit
-			elsif unit.unit_number == 22
-				@unit_select << unit
-			elsif unit.unit_number == 25
-				@unit_select << unit
-			end
-		end
-	end
-	def create
-		@stock = Stock.new(stock_params)
-		@cupboards = current_user.cupboards
-		@ingredients = Ingredient.all.order('name ASC')
-		@units = Unit.all
-		@two_weeks_from_now = Date.current + 2.weeks
-		@unit_select = []
-
-		@units.each do |unit|
-			if unit.unit_number == 5
-				@unit_select << unit
-			elsif unit.unit_number == 8
-				@unit_select << unit
-			elsif unit.unit_number == 11
-				@unit_select << unit
-			elsif unit.unit_number == 22
-				@unit_select << unit
-			elsif unit.unit_number == 25
-				@unit_select << unit
-			end
-		end
-
-		if params[:ingredient][:name].present?
-			@selected_ingredient_name = params[:ingredient][:name]
-			@selected_ingredient = Ingredient.where(name: @selected_ingredient_name).first
-			@selected_ingredient_id = @selected_ingredient.id
-		elsif params[:ingredient_id].present?
-			@selected_ingredient_id = params[:ingredient_id]
-		end
-
-		if params[:cupboard_id].present?
-			@selected_cupboard_id = params[:cupboard_id]
-		elsif params[:cupboards].present?
-			@selected_cupboard_id = params[:cupboards]
-			if @selected_cupboard_id.length > 1
-				@selected_cupboard_id = @selected_cupboard_id.join
-			end
-		else
-			## falls back to adding stock to the first of the users cupboards if not selected
-			@selected_cupboard_id = @cupboards.first
-		end
-
-		@stock_amount = params[:amount]
-		@stock_use_by_date = params[:stock][:use_by_date]
-		@stock_unit = params[:unit_number]
-
-
-		@stock.update_attributes(
-			unit_number: @stock_unit,
-			cupboard_id: @selected_cupboard_id,
-			ingredient_id: @selected_ingredient_id
-		)
-
-		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first
-
-    if @stock.save
-      redirect_to cupboards_path
-    else
-			render 'new'
-			flash[:danger] = "Make sure you select an ingredient"
-    end
 	end
 	private
 		def stock_params
