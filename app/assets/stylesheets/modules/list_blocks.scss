@@ -57,11 +57,17 @@
 	&.empty .list_block--action:not(.delete_cupboard_button) {
 		display: none;
 	}
-	&.empty, &.all-out-of-date {
+	&.all-out-of-date {
 		order: 2;
+	}
+	&.empty {
+		order: 3;
 	}
 	&:not(.list_block__column), .list_block--content  {
 		padding: em(12, 10) em(8, 10) em(16, 10);
+	}
+	&[hidden] {
+		display: none;
 	}
 }
 a.list_block {
@@ -133,7 +139,13 @@ a.list_block {
 		height: em(35, 15);
 		padding: em(5, 15);
 		color: $black-30;
-		margin-left: em(10, 15);
+		cursor: pointer;
+		&:not(:first-child) {
+			margin-left: em(10, 15);
+		}
+		&:first-child {
+			margin-right: em(7, 15);
+		}
 		font-size: em(17, 17);
 		&:hover {
 			color: $black-80;
@@ -141,7 +153,7 @@ a.list_block {
 	}
 }
 
-.list-block--actions {
+.list-block--action_row {
 	display: flex;
 	justify-content: flex-end;
 	a {

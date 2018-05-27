@@ -54,6 +54,12 @@ class CupboardsController < ApplicationController
 				)
 			end
 		end
+		if params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != ''
+			@cupboard_to_delete = Cupboard.find(params[:cupboard_id_delete])
+			@cupboard_to_delete.update_attributes(
+				hidden: true
+			)
+		end
 	end
 	def edit
 		@cupboard = Cupboard.find(params[:id])

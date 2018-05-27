@@ -17,9 +17,13 @@
     <% end %>
   </div>
   <div id="cupboard-list" class="list_block--collection">
-    <% @cupboards.each do |cupboard| %>
+    <% @cupboards.where(hidden: false).each do |cupboard| %>
       <div class="cupboard list_block list_block__grid<%= cupboard_empty_class(cupboard) %>">
         <div class="list_block--title">
+          <span class="delete_cupboard_button list_block--action">
+            <%= icomoon('bin') %>
+            <%= hidden_field_tag "cupboard_id_delete", cupboard.id %>
+          </span>
           <h3>
             <%= hidden_field_tag "cupboard_id", cupboard.id %>
             <%= text_field_tag "cupboard_location", cupboard.location %>
@@ -32,9 +36,6 @@
           </span>
           <span class="close_without_edit_cupboard_button list_block--action">
             <%= icomoon('close') %>
-          </span>
-          <span class="delete_cupboard_button list_block--action">
-            <%= icomoon('bin') %>
           </span>
         </div>
         <% if cupboard.stocks.first %>

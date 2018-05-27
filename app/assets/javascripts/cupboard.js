@@ -30,6 +30,20 @@ var cupboard = function() {
 		$cupboard_block.removeClass('edit_mode');
 	});
 
+	$('.delete_cupboard_button').click(function(){
+		var $cupboard_block = $(this).closest('.list_block');
+		var $delete_cupboard_values = $(this).find('input').serialize();
+		var confirmed = confirm("Are you sure you want to delete this cupboard?\nThere's no going back!");
+		$($cupboard_block).attr('hidden', true);
+		if (confirmed == true) {
+			$.ajax({
+				type: "POST",
+				url: "/cupboards/autosave",
+				data: $delete_cupboard_values,
+				dataType: "script"
+			});
+		}
+	});
 
 	$('.finish_editing_cupboard_button').click(function(e){
 		var $cupboard_block = $(this).closest('.list_block');
