@@ -48,6 +48,7 @@
 	flex: 0 0 calc(50% - 20px);
 	min-height: em(60, 10);
 	order: 1;
+	position: relative;
 	@media (min-width: 1201px) {
 		flex-basis: calc(25% - 14px);
 	}
@@ -69,6 +70,9 @@
 	&[hidden] {
 		display: none;
 	}
+	&.edit_mode {
+		border-style: dashed;
+	}
 }
 a.list_block {
 	margin: em(7, 15);
@@ -84,12 +88,22 @@ a.list_block {
 	}
 }
 
+.edit_mode--message {
+	font-family: monospace;
+	color: $teal-80;
+	font-size: em(13, 10);
+	position: absolute;
+	bottom: em(11, 12);
+	left: em(12, 12);
+}
+
 .list_block.edit_mode .list_block--item_show,
 .list_block.edit_mode .list_block--item-new,
 .list_block.edit_mode .edit_cupboard_button,
 .list_block:not(.edit_mode) .list_block--item_edit,
 .list_block:not(.edit_mode) .close_without_edit_cupboard_button,
 .list_block:not(.edit_mode) .finish_editing_cupboard_button,
+.list_block:not(.edit_mode) .edit_mode--message,
 .list_block:not(.empty) .delete_cupboard_button {
 	display: none;
 }
