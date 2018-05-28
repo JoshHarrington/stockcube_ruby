@@ -20,6 +20,14 @@ var cupboard = function() {
 		var $cupboard_block = $(this).closest('.list_block');
 		$('.list_block.edit_mode').removeClass('edit_mode');
 		$cupboard_block.toggleClass('edit_mode');
+		$cupboard_checkboxes = $(this).closest('.list_block').find('input[type="checkbox"]');
+		$cupboard_checkboxes.change(function(){
+			if ($(this).closest('.list_block').find('input[type="checkbox"]:checked').length > 0) {
+				$cupboard_block.addClass('delete_mode');
+			} else {
+				$cupboard_block.removeClass('delete_mode');
+			}
+		});
 	});
 
 	$('.close_without_edit_cupboard_button').click(function(e){
@@ -27,7 +35,7 @@ var cupboard = function() {
 		var $cupboard_block_checkbox_inputs = $(this).closest('.list_block').find('input[type="checkbox"]:checked');
 		$cupboard_block_checkbox_inputs.prop('checked', false);
 		$cupboard_block_checkbox_inputs.removeAttr('checked');
-		$cupboard_block.removeClass('edit_mode');
+		$cupboard_block.removeClass('edit_mode delete_mode');
 	});
 
 	$('.delete_cupboard_button').click(function(){
@@ -57,7 +65,7 @@ var cupboard = function() {
 				$('.'+ stock_edit_id).closest('.list_block').addClass('empty');
 			}
 		})
-		$cupboard_block.removeClass('edit_mode');
+		$cupboard_block.removeClass('edit_mode delete_mode');
 		$cupboard_block_checkbox_values = $cupboard_block_checkbox_inputs.serializeArray();
 
 		if ($cupboard_block_checkbox_values.length > 0) {
