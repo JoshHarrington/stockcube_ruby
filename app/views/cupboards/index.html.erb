@@ -2,19 +2,7 @@
 <div class="list-block--collection--wrap">
   <div class="list-block--collection--sibling">
     <h2>All Cupboards</h2>
-    <% if @out_of_date_exist == true %>
-      <% if params[:show_all] == 'true' %>
-        <%= link_to cupboards_path, class: "switch--wrap", title: "Only show in date ingredients" do %>
-          <span>Only show in date ingredients</span>
-          <span class="switch status_on"></span>
-        <% end %>
-      <% else %>
-        <%= link_to cupboards_path(:show_all => 'true'), class: "switch--wrap", title: "Show all ingredients in cupboards" do %>
-          <span>Show all ingredients in cupboards</span>
-          <span class="switch status_off"></span>
-        <% end %>
-      <% end %>
-    <% end %>
+    <%# render 'show_all_ingredients_partial' %>
   </div>
   <div id="cupboard-list" class="list_block--collection">
     <% @cupboards.where(hidden: false).each do |cupboard| %>

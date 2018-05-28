@@ -34,8 +34,8 @@ var cupboard = function() {
 		var $cupboard_block = $(this).closest('.list_block');
 		var $delete_cupboard_values = $(this).find('input').serialize();
 		var confirmed = confirm("Are you sure you want to delete this cupboard?\nThere's no going back!");
-		$($cupboard_block).attr('hidden', true);
 		if (confirmed == true) {
+			$($cupboard_block).attr('hidden', true);
 			$.ajax({
 				type: "POST",
 				url: "/cupboards/autosave",

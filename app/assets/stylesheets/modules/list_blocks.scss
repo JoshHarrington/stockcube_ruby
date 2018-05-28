@@ -65,7 +65,7 @@
 		order: 3;
 	}
 	&:not(.list_block__column), .list_block--content  {
-		padding: em(12, 10) em(8, 10) em(16, 10);
+		padding: em(12, 10) em(8, 10) em(30, 10);
 	}
 	&[hidden] {
 		display: none;
@@ -91,10 +91,11 @@ a.list_block {
 .edit_mode--message {
 	font-family: monospace;
 	color: $teal-80;
-	font-size: em(13, 10);
+	font-size: em(13, 8.125);
+	font-size: 13px;
 	position: absolute;
-	bottom: em(11, 12);
-	left: em(12, 12);
+	bottom: em(11, 13);
+	left: em(12, 13);
 }
 
 .list_block.edit_mode .list_block--item_show,
