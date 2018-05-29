@@ -4,87 +4,18 @@ module ShoppingListsHelper
 		zero_base_index = userShoppingLists.index(shopping_list)
 		return zero_base_index + 1
 	end
-	def shopping_list_portions_list_output(ingredient_id_set, shopping_list_id, cupboard_stock_ids)
-
-		shopping_list_portions_hash = Hash.new
-
-		ingredient_id_set.each do |ingredient_id|
-			ingredient_name = Ingredient.where(id: ingredient_id).first.name
-			portion_obj_first = ShoppingListPortion.where(ingredient_id: ingredient_id, shopping_list_id: shopping_list_id).first
-			portion_unit_number = portion_obj_first.unit_number
-			portion_unit = Unit.where(unit_number: portion_unit_number).first
-			unit = Unit.where(id: portion_unit_number).first
-			portion_amount = ShoppingListPortion.where(ingredient_id: ingredient_id, shopping_list_id: shopping_list_id).sum(&:amount).to_i
-
-
-			cupboard_stocks = Stock.find(cupboard_stock_ids)
-
-			cupboard_stock_amount = 0
-
-			cupboard_stocks.each do |stock|
-				if stock.ingredient_id == ingredient_id
-					cupboard_stock_amount = Stock.where(id: stock.id).sum(&:amount).to_i
-				end
-			end
-
-			if cupboard_stock_amount != 0
-				stock_obj = Stock.where(ingredient_id: ingredient_id).first
-				stock_unit_obj = stock_obj.ingredient.unit
-				if stock_unit_obj.metric_ratio
-					metric_transform(stock_obj, stock_unit_obj)
-				end
-
-				proportion_in_cupboard = cupboard_stock_amount / portion_amount
-
-				if proportion_in_cupboard < 1
-					cupboard_situation = cupboard_stock_amount.to_s + " " + portion_unit.name + " already in cupboard"
-				elsif proportion_in_cupboard.to_floor < 2
-					cupboard_situation = "More than enough in cupboard already"
-				else
-					cupboard_situation = "More than enough in cupboard, about " + proportion_in_cupboard.to_floor.to_s + " times more than you need"
-				end
-			else
-				cupboard_situation = "Not in cupboards"
-			end
-
-			# if unit.name == "Each" || unit.name == "Side"
-			if unit.unit_number == 5 || unit.unit_number == 44
-				portion_desc = portion_amount.to_s + ' ' + ingredient_name.pluralize(portion_amount.to_i)
-				portion_description = portion_desc
-			else
-				if unit.short_name
-					if unit.name.downcase.include?("milliliter")
-						portion_desc = portion_amount.to_s + unit.short_name.downcase.to_s + ' ' + ingredient_name.to_s
-						portion_description = portion_desc
-					else
-						portion_desc = portion_amount.to_s + ' ' + unit.name.to_s + ' ' + ingredient_name.to_s
-						portion_description = portion_desc
-					end
-				else
-					unit.name = unit.name.pluralize(portion_amount.to_i)
-					portion_desc = portion_amount.to_s + ' ' + unit.name.to_s + ' ' + ingredient_name.to_s
-					portion_description = portion_desc
-				end
-			end
-
-			shopping_list_portions_hash[portion_description] = cupboard_situation
-		end
-
-		return shopping_list_portions_hash
-
-	end
 
 	def metric_transform(portion_obj, portion_unit_obj)
 		metric_amount = portion_obj.amount * portion_unit_obj.metric_ratio
 
 		if metric_amount < 20
-			metric_amount = metric_amount.ceil
+			return metric_amount = metric_amount.ceil
 		elsif metric_amount < 400
-			metric_amount = (metric_amount / 10).ceil * 10
+			return metric_amount = (metric_amount / 10).ceil * 10
 		elsif metric_amount < 1000
-			metric_amount = (metric_amount / 20).ceil * 20
+			return metric_amount = (metric_amount / 20).ceil * 20
 		else
-			metric_amount = (metric_amount / 50).ceil * 50
+			return metric_amount = (metric_amount / 50).ceil * 50
 		end
 	end
 
@@ -129,6 +60,20 @@ module ShoppingListsHelper
 				:unit_number => portion_obj.unit_number,
 				:recipe_number => portion_obj.recipe_id
 			)
+		end
+	end
+
+	def latest_shopping_list_path
+		latest_shopping_list = current_user.shopping_lists.order('created_at DESC').first
+		return shopping_list_ingredients_path(latest_shopping_list)
+	end
+
+	def shopping_list_latest(shopping_list)
+		latest_shopping_list = current_user.shopping_lists.order('created_at DESC').first
+		if shopping_list.id == latest_shopping_list.id
+			return true
+		else
+			return false
 		end
 	end
 end

@@ -197,6 +197,9 @@ a.list_block {
 	flex-basis: calc(50% - 6px);
 	position: relative;
 	border: 1px solid $teal-40;
+	display: flex;
+	justify-content: space-between;
+	align-content: flex-start;
 	* {
 		font-size: inherit;
 	}
@@ -210,6 +213,17 @@ a.list_block {
 	&.date-full-warning {
 		background-color: $warning-red;
 		border-color: $warning-red;
+	}
+	&.list_block--item_stacked {
+		flex-wrap: wrap;
+		* {
+			flex-basis: 100%;
+		}
+	}
+	.icon {
+		width: em(10, 15);
+		height: em(10, 15);
+		color: $teal-10;
 	}
 }
 

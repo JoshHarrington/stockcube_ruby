@@ -32,14 +32,14 @@
       --><% if logged_in? && current_user && current_user.admin %><!--
       --><li <% if current_section == "ingredients" %>class="current_section"<% end %>><%= link_to "Ingredients", ingredients_path %></li><!--
       --><% end %><!--
-      --><% if logged_in? && current_user %><!--
+      --><% if logged_in? && current_user && current_user.shopping_lists.first.present? %><!--
       --><% unless current_section == "shopping_lists" %>
-        <li><%= link_to "Shopping Lists", shopping_lists_path %>
+        <li><%= link_to "Current shopping list", latest_shopping_list_path %>
             <% else %><!--
-      --><li class="current_section"><%= link_to "Shopping Lists", shopping_lists_path %>
-      <ul>
-        <li><%= link_to "Add shopping list", shopping_lists_new_path %></li>
-      </ul>
+      --><li class="current_section"><%= link_to "Current shopping list", latest_shopping_list_path %>
+      <%# <ul> %>
+        <%# <li><%= link_to "Add shopping list", shopping_lists_new_path</li> %> %>
+      <%# </ul> %>
       </li><!--
       --><% end %><!--
       --><li <% if current_section == "cupboards" %>class="current_section"<% end %>><%= link_to "Cupboard", cupboards_path %></li><!--

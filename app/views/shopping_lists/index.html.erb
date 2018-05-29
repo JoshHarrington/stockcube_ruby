@@ -1,26 +1,29 @@
 <% provide(:title, 'Your Shopping Lists') %>
 <div class="main">
   <div class="container">
-		<h2>All Shopping Lists</h2>
-		<br/>
-		<br/>
-		<%= will_paginate(@shopping_lists) %>
-		<% @shopping_lists.each_with_index do |shopping_list, index| %>
-			<div class="shopping_list">
-				<h3>Shopping List <%= link_to "##{shoppingListIndex(shopping_list)} (#{shopping_list.created_at.to_date.to_s(:long)})", shopping_list_path(shopping_list) %></h3>
-				<% if shopping_list.recipes.first %>
-					<% shopping_list.recipes.each do |recipe| %>
-						<h4><%= recipe.title %></h4>
-						<%= link_to "See Recipe Detail", recipe_path(recipe) %>
-					<% end %>
-				<% end %>
-				<%= link_to "delete shopping list", delete_shopping_list_path(shopping_list), method: :delete, :confirm => "You sure?" %>
+		<div class="list-block--collection--wrap">
+		  <div class="list-block--collection--sibling">
+				<h2>Current Shopping List</h2>
 			</div>
-		<br/>
-		<br/>
+			<div class="list_block--collection">
+				<%= render 'shopping_listing_partial', shopping_list: @shopping_lists.first %>
+			</div>
+		</div>
+		<% if @shopping_lists.length > 1 %>
+			<div class="list-block--collection--wrap">
+				<div class="list-block--collection--sibling">
+					<h2>Older Shopping Lists</h2>
+				</div>
+				<%= will_paginate(@shopping_lists) %>
+				<div class="list_block--collection">
+					<% @shopping_lists.each_with_index do |shopping_list, index| %>
+						<% unless index == 0 %>
+							<%= render 'shopping_listing_partial', shopping_list: shopping_list %>
+						<% end %>
+					<% end %>
+				</div>
+			</div>
 		<% end %>
-		<br/>
-		<br/>
-		<%= link_to "Make new Shopping List", shopping_lists_new_path %>
+		<%# <%= link_to "Make new Shopping List", shopping_lists_new_path %> %>
   </div>
 </div>
