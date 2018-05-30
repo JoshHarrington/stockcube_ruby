@@ -63,224 +63,43 @@ class ShoppingListsController < ApplicationController
     @shopping_list = ShoppingList.find(params[:id])
     @recipes = @shopping_list.recipes
 
-
-    # @ingredient_ids_set = Set[]
-    # @shopping_list_ingredients.each do |ingredient|
-    #   @ingredient_ids_set.add(ingredient.id)
-    # end
-    @shopping_list_ingredient_ids = ShoppingListPortion.where(shopping_list_id: params[:id]).map(&:id)
-    # @shopping_list_ingredient_ids = @shopping_list_ingredients.map(&:id)
-
-    current_user_cupboard_ids = current_user.cupboards.map(&:id)
-
-    # @cupboard_stock_ids = []
-    # @cupboards.each do |cupboard|
-    #   @cupboard_stocks.each do |stock|
-    #     @cupboard_stock_ids.push(stock.id)
-    #   end
-    # end
-    # @cupboard_stocks = Stock.where(cupboard_id: cupboard.id)
-    # @cupboard_stock = Stock.find(@cupboard_stock_ids)
-
-
-    not_in_stock_array = []
-    not_enough_in_stock_array = []
-    enough_in_stock_array = []
-    loads_in_stock_array = []
-
-    @shopping_list_ingredient_ids.each do |ingredient_id|
-      if Stock.where(cupboard_id: current_user_cupboard_ids, ingredient_id: ingredient_id).length > 0
-        ingredient_stock = Stock.where(cupboard_id: current_user_cupboard_ids, ingredient_id: ingredient_id)
-        total_stock_amount = 0
-        first_stock_unit_number = ingredient_stock.first.unit_number
-        if ingredient_stock.length > 1
-          ingredient_stock.each do |stock|
-            stock_unit = Unit.where(unit_number: stock.unit_number)
-            if stock_unit.metric_ratio
-              stock_amount = metric_transform(stock, stock_unit)
-              if stock.unit_number == first_stock_unit_number
-                total_stock_amount += stock_amount
-              end
-            elsif stock.unit_number == first_stock_unit_number
-              total_stock_amount += stock_amount
-            else
-              ## unsure what to do if unit_numbers don't match and metric_transform doesn't exist on stock
-            end
-          end
-        else
-          ingredient_stock = ingredient_stock.first
-          stock_unit = Unit.where(unit_number: ingredient_stock.unit_number).first
-          Rails.logger.debug metric_transform(ingredient_stock, stock_unit)
-          if stock_unit.metric_ratio
-            stock_amount = metric_transform(ingredient_stock, stock_unit)
-            if stock.unit_number == first_stock_unit_number
-              total_stock_amount += stock_amount
-            end
-          else
-            total_stock_amount += stock_amount
-          end
-        end
-
-
-        ingredient_portion = ShoppingListPortion.where(shopping_list_id: params[:id], ingredient_id: ingredient_id)
-        total_portion_amount = 0
-        first_portion_unit_number = ingredient_portion.first.unit_number
-        if ingredient_portion.length > 1
-          ingredient_portion.each do |portion|
-            portion_unit = portion.ingredient.unit
-            if portion_unit.metric_ratio
-              portion_amount = metric_transform(portion, portion_unit)
-              if portion.unit_number == first_portion_unit_number
-                total_portion_amount += portion_amount
-              end
-            elsif portion.unit_number == first_portion_unit_number
-              total_portion_amount += portion_amount
-            else
-              ## unsure what to do if unit_numbers don't match and metric_transform doesn't exist on portion
-            end
-          end
-        else
-          portion_unit = Unit.where(unit_number: ingredient_portion.unit_number)
-          if portion_unit.metric_ratio
-            portion_amount = metric_transform(ingredient_portion, portion_unit)
-            if ingredient_portion.unit_number == first_portion_unit_number
-              total_portion_amount += portion_amount
-            end
-          else
-            total_portion_amount += portion_amount
-          end
-        end
-
-
-        if ingredient_stock.length > 1
-          stock_unit_type = Unit.where(unit_number: ingredient_stock.first.unit_number).unit_type
-        else
-          stock_unit_type = Unit.where(unit_number: ingredient_stock.unit_number).unit_type
-        end
-
-        if ingredient_portion.length > 1
-          portion_unit_type = Unit.where(unit_number: ingredient_portion.first.unit_number).unit_type
-        else
-          portion_unit_type = Unit.where(unit_number: ingredient_portion.unit_number).unit_type
-        end
-
-        if stock_unit_type == portion_unit_type
-          if total_portion_amount > total_stock_amount
-            not_enough_in_stock_array.push(ingredient_id)
-          else
-            if total_stock_amount > total_portion_amount*2
-              loads_in_stock_array.push(ingredient_id)
-            else
-              enough_in_stock_array.push(ingredient_id)
-            end
-          end
-        else
-          ## something wrong here, the stock and portion aren't of the same unit_type
-        end
-
+    @portion_ids = []
+    @recipes.each do |recipe|
+      recipe.portions.each do |portion|
+        @portion_ids << portion.id
       end
-      not_in_stock_array.push(ingredient_id)
+    end
+    @portions = Portion.find(@portion_ids)
+
+    @ingredients = @shopping_list.ingredients.uniq
+    @ingredient_ids = @ingredients.map(&:id)
+
+    # @portion_names = @portion.ingredient.name.uniq
+
+    @portions_hash = Hash.new{|hsh,key| hsh[key] = {} }
+
+    @portions.each do |portion|
+      portion_amount = 0
+      if portion.unit.metric_ratio
+        portion_amount = portion.amount * portion.unit.metric_ratio
+      else
+        portion_amount = portion.amount
+      end
+
+      if @portions_hash.key?(portion.ingredient.name)
+        portion_amount = @portions_hash[portion.ingredient.name]["amount"].to_f + portion_amount
+      end
+      @portions_hash[portion.ingredient.name].store "amount", portion_amount
+      @portions_hash[portion.ingredient.name].store "unit", portion.unit_number
     end
 
-    # portion_amount = ShoppingListPortion.where(ingredient_id: @shopping_list_ingredients, shopping_list_id: params[:id]).sum(&:amount).to_i
+    Rails.logger.debug @portions_hash
 
 
-
-
-
-
-    #   @ingredient_ids_set.each do |ingredient_id|
-    #     ingredient_name = Ingredient.where(id: ingredient_id).first.name
-    #     portion_obj_first = ShoppingListPortion.where(ingredient_id: ingredient_id, shopping_list_id: params[:id]).first
-    #     portion_unit_number = portion_obj_first.unit_number
-    #     portion_unit = Unit.where(unit_number: portion_unit_number).first
-    #     unit = Unit.where(id: portion_unit_number).first
-    #     portion_amount = ShoppingListPortion.where(ingredient_id: ingredient_id, shopping_list_id: params[:id]).sum(&:amount).to_i
-
-
-
-    #     current_user_stocks = Stock.where(cupboard_id: current_user_cupboard_ids)
-
-    #     cupboard_stock_amount = 0
-
-    #     current_user_stocks.each do |stock|
-    #       if stock.ingredient_id == ingredient_id
-    #         cupboard_stock_amount = Stock.where(id: stock.id).sum(&:amount).to_i
-    #       end
-    #     end
-
-    #     if cupboard_stock_amount != 0
-    #       stock_obj = Stock.where(ingredient_id: ingredient_id).first
-    #       stock_unit_obj = stock_obj.ingredient.unit
-    #       if stock_unit_obj.metric_ratio
-    #         metric_transform(stock_obj, stock_unit_obj)
-    #       end
-
-    #       proportion_in_cupboard = cupboard_stock_amount / portion_amount
-
-    #       if proportion_in_cupboard < 1
-    #         cupboard_situation = cupboard_stock_amount.to_s + " " + portion_unit.name + " already in cupboard"
-    #         some_in_stock = true
-    #       elsif proportion_in_cupboard < 2
-    #         cupboard_situation = "More than enough in cupboard already"
-    #         loads_in_stock = true
-    #       else
-    #         cupboard_situation = "More than enough in cupboard, about " + proportion_in_cupboard.to_floor.to_s + " times more than you need"
-    #         loads_in_stock = true
-    #       end
-    #     else
-    #       cupboard_situation = "Not in cupboards"
-    #       not_in_stock = true
-    #     end
-
-    #     # if unit.name == "Each" || unit.name == "Side"
-    #     if unit.unit_number == 5 || unit.unit_number == 44
-    #       portion_desc = portion_amount.to_s + ' ' + ingredient_name.pluralize(portion_amount.to_i)
-    #       portion_description = portion_desc
-    #     else
-    #       if unit.short_name
-    #         if unit.name.downcase.include?("milliliter")
-    #           portion_desc = portion_amount.to_s + unit.short_name.downcase.to_s + ' ' + ingredient_name.to_s
-    #           portion_description = portion_desc
-    #         else
-    #           portion_desc = portion_amount.to_s + ' ' + unit.name.to_s + ' ' + ingredient_name.to_s
-    #           portion_description = portion_desc
-    #         end
-    #       else
-    #         unit.name = unit.name.pluralize(portion_amount.to_i)
-    #         portion_desc = portion_amount.to_s + ' ' + unit.name.to_s + ' ' + ingredient_name.to_s
-    #         portion_description = portion_desc
-    #       end
-    #     end
-
-    #     if loads_in_stock == true
-    #       loads_in_stock_hash[portion_description] = cupboard_situation
-    #     end
-    #     if some_in_stock == true
-    #       some_in_stock_hash[portion_description] = cupboard_situation
-    #     end
-    #     if not_in_stock == true
-    #       not_in_stock_hash[portion_description] = cupboard_situation
-    #     end
-
-    #   end
-
-
-
-
-
-
-
-
-
-
-    # @cupboard_ids = []
-    # current_user.cupboards.each do |cupboard|
-    #   @cupboard_ids.push(cupboard.id)
-    # end
-
-    # @cupboards = Cupboard.find(@cupboard_ids)
-
+    @stock = Stock.where(ingredient_id: @ingredient_ids)
+    @stock_ingredient_ids = @stock.map(&:ingredient_id)
+    @not_in_stock_ingredient_ids = @ingredient_ids - @stock_ingredient_ids
+    # @not_in_stock = Portion.where(recipe_id: @, ingredient_id: @not_in_stock_ingredient_ids).uniq
 
   end
 
@@ -358,7 +177,7 @@ class ShoppingListsController < ApplicationController
 
   private
     def shopping_list_params
-      params.require(:shopping_list).permit(:id, :date_created, recipes_attributes:[:id, :title, :description, :_destroy])
+      params.require(:shopping_list).permit(:id, :date_created, recipes_attributes:[:id, :title, :description, :_destroy], shopping_list_portion_attributes:[:id, :unit_number, :_destroy], unit_attributes:[:id, :unit_type, :_destroy])
     end
 
     def user_has_shopping_lists

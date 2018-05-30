@@ -2,34 +2,39 @@
   <div class="container">
     <div class="shopping_list_ingredients">
 
-      <% unless not_in_stock_array.empty? %>
-        <h2>Ingredients not in stock</h2>
-        <% not_in_stock_array.each do |ingredient_id| %>
-          <p><%= Ingredient.find(ingredient_id).name %></p>
-        <% end %>
-      <% end %>
+    <% @ingredients.each do |ingredient| %>
+      <p>
+        <%= ingredient.name %>
+      </p>
+    <% end %>
+<br />
+<br />
+<br />
+<br />
 
-      <% unless not_enough_in_stock_array.empty? %>
-        <h2>Ingredients in stock, but not enough of</h2>
-        <% not_enough_in_stock_array.each do |ingredient_id| %>
-          <p><%= Ingredient.find(ingredient_id).name %></p>
-        <% end %>
-      <% end %>
+    <% @stock.each do |stock| %>
+      <p><%= stock.ingredient.name %> <%= stock.amount %> <%= stock.unit.name %></p>
+    <% end %>
 
-      <% unless enough_in_stock_array.empty? %>
-        <h2>Ingredients in stock</h2>
-        <% enough_in_stock_array.each do |ingredient_id| %>
-          <p><%= Ingredient.find(ingredient_id).name %></p>
-        <% end %>
-      <% end %>
-
-      <% unless loads_in_stock_array.empty? %>
-        <h2>Ingredients in stock lots of surplus</h2>
-        <% loads_in_stock_array.each do |ingredient_id| %>
-          <p><%= Ingredient.find(ingredient_id).name %></p>
-        <% end %>
-      <% end %>
+    <br />
+    <br />
+    <br />
+    <br />
+    <% @portions.each do |portion| %>
+      <p><%= portion.ingredient.name %> <%= portion.amount %> <%= portion.unit.name %></p>
+    <% end %>
     </div>
+    <br />
+    <br />
+    <br />
+    <br />
+
+    <% @portions_hash.each do |key, values| %>
+      <p><%= key %></p>
+      <p><%= values["amount"] %></p>
+      <p><%= Unit.where(unit_number: values["unit"].to_i).first.name %></p>
+      <br />
+    <% end %>
     <br />
     <br />
     <br />
