@@ -11,4 +11,9 @@ class Stock < ApplicationRecord
 	validates_associated :ingredient, presence: true
 	validates_numericality_of :amount, on: :create
 	validates :use_by_date, presence: true
+
+
+	def quantity
+    Quantity.new(amount, unit.name)
+  end
 end

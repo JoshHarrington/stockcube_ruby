@@ -73,6 +73,12 @@ class ShoppingListsController < ApplicationController
 
     @ingredients = @shopping_list.ingredients.uniq
     @ingredient_ids = @ingredients.map(&:id)
+    @user_cupboard_ids = current_user.cupboards.map(&:id)
+
+    @stock = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: @ingredient_ids)
+    @stock_ingredient_ids = @stock.map(&:ingredient_id)
+    @not_in_stock_ingredient_ids = @ingredient_ids - @stock_ingredient_ids
+    ## need to flatten stock to catch where stock is split over multiple cupboards
 
     # @portion_names = @portion.ingredient.name.uniq
 
@@ -80,25 +86,56 @@ class ShoppingListsController < ApplicationController
 
     @portions.each do |portion|
       portion_amount = 0
-      if portion.unit.metric_ratio
-        portion_amount = portion.amount * portion.unit.metric_ratio
-      else
-        portion_amount = portion.amount
-      end
+
+      portion_amount = portion.quantity.comparable_amount
 
       if @portions_hash.key?(portion.ingredient.name)
-        portion_amount = @portions_hash[portion.ingredient.name]["amount"].to_f + portion_amount
+        portion_amount = @portions_hash[portion.ingredient.name]["portion_amount"].to_f + portion_amount
       end
-      @portions_hash[portion.ingredient.name].store "amount", portion_amount
-      @portions_hash[portion.ingredient.name].store "unit", portion.unit_number
+
+      default_unit_number = portion.ingredient.unit_id
+      ingredient_unit = Unit.where(unit_number: default_unit_number.to_i).first
+      ingredient_unit_name = ingredient_unit.name
+      unless ingredient_unit_name
+        Rails.logger.debug ingredient_unit
+      end
+
+      if @stock_ingredient_ids.include?(portion.ingredient_id)
+        @portions_hash[portion.ingredient.name].store "in_cupboard", true
+        matching_stocks = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: portion.ingredient_id)
+        stock_amount = 0
+
+        matching_stocks.each do |stock|
+          stock_amount += stock.quantity.comparable_amount
+        end
+
+        if ingredient_unit.metric_ratio
+          stock_amount = stock_amount / ingredient_unit.metric_ratio
+          portion_amount = portion_amount / ingredient_unit.metric_ratio
+        end
+
+        @portions_hash[portion.ingredient.name].store "stock_amount", stock_amount
+        if stock_amount >= portion_amount
+          @portions_hash[portion.ingredient.name].store "enough_in_cupboard", true
+          if stock_amount > (portion_amount*1.5)
+            @portions_hash[portion.ingredient.name].store "plenty_in_cupboard", true
+          end
+        end
+        @portions_hash[portion.ingredient.name].store "percent_in_cupboard", ((stock_amount.to_f / portion_amount.to_f) * 100)
+      else
+        @portions_hash[portion.ingredient.name].store "in_cupboard", false
+      end
+
+      @portions_hash[portion.ingredient.name].store "portion_amount", portion_amount
+
+      @portions_hash[portion.ingredient.name].store "unit_name", ingredient_unit_name
     end
 
     Rails.logger.debug @portions_hash
 
 
-    @stock = Stock.where(ingredient_id: @ingredient_ids)
-    @stock_ingredient_ids = @stock.map(&:ingredient_id)
-    @not_in_stock_ingredient_ids = @ingredient_ids - @stock_ingredient_ids
+
+
     # @not_in_stock = Portion.where(recipe_id: @, ingredient_id: @not_in_stock_ingredient_ids).uniq
 
   end
