@@ -1,5 +1,6 @@
 class ShoppingListsController < ApplicationController
   require 'set'
+  include ActionView::Helpers::NumberHelper
   before_action :logged_in_user
   before_action :user_has_shopping_lists, only: :index
   before_action :correct_user, only: [:show, :edit]
@@ -13,7 +14,6 @@ class ShoppingListsController < ApplicationController
     @user_id = current_user.id
   end
   def create
-    # Rails.logger.debug params[:shopping_list][:recipes][:id]
     @recipe_ids = params[:shopping_list][:recipes][:id]
     @user = current_user
     @user_id = current_user.id
@@ -75,12 +75,9 @@ class ShoppingListsController < ApplicationController
     @ingredient_ids = @ingredients.map(&:id)
     @user_cupboard_ids = current_user.cupboards.map(&:id)
 
-    @stock = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: @ingredient_ids)
+    @stock = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: @ingredient_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days)
     @stock_ingredient_ids = @stock.map(&:ingredient_id)
     @not_in_stock_ingredient_ids = @ingredient_ids - @stock_ingredient_ids
-    ## need to flatten stock to catch where stock is split over multiple cupboards
-
-    # @portion_names = @portion.ingredient.name.uniq
 
     @portions_hash = Hash.new{|hsh,key| hsh[key] = {} }
 
@@ -89,16 +86,25 @@ class ShoppingListsController < ApplicationController
 
       portion_amount = portion.quantity.comparable_amount
 
+      ingredient_unit_number = portion.ingredient.unit_id
+      ingredient_unit = Unit.where(unit_number: ingredient_unit_number.to_i).first
+      ingredient_unit_name = ingredient_unit.name
+
       if @portions_hash.key?(portion.ingredient.name)
-        portion_amount = @portions_hash[portion.ingredient.name]["portion_amount"].to_f + portion_amount
+        if ingredient_unit_number == @portions_hash[portion.ingredient.name]["unit_number"].to_i
+          portion_amount = @portions_hash[portion.ingredient.name]["portion_amount"].to_f + portion_amount
+        else
+          hashed_portion_amount = @portions_hash[portion.ingredient.name]["portion_amount"].to_f
+          hashed_unit_number = @portions_hash[portion.ingredient.name]["unit_number"].to_i
+          unit_model = Unit.where(unit_number: hashed_unit_number)
+          if unit_model.metric_ratio
+            hashed_portion_amount = hashed_portion_amount * unit_model.metric_ratio
+          end
+          portion_amount = portion_amount + hashed_portion_amount
+
+        end
       end
 
-      default_unit_number = portion.ingredient.unit_id
-      ingredient_unit = Unit.where(unit_number: default_unit_number.to_i).first
-      ingredient_unit_name = ingredient_unit.name
-      unless ingredient_unit_name
-        Rails.logger.debug ingredient_unit
-      end
 
       if @stock_ingredient_ids.include?(portion.ingredient_id)
         @portions_hash[portion.ingredient.name].store "in_cupboard", true
@@ -121,22 +127,28 @@ class ShoppingListsController < ApplicationController
             @portions_hash[portion.ingredient.name].store "plenty_in_cupboard", true
           end
         end
-        @portions_hash[portion.ingredient.name].store "percent_in_cupboard", ((stock_amount.to_f / portion_amount.to_f) * 100)
+        percent_in_cupboard = number_with_precision((stock_amount.to_f / portion_amount.to_f) * 100, :precision => 2)
+        @portions_hash[portion.ingredient.name].store "percent_in_cupboard", percent_in_cupboard
       else
         @portions_hash[portion.ingredient.name].store "in_cupboard", false
+      end
+
+
+      if portion_amount < 20
+        portion_amount = portion_amount.ceil
+      elsif portion_amount < 400
+        portion_amount = (portion_amount / 10).ceil * 10
+      elsif portion_amount < 1000
+        portion_amount = (portion_amount / 20).ceil * 20
+      else
+        portion_amount = (portion_amount / 50).ceil * 50
       end
 
       @portions_hash[portion.ingredient.name].store "portion_amount", portion_amount
 
       @portions_hash[portion.ingredient.name].store "unit_name", ingredient_unit_name
+      @portions_hash[portion.ingredient.name].store "unit_number", ingredient_unit_number
     end
-
-    Rails.logger.debug @portions_hash
-
-
-
-
-    # @not_in_stock = Portion.where(recipe_id: @, ingredient_id: @not_in_stock_ingredient_ids).uniq
 
   end
 

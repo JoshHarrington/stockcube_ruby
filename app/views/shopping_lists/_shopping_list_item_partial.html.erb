@@ -1,0 +1,10 @@
+          <p><%= key %></p>
+          <p><%= values["portion_amount"] %></p>
+          <p><%= values["unit_name"] %></p>
+          <% if values["in_cupboard"] == true %>
+            <% if values["plenty_in_cupboard"] == true %>
+              <p>There's plenty in your cupboards</p>
+            <% else %>
+              <p>Amount in cupboard is <%= values["percent_in_cupboard"] %>%</p>
+            <% end %>
+          <% end %>

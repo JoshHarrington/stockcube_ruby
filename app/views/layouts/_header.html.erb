@@ -33,16 +33,11 @@
       --><li <% if current_section == "ingredients" %>class="current_section"<% end %>><%= link_to "Ingredients", ingredients_path %></li><!--
       --><% end %><!--
       --><% if logged_in? && current_user && current_user.shopping_lists.first.present? %><!--
-      --><% unless current_section == "shopping_lists" %>
-        <li><%= link_to "Current shopping list", latest_shopping_list_path %>
-            <% else %><!--
-      --><li class="current_section"><%= link_to "Current shopping list", latest_shopping_list_path %>
-      <%# <ul> %>
-        <%# <li><%= link_to "Add shopping list", shopping_lists_new_path</li> %> %>
-      <%# </ul> %>
+      --><li<% if request.path_parameters[:controller] == "shopping_lists" && request.path_parameters[:action] == "show_ingredients" && request.path_parameters[:id].to_i == current_user.shopping_lists.last.id.to_i %> class="current_section"<% end %>><%= link_to "Current shopping list", latest_shopping_list_path %>
       </li><!--
       --><% end %><!--
       --><li <% if current_section == "cupboards" %>class="current_section"<% end %>><%= link_to "Cupboard", cupboards_path %></li><!--
+      --><% if logged_in? && current_user %><!--
       --><li <% if current_section == "users" %>class="current_section"<% end %>><%= link_to "Profile", user_path(current_user) %></li><!--
       --><li><%= link_to "Log out", logout_path, method: :delete %></li><!--
       --><% else %><!--
@@ -59,7 +54,3 @@
     </div>
   </nav>
 </div>
-
-<br>
-<br>
-<br>

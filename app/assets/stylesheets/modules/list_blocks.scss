@@ -126,6 +126,10 @@ a.list_block {
 	}
 }
 
+.list_block__full {
+	flex-basis: calc(100% - 14px);
+}
+
 .list_block--tag_bar {
 	background-color: $teal-10;
 	margin-top: em(10, 10);
@@ -209,10 +213,12 @@ a.list_block {
 	&.date-part-warning {
 		background-color: $warning-amber;
 		border-color: $warning-amber;
+		order: 1;
 	}
 	&.date-full-warning {
 		background-color: $warning-red;
 		border-color: $warning-red;
+		order: 2;
 	}
 	&.list_block--item_stacked {
 		flex-wrap: wrap;
@@ -224,6 +230,19 @@ a.list_block {
 		width: em(10, 15);
 		height: em(10, 15);
 		color: $teal-10;
+	}
+	.list_block__full & {
+		flex-basis: calc(14.28571% - 6px);
+		font-size: em(15, 10);
+		@media (max-width: 900px) and (min-width: 601px) {
+			flex-basis: calc(20% - 6px);
+		}
+		@media (max-width: 600px) and (min-width: 451px) {
+			flex-basis: calc(33.333% - 6px);
+		}
+		@media (max-width: 450px) {
+			flex-basis: calc(50% - 6px);
+		}
 	}
 }
 

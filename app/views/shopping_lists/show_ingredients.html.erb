@@ -1,51 +1,25 @@
-<div class="main shopping_list-show">
-  <div class="container">
-    <div class="shopping_list_ingredients">
-
-    <% @ingredients.each do |ingredient| %>
-      <p>
-        <%= ingredient.name %>
-      </p>
-    <% end %>
-<br />
-<br />
-<br />
-<br />
-
-    <% @stock.each do |stock| %>
-      <p><%= stock.ingredient.name %> <%= stock.amount %> <%= stock.unit.name %></p>
-    <% end %>
-
-    <br />
-    <br />
-    <br />
-    <br />
-    <% @portions.each do |portion| %>
-      <p><%= portion.ingredient.name %> <%= portion.amount %> <%= portion.unit.name %></p>
-    <% end %>
-    </div>
-    <br />
-    <br />
-    <br />
-    <br />
-
-    <% @portions_hash.each do |key, values| %>
-      <p><%= key %></p>
-      <p><%= values["portion_amount"] %></p>
-      <p><%= values["unit_name"] %></p>
-      <% if values["in_cupboard"] == true %>
-        <% if values["plenty_in_cupboard"] == true %>
-          <p>There's plenty in your cupboards</p>
-        <% else %>
-          <p>Amount in cupboard is <%= values["percent_in_cupboard"] %>%</p>
+<% provide(:title, 'Shopping List') %>
+<div class="list-block--collection--wrap">
+  <div class="list_block--collection">
+    <div class="list_block list_block__grid list_block__full">
+      <% @portions_hash.each do |key, values| %>
+        <% if values["in_cupboard"] == true && values["enough_in_cupboard"] == true %>
+          <div class="list_block--item list_block--item_stacked">
+            <%= render 'shopping_list_item_partial', key: key, values: values %>
+          </div>
+        <% elsif values["in_cupboard"] == true && (!values.key?("plenty_in_cupboard") || values["plenty_in_cupboard"] == false) %>
+          <div class="list_block--item list_block--item_stacked date-part-warning">
+            <%= render 'shopping_list_item_partial', key: key, values: values %>
+          </div>
+        <% elsif values["in_cupboard"] == false %>
+          <div class="list_block--item list_block--item_stacked date-full-warning">
+            <%= render 'shopping_list_item_partial', key: key, values: values %>
+          </div>
         <% end %>
       <% end %>
-      <br />
-    <% end %>
-    <br />
-    <br />
-    <br />
-    <br />
+    </div>
+  </div>
+</div>
 
     <div class="shopping_list">
 
