@@ -15,7 +15,7 @@
     </div>
   </header>
 
-  <nav id="nav" role="navigation" <% if current_section == "recipes" || current_section == "shopping_lists" %>class="nav-spacer"<% end %>>
+  <nav id="nav" role="navigation">
     <div class="block">
     <h1><%= icomoon('logo') %><%= link_to "Stockcubes", root_path, id: "logo" %></h1>
       <h2 class="block-title">Sections</h2>
@@ -24,9 +24,6 @@
         <li><%= link_to "Recipes", recipes_path %>
       <% else %>
         <li class="current_section"><%= link_to "Recipes", recipes_path %>
-          <ul>
-            <li><%= link_to "Add recipe", new_recipe_path %></li>
-          </ul>
           <% end %>
         </li><!--
       --><% if logged_in? && current_user && current_user.admin %><!--

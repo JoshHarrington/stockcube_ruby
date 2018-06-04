@@ -33,7 +33,7 @@ class RecipesController < ApplicationController
 		end
 	end
 	def favourites
-		@your_recipes = current_user.favourites.paginate(:page => params[:page], :per_page => 5)
+		@fav_recipes = current_user.favourites.paginate(:page => params[:page], :per_page => 12)
 	end
 	def new
 		@recipe = Recipe.new

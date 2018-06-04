@@ -6,6 +6,7 @@
 
 .list-block--collection--wrap {
 	margin-bottom: em(20, 10);
+	padding-top: em(20, 10);
 	padding-bottom: em(20, 10);
 	.list-block--collection--sibling {
 		padding-left: em(17, 10);
@@ -22,7 +23,12 @@
 	align-items: baseline;
 	justify-content: space-between;
 	flex-wrap: wrap;
+	div {
+		display: flex;
+		align-items: center;
+	}
 }
+
 
 .list_block--collection__tight {
 	.list_block {
@@ -224,6 +230,12 @@ a.list_block {
 		flex-wrap: wrap;
 		* {
 			flex-basis: 100%;
+		}
+		h4 {
+			flex-basis: calc(100% - 10px);
+		}
+		.icon {
+			flex-basis: 10px;
 		}
 	}
 	.icon {

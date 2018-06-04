@@ -1,15 +1,17 @@
 <% provide(:title, 'Your favourite recipes') %>
 <div class="main">
   <div class="container">
-
-    <%= will_paginate(@your_recipes) %>
-    <% @your_recipes.each do |recipe| %>
-
-      <%= render 'recipe_list_partial', recipe: recipe %>
-
-      <br/>
-      <br/>
-    <% end %>
-
+    <div class="list-block--collection--wrap">
+      <div class="list-block--collection--sibling">
+        <h2>Your favourite recipes</h2>
+        <%= link_to "Back to all recipes", recipes_path %>
+      </div>
+      <%= will_paginate(@fav_recipes) %>
+      <div class="list_block--collection list_block--collection__tight">
+        <% @fav_recipes.each do |recipe| %>
+          <%= render 'recipe_list_partial', recipe: recipe %>
+        <% end %>
+      </div>
+    </div>
 	</div>
 </div>

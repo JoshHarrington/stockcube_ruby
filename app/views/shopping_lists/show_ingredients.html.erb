@@ -5,6 +5,22 @@
 <% end %>
 
 <div class="list-block--collection--wrap">
+  <div class="list-block--collection--sibling">
+    <%# will need to switch .last >> .last_updated when old shopping lists can be rehydrated after use %>
+    <% if params[:id].to_i == current_user.shopping_lists.last.id.to_i %>
+      <h2>Current Shopping List</h2>
+    <% else %>
+      <h2>Archived Shopping List</h2>
+    <% end %>
+
+    <div>
+      <p>Ingredients</p>
+      <%= link_to shopping_list_path(@shopping_list), class: "switch--wrap" do %>
+        <span class="switch status_on"></span>
+        <p>Recipes</p>
+      <% end %>
+    </div>
+  </div>
   <div class="list_block--collection">
     <div class="list_block list_block__grid list_block__full">
       <% @portions_hash.each do |key, values| %>
@@ -23,23 +39,5 @@
         <% end %>
       <% end %>
     </div>
-  </div>
-</div>
-
-    <div class="shopping_list">
-
-      <!-- Display the shopping_list's info here -->
-      <div class="info">
-				<h3>Shopping List - #<%= shoppingListIndex(@shopping_list) %> (<%= @shopping_list.created_at.to_date.to_s(:long) %>)</h3>
-      </div>
-    </div>
-
-    <%= link_to "See Recipes in this Shopping List", shopping_list_path(@shopping_list) %>
-
-<br>
-<br>
-<br>
-    <%= link_to "Edit", edit_shopping_list_path(@shopping_list.id) %>
-
   </div>
 </div>
