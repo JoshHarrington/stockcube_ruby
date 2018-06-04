@@ -20,27 +20,29 @@
     <h1><%= icomoon('logo') %><%= link_to "Stockcubes", root_path, id: "logo" %></h1>
       <h2 class="block-title">Sections</h2>
       <ul>
-      <% unless current_section == "recipes" %>
-        <li><%= link_to "Recipes", recipes_path %>
-      <% else %>
-        <li class="current_section"><%= link_to "Recipes", recipes_path %>
-          <% end %>
-        </li><!--
+      <% if logged_in? && current_user %>
+        <li class="<% current_section == 'recipes' ? 'current_section' : ''%>"><%= link_to "Recipes", recipes_path %>
+        </li><% end %><!--
       --><% if logged_in? && current_user && current_user.admin %><!--
       --><li <% if current_section == "ingredients" %>class="current_section"<% end %>><%= link_to "Ingredients", ingredients_path %></li><!--
       --><% end %><!--
       --><% if logged_in? && current_user && current_user.shopping_lists.first.present? %><!--
       --><li<% if request.path_parameters[:controller] == "shopping_lists" && request.path_parameters[:action] == "show_ingredients" && request.path_parameters[:id].to_i == current_user.shopping_lists.last.id.to_i %> class="current_section"<% end %>><%= link_to "Current shopping list", latest_shopping_list_path %>
       </li><!--
-      --><% end %><!--
-      --><li <% if current_section == "cupboards" %>class="current_section"<% end %>><%= link_to "Cupboard", cupboards_path %></li><!--
-      --><% unless logged_in? && current_user %><!--
-        --><li><%= link_to "Sign in", login_path %></li><!--
-        --><li><%= link_to "Sign up", signup_path %></li>
-        <% end %>
+      --><% end %><% if logged_in? && current_user %><!--
+      --><li <% if current_section == "cupboards" %>class="current_section"<% end %>><%= link_to "Cupboard", cupboards_path %></li><% end %>
       </ul>
-      <%= link_to edit_user_path(current_user), class: "account-btn#{current_section == 'users' ? ' current_section' : ''}" do %>
-        <%= icomoon('user') %>
+      <% unless logged_in? && @current_user %>
+          <%= link_to login_path, class: "profile_item" do %>
+            <p>Sign in</p>
+            <span class="account-btn">
+              <%= icomoon('user') %>
+            </span>
+          <% end %>
+      <% else %>
+        <%= link_to edit_user_path(current_user), class: "account-btn#{current_section == 'users' ? ' current_section' : ''}" do %>
+          <%= icomoon('user') %>
+        <% end %>
       <% end %>
       <%= link_to "Return to Content", href: "#top", id: "nav-close-btn", class: "nav-btn close-btn svg-btn", data: { turbolinks: 'false' } do %>
         <%= icomoon('close') %>

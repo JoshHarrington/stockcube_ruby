@@ -186,6 +186,17 @@ footer[role="contentinfo"] {
   margin-right: em(10, 19);
 }
 
+.profile_item {
+  display: flex;
+  color: black;
+  align-items: center;
+  font-size: em(15, 10);
+  p {
+    font-size: inherit;
+    margin-right: em(10, 15);
+  }
+}
+
 .account-btn {
   border-radius: 50%;
   padding: em(5, 15);

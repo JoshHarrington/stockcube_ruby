@@ -2,7 +2,7 @@ require 'will_paginate/array'
 class RecipesController < ApplicationController
 	include ActionView::Helpers::UrlHelper
 
-	before_action :logged_in_user, only: [:edit, :new]
+	before_action :logged_in_user, only: [:edit, :new, :index]
 	before_action :admin_user,     only: [:create, :new, :edit, :update]
 
 	def index
@@ -180,7 +180,7 @@ class RecipesController < ApplicationController
 			unless logged_in?
 				store_location
 				flash[:danger] = "Please log in."
-				redirect_to search_recipe_path
+				redirect_to root_url
 			end
 		end
 
