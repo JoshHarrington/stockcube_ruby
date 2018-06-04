@@ -1,5 +1,15 @@
 <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <defs>
+<symbol id="icon-logo" viewBox="0 0 38 20">
+<title>logo</title>
+<path fill="#65b5ae" style="fill: var(--color1, #65b5ae)" d="M11.357 2.283l10.613-2.274v11.002l-10.613 2.743z"></path>
+<path fill="#77c9c4" style="fill: var(--color2, #77c9c4)" d="M11.359 13.749l10.611-2.739 9.413 3.082-10.742 2.916z"></path>
+<path fill="#98dcd8" style="fill: var(--color3, #98dcd8)" d="M11.347 2.245l9.293 2.725v12.039l-9.293-3.277z"></path>
+<path fill="#8fd9d5" style="fill: var(--color4, #8fd9d5)" d="M0.019 16.501l11.329-2.779 9.295 3.286-11.826 2.977z"></path>
+<path fill="#6fbdb8" style="fill: var(--color5, #6fbdb8)" d="M21.976 0.011l9.406 2.483v11.601l-9.406-3.085z"></path>
+<path fill="#c3ebe9" style="fill: var(--color6, #c3ebe9)" d="M22.001 0.018l9.385 2.482-10.716 2.482-9.333-2.749z"></path>
+<path fill="#aae2de" style="fill: var(--color7, #aae2de)" d="M26.996 3.517l10.647-2.446v11.381l-10.647 2.829z"></path>
+</symbol>
 <symbol id="icon-checkmark" viewBox="0 0 20 20">
 <title>checkmark</title>
 <path d="M0 11l2-2 5 5 11-11 2 2-13 13z"></path>
@@ -23,16 +33,6 @@
 <symbol id="icon-bin" viewBox="0 0 20 20">
 <title>bin</title>
 <path d="M6 2l2-2h4l2 2h4v2h-16v-2h4zM3 6h14l-1 14h-12l-1-14zM8 8v10h1v-10h-1zM11 8v10h1v-10h-1z"></path>
-</symbol>
-<symbol id="icon-logo" viewBox="0 0 38 20">
-<title>logo</title>
-<path fill="#75d2cb" style="fill: var(--color1, #75d2cb)" d="M11.363 2.283l10.619-2.274v11.002l-10.619 2.743z"></path>
-<path fill="#87d8d2" style="fill: var(--color2, #87d8d2)" d="M11.364 13.749l10.616-2.739 9.417 3.082-10.747 2.916z"></path>
-<path fill="#98dcd8" style="fill: var(--color3, #98dcd8)" d="M11.353 2.245l9.298 2.725v12.039l-9.298-3.277z"></path>
-<path fill="#8fd9d5" style="fill: var(--color4, #8fd9d5)" d="M0.019 16.501l11.334-2.779 9.299 3.286-11.832 2.977z"></path>
-<path fill="#7ed4ce" style="fill: var(--color5, #7ed4ce)" d="M21.987 0.011l9.411 2.483v11.601l-9.411-3.085z"></path>
-<path fill="#c3ebe9" style="fill: var(--color6, #c3ebe9)" d="M22.012 0.018l9.389 2.482-10.721 2.482-9.338-2.749z"></path>
-<path fill="#aae2de" style="fill: var(--color7, #aae2de)" d="M26.992 3.517l10.646-2.446v11.381l-10.646 2.829z"></path>
 </symbol>
 <symbol id="icon-calendar" viewBox="0 0 20 20">
 <title>calendar</title>
