@@ -34,16 +34,13 @@
       </li><!--
       --><% end %><!--
       --><li <% if current_section == "cupboards" %>class="current_section"<% end %>><%= link_to "Cupboard", cupboards_path %></li><!--
-      --><% if logged_in? && current_user %><!--
-      --><li <% if current_section == "users" %>class="current_section"<% end %>><%= link_to "Profile", user_path(current_user) %></li><!--
-      --><li><%= link_to "Log out", logout_path, method: :delete %></li><!--
-      --><% else %><!--
+      --><% unless logged_in? && current_user %><!--
         --><li><%= link_to "Sign in", login_path %></li><!--
         --><li><%= link_to "Sign up", signup_path %></li>
         <% end %>
       </ul>
-      <%= link_to(cupboards_path, class: "nav-quick-link svg-btn") do %>
-        <%= icomoon('notifications') %>
+      <%= link_to edit_user_path(current_user), class: "account-btn#{current_section == 'users' ? ' current_section' : ''}" do %>
+        <%= icomoon('user') %>
       <% end %>
       <%= link_to "Return to Content", href: "#top", id: "nav-close-btn", class: "nav-btn close-btn svg-btn", data: { turbolinks: 'false' } do %>
         <%= icomoon('close') %>

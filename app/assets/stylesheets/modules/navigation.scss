@@ -186,6 +186,25 @@ footer[role="contentinfo"] {
   margin-right: em(10, 19);
 }
 
+.account-btn {
+  border-radius: 50%;
+  padding: em(5, 15);
+  border: 1px solid $teal-40;
+  background-color: $teal-110;
+  color: black;
+  transition: background-color .2s;
+  &:hover {
+    background-color: $teal-80;
+  }
+  &.current_section {
+    background-color: white;
+  }
+  svg {
+    width: em(30, 15);
+    height: em(30, 15);
+  }
+}
+
 @media screen and (min-width: 45.0625em) {
 	#nav .close-btn,
 	#nav .block-title,
@@ -237,11 +256,8 @@ footer[role="contentinfo"] {
     }
     li {
       display: inline-block;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid $teal-40;
       margin: 0 em(2);
-      &:last-child {
-        border-right: none;
-      }
       a {
         padding: em(12) em(14);
         color: black;

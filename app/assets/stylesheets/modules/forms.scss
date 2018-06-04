@@ -1,0 +1,41 @@
+.pretty_form {
+	display: flex;
+	justify-content: center;
+	padding: em(20, 10);
+	flex-wrap: wrap;
+}
+.pretty_form--title_block {
+	flex-basis: 100%;
+	text-align: center;
+	margin-bottom: em(40, 15);
+	p {
+		margin-top: em(6, 15);
+	}
+}
+
+.pretty_form form,
+.pretty_form .fake_form {
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	max-width: em(1000, 10);
+	justify-content: center;
+	* {
+		width: 50%;
+		margin-bottom: em(10, 15);
+	}
+	label,
+	.info {
+		text-align: right;
+		padding-right: em(10, 15);
+	}
+	input {
+		padding: em(10, 15);
+	}
+	input[type="submit"] {
+		width: auto;
+		font-size: em(20, 10);
+		padding: em(10, 15);
+		margin-top: em(15, 15);
+	}
+}
