@@ -2,14 +2,15 @@
 	display: flex;
 	align-items: center;
 	flex-direction: column;
-	padding: 0 2em;
+	padding: 0 em(20, 10);
 }
 
 .feature-banner--title {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	margin-bottom: 4em;
+	margin-bottom: em(40, 10);
+	margin-top: em(30, 10);
 	h1 {
 		font-size: 3em;
 		margin-bottom: .4em;
@@ -20,30 +21,39 @@
 }
 
 .feature-banner {
-	max-width: 60em;
+	max-width: em(600, 10);
 	width: 80%;
 	display: flex;
 	flex-wrap: wrap;
-	margin: 3em 0;
+	margin: em(30, 10) 0;
+	align-items: center;
+	justify-content: center;
 	p {
-		font-size: 2.4em;
+		font-size: em(24, 10);
 	}
 }
 
 .feature-banner--img {
 	flex: 1 0 35%;
-	background-color: aqua;
-	margin-right: 2em;
-	height: 5em; // remove when svg complete
-	margin-bottom: 2em;
+	display: flex;
+	justify-content: center;
 }
 
 .feature-banner--content {
-	flex: 1 0 55%;
+	flex: 1 0 43%;
 	min-width: 25em;
+	margin-bottom: em(10, 10);
+	@media (min-width: 750px) {
+		padding-left: em(30, 10);
+		padding-right: em(30, 10);
+	}
+	@media (max-width: 800px) {
+		text-align: center;
+		margin-top: em(25, 10);
+	}
 	p:first-child ~ p {
-		margin-top: .2rem;
-		font-size: 1.8em;
+		margin-top: em(5, 18);
+		font-size: em(18, 10);
 		color: $black-80;
 	}
 }
