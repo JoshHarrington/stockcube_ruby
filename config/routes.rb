@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  match "/404", :to => "errors#not_found", :via => :all
+  match "/500", :to => "errors#internal_server_error", :via => :all
+
   get '/shopping_lists' => 'shopping_lists#index'
   get '/shopping_lists/new' => 'shopping_lists#new'
   get '/shopping_lists/:id' => 'shopping_lists#show', as: :shopping_list
