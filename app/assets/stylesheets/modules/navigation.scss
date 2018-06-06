@@ -45,9 +45,8 @@
   border: 0;
 	outline: none;
 	color: $black-90;
-  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
-  opacity: 0.8;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  padding: em(4, 15);
 }
 
 .nav-quick-link {
@@ -279,7 +278,11 @@ footer[role="contentinfo"] {
 
 @media screen and (max-width: 45em) {
   #top .block {
-    padding: em(12) em(14);
+    padding: em(15) em(14);
+    .account-btn svg {
+      width: em(20, 15);
+      height: em(20, 15);
+    }
   }
   #nav {
     position: absolute;
@@ -299,6 +302,7 @@ footer[role="contentinfo"] {
       position: absolute;
       top: em(-42, 15);
       left: em(10, 15);
+      padding: em(4, 15);
       .no-js & {
         background: $teal-100;
       }
@@ -346,6 +350,9 @@ footer[role="contentinfo"] {
       }
     }
     .nav-quick-link {
+      display: none;
+    }
+    .account-btn {
       display: none;
     }
   }

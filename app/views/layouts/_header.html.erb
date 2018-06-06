@@ -2,16 +2,26 @@
   <% current_section = request.path_parameters[:controller] %>
   <header id="top" role="banner">
     <div class="block">
-
-      <%= link_to "Site Navigation", href: "#nav", id: "nav-open-btn", class: "nav-btn open-btn svg-btn", data: { turbolinks: 'false' } do %>
-        <%= icomoon('menu') %>
+      <% if logged_in? && @current_user %>
+        <%= link_to "Site Navigation", href: "#nav", id: "nav-open-btn", class: "nav-btn open-btn svg-btn", data: { turbolinks: 'false' } do %>
+          <%= icomoon('menu') %>
+        <% end %>
       <% end %>
 
       <h1><%= icomoon('logo') %>
       <%= link_to "Stockcubes", root_path, id: "logo" %></h1>
-      <a class="nav-quick-link svg-btn" id="nav-quick-link" href="#na">
-        <%= icomoon('calendar') %>
-      </a>
+      <% unless logged_in? && @current_user %>
+          <%= link_to login_path, class: "profile_item" do %>
+            <p>Sign in</p>
+            <span class="account-btn<%= (current_section == 'users') || (current_section == 'sessions') ? ' current_section' : '' %>">
+              <%= icomoon('user') %>
+            </span>
+          <% end %>
+      <% else %>
+        <%= link_to edit_user_path(current_user), class: "account-btn#{(current_section == 'users') || (current_section == 'sessions') ? ' current_section' : ''}" do %>
+          <%= icomoon('user') %>
+        <% end %>
+      <% end %>
     </div>
   </header>
 
@@ -35,12 +45,12 @@
       <% unless logged_in? && @current_user %>
           <%= link_to login_path, class: "profile_item" do %>
             <p>Sign in</p>
-            <span class="account-btn">
+            <span class="account-btn<%= (current_section == 'users') || (current_section == 'sessions') ? ' current_section' : '' %>">
               <%= icomoon('user') %>
             </span>
           <% end %>
       <% else %>
-        <%= link_to edit_user_path(current_user), class: "account-btn#{current_section == 'users' ? ' current_section' : ''}" do %>
+        <%= link_to edit_user_path(current_user), class: "account-btn#{(current_section == 'users') || (current_section == 'sessions') ? ' current_section' : ''}" do %>
           <%= icomoon('user') %>
         <% end %>
       <% end %>

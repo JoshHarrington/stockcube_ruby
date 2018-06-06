@@ -1,3 +1,5 @@
+$bp-mobile: 600px;
+
 .pretty_form {
 	display: flex;
 	justify-content: center;
@@ -23,22 +25,46 @@
 	* {
 		width: 50%;
 		margin-bottom: em(10, 15);
+		@media (max-width: $bp-mobile) {
+			width: 100%;
+			text-align: left;
+		}
 	}
 	label,
 	.info {
-		text-align: right;
+		@media (min-width: $bp-mobile) {
+			text-align: right;
+		}
 		padding-right: em(10, 15);
 	}
 	input {
+		@media (max-width: $bp-mobile) {
+			font-size: em(16, 10);
+		}
 		padding: em(10, 15);
 	}
 	input[type="checkbox"] {
-		margin: em(20, 15) 0;
+		margin: em(20, 13) 0;
+		@media (max-width: $bp-mobile) {
+			margin: em(10, 16) 0;
+		}
+	}
+	@media (max-width: $bp-mobile) {
+		input[type="checkbox"],
+		label.checkbox {
+			width: auto;
+		}
+		label.checkbox {
+			margin-top: em(20, 15);
+		}
 	}
 	input[type="submit"] {
 		width: auto;
 		font-size: em(20, 10);
 		padding: em(10, 15);
 		margin-top: em(15, 15);
+		@media (max-width: $bp-mobile) {
+			margin: em(10, 15) 25%;
+		}
 	}
 }
