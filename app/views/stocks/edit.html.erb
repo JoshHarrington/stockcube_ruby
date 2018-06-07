@@ -1,7 +1,8 @@
+<% provide(:title, "Editing #{@current_ingredient.name} in cupboards") %>
+
 <h1><%= @current_ingredient.name %></h1>
 <%= form_for @stock, id: "stock-form", :validate => true do |s| %>
 	<div class="field">
-		<%= s.label :stock %><br>
 
 		Amount <%= s.text_field(:amount, validate: true) %><br>
 		Use by Date <%= s.date_field :use_by_date, min: Date.current, value: @stock.use_by_date, validate: true %>
@@ -12,6 +13,10 @@
 		Units <%= select_tag "unit_number", options_from_collection_for_select(@units_select, "unit_number", "name", @preselect_unit) %>
 
 		<%= select_tag :cupboard_id, options_from_collection_for_select(@cupboards, "id", "location", @current_cupboard) %>
+		<% @cupboards.each do |cupboard| %>
+			<%= radio_button_tag "cupboards", cupboard.id, (cupboard.id == @current_cupboard.id ? true : false) %>
+			<%= label_tag "cupboards_#{cupboard.id}", cupboard.location %>
+		<% end %>
 
 	</div>
 	<div class="actions">
