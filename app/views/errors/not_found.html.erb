@@ -1,13 +1,15 @@
 <% provide(:title, '404') %>
-<div class="page-404">
-	<h1>404 page</h1>
+<div class="page_404">
+	<div class="page_404--content">
+		<h1>404 page</h1>
 
-	<%= large_svg('ghost_in_the_cube') %>
-	<div class="error_text">
-		<p>The way is shut.<br />
-		It was made by those who are <span>404s</span><br />
-		...and the <span>404s</span> keep it</p>
+		<%= large_svg('ghost_in_the_cube') %>
+		<div class="error_text">
+			<p>The way is shut.<br />
+			It was made by those who are <span>404s</span><br />
+			...and the <span>404s</span> keep it</p>
 
-		<p>You can always <%= link_to 'go home', root_path %> where it's safe!</a></p>
+			<p>You can always <%= link_to 'go home', root_path %> where it's safe!</a></p>
+		</div>
 	</div>
 </div>

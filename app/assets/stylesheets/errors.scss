@@ -1,7 +1,25 @@
-.errors_controller.not_found_page {
+body.errors_controller.not_found_page {
 	background-color: $black-80;
 	color: white;
 	a {
 		color: $teal-40;
+	}
+}
+
+.page_404 {
+	display: flex;
+	justify-content: center;
+}
+
+.page_404--content {
+	max-width: em(800, 10);
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	* {
+		flex-basis: 100%;
+	}
+	.error_text {
+		padding-left: em(200, 10);
 	}
 }
