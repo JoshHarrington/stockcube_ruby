@@ -1,8 +1,4 @@
 module RecipesHelper
-	def recipe_description
-		description = @recipe.description
-		description.gsub!(/\n/, '<br />')
-	end
 	def vegan?(recipe)
 		if recipe.ingredients.none?{ |ingredient| ingredient.vegan == false }
 			return true

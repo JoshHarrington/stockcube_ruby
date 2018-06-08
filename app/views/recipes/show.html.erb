@@ -1,67 +1,71 @@
 <% provide(:title, "Recipe: #{@recipe.title}") %>
-<div class="main recipe-show">
-  <div class="container">
-    <div class="recipe">
 
-      <!-- Display the recipe's info here -->
-      <div class="info">
-        <h3 class="recipe-title"><%= @recipe.title %></h3>
-        <p class="recipe-cuisine"><%= @recipe.cuisine.to_s %></p>
-        <p class="recipe-serving"><%= @recipe.yield.to_s %></p>
-        <% if @recipe.prep_time %>
-          <p class="recipe-prep_time">Prep Time: <%= @recipe.prep_time.to_s %></p>
+<div class="content_rich--wrapper">
+  <div class="content_rich">
+    <div class="content_rich--title_block">
+      <div class="content_rich--title_row">
+        <h1 class="recipe-title">
+        <% if current_user %>
+          <% current_user.favourites.include?(@recipe) ? fav_status = "unfavourite" : fav_status = "favourite" %>
+          <%= link_to favourite_recipe_path(@recipe, type: fav_status), title: fav_status, class: "heart_stat_#{fav_status}", method: :put do %>
+            <%= icomoon('heart') %>
+            <span class="content_rich--title_text">
+              <%= @recipe.title %>
+            </span>
+          <% end %>
         <% end %>
-        <% if @recipe.cook_time %>
-          <p class="recipe-cook_time">Cook Time: <%= @recipe.cook_time.to_s %></p>
-        <% end %>
-        <% if @recipe.description.to_s.include?('\n') %>
-          <p class="recipe-description"><%= recipe_description.html_safe %></p>
-        <% else %>
-          <p class="recipe-description"><%= @recipe.description.to_s %></p>
-        <% end %>
-        <p class="recipe-notes"><%= @recipe.note.to_s %></p>
+        </h1>
         <% if current_user && current_user.admin %>
-        <br />
-        <br />
-        <br />
-        <br />
-          <%= link_to "Edit recipe", edit_recipe_path(@recipe) %>
-        <br />
-        <br />
-        <br />
-        <br />
+          <%= link_to edit_recipe_path(@recipe) do %>
+            <span>Edit recipe</span>
+            <%= icomoon('edit') %>
+          <% end  %>
         <% end %>
-
+      </div>
+      <p class="recipe_cuisine"><%= @recipe.cuisine.to_s %></p>
+      <% if vegetarian?(@recipe) || vegan?(@recipe) || gluten_free?(@recipe) || dairy_free?(@recipe) || kosher?(@recipe) %>
+        <div class="recipe_info_tags">
+          <% if vegetarian?(@recipe) %><span class="recipe_info_tags--item">Vegetarian &check;</span><% end %>
+          <% if vegan?(@recipe) %><span class="recipe_info_tags--item">Vegan &check;</span><% end %>
+          <% if gluten_free?(@recipe) %><span class="recipe_info_tags--item">Gluten free &check;</span><% end %>
+          <% if dairy_free?(@recipe) %><span class="recipe_info_tags--item">Dairy free &check;</span><% end %>
+          <% if kosher?(@recipe) %><span class="recipe_info_tags--item">Kosher &check;</span><% end %>
+        </div>
+      <% end %>
+    </div>
+    <div class="content_rich--row">
+      <p class="recipe-serving"><%= @recipe.yield.to_s %></p>
+    </div>
+    <% if @recipe.prep_time %>
+      <div class="content_rich--row">
+        <p class="recipe-prep_time">Prep Time: <%= @recipe.prep_time.to_s %></p>
+      </div>
+    <% end %>
+    <% if @recipe.cook_time %>
+      <div class="content_rich--row">
+        <p class="recipe-cook_time">Cook Time: <%= @recipe.cook_time.to_s %></p>
+      </div>
+    <% end %>
+    <div class="content_rich--row">
+      <div class="recipe_description">
+        <h2>Method</h2>
+        <%= simple_format(@recipe.description) %>
       </div>
     </div>
-
-    <% if current_user %>
-      <% if not current_user.favourites.include?(@recipe) %>
-        <%= link_to "favourite", favourite_recipe_path(@recipe, type: "favourite"), method: :put %>
-      <% else %>
-        <%= link_to "unfavourite", favourite_recipe_path(@recipe, type: "unfavourite"), method: :put %>
-      <% end %>
-    <% end %>
-    <br />
-    <br />
-    <p><% if vegetarian?(@recipe) %>Vegetarian &check;<% end %></p>
-    <br />
-    <br />
-
-    <% if @portions.exists? %>
-      <% @portions.each do |portion| %>
-      <div class="portion-block">
-
-        <p><%= portion_amount_unit_and_ingredient(portion).html_safe %></p>
-        <br />
+    <% if @recipe.note %>
+      <div class="content_rich--row">
+        <p class="recipe-notes"><%= @recipe.note.to_s %></p>
       </div>
-      <% end %>
     <% end %>
-
-
-
-
-
-
+    <div class="content_rich--row portion_list">
+      <% if @portions.exists? %>
+        <h2>Ingredients</h2>
+        <ul>
+          <% @portions.each do |portion| %>
+            <li><%= portion_amount_unit_and_ingredient(portion).html_safe %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
   </div>
 </div>
