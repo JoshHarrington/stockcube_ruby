@@ -9,62 +9,25 @@ class StocksController < ApplicationController
 	end
 	def new
 		@stock = Stock.new
-		@cupboards = current_user.cupboards
-		@ingredients = Ingredient.all.order('name ASC')
-		@units = Unit.all
+		@cupboards = current_user.cupboards.where(hidden: false)
+		@ingredients = Ingredient.where(hidden: false).order('name ASC')
 		@two_weeks_from_now = Date.current + 2.weeks
-		@unit_select = []
+		@unit_select = Unit.where(unit_number: [5, 8, 11, 22, 25])
 
-		@units.each do |unit|
-			if unit.unit_number == 5
-				@unit_select << unit
-			elsif unit.unit_number == 8
-				@unit_select << unit
-			elsif unit.unit_number == 11
-				@unit_select << unit
-			elsif unit.unit_number == 22
-				@unit_select << unit
-			elsif unit.unit_number == 25
-				@unit_select << unit
-			end
-		end
 	end
 	def create
 		@stock = Stock.new(stock_params)
-		@cupboards = current_user.cupboards
-		@ingredients = Ingredient.all.order('name ASC')
-		@units = Unit.all
+		@cupboards = current_user.cupboards.where(hidden: false)
+		@ingredients = Ingredient.where(hidden: false).order('name ASC')
 		@two_weeks_from_now = Date.current + 2.weeks
-		@unit_select = []
-
-		@units.each do |unit|
-			if unit.unit_number == 5
-				@unit_select << unit
-			elsif unit.unit_number == 8
-				@unit_select << unit
-			elsif unit.unit_number == 11
-				@unit_select << unit
-			elsif unit.unit_number == 22
-				@unit_select << unit
-			elsif unit.unit_number == 25
-				@unit_select << unit
-			end
-		end
+		@unit_select = Unit.where(unit_number: [5, 8, 11, 22, 25])
 
 		if params.has_key?(:ingredient_id) && params[:ingredient_id].present?
-			@selected_ingredient_id = params[:ingredient_id]
+			selected_ingredient_id = params[:ingredient_id]
 		end
 
 		if params.has_key?(:cupboard_id) && params[:cupboard_id].present?
-			@selected_cupboard_id = params[:cupboard_id]
-		elsif params.has_key?(:cupboards) && params[:cupboards].present?
-			@selected_cupboard_id = params[:cupboards]
-			if @selected_cupboard_id.length > 1
-				@selected_cupboard_id = @selected_cupboard_id.join
-			end
-		else
-			## falls back to adding stock to the first of the users cupboards if not selected
-			@selected_cupboard_id = @cupboards.first
+			selected_cupboard_id = params[:cupboard_id]
 		end
 
 		@stock_amount = params[:amount]
@@ -74,8 +37,8 @@ class StocksController < ApplicationController
 
 		@stock.update_attributes(
 			unit_number: @stock_unit,
-			cupboard_id: @selected_cupboard_id,
-			ingredient_id: @selected_ingredient_id
+			cupboard_id: (selected_cupboard_id || @cupboards.first),
+			ingredient_id: selected_ingredient_id
 		)
 
 		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first
@@ -91,7 +54,7 @@ class StocksController < ApplicationController
 		@stock = Stock.find(params[:id])
 		@cupboards = current_user.cupboards.where(hidden: false)
 		@current_cupboard = @stock.cupboard
-		@ingredients = Ingredient.all.order('name ASC')
+		@ingredients = Ingredient.where(hidden: false).order('name ASC')
 		@current_ingredient = @stock.ingredient
 
 		if @stock.ingredient.unit.unit_type == "volume"
@@ -108,7 +71,7 @@ class StocksController < ApplicationController
 		@stock = Stock.find(params[:id])
 		@cupboards = current_user.cupboards.where(hidden: false)
 		@current_cupboard = @stock.cupboard
-		@ingredients = Ingredient.all.order('name ASC')
+		@ingredients = Ingredient.where(hidden: false).order('name ASC')
 		@current_ingredient = @stock.ingredient
 		@current_ingredient_unit = @stock.ingredient.unit
 		@current_ingredient_unit_number = @current_ingredient_unit.unit_number

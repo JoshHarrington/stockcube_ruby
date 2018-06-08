@@ -81,6 +81,7 @@ $bp-mobile: 600px;
 }
 
 .item_form {
+	max-width: em(600, 10);
 	background-color: $teal-5;
 	button[type="submit"] {
 		font-size: em(15, 10);

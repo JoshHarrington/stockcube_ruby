@@ -12,7 +12,7 @@
 
 			<div class="item_form--content_row">
 				<%= label_tag 'stock_use_by_date', 'Use by date'  %> <%= s.date_field :use_by_date, min: Date.current, value: @stock.use_by_date, validate: true %>
-				<p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%><%= @stock.use_by_date > Time.zone.now ? 'Looks like this goes out of date in ' : 'Looks like this went off ' %> <span class="item_form--content_item--highlight"><%= distance_of_time_in_words(Time.zone.now, @stock.use_by_date) %><%= @stock.use_by_date <= Time.zone.now ? ' ago': '' %></span></p>
+				<p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%><%= @stock.use_by_date > Time.zone.now ? 'Looks like this item goes out of date in ' : 'Looks like this went off ' %> <span class="item_form--content_item--highlight"><%= distance_of_time_in_words(Time.zone.now, @stock.use_by_date) %><%= @stock.use_by_date <= Time.zone.now ? ' ago': '' %></span></p>
 			</div>
 
 			<div class="item_form--content_row">
