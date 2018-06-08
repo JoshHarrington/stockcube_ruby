@@ -89,46 +89,35 @@ class StocksController < ApplicationController
 	end
 	def edit
 		@stock = Stock.find(params[:id])
-		@cupboards = current_user.cupboards
+		@cupboards = current_user.cupboards.where(hidden: false)
 		@current_cupboard = @stock.cupboard
 		@ingredients = Ingredient.all.order('name ASC')
 		@current_ingredient = @stock.ingredient
-		@current_ingredient_unit = @stock.ingredient.unit
-		@current_ingredient_unit_number = @current_ingredient_unit.unit_number
-		@current_unit_number = @stock.unit_number
-		@current_unit = Unit.where(unit_number: @current_unit_number).first
 
-		if @current_ingredient_unit.unit_type == "volume"
+		if @stock.ingredient.unit.unit_type == "volume"
 			@units_select = Unit.where(:unit_type => "volume")
-		elsif @current_ingredient_unit.unit_type == "mass"
+		elsif @stock.ingredient.unit.unit_type == "mass"
 			@units_select = Unit.where(unit_type: "mass")
 		else
 			@units_select = Unit.where(unit_type: "other")
 		end
 
-		if @current_unit.unit_type == @current_ingredient_unit.unit_type
-			@preselect_unit = @current_unit
-		else
-			@preselect_unit = @unit_select.first
-		end
+		@preselect_unit = @stock.unit
 	end
 	def update
 		@stock = Stock.find(params[:id])
-		@cupboards = current_user.cupboards
+		@cupboards = current_user.cupboards.where(hidden: false)
 		@current_cupboard = @stock.cupboard
 		@ingredients = Ingredient.all.order('name ASC')
 		@current_ingredient = @stock.ingredient
 		@current_ingredient_unit = @stock.ingredient.unit
 		@current_ingredient_unit_number = @current_ingredient_unit.unit_number
-		@current_unit_number = @stock.unit_number
-		@current_unit = Unit.where(unit_number: @current_unit_number).first
+		@stock_unit = @stock.unit
 
-
-		if not params[:cupboard_id] == @current_cupboard.id
+		unless params[:cupboard_id] == @current_cupboard.id
 			@stock.update_attributes(
 				cupboard_id: params[:cupboard_id]
 			)
-			@current_cupboard = Cupboard.where(id: params[:cupboard_id]).first
 		end
 
 		if @current_ingredient_unit.unit_type == "volume"
@@ -139,13 +128,9 @@ class StocksController < ApplicationController
 			@units_select = Unit.where(unit_type: "other")
 		end
 
-		if @current_unit.unit_type == @current_ingredient_unit.unit_type
-			@preselect_unit = @current_unit
-		else
-			@preselect_unit = @units_select.first
-		end
+		@preselect_unit = @stock.unit
 
-		if not params[:unit_number] == @current_unit_number
+		unless params[:unit_number] == @stock_unit.unit_number
 			@stock.update_attributes(
 				unit_number: params[:unit_number]
 			)
