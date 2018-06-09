@@ -4,8 +4,16 @@
   <% provide(:title, 'Archived Shopping List') %>
 <% end %>
 
-<div class="list-block--collection--wrap">
-  <div class="list-block--collection--sibling">
+<div class="list_block--collection--wrap">
+  <div class="list_block--collection--sibling list_block--collection--sibling_stack">
+    <h3>Ingredients Key</h3>
+    <ul class="list_block--collection--sibling--key_list">
+      <li class="list_block--sibling--key--positive">This colour means you have enough of this ingredient in your cupboards</li>
+      <li class="list_block--sibling--key--part_warning">This colour means you probably don't have enough of this ingredient in your cupboards, but check the percentage, you might be able to get away with it!</li>
+      <li class="list_block--sibling--key--full_warning">This colour means you don't have this ingredient in your cupboards, so you'll need to get some of this</li>
+    </ul>
+  </div>
+  <div class="list_block--collection--sibling">
     <%# will need to switch .last >> .last_updated when old shopping lists can be rehydrated after use %>
     <% if params[:id].to_i == current_user.shopping_lists.last.id.to_i %>
       <h2>Current Shopping List</h2>

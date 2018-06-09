@@ -14,7 +14,7 @@
     <br />
     <br />
 
-    <div class="list-block--collection--wrap">
+    <div class="list_block--collection--wrap">
       <% if @no_results == true %>
         <p>No results found! Maybe try a more generic search?</p>
         <br />
@@ -32,8 +32,8 @@
       </div>
     </div>
     <% if @fav_recipes.length > 0 %>
-      <div class="list-block--collection--wrap">
-        <div class="list-block--collection--sibling">
+      <div class="list_block--collection--wrap">
+        <div class="list_block--collection--sibling">
           <h2>Your favourite recipes</h2>
         </div>
         <div class="list_block--collection list_block--collection__tight">
@@ -42,7 +42,7 @@
           <% end %>
         </div>
         <% if @fav_recipes.length > 6 %>
-          <div class="list-block--collection--sibling">
+          <div class="list_block--collection--sibling">
             <%= link_to "See all of your favourite recipes", favourite_recipes_path %>
           </div>
         <% end %>

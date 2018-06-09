@@ -2,7 +2,7 @@
 	<div class="list_block--content">
 		<div class="list_block--title">
 			<h3><%= link_to recipe.title, recipe_path(recipe) %></h3>
-			<div class="list-block--action_row">
+			<div class="list_block--action_row">
 				<% if current_user %>
 					<% unless current_user.favourites.include?(recipe) %>
 						<%= link_to favourite_recipe_path(recipe, type: 'favourite'), class: 'unfavourite svg-btn', title: 'favourite', method: :put do %>

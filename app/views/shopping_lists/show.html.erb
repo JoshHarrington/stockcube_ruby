@@ -4,8 +4,8 @@
   <% provide(:title, 'Archived Shopping List') %>
 <% end %>
 
-<div class="list-block--collection--wrap">
-  <div class="list-block--collection--sibling">
+<div class="list_block--collection--wrap">
+  <div class="list_block--collection--sibling">
     <%# will need to switch .last >> .last_updated when old shopping lists can be rehydrated after use %>
     <% if params[:id].to_i == current_user.shopping_lists.last.id.to_i %>
       <h2>Current Shopping List</h2>
