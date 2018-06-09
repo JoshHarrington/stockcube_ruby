@@ -12,6 +12,19 @@
         gtag('config', 'UA-120510096-1');
       </script>
     <% end %>
+    <% if Rails.env.development? %>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120510096-1"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-120510096-1');
+      </script>
+      <%= javascript_include_tag 'vendor/tota11y.min.js', 'data-turbolinks-track': 'reload', :defer => "defer" %>
+    <% end %>
+
+
     <title><%= yield(:title) %> | Stockcubes</title>
     <%= csrf_meta_tags %>
     <meta charset="utf-8">
