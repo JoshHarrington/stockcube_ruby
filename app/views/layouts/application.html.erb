@@ -8,20 +8,8 @@
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-
         gtag('config', 'UA-120510096-1');
       </script>
-    <% end %>
-    <% if Rails.env.development? %>
-      <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120510096-1"></script>
-      <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'UA-120510096-1');
-      </script>
-      <%= javascript_include_tag 'vendor/tota11y.min.js', 'data-turbolinks-track': 'reload', :defer => "defer" %>
     <% end %>
 
 
@@ -33,6 +21,9 @@
     <link rel="shortcut icon" href="<%= asset_path('favicon.ico') %>" />
     <link rel="icon" type="image/png" href="<%= asset_path('favicon-32x32.png') %>" sizes="32x32" />
     <link rel="icon" type="image/png" href="<%= asset_path('favicon-16x16.png') %>" sizes="16x16" />
+    <% if Rails.env.development? %>
+      <%= javascript_include_tag 'vendor/tota11y.min.js', 'data-turbolinks-track': 'reload' %>
+    <% end %>
     <%= javascript_include_tag 'in_head/modernizr-custom', 'data-turbolinks-track': 'reload' %>
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload', :defer => "defer" %>
