@@ -12,10 +12,10 @@
 	width: em(890, 10);
 	max-width: 100%;
 	input[name="search"] {
-		font-size: em(20, 10);
+		font-size: em(16, 10);
 		border: none;
-		min-height: em(50, 20);
-		padding-left: em(13, 20);
+		min-height: em(50, 16);
+		padding-left: em(13, 16);
 		flex-grow: 1;
 	}
 	button {

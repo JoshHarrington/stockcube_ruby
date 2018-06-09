@@ -4,7 +4,7 @@
 
     <%= form_tag recipes_path, class: 'search_box--form',  method: :get do %>
       <div class="search_box">
-        <%= text_field_tag :search, params[:search], placeholder: "search for recipes like 'Tamales' or 'Lancashire Hot Pot' or whatever you fancy" %>
+        <%= text_field_tag :search, params[:search], placeholder: "what do you fancy? Tamales? Lancashire Hot Pot?" %>
         <%= button_tag "Search", name: nil do %>
           <%= icomoon('search') %>
         <% end %>
