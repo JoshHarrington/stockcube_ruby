@@ -23,5 +23,4 @@
 //= require navigation
 //= require stocks
 //= require recipes
-//= require cupboard_sort
 

@@ -45,6 +45,7 @@ Rails.application.routes.draw do
   patch '/cupboards/:id' => 'cupboards#update'
   post '/cupboards' => 'cupboards#create'
   post '/cupboards/autosave' => 'cupboards#autosave'
+  post '/cupboards/autosave_sorting' => 'cupboards#autosave_sorting'
 
   get '/ingredients' => 'ingredients#index'
   get '/ingredients/new' => 'ingredients#new'

@@ -61,6 +61,14 @@ class CupboardsController < ApplicationController
 			)
 		end
 	end
+	def autosave_sorting
+		if current_user && params.has_key?(:stock_id) && params.has_key?(:cupboard_id) && params.has_key?(:old_cupboard_id) && params[:stock_id].to_s != '' && params[:cupboard_id].to_s != '' && params[:old_cupboard_id].to_s != ''
+			@stock_to_edit = Stock.where(id: params[:stock_id]).first
+			@stock_to_edit.update_attributes(
+				cupboard_id: params[:cupboard_id]
+			)
+		end
+	end
 	def edit
 		@cupboard = Cupboard.find(params[:id])
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)

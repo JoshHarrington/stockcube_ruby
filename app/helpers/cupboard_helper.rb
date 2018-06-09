@@ -39,7 +39,7 @@ module CupboardHelper
 			stocks = cupboard.stocks.order(use_by_date: :desc)
 			days_from_now = (stocks.first.use_by_date - Date.current).to_i
 			if days_from_now <= -2
-				return ' all-out-of-date'
+				return ' empty all-out-of-date'
 			end
 		end
 	end

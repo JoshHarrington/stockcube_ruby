@@ -117,8 +117,19 @@
 	}
 	&.edit_mode {
 		border-style: dashed;
+		&.empty {
+			align-content: flex-start;
+		}
+	}
+	&.hide_add {
+		min-height: em(123, 10);
+		align-items: flex-start;
+		.list_block--item-new {
+			display: none;
+		}
 	}
 }
+
 a.list_block {
 	margin: em(7, 15);
 	&:not(.list_block__column) {
@@ -300,6 +311,7 @@ a.list_block {
 
 .list_block--item_placeholder {
 	background-color: $teal-10;
+	min-height: em(45, 15);
 }
 
 a.list_block--item {
@@ -360,6 +372,7 @@ a.list_block--item {
 	display: flex;
 	align-items: center;
 	border: 1px solid $teal-110;
+	order: 2;
 	&.list_block--item:hover {
 		background-color: $teal-5;
 	}
