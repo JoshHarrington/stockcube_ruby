@@ -10,7 +10,7 @@ class StocksController < ApplicationController
 	def new
 		@stock = Stock.new
 		@cupboards = current_user.cupboards.where(hidden: false)
-		@ingredients = Ingredient.where(hidden: false).order('name ASC')
+		@ingredients = Ingredient.all.order('name ASC')
 		@two_weeks_from_now = Date.current + 2.weeks
 		@unit_select = Unit.where(unit_number: [5, 8, 11, 22, 25])
 
@@ -18,7 +18,7 @@ class StocksController < ApplicationController
 	def create
 		@stock = Stock.new(stock_params)
 		@cupboards = current_user.cupboards.where(hidden: false)
-		@ingredients = Ingredient.where(hidden: false).order('name ASC')
+		@ingredients = Ingredient.all.order('name ASC')
 		@two_weeks_from_now = Date.current + 2.weeks
 		@unit_select = Unit.where(unit_number: [5, 8, 11, 22, 25])
 
@@ -54,7 +54,7 @@ class StocksController < ApplicationController
 		@stock = Stock.find(params[:id])
 		@cupboards = current_user.cupboards.where(hidden: false)
 		@current_cupboard = @stock.cupboard
-		@ingredients = Ingredient.where(hidden: false).order('name ASC')
+		@ingredients = Ingredient.all.order('name ASC')
 		@current_ingredient = @stock.ingredient
 
 		if @stock.ingredient.unit.unit_type == "volume"
@@ -71,7 +71,7 @@ class StocksController < ApplicationController
 		@stock = Stock.find(params[:id])
 		@cupboards = current_user.cupboards.where(hidden: false)
 		@current_cupboard = @stock.cupboard
-		@ingredients = Ingredient.where(hidden: false).order('name ASC')
+		@ingredients = Ingredient.all.order('name ASC')
 		@current_ingredient = @stock.ingredient
 		@current_ingredient_unit = @stock.ingredient.unit
 		@current_ingredient_unit_number = @current_ingredient_unit.unit_number
