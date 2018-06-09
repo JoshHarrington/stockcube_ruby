@@ -238,7 +238,8 @@ a.list_block {
 	}
 }
 
-.list_block--item {
+.list_block--item,
+.list_block--item_placeholder {
 	margin: em(3, 15);
 	background-color: $teal-40;
 	border-radius: em(3, 15);
@@ -295,6 +296,10 @@ a.list_block {
 			flex-basis: calc(50% - 6px);
 		}
 	}
+}
+
+.list_block--item_placeholder {
+	background-color: $teal-10;
 }
 
 a.list_block--item {
