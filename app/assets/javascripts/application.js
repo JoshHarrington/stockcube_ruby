@@ -23,4 +23,5 @@
 //= require navigation
 //= require stocks
 //= require recipes
+//= require touch-punch.min.js
 
