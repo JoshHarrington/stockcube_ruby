@@ -144,9 +144,6 @@ class RecipesController < ApplicationController
 
 		this_shopping_list = ShoppingList.where(user_id: current_user.id).order('created_at DESC').first_or_create
 
-		puts this_shopping_list.to_s + ' this shopping list'
-		puts @recipe.to_s + ' the recipe'
-
 		this_shopping_list.recipes << @recipe
 		@recipe.portions.each do |portion|
 			shopping_list_portion = ShoppingListPortion.new(shopping_list_id: this_shopping_list.id, recipe_number: @recipe.id)
