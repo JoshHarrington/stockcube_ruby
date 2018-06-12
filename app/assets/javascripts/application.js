@@ -20,6 +20,7 @@
 //= require general
 //= require alert
 //= require cupboard
+//= require list_block
 //= require navigation
 //= require stocks
 //= require recipes

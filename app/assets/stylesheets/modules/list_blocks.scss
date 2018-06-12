@@ -100,7 +100,7 @@
 	@media (max-width: 700px) {
 		flex-basis: calc(100% - 14px);
 	}
-	&.empty .list_block--action:not(.delete_cupboard_button) {
+	&.empty .list_block--action:not(.delete_list_block_button) {
 		display: none;
 	}
 	&.all-out-of-date {
@@ -156,16 +156,16 @@ a.list_block {
 
 .list_block.edit_mode .list_block--item_show,
 .list_block.edit_mode .list_block--item-new,
-.list_block.edit_mode .edit_cupboard_button,
+.list_block.edit_mode .edit_list_block_button,
 .list_block:not(.edit_mode) .list_block--item_edit,
-.list_block:not(.edit_mode) .close_without_edit_cupboard_button,
-.finish_editing_cupboard_button,
+.list_block:not(.edit_mode) .close_without_edit_list_block_button,
+.finish_editing_list_block_button,
 .list_block:not(.edit_mode) .edit_mode--message,
-.list_block:not(.empty) .delete_cupboard_button {
+.list_block:not(.empty) .delete_list_block_button {
 	display: none;
 }
 
-.list_block.edit_mode.delete_mode .finish_editing_cupboard_button {
+.list_block.edit_mode.delete_mode .finish_editing_list_block_button {
 	display: block;
 }
 
@@ -307,6 +307,9 @@ a.list_block {
 			flex-basis: calc(50% - 6px);
 		}
 	}
+	&[hidden] {
+		display: none;
+	}
 }
 
 .list_block--item_placeholder {
@@ -360,7 +363,7 @@ a.list_block--item {
 	color: $teal-110;
 }
 
-.finish_editing_cupboard_button {
+.finish_editing_list_block_button {
 	cursor: pointer;
 }
 

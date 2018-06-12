@@ -33,10 +33,10 @@ module CupboardHelper
 		return correct_unit.name
 	end
 	def cupboard_empty_class(cupboard)
-		if cupboard.stocks.empty? || cupboard.stocks.where(hidden: false).length == 0
+		if cupboard.stocks.where(hidden: false).length == 0 || cupboard.stocks.empty?
 			return ' empty'
 		else
-			stocks = cupboard.stocks.order(use_by_date: :desc)
+			stocks = cupboard.stocks.where(hidden: false).order(use_by_date: :desc)
 			days_from_now = (stocks.first.use_by_date - Date.current).to_i
 			if days_from_now <= -2
 				return ' empty all-out-of-date'

@@ -7,7 +7,7 @@
     <% @cupboards.where(hidden: false).each do |cupboard| %>
       <div class="cupboard list_block list_block__grid<%= cupboard_empty_class(cupboard) %>" data-id="<%= cupboard.id %>">
         <div class="list_block--title">
-          <span class="delete_cupboard_button list_block--action">
+          <span class="delete_list_block_button list_block--action">
             <%= icomoon('bin') %>
             <%= hidden_field_tag "cupboard_id_delete", cupboard.id %>
           </span>
@@ -15,13 +15,13 @@
             <%= hidden_field_tag "cupboard_id", cupboard.id %>
             <%= text_field_tag "cupboard_location", cupboard.location %>
           </h3>
-          <%= link_to edit_cupboard_path(cupboard), class: "edit_cupboard_button list_block--action", title: "pick items to remove" do %>
+          <%= link_to edit_cupboard_path(cupboard), class: "edit_list_block_button list_block--action", title: "pick items to remove" do %>
             <%= icomoon('edit') %>
           <% end %>
-          <span class="finish_editing_cupboard_button list_block--action">
+          <span class="finish_editing_list_block_button list_block--action">
             <%= icomoon('bin') %>
           </span>
-          <span class="close_without_edit_cupboard_button list_block--action">
+          <span class="close_without_edit_list_block_button list_block--action">
             <%= icomoon('close') %>
           </span>
         </div>

@@ -209,6 +209,17 @@ class ShoppingListsController < ApplicationController
     end
   end
 
+  def autosave
+    if params.has_key?(:shopping_list_id) && params[:shopping_list_id].to_s != '' && params.has_key?(:recipe_id) && params[:recipe_id].to_s != ''
+      shopping_list = ShoppingList.find(params[:shopping_list_id])
+      recipes_to_delete = Recipe.find(params[:recipe_id])
+      recipes_to_delete.each do |recipe|
+        shopping_list.recipes.delete(recipe)
+      end
+		end
+  end
+
+
   def delete
     @shopping_list = ShoppingList.find(params[:id])
     if current_user == @shopping_list.user
