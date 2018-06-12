@@ -60,6 +60,8 @@ var listBlockEdit = function(page) {
 	$('.finish_editing_list_block_button').click(function(e){
 		var $list_block = $(this).closest('.list_block');
 		var $list_block_checkbox_inputs = $(this).closest('.list_block').find('input[type="checkbox"]:checked');
+		var $list_block_checkbox_inputs_all = $(this).closest('.list_block').find('input[type="checkbox"]');
+
 
 		var dataString = '';
 		$list_block_checkbox_inputs.each(function(i){
@@ -88,6 +90,12 @@ var listBlockEdit = function(page) {
 				dataType: "script"
 			});
 		}
+
+
+		if ((page == 'shopping_list') && ($list_block_checkbox_inputs_all.length == $list_block_checkbox_inputs.length)) {
+			Turbolinks.visit('/recipes')
+		}
+
 	});
 
 }

@@ -36,7 +36,7 @@
       --><% if logged_in? && current_user && current_user.admin %><!--
       --><li <% if current_section == "ingredients" %>class="current_section"<% end %>><%= link_to "Ingredients", ingredients_path %></li><!--
       --><% end %><!--
-      --><% if logged_in? && current_user && current_user.shopping_lists.first.present? %><!--
+      --><% if logged_in? && current_user && current_user.shopping_lists.last && current_user.shopping_lists.last.recipes.length != 0 %><!--
       --><li<% if request.path_parameters[:controller] == "shopping_lists" && request.path_parameters[:action] == "show_ingredients" && request.path_parameters[:id].to_i == current_user.shopping_lists.last.id.to_i %> class="current_section"<% end %>><%= link_to "Current shopping list", latest_shopping_list_path %>
       </li><!--
       --><% end %><% if logged_in? && current_user %><!--

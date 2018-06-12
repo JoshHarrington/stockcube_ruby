@@ -2,7 +2,7 @@ class ShoppingListsController < ApplicationController
   require 'set'
   include ActionView::Helpers::NumberHelper
   before_action :logged_in_user
-  before_action :user_has_shopping_lists, only: :index
+  before_action :user_has_shopping_lists, only: [:index, :show, :show_ingredients, :edit]
   before_action :correct_user, only: [:show, :edit]
 
   def index
@@ -241,8 +241,8 @@ class ShoppingListsController < ApplicationController
     end
 
     def user_has_shopping_lists
-			unless current_user.shopping_lists.first
-				redirect_to shopping_lists_new_path
+			unless current_user.shopping_lists.last && current_user.shopping_lists.last.recipes.length != 0
+				redirect_to root_url
 			end
 		end
 
