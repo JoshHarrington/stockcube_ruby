@@ -1,4 +1,5 @@
 class SessionsController < ApplicationController
+  before_action :demo_user,      only: [:new, :create, :destroy]
 
   def new
   end
@@ -26,4 +27,12 @@ class SessionsController < ApplicationController
     log_out if logged_in?
     redirect_to root_url
   end
+
+  private
+
+    def demo_user
+      if current_user && current_user.demo == true
+        redirect_to(root_url)
+      end
+    end
 end

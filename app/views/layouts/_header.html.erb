@@ -2,7 +2,7 @@
   <% current_section = request.path_parameters[:controller] %>
   <header id="top" role="banner">
     <div class="block">
-      <% if logged_in? && @current_user %>
+      <% if logged_in? && current_user %>
         <%= link_to "Site Navigation", href: "#nav", id: "nav-open-btn", class: "nav-btn open-btn svg-btn", data: { turbolinks: 'false' } do %>
           <%= icomoon('menu') %>
         <% end %>
@@ -10,7 +10,7 @@
 
       <h1><%= icomoon('logo') %>
       <%= link_to "Stockcubes", root_path, id: "logo" %></h1>
-      <% unless logged_in? && @current_user %>
+      <% unless logged_in? && current_user %>
           <%= link_to login_path, class: "profile_item" do %>
             <p>Sign in</p>
             <span class="account-btn<%= (current_section == 'users') || (current_section == 'sessions') ? ' current_section' : '' %>">
@@ -42,13 +42,20 @@
       --><% end %><% if logged_in? && current_user %><!--
       --><li <% if current_section == "cupboards" %>class="current_section"<% end %>><%= link_to "Cupboard", cupboards_path %></li><% end %>
       </ul>
-      <% unless logged_in? && @current_user %>
+      <% if not logged_in? && current_user %>
           <%= link_to login_path, class: "profile_item" do %>
             <p>Sign in</p>
             <span class="account-btn<%= (current_section == 'users') || (current_section == 'sessions') ? ' current_section' : '' %>">
               <%= icomoon('user') %>
             </span>
           <% end %>
+      <% elsif current_user.demo == true %>
+        <span class="profile_item demo_mode">
+          <p>Demo</p>
+          <span class="account-btn">
+            <%= icomoon('user') %>
+          </span>
+        </span>
       <% else %>
         <%= link_to edit_user_path(current_user), class: "account-btn#{(current_section == 'users') || (current_section == 'sessions') ? ' current_section' : ''}" do %>
           <%= icomoon('user') %>

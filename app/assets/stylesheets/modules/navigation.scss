@@ -203,7 +203,7 @@ footer[role="contentinfo"] {
   background-color: $teal-110;
   color: black;
   transition: background-color .2s;
-  &:hover {
+  .profile_item:not(.demo_mode) &:hover {
     background-color: $teal-80;
   }
   &.current_section {
