@@ -1,7 +1,7 @@
 namespace :demo_user do
   desc "Find demo user, if it doesn't exist create it, add cupboards and stock"
 	task :find_or_create_demo_user => :environment do
-		if User.exists?(name: "Demo User")
+		if User.exists?(demo: true)
 			demo_user = User.where(demo: true).first
 			demo_user.cupboards.destroy_all
 			demo_user.shopping_lists.destroy_all
