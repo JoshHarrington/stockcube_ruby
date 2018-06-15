@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   include SessionsHelper
+  include ApplicationHelper
 
   # def metric_transform(portion_obj, portion_unit_obj)
 	# 	metric_amount = portion_obj.amount * portion_unit_obj.metric_ratio

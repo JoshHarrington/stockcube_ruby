@@ -1,5 +1,5 @@
 class SessionsController < ApplicationController
-  before_action :demo_user,      only: [:new, :create, :destroy]
+  before_action :demo_restrict,      only: [:new, :create, :destroy]
 
   def new
   end
@@ -30,7 +30,7 @@ class SessionsController < ApplicationController
 
   private
 
-    def demo_user
+    def demo_restrict
       if current_user && current_user.demo == true
         redirect_to(root_url)
       end
