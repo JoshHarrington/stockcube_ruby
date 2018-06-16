@@ -81,7 +81,7 @@ class UsersController < ApplicationController
     end
 
     def demo_user
-      redirect_to(root_url) if current_user.demo == true
+      redirect_to(root_url) if current_user && current_user.demo == true
     end
 
 end

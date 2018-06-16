@@ -54,12 +54,12 @@
       --><li <% if current_section == "cupboards" %>class="current_section"<% end %>><%= link_to "Cupboard", cupboards_path %></li><% end %>
       </ul>
       <% if not logged_in? && current_user %>
-          <%= link_to login_path, class: "profile_item" do %>
-            <p>Sign in</p>
-            <span class="account-btn<%= (current_section == 'users') || (current_section == 'sessions') ? ' current_section' : '' %>">
-              <%= icomoon('user') %>
-            </span>
-          <% end %>
+        <%= link_to login_path, class: "profile_item" do %>
+          <p>Sign in</p>
+          <span class="account-btn<%= (current_section == 'users') || (current_section == 'sessions') ? ' current_section' : '' %>">
+            <%= icomoon('user') %>
+          </span>
+        <% end %>
       <% elsif current_user.demo == true %>
         <span class="profile_item demo_mode">
           <p>Demo</p>
