@@ -41,3 +41,34 @@
       </div>
     </section>
   </article>
+
+  <hr>
+  <article class="feature-banner--sibling">
+    <section>
+    <% if current_user && current_user.demo == true %>
+      <p>Sound good?</p>
+      <p>
+      <% if current_user && current_user.demo == true %>
+        <% if domain_check('demo') == true %>
+          <%= link_to 'Sign up today', 'https://www.stockcub.es/signup' %> on the main site
+        <% else %>
+          <%= link_to 'Sign up today', demo_logout_path, method: :delete %>
+        <% end %>
+      <% end %>
+      </p>
+    <% end %>
+    <% unless logged_in? && current_user %>
+      <p>
+        Not yet convinced? Check out the <%= link_to 'demo site', 'https://demo.stockcub.es' %>
+      </p>
+    <% end %>
+    <% if current_user && current_user.demo == false && domain_check('demo') != true %>
+    <p>
+      Unsure about how things work, check out the <%= link_to 'demo site', 'https://demo.stockcub.es' %>
+    </p>
+    <p>Alternatively you can contact us by <%= link_to 'email', 'mailto:team+site_help@stockcub.es' %> or on twitter
+    <%= link_to '@stock_cubes',  'https://twitter.com/stock_cubes' %>
+    </p>
+    <% end %>
+    </section>
+  </article>
