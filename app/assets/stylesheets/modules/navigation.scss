@@ -1,7 +1,6 @@
 .block {
   position: relative;
   margin: 0 auto;
-  // padding: 1.5em 1.25em;
 	width: 100%;
 	header & {
 		display: flex;
@@ -287,7 +286,10 @@ footer[role="contentinfo"] {
   #nav {
     position: absolute;
     top: 0;
-    padding-top: 5.25em;
+    padding-top: em(53, 10);
+    .site_notice ~ & {
+      padding-top: em(92, 10);
+    }
     h1 {
       display: none;
     }
@@ -321,7 +323,7 @@ footer[role="contentinfo"] {
       }
     }
     .no-js & >.block>ul {
-      background-color: $teal-110;
+      background-color: $teal-40;
     }
     .current_section + li {
       border-top: none;
@@ -352,7 +354,8 @@ footer[role="contentinfo"] {
     .nav-quick-link {
       display: none;
     }
-    .account-btn {
+    .account-btn,
+    .profile_item {
       display: none;
     }
   }
@@ -360,10 +363,9 @@ footer[role="contentinfo"] {
     #nav {
       height: 100%;
       width: 70%;
-      background: $teal-110;
-      -webkit-box-shadow: inset -1.5em 0 1.5em -0.75em rgba(0, 0, 0, 0.25);
-      -moz-box-shadow: inset -1.5em 0 1.5em -0.75em rgba(0, 0, 0, 0.25);
-      box-shadow: inset -1.5em 0 1.5em -0.75em rgba(0, 0, 0, 0.25);
+      background: $teal-40;
+      border-right: 2px solid $teal-110;
+      left: -70%;
       .block {
         background: transparent;
       }
@@ -376,7 +378,6 @@ footer[role="contentinfo"] {
           opacity: 1;
         }
       }
-      left: -70%;
     }
     #inner-wrap {
       left: 0;
