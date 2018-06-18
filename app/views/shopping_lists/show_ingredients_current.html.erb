@@ -1,8 +1,4 @@
-<% if params[:id].to_i == current_user.shopping_lists.last.id.to_i %>
-  <% provide(:title, 'Current Shopping List Ingredients') %>
-<% else %>
-  <% provide(:title, 'Archived Shopping List Ingredients') %>
-<% end %>
+<% provide(:title, 'Current Shopping List Ingredients') %>
 
 <div class="list_block--collection--wrap">
   <div class="list_block--collection--sibling list_block--collection--sibling_stack">
@@ -15,15 +11,11 @@
   </div>
   <div class="list_block--collection--sibling">
     <%# will need to switch .last >> .last_updated when old shopping lists can be rehydrated after use %>
-    <% if params[:id].to_i == current_user.shopping_lists.last.id.to_i %>
-      <h2>Current Shopping List</h2>
-    <% else %>
-      <h2>Archived Shopping List</h2>
-    <% end %>
+    <h2>Current Shopping List</h2>
 
     <div>
       <p>Ingredients</p>
-      <%= link_to shopping_list_path(@shopping_list), class: "switch--wrap" do %>
+      <%= link_to current_shopping_list_path, class: "switch--wrap" do %>
         <span class="switch status_on"></span>
         <p>Recipes</p>
       <% end %>
