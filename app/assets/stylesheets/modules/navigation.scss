@@ -403,11 +403,11 @@ footer[role="contentinfo"] {
       }
       #inner-wrap {
         left: 0 !important;
-        -webkit-transform: translate3d(0, 0, 0);
-        -moz-transform: translate3d(0, 0, 0);
-        -ms-transform: translate3d(0, 0, 0);
-        -o-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
+        -webkit-transform: none;
+        -moz-transform: none;
+        -ms-transform: none;
+        -o-transform: none;
+        transform: none;
         -webkit-transition: -webkit-transform 500ms ease;
         -moz-transition: -moz-transform 500ms ease;
         -o-transition: -o-transform 500ms ease;

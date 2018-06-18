@@ -10,6 +10,7 @@
 	color: white;
 	box-shadow: 0 2px 7px 0 #00000087;
 	background: hsl(0, 0%, 19%);
+	max-width: calc(100% - 34px);
 	a {
 		color: $teal-100;
 	}
