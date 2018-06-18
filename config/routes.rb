@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  root 'static_pages#home'
+  # get '/about' => 'static_pages#about'
+
+  # get '/elements' => 'static_pages#elements'
+
   get '/shopping_lists' => 'shopping_lists#index'
   get '/shopping_lists/new' => 'shopping_lists#new'
   get '/shopping_lists/current' => 'shopping_lists#show_current', as: :current_shopping_list
@@ -15,11 +20,6 @@ Rails.application.routes.draw do
   get 'password_resets/new'
 
   get 'password_resets/edit'
-
-  root 'static_pages#home'
-  get '/about' => 'static_pages#about'
-
-  get '/elements' => 'static_pages#elements'
 
   get 'sessions/new'
 
