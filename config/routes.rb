@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   get '/shopping_lists/new' => 'shopping_lists#new'
   get '/shopping_lists/current' => 'shopping_lists#show_current', as: :current_shopping_list
   get '/shopping_lists/current/ingredients' => 'shopping_lists#show_ingredients_current', as: :current_shopping_list_ingredients
+  get '/shopping_lists/current/shop' => 'shopping_lists#shop'
   get '/shopping_lists/:id' => 'shopping_lists#show', as: :shopping_list
   get '/shopping_lists/:id/ingredients' => 'shopping_lists#show_ingredients', as: :shopping_list_ingredients
   get '/shopping_lists/:id/edit' => 'shopping_lists#edit', as: :edit_shopping_list

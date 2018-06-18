@@ -158,6 +158,100 @@ class ShoppingListsController < ApplicationController
 
   end
 
+  def shop
+
+    @shopping_list = current_user.shopping_lists.last
+    @recipes = @shopping_list.recipes
+
+    @portion_ids = []
+    @recipes.each do |recipe|
+      recipe.portions.each do |portion|
+        @portion_ids << portion.id
+      end
+    end
+    @portions = Portion.find(@portion_ids)
+
+    @ingredients = @shopping_list.ingredients.uniq
+    @ingredient_ids = @ingredients.map(&:id)
+    @user_cupboard_ids = current_user.cupboards.map(&:id)
+
+    @stock = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: @ingredient_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days)
+    @stock_ingredient_ids = @stock.map(&:ingredient_id)
+    @not_in_stock_ingredient_ids = @ingredient_ids - @stock_ingredient_ids
+
+    @portions_hash = Hash.new{|hsh,key| hsh[key] = {} }
+
+    @portions.each do |portion|
+      portion_amount = 0
+
+      portion_amount = portion.quantity.comparable_amount
+
+      ingredient_unit_number = portion.ingredient.unit_id
+      ingredient_unit = Unit.where(unit_number: ingredient_unit_number.to_i).first
+      ingredient_unit_name = ingredient_unit.name
+
+      if @portions_hash.key?(portion.ingredient.name)
+        if ingredient_unit_number == @portions_hash[portion.ingredient.name]["unit_number"].to_i
+          portion_amount = @portions_hash[portion.ingredient.name]["portion_amount"].to_f + portion_amount
+        else
+          hashed_portion_amount = @portions_hash[portion.ingredient.name]["portion_amount"].to_f
+          hashed_unit_number = @portions_hash[portion.ingredient.name]["unit_number"].to_i
+          unit_model = Unit.where(unit_number: hashed_unit_number)
+          if unit_model.metric_ratio
+            hashed_portion_amount = hashed_portion_amount * unit_model.metric_ratio
+          end
+          portion_amount = portion_amount + hashed_portion_amount
+
+        end
+      end
+
+
+      if @stock_ingredient_ids.include?(portion.ingredient_id)
+        @portions_hash[portion.ingredient.name].store "in_cupboard", true
+        matching_stocks = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: portion.ingredient_id)
+        stock_amount = 0
+
+        matching_stocks.each do |stock|
+          stock_amount += stock.quantity.comparable_amount
+        end
+
+        if ingredient_unit.metric_ratio
+          stock_amount = stock_amount / ingredient_unit.metric_ratio
+          portion_amount = portion_amount / ingredient_unit.metric_ratio
+        end
+
+        @portions_hash[portion.ingredient.name].store "stock_amount", stock_amount
+        if stock_amount >= portion_amount
+          @portions_hash[portion.ingredient.name].store "enough_in_cupboard", true
+          if stock_amount > (portion_amount*1.5)
+            @portions_hash[portion.ingredient.name].store "plenty_in_cupboard", true
+          end
+        end
+        percent_in_cupboard = number_with_precision((stock_amount.to_f / portion_amount.to_f) * 100, :precision => 2)
+        @portions_hash[portion.ingredient.name].store "percent_in_cupboard", percent_in_cupboard
+      else
+        @portions_hash[portion.ingredient.name].store "in_cupboard", false
+      end
+
+
+      if portion_amount < 20
+        portion_amount = portion_amount.ceil
+      elsif portion_amount < 400
+        portion_amount = (portion_amount / 10).ceil * 10
+      elsif portion_amount < 1000
+        portion_amount = (portion_amount / 20).ceil * 20
+      else
+        portion_amount = (portion_amount / 50).ceil * 50
+      end
+
+      @portions_hash[portion.ingredient.name].store "portion_amount", portion_amount
+
+      @portions_hash[portion.ingredient.name].store "unit_name", ingredient_unit_name
+      @portions_hash[portion.ingredient.name].store "unit_number", ingredient_unit_number
+    end
+
+  end
+
   def show_ingredients
 
     @shopping_list = ShoppingList.find(params[:id])
