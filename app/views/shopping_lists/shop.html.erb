@@ -1,6 +1,34 @@
 <% provide(:title, 'Shopping List - Shop Mode') %>
 
 <div class="list_block--collection--wrap">
+  <div class="list_block--collection--sibling">
+    <%# will need to switch .last >> .last_updated when old shopping lists can be rehydrated after use %>
+		<h2>Shopping List - Shop Mode</h2>
+  </div>
+  <div class="list_block--collection">
+    <%= form_tag @import_cupboard, :url => url_for(:controller => 'shopping_lists', :action => 'shopping_list_to_cupboard'), class: 'list_block list_block__grid list_block__full',  method: :get do %>
+      <% @portions_hash.each_with_index do |(key, values), index| %>
+        <% if values["in_cupboard"] == true && values["enough_in_cupboard"] == true %>
+          <input type="checkbox" id="shopping_list_item[<%= key %>][<%= values["unit_number"] %>][<%= values["portion_amount"] %>]" checked >
+          <label class="list_block--item list_block--item_stacked list_block--item__shop_mode" for="shopping_list_item[<%= key %>][<%= values["unit_number"] %>][<%= values["portion_amount"] %>]">
+            <%= render 'shopping_list_item_partial', key: key, values: values %>
+          </label>
+        <% elsif values["in_cupboard"] == true && (!values.key?("plenty_in_cupboard") || values["plenty_in_cupboard"] == false) %>
+          <input type="checkbox" id="shopping_list_item[<%= key %>][<%= values["unit_number"] %>][<%= values["portion_amount"] %>]">
+          <label class="list_block--item list_block--item_stacked date-part-warning" for="shopping_list_item[<%= key %>][<%= values["unit_number"] %>][<%= values["portion_amount"] %>]">
+            <%= render 'shopping_list_item_partial', key: key, values: values %>
+          </label>
+        <% elsif values["in_cupboard"] == false %>
+          <input type="checkbox" id="shopping_list_item[<%= key %>][<%= values["unit_number"] %>][<%= values["portion_amount"] %>]">
+          <label class="list_block--item list_block--item_stacked date-full-warning" for="shopping_list_item[<%= key %>][<%= values["unit_number"] %>][<%= values["portion_amount"] %>]">
+            <%= render 'shopping_list_item_partial', key: key, values: values %>
+          </label>
+        <% end %>
+      <% end %>
+      <hr>
+      <%= button_tag "Save", name: nil %>
+    <% end %>
+  </div>
   <div class="list_block--collection--sibling list_block--collection--sibling_stack">
     <h3>Ingredients Key</h3>
     <ul class="list_block--collection--sibling--key_list">
@@ -8,40 +36,5 @@
       <li class="list_block--sibling--key--part_warning">This colour means you probably don't have enough of this ingredient in your cupboards, but check the percentage, you might be able to get away with it!</li>
       <li class="list_block--sibling--key--full_warning">This colour means you don't have this ingredient in your cupboards, so you'll need to get some of this</li>
     </ul>
-  </div>
-  <div class="list_block--collection--sibling">
-    <%# will need to switch .last >> .last_updated when old shopping lists can be rehydrated after use %>
-		<h2>Shopping List - Shop Mode</h2>
-
-    <div>
-      <p>Ingredients</p>
-      <%= link_to shopping_list_path(@shopping_list), class: "switch--wrap" do %>
-        <span class="switch status_on"></span>
-        <p>Recipes</p>
-      <% end %>
-    </div>
-  </div>
-  <div class="list_block--collection">
-    <div class="list_block list_block__grid list_block__full">
-      <% @portions_hash.each_with_index do |(key, values), index| %>
-        <% if values["in_cupboard"] == true && values["enough_in_cupboard"] == true %>
-          <input type="checkbox" id="shopping_list_item_<%= index %>" checked>
-          <label class="list_block--item list_block--item_stacked list_block--item__shop_mode" for="shopping_list_item_<%= index %>">
-            <%= render 'shopping_list_item_partial', key: key, values: values %>
-          </label>
-        <% elsif values["in_cupboard"] == true && (!values.key?("plenty_in_cupboard") || values["plenty_in_cupboard"] == false) %>
-          <input type="checkbox" id="shopping_list_item_<%= index %>">
-          <label class="list_block--item list_block--item_stacked date-part-warning" for="shopping_list_item_<%= index %>">
-            <%= render 'shopping_list_item_partial', key: key, values: values %>
-          </label>
-        <% elsif values["in_cupboard"] == false %>
-          <input type="checkbox" id="shopping_list_item_<%= index %>">
-          <label class="list_block--item list_block--item_stacked date-full-warning" for="shopping_list_item_<%= index %>">
-            <%= render 'shopping_list_item_partial', key: key, values: values %>
-          </label>
-        <% end %>
-      <% end %>
-      <hr>
-    </div>
   </div>
 </div>

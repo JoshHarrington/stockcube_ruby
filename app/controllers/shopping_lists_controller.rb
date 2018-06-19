@@ -250,6 +250,23 @@ class ShoppingListsController < ApplicationController
       @portions_hash[portion.ingredient.name].store "unit_number", ingredient_unit_number
     end
 
+    @import_cupboard = Cupboard.new
+  end
+
+  def shopping_list_to_cupboard
+    # @import_cupboard = Cupboard.new(location: "Import Cupboard (Hidden)", setup: true, user_id: current_user.id)
+    Rails.logger.debug "shopping_list_item"
+    Rails.logger.debug params[:shopping_list_item]
+    Rails.logger.debug params[:shopping_list_item][]
+    Rails.logger.debug params[:shopping_list_item][][]
+    Rails.logger.debug params[:shopping_list_item][][][]
+
+    # if @import_cupboard.save
+    #   # redirect_to cupboard_path(@import_cupboard.id)
+    # else
+    #   redirect_to shopping_lists_current_shop_path
+    # end
+
   end
 
   def show_ingredients
