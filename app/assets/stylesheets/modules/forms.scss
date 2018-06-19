@@ -223,8 +223,10 @@ $bp-mobile: 600px;
 	hr {
 		order: 3;
 		display: none;
+		width: calc(100% - 6px);
+    margin-left: 3px;
 	}
-	& [type="checkbox"]:checked ~ hr {
+	& [type="checkbox"]:not(:checked) ~ hr {
 		display: block;
 	}
 }
