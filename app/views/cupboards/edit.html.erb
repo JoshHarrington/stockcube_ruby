@@ -9,14 +9,27 @@
 	<% for stock in @stocks %>
 		<p><%= stock.ingredient.name %></p>
 		<br>
-		<%= hidden_field_tag "cupboard[stock_ids][]", stock.id %>
-		<%= text_field_tag "cupboard[stock][amount][]", stock.amount %>
-		<%= select_tag "cupboard[stock][ingredient][unit][]", options_from_collection_for_select(@units, "id", "name", stock.ingredient.unit.id), :id => stock.ingredient.id %>
+		<%= text_field_tag "stock_items[#{stock.id}][amount]", stock.amount %>
+		<%= select_tag "stock_items[#{stock.id}][unit_number]", options_from_collection_for_select(@units, "unit_number", "name", stock.ingredient.unit.unit_number) %>
 		<br>
-		<%= check_box_tag "cupboard[stock][id][]", stock.id, nil, {:id => stock.id} %>
-		<%= label_tag "cupboard[stock][id][]", "Bin it!", {:for => stock.id} %>
+		<%= check_box_tag "stock_items[#{stock.id}][delete]", "stock_items[#{stock.id}]_delete", false %>
+		<%= label_tag "stock_items[#{stock.id}][delete]", "Bin it!" %>
 		<br>
 		<br>
+		<div class="item_form--content_row">
+			<%= label_tag "stock_items[#{stock.id}][use_by_date]", 'Use by date'  %> <%= date_field_tag "stock_items[#{stock.id}][use_by_date]", stock.use_by_date, min: Date.current, validate: true %>
+		</div>
+		<div class="item_form--content_row">
+			<% @all_cupboards.each do |cupboard| %>
+				<%= radio_button_tag "stock_items[#{stock.id}][cupboard]", cupboard.id, (cupboard.id == @all_cupboards.first.id ? true : false), class: "fancy_radio_button" %>
+				<%= label_tag "stock_items[#{stock.id}][cupboard]_#{cupboard.id}", cupboard.location, class: "fancy_radio_button__label" %>
+			<% end %>
+		</div>
+
+		<br>
+		<br>
+		<hr>
+
 	<% end %>
 	<%= link_to "Add Stock", stocks_new_path(:cupboard_id => params[:id]) %>
 	<br>

@@ -229,5 +229,8 @@ $bp-mobile: 600px;
 	& [type="checkbox"]:not(:checked) ~ hr {
 		display: block;
 	}
+	.list_block--form_action {
+		order: 6;
+	}
 }
 

@@ -2,7 +2,7 @@ class ShoppingListsController < ApplicationController
   require 'set'
   include ActionView::Helpers::NumberHelper
   before_action :logged_in_user
-  before_action :user_has_shopping_lists, only: [:index, :show, :show_ingredients, :edit]
+  before_action :user_has_shopping_lists, only: [:index, :show, :show_ingredients, :show_current, :show_ingredients_current, :shop, :shopping_list_to_cupboard, :edit]
   before_action :correct_user, only: [:show, :edit]
 
   def index
@@ -248,24 +248,32 @@ class ShoppingListsController < ApplicationController
 
       @portions_hash[portion.ingredient.name].store "unit_name", ingredient_unit_name
       @portions_hash[portion.ingredient.name].store "unit_number", ingredient_unit_number
+      @portions_hash[portion.ingredient.name].store "ingredient_id", portion.ingredient.id
     end
 
-    @import_cupboard = Cupboard.new
+    # @import_cupboard = Cupboard.new
   end
 
   def shopping_list_to_cupboard
-    # @import_cupboard = Cupboard.new(location: "Import Cupboard (Hidden)", setup: true, user_id: current_user.id)
-    Rails.logger.debug "shopping_list_item"
-    Rails.logger.debug params[:shopping_list_item]
-    Rails.logger.debug params[:shopping_list_item][]
-    Rails.logger.debug params[:shopping_list_item][][]
-    Rails.logger.debug params[:shopping_list_item][][][]
+    @import_cupboard = Cupboard.create(location: "Import Cupboard (Hidden)", setup: true, user_id: current_user.id)
 
-    # if @import_cupboard.save
-    #   # redirect_to cupboard_path(@import_cupboard.id)
-    # else
-    #   redirect_to shopping_lists_current_shop_path
-    # end
+    stocks = params[:shopping_list_item].to_unsafe_h.map do |ingredient_id, x|
+       unit_number = x.keys.first
+       amount = x.values.first
+       Stock.create(
+        unit_number: unit_number,
+        amount: amount,
+        ingredient_id: ingredient_id,
+        cupboard_id: @import_cupboard.id,
+        use_by_date: 2.weeks.from_now
+      )
+    end
+
+    current_user.shopping_lists.last.update_attributes(
+      archived: true
+    )
+
+    redirect_to edit_cupboard_path(@import_cupboard.id)
 
   end
 
@@ -448,11 +456,11 @@ class ShoppingListsController < ApplicationController
 
   private
     def shopping_list_params
-      params.require(:shopping_list).permit(:id, :date_created, recipes_attributes:[:id, :title, :description, :_destroy], shopping_list_portion_attributes:[:id, :unit_number, :_destroy], unit_attributes:[:id, :unit_type, :_destroy])
+      params.require(:shopping_list).permit(:id, :date_created, :archived, recipes_attributes:[:id, :title, :description, :_destroy], shopping_list_portion_attributes:[:id, :unit_number, :_destroy], unit_attributes:[:id, :unit_type, :_destroy], shopping_list_item:[ingredient_id:[unit_number:[:amount]]])
     end
 
     def user_has_shopping_lists
-			unless current_user.shopping_lists.last && current_user.shopping_lists.last.recipes.length != 0
+			unless current_user.shopping_lists.last.archived == false && current_user.shopping_lists.last.recipes.length != 0
 				redirect_to root_url
 			end
 		end

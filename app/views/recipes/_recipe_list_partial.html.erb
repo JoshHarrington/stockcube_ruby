@@ -13,7 +13,7 @@
 							<%= icomoon('heart') %>
 						<% end %>
 					<% end %>
-					<% unless recipe.shopping_lists.include?(current_user.shopping_lists.order('created_at DESC').first) %>
+					<% unless current_user.shopping_lists.last.archived == false && recipe.shopping_lists.include?(current_user.shopping_lists.last) %>
 						<%= link_to add_to_shopping_list_recipe_path(recipe), class: 'svg-btn', title: 'add to shopping list', method: :put do %>
 							<%= icomoon('list-add') %>
 						<% end %>

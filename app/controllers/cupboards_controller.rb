@@ -2,7 +2,7 @@ class CupboardsController < ApplicationController
 	before_action :logged_in_user
 	before_action :correct_user,   only: [:show, :edit, :update]
 	def index
-		@cupboards = current_user.cupboards.order(location: :asc)
+		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false).where(setup: false)
 		@out_of_date_exist = false
 		@cupboards.each do |cupboard|
 			cupboard.stocks.each do |stock|
@@ -35,7 +35,7 @@ class CupboardsController < ApplicationController
     end
 	end
 	def edit_all
-		@cupboards = current_user.cupboards.order(location: :asc)
+		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false).where(setup: false)
 	end
 	def autosave
 		if params.has_key?(:cupboard_location) && params[:cupboard_location].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
@@ -71,52 +71,75 @@ class CupboardsController < ApplicationController
 	end
 	def edit
 		@cupboard = Cupboard.find(params[:id])
+		@all_cupboards = current_user.cupboards.where(hidden: false).where(setup: false)
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)
 		@units = Unit.all
 	end
 	def update
 		@cupboard = Cupboard.find(params[:id])
+		@all_cupboards = current_user.cupboards.where(hidden: false).where(setup: false)
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)
 		@units = Unit.all
 
-		@stock_ids = []
-		@stocks.each do |stock|
-			@stock_ids.push(stock.id)
-		end
+		# require 'pry'
+		# binding.pry
 
-		@delete_stock_check_ids = params[:cupboard][:stock][:id]
-		@form_stock_ids = params[:cupboard][:stock_ids]
-		@form_stock_amounts = params[:cupboard][:stock][:amount]
-		@form_stock_ingredient_units = params[:cupboard][:stock][:ingredient][:unit]
-
-		# Rails.logger.debug @delete_stock_check_ids
-		if @delete_stock_check_ids
-			@stock_unpick = Stock.find(@delete_stock_check_ids)
-			@stocks.delete(@stock_unpick)
-		end
-
-		if @form_stock_amounts.length == @stocks.length
-			@stocks.each_with_index do |stock, index|
-				if not stock[:amount].to_f == @form_stock_amounts[index].to_f
-					stock.update_attributes(
-						:amount => @form_stock_amounts[index].to_f
-					)
-				end
-				if @form_stock_ingredient_units.length == @stocks.length
-					if not stock.ingredient.unit_id.to_f == @form_stock_ingredient_units[index].to_f
-						stock.ingredient.update_attributes(
-							:unit_id => @form_stock_ingredient_units[index].to_f
-						)
-					end
-				end
+		if params.has_key?(:stock_items)
+			params[:stock_items].to_unsafe_h.map do |stock_id, values|
+				stock = Stock.find(stock_id)
+				stock.update_attributes(
+					amount: values[:amount],
+					unit_number: values[:unit_number],
+					use_by_date: values[:use_by_date],
+					cupboard_id: values[:cupboard]
+				)
 			end
 		end
 
-		if @cupboard.update(cupboard_params)
-			redirect_to @cupboard
-		else
-			render 'edit'
+		if @cupboard.setup == true
+			@cupboard.delete
 		end
+
+		redirect_to cupboards_path
+
+		# @stock_ids = []
+		# @stocks.each do |stock|
+		# 	@stock_ids.push(stock.id)
+		# end
+
+		# @delete_stock_check_ids = params[:cupboard][:stock][:id]
+		# @form_stock_ids = params[:cupboard][:stock_ids]
+		# @form_stock_amounts = params[:cupboard][:stock][:amount]
+		# @form_stock_ingredient_units = params[:cupboard][:stock][:ingredient][:unit]
+
+		# # Rails.logger.debug @delete_stock_check_ids
+		# if @delete_stock_check_ids
+		# 	@stock_unpick = Stock.find(@delete_stock_check_ids)
+		# 	@stocks.delete(@stock_unpick)
+		# end
+
+		# if @form_stock_amounts.length == @stocks.length
+		# 	@stocks.each_with_index do |stock, index|
+		# 		if not stock[:amount].to_f == @form_stock_amounts[index].to_f
+		# 			stock.update_attributes(
+		# 				:amount => @form_stock_amounts[index].to_f
+		# 			)
+		# 		end
+		# 		if @form_stock_ingredient_units.length == @stocks.length
+		# 			if not stock.ingredient.unit_id.to_f == @form_stock_ingredient_units[index].to_f
+		# 				stock.ingredient.update_attributes(
+		# 					:unit_id => @form_stock_ingredient_units[index].to_f
+		# 				)
+		# 			end
+		# 		end
+		# 	end
+		# end
+
+		# if @cupboard.update(cupboard_params)
+		# 	redirect_to @cupboard
+		# else
+		# 	render 'edit'
+		# end
   end
 	private
 		def cupboard_params

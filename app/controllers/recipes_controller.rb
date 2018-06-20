@@ -142,23 +142,27 @@ class RecipesController < ApplicationController
 		@recipe = Recipe.find(params[:id])
 		recipe_title = @recipe.title
 
-		this_shopping_list = ShoppingList.where(user_id: current_user.id).order('created_at DESC').first_or_create
+		if current_user.shopping_lists.first && current_user.shopping_lists.last.archived != true
+			current_shopping_list = current_user.shopping_lists.last
+		else
+			current_shopping_list = ShoppingList.create(user_id: current_user.id)
+		end
 
-		this_shopping_list.recipes << @recipe
+		current_shopping_list.recipes << @recipe
 		@recipe.portions.each do |portion|
-			shopping_list_portion = ShoppingListPortion.new(shopping_list_id: this_shopping_list.id, recipe_number: @recipe.id)
+			shopping_list_portion = ShoppingListPortion.new(shopping_list_id: current_shopping_list.id, recipe_number: @recipe.id)
 			shopping_list_portion.update_attributes(amount: portion.amount, ingredient_id: portion.ingredient_id, unit_number: portion.unit_number)
 		end
 
 
 		# find index of shopping list
-		userShoppingLists = current_user.shopping_lists
-		zero_base_index = userShoppingLists.index(this_shopping_list)
-		shopping_list_index = zero_base_index + 1
-		shopping_list_ref = "#" + shopping_list_index.to_s + " " + this_shopping_list.created_at.to_date.to_s(:long)
+		# userShoppingLists = current_user.shopping_lists
+		# zero_base_index = userShoppingLists.index(current_shopping_list)
+		# shopping_list_index = zero_base_index + 1
+		# shopping_list_ref = "#" + shopping_list_index.to_s + " " + current_shopping_list.created_at.to_date.to_s(:long)
 
 		# give notice that the recipe has been added with link to shopping list
-		@string = "Added the #{@recipe.title} to shopping list from #{link_to(shopping_list_ref, shopping_list_path(this_shopping_list))}"
+		@string = "Added the #{@recipe.title} to your #{link_to("current shopping list", shopping_list_path(current_shopping_list))}"
 		redirect_back fallback_location: root_path, notice: @string
 
 	end
