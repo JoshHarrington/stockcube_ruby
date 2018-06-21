@@ -39,6 +39,9 @@
 
 .list_block--collection--sibling_stack {
 	flex-direction: column;
+	>* + * {
+		margin-top: em(10, 10);
+	}
 }
 
 .list_block--collection--sibling--key_list {
@@ -261,6 +264,7 @@ a.list_block {
 	display: flex;
 	justify-content: space-between;
 	align-content: flex-start;
+	min-height: em(47, 15);
 	* {
 		font-size: inherit;
 	}
@@ -278,9 +282,12 @@ a.list_block {
 		order: 2;
 	}
 	&.list_block--item_stacked {
+		align-content: unset;
 		flex-wrap: wrap;
 		* {
 			flex-basis: 100%;
+			flex-grow: 0;
+			line-height: em(19, 15);
 		}
 		h4 {
 			flex-basis: calc(100% - 10px);
@@ -295,12 +302,13 @@ a.list_block {
 		color: $teal-10;
 	}
 	.list_block__full & {
-		flex-basis: calc(14.28571% - 6px);
+		// flex-basis: calc(14.285714286% - 6px);  // 100 / 7
+		flex-basis: calc(16.666666% - 6px);  // 100 / 6
 		font-size: em(15, 10);
-		@media (max-width: 900px) and (min-width: 601px) {
+		@media (max-width: 900px) and (min-width: 751px) {
 			flex-basis: calc(20% - 6px);
 		}
-		@media (max-width: 600px) and (min-width: 451px) {
+		@media (max-width: 750px) and (min-width: 451px) {
 			flex-basis: calc(33.333% - 6px);
 		}
 		@media (max-width: 450px) {
@@ -309,6 +317,9 @@ a.list_block {
 	}
 	&[hidden] {
 		display: none;
+	}
+	> * + * {
+		margin-top: .4rem;
 	}
 }
 
@@ -379,4 +390,12 @@ a.list_block--item {
 	&.list_block--item:hover {
 		background-color: $teal-5;
 	}
+}
+
+.list_block--item--ingredient_note {
+	font-size: em(12, 15);
+	background-color:rgba(255, 255, 255, 0.6);
+	padding: em(3, 12) em(4, 12);
+	margin: 1rem em(-2, 12) em(-2, 12) em(-2, 12);
+	align-self: flex-end;
 }

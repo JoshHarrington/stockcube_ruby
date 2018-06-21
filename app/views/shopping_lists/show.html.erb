@@ -1,60 +1,6 @@
-<% if params[:id].to_i == current_user.shopping_lists.last.id.to_i %>
-  <% provide(:title, 'Current Shopping List') %>
-<% else %>
-  <% provide(:title, 'Archived Shopping List') %>
-<% end %>
-
-<div class="list_block--collection--wrap">
-  <div class="list_block--collection--sibling">
-    <%# will need to switch .last >> .last_updated when old shopping lists can be rehydrated after use %>
-    <% if params[:id].to_i == current_user.shopping_lists.last.id.to_i %>
-      <h2>Current Shopping List</h2>
-    <% else %>
-      <h2>Archived Shopping List</h2>
-    <% end %>
-
-    <div>
-      <%= link_to shopping_list_ingredients_path(@shopping_list), class: "switch--wrap" do %>
-        <p>Ingredients</p>
-        <span class="switch status_off"></span>
-      <% end %>
-      <p>Recipes</p>
-    </div>
-  </div>
-  <div id="shopping_list_recipe--list" class="list_block--collection">
-    <div class="list_block list_block__grid list_block__full" data-shopping-list="<%= @shopping_list.id %>">
-      <div class="list_block--title">
-        <h3>Created on <%= @shopping_list.created_at.to_date.to_s(:long) %></h3>
-        <span class="edit_list_block_button list_block--action">
-          <%= icomoon('edit') %>
-        </span>
-        <span class="finish_editing_list_block_button list_block--action">
-          <%= icomoon('bin') %>
-        </span>
-        <span class="close_without_edit_list_block_button list_block--action">
-          <%= icomoon('close') %>
-        </span>
-      </div>
-      <% @recipes.each do |recipe| %>
-        <%= link_to recipe_path(recipe), class: "list_block--item list_block--item_stacked list_block--item_show recipe_#{recipe.id}" do %>
-          <h4><%= recipe.title %></h4>
-          <% if current_user.favourites.include?(recipe) %>
-            <span class="icon">
-              <%= icomoon('heart') %>
-            </span>
-          <% end %>
-        <% end %>
-        <%= check_box_tag "recipe_id[]", value = "#{recipe.id}", checked = false, id: "recipe_#{recipe.id}", class: "list_block--item_edit--checkbox" %>
-        <%= label_tag "recipe_#{recipe.id}", class: "list_block--item list_block--item_stacked list_block--item_edit" do %>
-          <span class="list_block--item_edit_marker"><%= icomoon('bin') %></span>
-          <p><%= recipe.title %></p>
-          <% if current_user.favourites.include?(recipe) %>
-            <span class="icon">
-              <%= icomoon('heart') %>
-            </span>
-          <% end %>
-        <% end %>
-      <% end %>
-    </div>
-  </div>
-</div>
+<%=
+  render 'show_partial',
+  current: false,
+  shopping_list: @shopping_list,
+  recipes: @recipes
+%>

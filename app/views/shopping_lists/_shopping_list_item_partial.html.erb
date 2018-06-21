@@ -1,11 +1,10 @@
-          <p><%= key %></p>
-          <p><%= values["portion_amount"] %> <%= values["unit_name"] %></p>
-          <% if values["in_cupboard"] == true %>
-            <br />
-            <br />
-            <% if values["plenty_in_cupboard"] == true %>
-              <p>There's plenty in your cupboards</p>
-            <% else %>
-              <p>Amount in cupboard is <%= values["percent_in_cupboard"] %>% of what the recipe(s) need</p>
-            <% end %>
-          <% end %>
+<p><%= key %> [<%= values["portion_amount"] %> <%= values["unit_name"] %>]</p>
+<% if values["in_cupboard"] == true %>
+  <span class="list_block--item--ingredient_note">
+    <% if values["plenty_in_cupboard"] == true %>
+      <span>Loads in cupboards</span>
+    <% else %>
+      <span><%= values["percent_in_cupboard"] %>% in cupboards</span>
+    <% end %>
+  </span>
+<% end %>

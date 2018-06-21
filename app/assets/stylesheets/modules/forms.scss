@@ -186,16 +186,15 @@ $bp-mobile: 600px;
 		}
 	}
 	[type="checkbox"] + label {
-		padding-left: em(50, 15);
+		padding-left: em(44, 15);
 		&::before {
 			content: "";
-			border: 2px solid;
 			background: transparent;
 			width: em(30, 15);
 			height: em(30, 15);
 			position: absolute;
 			top: em(8, 15);
-			left: em(10, 15);
+			left: em(6, 15);
 			background-color: white;
 			background-color: rgba(255,255,255, .8);
 		}
@@ -209,7 +208,7 @@ $bp-mobile: 600px;
 			height: em(10, 15);
 			position: absolute;
 			top: em(15, 15);
-			left: em(17, 15);
+			left: em(13, 15);
 			-moz-transform: rotate(-45deg);
 			-o-transform: rotate(-45deg);
 			-webkit-transform: rotate(-45deg);
@@ -226,11 +225,68 @@ $bp-mobile: 600px;
 		width: calc(100% - 6px);
     margin-left: 3px;
 	}
-	& [type="checkbox"]:not(:checked) ~ hr {
+	& [type="checkbox"]:not(:checked) ~ .list_block--form--divider {
 		display: block;
 	}
-	.list_block--form_action {
+	break {
+		flex-basis: 100%;
+		width: 0px;
+		height: 0px;
+		overflow: hidden;
 		order: 6;
+	}
+	.list_block--form_action--title {
+		order: 8;
+		margin-top: em(20, 15);
+	}
+	.list_block--form_action--sub_title {
+		order: 9;
+		margin-top: em(10, 15);
+	}
+	.list_block--form_action--title--divider {
+		order: 7;
+	}
+	.list_block--form_action--sub_title,
+	.list_block--form_action--title,
+	.list_block--form_action--title--divider {
+		flex-basis: 100%;
+		display: none;
+	}
+	.list_block--form_action {
+		font-size: em(15, 10);
+		margin-top: em(20, 15);
+		margin-left: em(3, 15);
+		order: 10;
+		padding: em(10, 15) em(15, 15);
+		background-color: $teal-20;
+		border: 1px solid $teal-40;
+		color: white;
+		pointer-events: none;
+		cursor: not-allowed;
+	}
+	& [type="checkbox"]:checked {
+		& ~ .list_block--form_action {
+			color: $black-80;
+			pointer-events: all;
+			cursor: pointer;
+		}
+		& ~ .list_block--form_action--title,
+		& ~ .list_block--form_action--sub_title,
+		& ~ .list_block--form_action--title--divider {
+			display: block;
+		}
+	}
+	.list_block--item.date-full-warning,
+	.list_block--item_placeholder.date-full-warning {
+		order: 1;
+	}
+	.list_block--item.date-part-warning,
+	.list_block--item_placeholder.date-part-warning {
+		order: 2;
+	}
+	.list_block--item,
+	.list_block--item_placeholder {
+		order: 3;
 	}
 }
 
