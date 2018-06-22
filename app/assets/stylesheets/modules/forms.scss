@@ -160,7 +160,7 @@ $bp-mobile: 600px;
 }
 
 
-.list_block--collection--wrap {
+.list_block--collection--wrap form {
 	[type="checkbox"] {
 		position: absolute;
 		cursor: pointer;
@@ -187,6 +187,7 @@ $bp-mobile: 600px;
 	}
 	[type="checkbox"] + label {
 		padding-left: em(44, 15);
+		cursor: pointer;
 		&::before {
 			content: "";
 			background: transparent;

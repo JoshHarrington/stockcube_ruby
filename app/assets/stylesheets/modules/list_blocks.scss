@@ -42,6 +42,9 @@
 	>* + * {
 		margin-top: em(10, 10);
 	}
+	p {
+		line-height: em(20, 15);
+	}
 }
 
 .list_block--collection--sibling--key_list {
@@ -126,7 +129,7 @@
 	}
 	&.hide_add {
 		min-height: em(123, 10);
-		align-items: flex-start;
+		align-content: flex-start;
 		.list_block--item-new {
 			display: none;
 		}

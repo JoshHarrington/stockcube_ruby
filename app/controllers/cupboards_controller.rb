@@ -81,26 +81,43 @@ class CupboardsController < ApplicationController
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)
 		@units = Unit.all
 
-		# require 'pry'
-		# binding.pry
 
 		if params.has_key?(:stock_items)
 			params[:stock_items].to_unsafe_h.map do |stock_id, values|
 				stock = Stock.find(stock_id)
-				stock.update_attributes(
-					amount: values[:amount],
-					unit_number: values[:unit_number],
-					use_by_date: values[:use_by_date],
-					cupboard_id: values[:cupboard]
-				)
+				unless stock.amount == values[:amount]
+					stock.update_attributes(
+						amount: values[:amount]
+					)
+				end
+				unless stock.unit_number == values[:unit_number]
+					stock.update_attributes(
+						unit_number: values[:unit_number]
+					)
+				end
+				unless stock.use_by_date == values[:use_by_date]
+					stock.update_attributes(
+						use_by_date: values[:use_by_date]
+					)
+				end
+				unless stock.cupboard_id == values[:cupboard]
+					stock.update_attributes(
+						cupboard_id: values[:cupboard]
+					)
+				end
+				if values[:delete]
+					Stock.find(values[:delete]).delete
+				end
 			end
 		end
 
+
 		if @cupboard.setup == true
-			@cupboard.delete
+			@cupboard.hidden = true
 		end
 
-		redirect_to cupboards_path
+		# redirect_to cupboards_path
+		redirect_to edit_cupboard_path(@cupboard.id)
 
 		# @stock_ids = []
 		# @stocks.each do |stock|
