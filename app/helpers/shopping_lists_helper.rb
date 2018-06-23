@@ -1,4 +1,5 @@
 module ShoppingListsHelper
+	require 'set'
 	def shoppingListIndex(shopping_list)
 		userShoppingLists = current_user.shopping_lists
 		zero_base_index = userShoppingLists.index(shopping_list)
@@ -76,4 +77,122 @@ module ShoppingListsHelper
 			return false
 		end
 	end
+
+
+	def shopping_list_portions_set(shopping_list)
+
+    @recipes = shopping_list.recipes
+
+    @portion_ids = []
+		@ingredient_ids = Set[]
+    @recipes.each do |recipe|
+      recipe.portions.each do |portion|
+				@portion_ids << portion.id
+				@ingredient_ids.add(portion.ingredient.id)
+      end
+		end
+
+		@portions = Portion.find(@portion_ids)
+
+    @user_cupboard_ids = current_user.cupboards.map(&:id)
+
+    @stock = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: @ingredient_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days)
+    @stock_ingredient_ids = @stock.map(&:ingredient_id)
+		@not_in_stock_ingredient_ids = @ingredient_ids - @stock_ingredient_ids
+
+		shopping_list.shopping_list_portions.delete_all
+
+		@portions.each do |portion|
+
+			shopping_list_portion = ShoppingListPortion.create(
+				shopping_list_id: shopping_list.id,
+				ingredient_id: portion.ingredient_id
+			)
+
+      portion_amount = 0
+
+      portion_amount = portion.quantity.comparable_amount
+
+      ingredient_unit_number = portion.ingredient.unit_id
+      ingredient_unit = Unit.where(unit_number: ingredient_unit_number.to_i).first
+			ingredient_unit_name = ingredient_unit.name
+
+			similar_shopping_list_portion_all = shopping_list.shopping_list_portions.where(ingredient_id: portion.ingredient_id)
+			similar_shopping_list_portion = similar_shopping_list_portion_all.first
+
+			if similar_shopping_list_portion.id != shopping_list_portion.id && similar_shopping_list_portion_all.length != 0
+				if similar_shopping_list_portion.unit_number != nil && ingredient_unit_number == similar_shopping_list_portion.unit_number.to_i
+					portion_amount = similar_shopping_list_portion.portion_amount.to_f + portion_amount
+				else
+					similar_shli_portion_amount = similar_shopping_list_portion.portion_amount.to_f
+          similar_shli_unit_number = similar_shopping_list_portion.unit_number.to_i
+          unit_model = Unit.where(unit_number: similar_shli_unit_number)
+          if unit_model.metric_ratio
+            similar_shli_portion_amount = similar_shli_portion_amount * unit_model.metric_ratio
+          end
+          portion_amount = portion_amount + similar_shli_portion_amount
+				end
+			end
+
+      if @stock_ingredient_ids.include?(portion.ingredient_id)
+        shopping_list_portion.update_attributes(
+					in_cupboard: true
+				)
+        matching_stocks = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: portion.ingredient_id)
+        stock_amount = 0
+
+        matching_stocks.each do |stock|
+          stock_amount += stock.quantity.comparable_amount
+        end
+
+        if ingredient_unit.metric_ratio
+          stock_amount = stock_amount / ingredient_unit.metric_ratio
+          portion_amount = portion_amount / ingredient_unit.metric_ratio
+        end
+
+        shopping_list_portion.update_attributes(
+					stock_amount: stock_amount
+				)
+        if stock_amount >= portion_amount
+          shopping_list_portion.update_attributes(
+						enough_in_cupboard: true
+					)
+          if stock_amount > (portion_amount*1.5)
+            shopping_list_portion.update_attributes(
+							plenty_in_cupboard: true
+						)
+          end
+        end
+        percent_in_cupboard = number_with_precision((stock_amount.to_f / portion_amount.to_f) * 100, :precision => 0)
+        shopping_list_portion.update_attributes(
+					percent_in_cupboard: percent_in_cupboard
+				)
+      else
+        shopping_list_portion.update_attributes(
+					in_cupboard: false
+				)
+      end
+
+
+      if portion_amount < 20
+        portion_amount = portion_amount.ceil
+      elsif portion_amount < 400
+        portion_amount = (portion_amount / 10).ceil * 10
+      elsif portion_amount < 1000
+        portion_amount = (portion_amount / 20).ceil * 20
+      else
+        portion_amount = (portion_amount / 50).ceil * 50
+      end
+
+      shopping_list_portion.update_attributes(
+				portion_amount: portion_amount
+			)
+      shopping_list_portion.update_attributes(
+				unit_number: ingredient_unit_number
+			)
+    end
+
+
+	end
+
 end

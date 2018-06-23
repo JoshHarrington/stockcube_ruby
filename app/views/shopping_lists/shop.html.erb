@@ -12,21 +12,21 @@
   </div>
   <div class="list_block--collection">
     <%= form_tag({controller: "shopping_lists", action: "shopping_list_to_cupboard" }, class: "list_block list_block__grid list_block__full",  method: :post) do %>
-      <% @portions_hash.each_with_index do |(key, values), index| %>
-        <% if values["in_cupboard"] == true && values["enough_in_cupboard"] == true %>
-          <%= check_box_tag "shopping_list_item[#{values["ingredient_id"]}][#{values["unit_number"]}]", "#{values["portion_amount"]}", false %>
-          <%= label_tag "shopping_list_item[#{values["ingredient_id"]}][#{values["unit_number"]}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode' do %>
-            <%= render 'shopping_list_item_partial', key: key, values: values %>
+      <% @shopping_list_portions.each_with_index do |sl_portion, index| %>
+        <% if sl_portion.in_cupboard == true && sl_portion.enough_in_cupboard == true %>
+          <%= check_box_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", "#{sl_portion.portion_amount}", false %>
+          <%= label_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode' do %>
+            <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
           <% end %>
-        <% elsif values["in_cupboard"] == true && (!values.key?("plenty_in_cupboard") || values["plenty_in_cupboard"] == false) %>
-          <%= check_box_tag "shopping_list_item[#{values["ingredient_id"]}][#{values["unit_number"]}]", "#{values["portion_amount"]}", false %>
-          <%= label_tag "shopping_list_item[#{values["ingredient_id"]}][#{values["unit_number"]}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode date-part-warning' do %>
-            <%= render 'shopping_list_item_partial', key: key, values: values %>
+        <% elsif sl_portion.in_cupboard == true && (sl_portion.plenty_in_cupboard == nil || sl_portion.plenty_in_cupboard == false) %>
+          <%= check_box_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", "#{sl_portion.portion_amount}", false %>
+          <%= label_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode date-part-warning' do %>
+            <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
           <% end %>
-        <% elsif values["in_cupboard"] == false %>
-          <%= check_box_tag "shopping_list_item[#{values["ingredient_id"]}][#{values["unit_number"]}]", "#{values["portion_amount"]}", false %>
-          <%= label_tag "shopping_list_item[#{values["ingredient_id"]}][#{values["unit_number"]}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode date-full-warning' do %>
-            <%= render 'shopping_list_item_partial', key: key, values: values %>
+        <% elsif sl_portion.in_cupboard == false %>
+          <%= check_box_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", "#{sl_portion.portion_amount}", false %>
+          <%= label_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode date-full-warning' do %>
+            <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
           <% end %>
         <% end %>
       <% end %>

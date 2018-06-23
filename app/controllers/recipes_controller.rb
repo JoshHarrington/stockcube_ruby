@@ -1,6 +1,7 @@
 require 'will_paginate/array'
 class RecipesController < ApplicationController
 	include ActionView::Helpers::UrlHelper
+	include ShoppingListsHelper
 
 	before_action :logged_in_user, only: [:edit, :new, :index]
 	before_action :admin_user,     only: [:create, :new, :edit, :update]
@@ -149,10 +150,13 @@ class RecipesController < ApplicationController
 		end
 
 		current_shopping_list.recipes << @recipe
-		@recipe.portions.each do |portion|
-			shopping_list_portion = ShoppingListPortion.new(shopping_list_id: current_shopping_list.id, recipe_number: @recipe.id)
-			shopping_list_portion.update_attributes(amount: portion.amount, ingredient_id: portion.ingredient_id, unit_number: portion.unit_number)
-		end
+
+		shopping_list_portions_set(current_shopping_list)
+
+		# @recipe.portions.each do |portion|
+		# 	shopping_list_portion = ShoppingListPortion.new(shopping_list_id: current_shopping_list.id, recipe_number: @recipe.id)
+		# 	shopping_list_portion.update_attributes(amount: portion.amount, ingredient_id: portion.ingredient_id, unit_number: portion.unit_number)
+		# end
 
 
 		# find index of shopping list
