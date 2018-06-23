@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180623092039) do
+ActiveRecord::Schema.define(version: 20180623172001) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -85,9 +85,9 @@ ActiveRecord::Schema.define(version: 20180623092039) do
     t.decimal "stock_amount"
     t.boolean "in_cupboard", default: false
     t.decimal "percent_in_cupboard"
-    t.decimal "enough_in_cupboard"
-    t.decimal "plenty_in_cupboard"
     t.boolean "checked", default: false
+    t.boolean "enough_in_cupboard", default: false
+    t.boolean "plenty_in_cupboard", default: false
     t.index ["ingredient_id"], name: "index_shopping_list_portions_on_ingredient_id"
     t.index ["shopping_list_id"], name: "index_shopping_list_portions_on_shopping_list_id"
   end

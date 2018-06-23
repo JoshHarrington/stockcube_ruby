@@ -1,5 +1,6 @@
 module ShoppingListsHelper
 	require 'set'
+	include ActionView::Helpers::NumberHelper
 	def shoppingListIndex(shopping_list)
 		userShoppingLists = current_user.shopping_lists
 		zero_base_index = userShoppingLists.index(shopping_list)
@@ -81,24 +82,18 @@ module ShoppingListsHelper
 
 	def shopping_list_portions_set(shopping_list)
 
-    @recipes = shopping_list.recipes
+		@recipes = shopping_list.recipes
+		@recipe_ids = shopping_list.recipes.map(&:id)
 
-    @portion_ids = []
-		@ingredient_ids = Set[]
-    @recipes.each do |recipe|
-      recipe.portions.each do |portion|
-				@portion_ids << portion.id
-				@ingredient_ids.add(portion.ingredient.id)
-      end
-		end
+		@portions = Portion.where(recipe_id: @recipe_ids)
+		@portion_ids = @portions.map(&:id)
+		@uniq_ingredient_ids = @portions.map(&:ingredient_id).uniq
 
-		@portions = Portion.find(@portion_ids)
+    @user_cupboard_ids = current_user.cupboards.where(hidden: false).where(setup: false).map(&:id)
 
-    @user_cupboard_ids = current_user.cupboards.map(&:id)
-
-    @stock = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: @ingredient_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days)
+    @stock = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: @uniq_ingredient_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days)
     @stock_ingredient_ids = @stock.map(&:ingredient_id)
-		@not_in_stock_ingredient_ids = @ingredient_ids - @stock_ingredient_ids
+		@not_in_stock_ingredient_ids = @uniq_ingredient_ids - @stock_ingredient_ids
 
 		shopping_list.shopping_list_portions.delete_all
 
