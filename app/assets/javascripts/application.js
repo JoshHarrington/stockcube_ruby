@@ -25,4 +25,5 @@
 //= require stocks
 //= require recipes
 //= require touch-punch.min.js
+//= require shopping_list
 

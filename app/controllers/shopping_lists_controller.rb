@@ -147,6 +147,20 @@ class ShoppingListsController < ApplicationController
 		end
   end
 
+  def autosave_checked_items
+    if params.has_key?(:shopping_list_portion_ids) && params[:shopping_list_portion_ids].to_s != ''
+      new_to_check_sl_portion_ids = params[:shopping_list_portion_ids].to_unsafe_h.map {|id| id.first.to_i}
+      currently_checked_sl_portion_ids = ShoppingListPortion.where(shopping_list_id: current_user.shopping_lists.last.id, checked: true).map(&:id).map(&:to_i)
+      remove_checked_status_sl_portion_ids = currently_checked_sl_portion_ids - new_to_check_sl_portion_ids
+      add_checked_status_sl_portion_ids = new_to_check_sl_portion_ids - currently_checked_sl_portion_ids
+      if remove_checked_status_sl_portion_ids.length > 0
+        ShoppingListPortion.where(id: remove_checked_status_sl_portion_ids).update_all(checked: false)
+      end
+      if add_checked_status_sl_portion_ids.length > 0
+        ShoppingListPortion.where(id: add_checked_status_sl_portion_ids).update_all(checked: true)
+      end
+    end
+  end
 
   def delete
     @shopping_list = ShoppingList.find(params[:id])

@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   patch '/shopping_lists/:id' => 'shopping_lists#update'
   post '/shopping_lists' => 'shopping_lists#create'
   post '/shopping_lists/autosave' => 'shopping_lists#autosave'
+  post '/shopping_lists/autosave_checked_items' => 'shopping_lists#autosave_checked_items'
   post '/shopping_lists/shopping_list_to_cupboard' => 'shopping_lists#shopping_list_to_cupboard'
   delete '/shopping_lists/:id/delete' => 'shopping_lists#delete', as: :delete_shopping_list
 
