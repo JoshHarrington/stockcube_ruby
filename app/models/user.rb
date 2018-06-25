@@ -31,7 +31,7 @@ class User < ApplicationRecord
       SecureRandom.urlsafe_base64
     end
   end
-	
+
 	# Remembers a user in the database for use in persistent sessions.
 	def remember
 		self.remember_token = User.new_token
@@ -44,12 +44,12 @@ class User < ApplicationRecord
     return false if digest.nil?
     BCrypt::Password.new(digest).is_password?(token)
   end
-  
+
 	# Forgets a user.
 	def forget
 		update_attribute(:remember_digest, nil)
   end
- 
+
   # Activates an account.
   def activate
     update_columns(activated: true, activated_at: Time.zone.now)
@@ -71,11 +71,16 @@ class User < ApplicationRecord
     UserMailer.password_reset(self).deliver_now
   end
 
+  # Sends shopping list to cupboard reminder.
+  def send_shopping_list_reminder_email
+    UserMailer.shopping_list_reminder(self).deliver_later(wait_until: 24.hours.from_now)
+  end
+
   # Returns true if a password reset has expired.
   def password_reset_expired?
     reset_sent_at < 2.hours.ago
   end
-  
+
   private
 
     # Converts email to all lower-case.

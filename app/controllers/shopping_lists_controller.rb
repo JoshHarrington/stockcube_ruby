@@ -162,6 +162,13 @@ class ShoppingListsController < ApplicationController
     end
   end
 
+  def send_shopping_list_reminder
+    if current_user
+      current_user.send_shopping_list_reminder_email
+      flash[:info] = "Reminder email will be sent in 24 hours"
+    end
+  end
+
   def delete
     @shopping_list = ShoppingList.find(params[:id])
     if current_user == @shopping_list.user

@@ -51,9 +51,7 @@
         --><li<% if request.path_parameters[:controller] == "shopping_lists" %> class="current_section"<% end %>><!--
           --><% if current_user.shopping_lists.last.shopping_list_portions.where(checked: true).length > 0 %><!--
             --><%= link_to "Current shopping list", shopping_lists_current_shop_path %><!--
-            --><%= link_to "Current shopping list", current_shopping_list_ingredients_path, :hidden => "hidden" %><!--
           --><% else %><!--
-            --><%= link_to "Current shopping list", shopping_lists_current_shop_path, :hidden => "hidden" %><!--
             --><%= link_to "Current shopping list", current_shopping_list_ingredients_path %><!--
           --><% end %><!--
         --></li><!--

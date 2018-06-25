@@ -19,4 +19,9 @@ class UserMailer < ApplicationMailer
     @user = user
     mail to: user.email, subject: "Password reset"
   end
+
+  def shopping_list_reminder(user)
+    @user = user
+    mail to: user.email, subject: "Shopping List Reminder"
+  end
 end

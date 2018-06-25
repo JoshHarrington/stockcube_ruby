@@ -6,9 +6,9 @@
 		<h2>Shopping List - Shop Mode</h2>
     <p>Now you're in 'Shop Mode' you can check off ingredients you need to add.
     <br/>
-    You might already have ingredients in stock so be sure to check the colours (key at the bottom).
+    You might already have ingredients in stock so be sure to check the colours (there's a key at the bottom).
     </p>
-    <p>Only the items you check off will get added to your cupboards.</p>
+    <p>Only the items you check off will get added to your cupboards. You will be able to change their amounts later.</p>
   </div>
   <div class="list_block--collection">
     <%= form_tag({controller: "shopping_lists", action: "shopping_list_to_cupboard" }, class: "list_block list_block__grid list_block__full", id: "shopping_list_shop_mode_form",  method: :post) do %>
@@ -36,7 +36,12 @@
       <h3 class="list_block--form_action--title">Move to cupboards now?</h3>
       <p class="list_block--form_action--sub_title">Should only take a couple of minutes</p>
       <%= button_tag "Yep I've got time", name: nil, class: 'list_block--form_action' %>
-      <%# <% button_tag "I'll do it later" %>
+
+      <%# Need to figure out method to either send or not send the reminder email %>
+        <%# Also be worth checking if the shopping list still exists before
+        sending the email as the user may have already moved the ingredients over to the cupboard %>
+      <%#= link_to "Not right now", shopping_list_delay, title: 'add to shopping list' %>
+      <%#= check_box_tag "reminder_pick", "" %>
     <% end %>
   </div>
   <div class="list_block--collection--sibling list_block--collection--sibling_stack">
