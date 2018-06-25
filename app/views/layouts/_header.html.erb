@@ -45,11 +45,18 @@
         <li class="<% current_section == 'recipes' ? 'current_section' : ''%>"><%= link_to "Recipes", recipes_path %>
         </li><% end %><!--
       --><% if logged_in? && current_user && current_user.admin %><!--
-      --><li <% if current_section == "ingredients" %>class="current_section"<% end %>><%= link_to "Ingredients", ingredients_path %></li><!--
+        --><li <% if current_section == "ingredients" %>class="current_section"<% end %>><%= link_to "Ingredients", ingredients_path %></li><!--
       --><% end %><!--
       --><% if logged_in? && current_user && current_user.shopping_lists.first && current_user.shopping_lists.last.archived == false && current_user.shopping_lists.last.recipes.length != 0 %><!--
-      --><li<% if request.path_parameters[:controller] == "shopping_lists" && (((request.path_parameters[:action] == "show_ingredients" && request.path_parameters[:id].to_i == current_user.shopping_lists.last.id.to_i) || request.path_parameters[:action] == "show_ingredients_current") || ((request.path_parameters[:action] == "show" && request.path_parameters[:id].to_i == current_user.shopping_lists.last.id.to_i) || request.path_parameters[:action] == "show_current")) %> class="current_section"<% end %>><%= link_to "Current shopping list", current_shopping_list_ingredients_path %>
-      </li><!--
+        --><li<% if request.path_parameters[:controller] == "shopping_lists" %> class="current_section"<% end %>><!--
+          --><% if current_user.shopping_lists.last.shopping_list_portions.where(checked: true).length > 0 %><!--
+            --><%= link_to "Current shopping list", shopping_lists_current_shop_path %><!--
+            --><%= link_to "Current shopping list", current_shopping_list_ingredients_path, :hidden => "hidden" %><!--
+          --><% else %><!--
+            --><%= link_to "Current shopping list", shopping_lists_current_shop_path, :hidden => "hidden" %><!--
+            --><%= link_to "Current shopping list", current_shopping_list_ingredients_path %><!--
+          --><% end %><!--
+        --></li><!--
       --><% end %><% if logged_in? && current_user %><!--
       --><li <% if current_section == "cupboards" %>class="current_section"<% end %>><%= link_to "Cupboard", cupboards_path %></li><% end %>
       </ul>
