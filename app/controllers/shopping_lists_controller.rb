@@ -165,8 +165,13 @@ class ShoppingListsController < ApplicationController
   def send_shopping_list_reminder
     if current_user
       current_user.send_shopping_list_reminder_email
+      redirect_to root_url
       flash[:info] = "Reminder email will be sent in 24 hours"
     end
+  end
+
+  def delay_shopping_list_process
+    redirect_to root_url
   end
 
   def delete

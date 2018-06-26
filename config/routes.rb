@@ -16,7 +16,8 @@ Rails.application.routes.draw do
   post '/shopping_lists' => 'shopping_lists#create'
   post '/shopping_lists/autosave' => 'shopping_lists#autosave'
   post '/shopping_lists/autosave_checked_items' => 'shopping_lists#autosave_checked_items'
-  post '/shopping_lists/reminder_email' => 'shopping_lists#send_shopping_list_reminder'
+  post '/shopping_lists/reminder_email' => 'shopping_lists#send_shopping_list_reminder', as: :shopping_list_delay__with_notification
+  post '/shopping_lists/no_reminder_email' => 'shopping_lists#delay_shopping_list_process', as: :shopping_list_delay
   post '/shopping_lists/shopping_list_to_cupboard' => 'shopping_lists#shopping_list_to_cupboard'
   delete '/shopping_lists/:id/delete' => 'shopping_lists#delete', as: :delete_shopping_list
 

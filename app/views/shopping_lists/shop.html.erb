@@ -32,16 +32,23 @@
       <% end %>
       <hr class="list_block--form--divider">
       <break></break>
-      <hr class="list_block--form_action--title--divider">
-      <h3 class="list_block--form_action--title">Move to cupboards now?</h3>
-      <p class="list_block--form_action--sub_title">Should only take a couple of minutes</p>
-      <%= button_tag "Yep I've got time", name: nil, class: 'list_block--form_action' %>
-
-      <%# Need to figure out method to either send or not send the reminder email %>
-        <%# Also be worth checking if the shopping list still exists before
-        sending the email as the user may have already moved the ingredients over to the cupboard %>
-      <%#= link_to "Not right now", shopping_list_delay, title: 'add to shopping list' %>
-      <%#= check_box_tag "reminder_pick", "" %>
+      <hr class="list_block--form_actions--divider_wide" />
+      <div class="list_block--form_actions">
+        <div class="list_block--form_actions--title_row">
+          <h3 class="list_block--form_action--title">Move stock to cupboards now?</h3>
+          <p class="list_block--form_action--sub_title">It should only take a couple of minutes</p>
+        </div>
+        <div class="list_block--form_action--container">
+          <%= button_tag "Yes", name: nil, class: 'list_block--form_action' %>
+        </div>
+        <vr class="list_block--form_actions--vertical_divider"></vr>
+        <div class="list_block--form_action--container">
+          <%= check_box_tag "reminder_pick", "reminder_pick_status", true %>
+          <span class="form_action--reminder_pick--with_notification"><%= link_to "Do it later", shopping_list_delay_path, title: 'add to shopping list', class: 'list_block--form_action' %><span class="reminder_text"> (with reminder)</span></span>
+          <span class="form_action--reminder_pick--no_notification"><%= link_to "Do it later", shopping_list_delay__with_notification_path, title: 'add to shopping list', class: 'list_block--form_action' %><span class="reminder_text"> (no reminder)</span></span>
+          <%= label_tag "reminder_pick", "Send an email reminder in 24 hours", class: "reminder_pick--label" %>
+        </div>
+      </div>
     <% end %>
   </div>
   <div class="list_block--collection--sibling list_block--collection--sibling_stack">

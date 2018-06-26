@@ -185,7 +185,7 @@ $bp-mobile: 600px;
 			}
 		}
 	}
-	[type="checkbox"] + label {
+	[type="checkbox"] ~ label {
 		padding-left: em(44, 15);
 		cursor: pointer;
 		&::before {
@@ -226,7 +226,7 @@ $bp-mobile: 600px;
 		width: calc(100% - 6px);
     margin-left: 3px;
 	}
-	& [type="checkbox"]:not(:checked) ~ .list_block--form--divider {
+	& [type="checkbox"]:checked ~ .list_block--form--divider {
 		display: block;
 	}
 	break {
@@ -236,45 +236,40 @@ $bp-mobile: 600px;
 		overflow: hidden;
 		order: 6;
 	}
-	.list_block--form_action--title {
-		order: 8;
-		margin-top: em(20, 15);
-	}
 	.list_block--form_action--sub_title {
 		order: 9;
 		margin-top: em(10, 15);
 	}
-	.list_block--form_action--title--divider {
+	.list_block--form_actions--divider_wide {
 		order: 7;
+		display: block;
+		margin-left: em(-9, 10);
+    margin-right: em(-9, 10);
+    width: calc(100% + 18px);
 	}
-	.list_block--form_action--sub_title,
-	.list_block--form_action--title,
-	.list_block--form_action--title--divider {
-		flex-basis: 100%;
-		display: none;
+	.list_block--form_actions--divider {
+		order: 10;
+		display: block;
+	}
+	.list_block--form_actions {
+		order: 8;
 	}
 	.list_block--form_action {
 		font-size: em(15, 10);
-		margin-top: em(20, 15);
 		margin-left: em(3, 15);
-		order: 10;
 		padding: em(10, 15) em(15, 15);
 		background-color: $teal-20;
 		border: 1px solid $teal-40;
 		color: white;
 		pointer-events: none;
 		cursor: not-allowed;
+		display: inline-block;
 	}
-	& [type="checkbox"]:checked {
-		& ~ .list_block--form_action {
+	& [type="checkbox"]:checked ~ {
+		.list_block--form_actions .list_block--form_action {
 			color: $black-80;
 			pointer-events: all;
 			cursor: pointer;
-		}
-		& ~ .list_block--form_action--title,
-		& ~ .list_block--form_action--sub_title,
-		& ~ .list_block--form_action--title--divider {
-			display: block;
 		}
 	}
 	.list_block--item.date-full-warning,
@@ -291,3 +286,81 @@ $bp-mobile: 600px;
 	}
 }
 
+.list_block--form_actions {
+	display: flex;
+	flex-wrap: wrap;
+	overflow: hidden;
+}
+
+.list_block--form_actions--title_row {
+	flex-basis: 100%;
+	margin-bottom: em(20, 10);
+	padding-left: em(3, 10);
+	margin-top: em(10, 10);
+}
+
+.list_block--form_action--container {
+	flex-basis: calc(50% - 8px);
+	@media (max-width: $bp-mobile) {
+		flex-basis: 100%;
+	}
+}
+
+.list_block--form_actions--vertical_divider {
+	flex-basis: em(2, 10);
+	width: em(2, 10);
+	height: 100%;
+	margin: 0 em(7, 10);
+	background-color: $teal-40;
+	@media (max-width: $bp-mobile) {
+		flex-basis: 100%;
+		width: 100%;
+		height: em(2, 10);
+		margin: em(17, 10) em(3, 10);
+	}
+}
+
+.reminder_text {
+	font-size: em(15, 10);
+	margin-left: em(5, 15);
+}
+
+#reminder_pick ~ .reminder_pick--label {
+	position: relative;
+	order: 11;
+	min-height: em(32, 15);
+	display: flex;
+	align-items: center;
+	padding-left: em(44, 15);
+	margin-top: em(15, 15);
+	&::before {
+		content: "";
+		top: 0;
+		border: 2px solid black;
+		width: em(32, 15);
+		height: em(32, 15);
+	}
+	&::after {
+		content: "";
+		top: em(17, 15);
+		left: em(14, 15);
+		top: em(9, 15);
+	}
+}
+
+#reminder_pick:checked ~ {
+	.form_action--reminder_pick--no_notification {
+		display: none;
+	}
+	.reminder_pick--label::after {
+		zoom: 1;
+		filter: alpha(opacity=100);
+		opacity: 1;
+	}
+}
+
+#reminder_pick:not(:checked) ~ {
+	.form_action--reminder_pick--with_notification {
+		display: none;
+	}
+}
