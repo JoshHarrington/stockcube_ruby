@@ -44,3 +44,21 @@ $(document).on("turbolinks:load", function() {
 		cupboard();
 	}
 });
+
+var cupboardEdit = function() {
+	window.onbeforeunload = function(e) {
+		var dialogText = 'Unsaved changes';
+		e.returnValue = dialogText;
+		return dialogText;
+	};
+	console.log('hello');
+}
+
+
+// catch when user navigating away from page without submitting
+// -- both on turbolinks:unload and window.onbeforeunload
+
+// $(document).on("turbolinks:beforeunload", function() {
+// 	console.log('hi');
+// 	alert('hi');
+// });

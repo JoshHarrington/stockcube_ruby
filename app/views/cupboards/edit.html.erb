@@ -1,5 +1,5 @@
 <% provide(:title, (@cupboard.setup ? 'Importing shop stock' : "Editing '#{@cupboard.location.to_s}''")) %>
-<%= form_for @cupboard do |f| %>
+<%= form_for @cupboard, :html => {id: "edit_cupboard_form", class: "edit_cupboard_form"} do |f| %>
 	<%= f.submit "Save" %>
 	<div class="field">
 		<% if @cupboard.setup %>

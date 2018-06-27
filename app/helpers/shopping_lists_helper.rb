@@ -98,6 +98,7 @@ module ShoppingListsHelper
 		shopping_list.shopping_list_portions.delete_all
 
 		@portions.each do |portion|
+			next if portion.ingredient.name.downcase == "water"
 
 			shopping_list_portion = ShoppingListPortion.create(
 				shopping_list_id: shopping_list.id,

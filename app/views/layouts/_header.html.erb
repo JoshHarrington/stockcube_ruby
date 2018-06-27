@@ -1,5 +1,8 @@
 <div class="header-nav-banner">
-  <% current_section = request.path_parameters[:controller] %>
+  <%
+    current_section = request.path_parameters[:controller]
+    notification_count = true # true = red icon shows up, integer = red icon with number shows up
+  %>
   <% if current_user && current_user.demo == true %>
     <div class="site_notice">
       <p>Site currently in Demo mode</p>
@@ -18,20 +21,14 @@
       <% if not logged_in? && current_user %>
           <%= link_to login_path, class: "profile_item" do %>
             <p>Sign in</p>
-            <span class="account-btn<%= (current_section == 'users') || (current_section == 'sessions') ? ' current_section' : '' %>">
-              <%= icomoon('user') %>
-            </span>
+            <%= render './layouts/account_nav_item_fake_partial', current_section: current_section %>
           <% end %>
       <% elsif current_user.demo == true %>
         <span class="profile_item demo_mode">
-          <span class="account-btn<%= (current_section == 'users') || (current_section == 'sessions') ? ' current_section' : '' %>">
-            <%= icomoon('user') %>
-          </span>
+          <%= render './layouts/account_nav_item_fake_partial', current_section: current_section %>
         </span>
       <% else %>
-        <%= link_to edit_user_path(current_user), class: "account-btn#{(current_section == 'users') || (current_section == 'sessions') ? ' current_section' : ''}" do %>
-          <%= icomoon('user') %>
-        <% end %>
+        <%= render './layouts/account_nav_item_partial', current_section: current_section, notifications: notification_count %>
       <% end %>
     </div>
   </header>
@@ -61,9 +58,7 @@
       <% if not logged_in? && current_user %>
         <%= link_to login_path, class: "profile_item" do %>
           <p>Sign in</p>
-          <span class="account-btn<%= (current_section == 'users') || (current_section == 'sessions') ? ' current_section' : '' %>">
-            <%= icomoon('user') %>
-          </span>
+          <%= render './layouts/account_nav_item_fake_partial', current_section: current_section %>
         <% end %>
       <% elsif current_user.demo == true %>
         <span class="profile_item demo_mode">
@@ -73,9 +68,7 @@
           </span>
         </span>
       <% else %>
-        <%= link_to edit_user_path(current_user), class: "account-btn#{(current_section == 'users') || (current_section == 'sessions') ? ' current_section' : ''}" do %>
-          <%= icomoon('user') %>
-        <% end %>
+        <%= render './layouts/account_nav_item_partial', current_section: current_section, notifications: notification_count %>
       <% end %>
       <%= link_to "Return to Content", href: "#top", id: "nav-close-btn", class: "nav-btn close-btn svg-btn", data: { turbolinks: 'false' } do %>
         <%= icomoon('close') %>

@@ -202,6 +202,7 @@ footer[role="contentinfo"] {
   background-color: $teal-110;
   color: black;
   transition: background-color .2s;
+  position: relative;
   .profile_item:not(.demo_mode) &:hover {
     background-color: $teal-80;
   }
@@ -211,6 +212,32 @@ footer[role="contentinfo"] {
   svg {
     width: em(30, 15);
     height: em(30, 15);
+  }
+  &.notifcations {
+    &::before {
+      content: " ";
+      background: $warning-red-strong;
+      color: white;
+      width: 13px;
+      height: 13px;
+      font-size: 10px;
+      position: absolute;
+      display: flex;
+      align-items: center;
+      border-radius: 50%;
+      justify-content: center;
+      top: -1px;
+      right: -2px;
+      padding-bottom: 2px;
+      overflow: hidden;
+    }
+    &[data-notifications]:not([data-notifications="null"])::before {
+        content: attr(data-notifications);
+        width: 15px;
+        height: 15px;
+        top: -2px;
+        right: -3px;
+    }
   }
 }
 
