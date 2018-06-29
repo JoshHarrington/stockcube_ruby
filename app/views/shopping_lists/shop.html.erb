@@ -11,7 +11,7 @@
     <p>Only the items you check off will get added to your cupboards. You will be able to change their amounts later.</p>
   </div>
   <div class="list_block--collection">
-    <%= form_tag({controller: "shopping_lists", action: "shopping_list_to_cupboard" }, class: "list_block list_block__grid list_block__full", id: "shopping_list_shop_mode_form",  method: :post) do %>
+    <%= form_tag({controller: "shopping_lists", action: "shopping_list_to_cupboard" }, class: "list_block list_block__full", id: "shopping_list_shop_mode_form",  method: :post) do %>
       <% @shopping_list_portions.each_with_index do |sl_portion, index| %>
         <% if sl_portion.in_cupboard == true && sl_portion.enough_in_cupboard == true %>
           <%= check_box_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", "#{sl_portion.portion_amount}", sl_portion.checked, data: {"id" => sl_portion.id} %>

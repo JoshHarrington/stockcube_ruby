@@ -1,9 +1,29 @@
 <% provide(:title, 'Edit user') %>
 <% provide(:button_text, 'Save changes') %>
+<%
+  current_user.cupboards.where(setup: true, hidden: false).length > 0 ? update_cupboard = current_user.cupboards.where(setup: true, hidden: false).last : update_cupboard = false
+  current_user.shopping_lists.length > 0 && current_user.shopping_lists.last.archived == false && current_user.shopping_lists.last.recipes.length != 0 && current_user.shopping_lists.last.shopping_list_portions.where(checked: true).length > 0 ? shop_mode = true : shop_mode = false
+%>
 <div class="pretty_form">
   <div class="pretty_form--sibling">
     <h1>Your profile</h1>
     <p>(<%= link_to "sign out", logout_path, method: :delete %>)</p>
   </div>
+  <% if shop_mode || update_cupboard %>
+  <div class="pretty_form--sibling">
+    <h2>Todos:</h2>
+    <ul>
+      <% if shop_mode %>
+      <li>
+        <p>Finish moving your <%= link_to "checked shopping list items", shopping_lists_current_shop_path %> to your cupboards</p>
+      </li>
+      <% elsif update_cupboard %>
+      <li>
+        <p>Finish moving your shopping list items to the <%= link_to "right cupboards", edit_cupboard_path(update_cupboard) %></p>
+      </li>
+      <% end %>
+    </ul>
+  </div>
+  <% end %>
   <%= render 'form' %>
 </div>

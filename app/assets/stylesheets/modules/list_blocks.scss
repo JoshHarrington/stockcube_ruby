@@ -203,7 +203,7 @@ a.list_block {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	.list_block__grid & {
+	.list_block:not(.list_block__column) & {
 		margin: 0 em(3, 17) em(10, 17);
 	}
 	h3 {
