@@ -43,14 +43,14 @@ $bp-mobile: 600px;
 		}
 		padding: em(10, 15);
 	}
-	input[type="checkbox"] {
+	[type="checkbox"]:not(.checkbox_standard) {
 		margin: em(20, 13) 0;
 		@media (max-width: $bp-mobile) {
 			margin: em(10, 16) 0;
 		}
 	}
 	@media (max-width: $bp-mobile) {
-		input[type="checkbox"],
+		[type="checkbox"]:not(.checkbox_standard),
 		label.checkbox {
 			width: auto;
 		}
@@ -161,7 +161,7 @@ $bp-mobile: 600px;
 
 
 .list_block--collection--wrap form {
-	[type="checkbox"] {
+	[type="checkbox"]:not(.checkbox_standard) {
 		position: absolute;
 		cursor: pointer;
 		left: 0;
@@ -185,7 +185,7 @@ $bp-mobile: 600px;
 			}
 		}
 	}
-	[type="checkbox"] ~ label {
+	[type="checkbox"]:not(.checkbox_standard) ~ label {
 		padding-left: em(44, 15);
 		cursor: pointer;
 		&::before {
@@ -226,7 +226,7 @@ $bp-mobile: 600px;
 		width: calc(100% - 6px);
     margin-left: 3px;
 	}
-	& [type="checkbox"]:checked ~ .list_block--form--divider {
+	& [type="checkbox"]:not(.checkbox_standard):checked ~ .list_block--form--divider {
 		display: block;
 	}
 	break {
@@ -265,7 +265,7 @@ $bp-mobile: 600px;
 		cursor: not-allowed;
 		display: inline-block;
 	}
-	& [type="checkbox"]:checked ~ {
+	& [type="checkbox"]:not(.checkbox_standard):checked ~ {
 		.list_block--form_actions .list_block--form_action {
 			color: $black-80;
 			pointer-events: all;
@@ -364,3 +364,51 @@ $bp-mobile: 600px;
 		display: none;
 	}
 }
+
+.list_block--delete_status_checkbox:checked + .list_block {
+	position: relative;
+	border-color: $teal-20;
+	>*:not(.list_block--title),
+	.list_block--title p {
+		opacity: .7;
+	}
+	.edit_list_block_button {
+		z-index: 2;
+		position: relative;
+		color: black;
+	}
+	&::before {
+		content: " ";
+		background-color: $teal-20;
+		opacity: .3;
+		z-index: 1;
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+	}
+}
+
+.cupboard_form--delete_stock_button {
+	position: relative;
+	&:hover::before {
+		content: "delete this ingredient?";
+    position: absolute;
+    top: 100%;
+    right: 100%;
+    z-index: 5;
+    padding: 7px;
+    background: whitesmoke;
+    border: 1px solid antiquewhite;
+    width: 114px;
+		line-height: 15px;
+		text-align: center;
+	}
+	.list_block--delete_status_checkbox:checked + .list_block & {
+		&:hover::before {
+			content: "keep this ingredient?"
+		}
+	}
+}
+

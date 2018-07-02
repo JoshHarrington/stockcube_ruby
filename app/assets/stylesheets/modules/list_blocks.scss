@@ -175,7 +175,8 @@ a.list_block {
 	display: block;
 }
 
-.list_block input[type="checkbox"] {
+.list_block input[type="checkbox"],
+.list_block--item_edit--checkbox {
 	position: absolute;
 	left: -100000vw;
 	visibility: hidden;
