@@ -195,7 +195,7 @@ class ShoppingListsController < ApplicationController
     end
 
     def user_has_shopping_lists
-			unless current_user.shopping_lists.last.archived == false && current_user.shopping_lists.last.recipes.length != 0
+			if current_user && current_user.shopping_lists.last && current_user.shopping_lists.last.archived == true && current_user.shopping_lists.last.recipes.length == 0
 				redirect_to root_url
 			end
 		end

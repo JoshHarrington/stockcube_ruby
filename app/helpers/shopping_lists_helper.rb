@@ -2,9 +2,13 @@ module ShoppingListsHelper
 	require 'set'
 	include ActionView::Helpers::NumberHelper
 	def shoppingListIndex(shopping_list)
-		userShoppingLists = current_user.shopping_lists
-		zero_base_index = userShoppingLists.index(shopping_list)
-		return zero_base_index + 1
+		if current_user && current_user.shopping_lists.length > 0
+			userShoppingLists = current_user.shopping_lists
+			zero_base_index = userShoppingLists.index(shopping_list)
+			return zero_base_index + 1
+		else
+			return 1
+		end
 	end
 
 	def metric_transform(portion_obj, portion_unit_obj)
@@ -71,16 +75,20 @@ module ShoppingListsHelper
 	end
 
 	def shopping_list_latest(shopping_list)
-		latest_shopping_list = current_user.shopping_lists.order('created_at DESC').first
-		if shopping_list.id == latest_shopping_list.id
-			return true
-		else
-			return false
+		if current_user && current_user.shopping_lists.length > 0
+			latest_shopping_list = current_user.shopping_lists.order('created_at DESC').first
+			if shopping_list.id == latest_shopping_list.id
+				return true
+			else
+				return false
+			end
 		end
 	end
 
 
 	def shopping_list_portions_set(shopping_list)
+
+		## check if one exists? create if doesn't
 
 		@recipes = shopping_list.recipes
 		@recipe_ids = shopping_list.recipes.map(&:id)
