@@ -6,9 +6,13 @@
     <p>(<%= link_to "update profile", edit_user_path(@user) %>)</p>
   </div>
   <div class="fake_form">
-    <p class="info">Name:</p>
-    <p><%= @user.name %></p>
-    <p class="info">Email:</p>
-    <p><%= @user.email %></p>
+    <div class="pretty_form--row">
+      <p class="info">Name:</p>
+      <p><%= @user.name %></p>
+    </div>
+    <div class="pretty_form--row">
+      <p class="info">Email:</p>
+      <p><%= @user.email %></p>
+    </div>
   </div>
 </div>

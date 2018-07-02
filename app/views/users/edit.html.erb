@@ -5,7 +5,7 @@
   current_user.shopping_lists.length > 0 && current_user.shopping_lists.last.archived == false && current_user.shopping_lists.last.recipes.length != 0 && current_user.shopping_lists.last.shopping_list_portions.where(checked: true).length > 0 ? shop_mode = true : shop_mode = false
 %>
 <div class="pretty_form">
-  <div class="pretty_form--sibling">
+  <div class="pretty_form--sibling pretty_form--sibling_row">
     <h1>Your profile</h1>
     <p>(<%= link_to "sign out", logout_path, method: :delete %>)</p>
   </div>
@@ -15,11 +15,13 @@
     <ul>
       <% if shop_mode %>
       <li>
-        <p>Finish moving your <%= link_to "checked shopping list items", shopping_lists_current_shop_path %> to your cupboards</p>
+        <p>Finish moving your <%= link_to "checked shopping list items", shopping_lists_current_shop_path %> to your cupboards (this todo will disappear when complete!)</p>
+        <p class="h6 fade_text">(this todo will disappear when complete!)</p>
       </li>
       <% elsif update_cupboard %>
       <li>
         <p>Finish moving your shopping list items to the <%= link_to "right cupboards", edit_cupboard_path(update_cupboard) %></p>
+        <p class="h6 fade_text">(this todo will disappear when complete!)</p>
       </li>
       <% end %>
     </ul>
