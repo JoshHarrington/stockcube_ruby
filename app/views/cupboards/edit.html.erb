@@ -7,7 +7,11 @@
 			<% else %>
 				<h2><%= f.text_field :location %></h2>
 			<% end %>
-			<%= submit_tag "Save", class: 'list_block--collection--action' %>
+			<% if @cupboard.setup %>
+				<%= submit_tag "Save shopping items to cupboards", class: 'list_block--collection--action' %>
+			<% else %>
+				<%= submit_tag "Update #{@cupboard.location}", class: 'list_block--collection--action' %>
+			<% end %>
 		</div>
 
 		<div class="list_block--collection">
