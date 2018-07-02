@@ -212,13 +212,7 @@ a.list_block {
 	}
 	input[type="text"] {
 		font-size: em(17, 17);
-		border: 1px solid transparent;
 		padding: em(3, 17);
-		width: 100%;
-		&:focus {
-			border-color: $black-30;
-			outline: none;
-		}
 	}
 	.list_block--action {
 		width: em(35, 15);
@@ -235,6 +229,18 @@ a.list_block {
 		font-size: em(17, 17);
 		&:hover {
 			color: $black-80;
+		}
+	}
+}
+
+.list_block--title,
+.list_block--collection--wrap {
+	input[type="text"] {
+		border: 1px solid transparent;
+		width: 100%;
+		&:focus {
+			border-color: $black-30;
+			outline: none;
 		}
 	}
 }
