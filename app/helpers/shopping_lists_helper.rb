@@ -88,10 +88,10 @@ module ShoppingListsHelper
 
 	def shopping_list_portions_set(shopping_list)
 
-		## check if one exists? create if doesn't
+		@recipe_ids = ShoppingListRecipe.where(shopping_list_id: shopping_list.id).map(&:id)
 
-		@recipes = shopping_list.recipes
-		@recipe_ids = shopping_list.recipes.map(&:id)
+		# @recipes = shopping_list.recipes
+		# @recipe_ids = shopping_list.recipes.map(&:id)
 
 		@portions = Portion.where(recipe_id: @recipe_ids)
 		@portion_ids = @portions.map(&:id)

@@ -149,7 +149,7 @@ class RecipesController < ApplicationController
 			current_shopping_list = ShoppingList.create(user_id: current_user.id)
 		end
 
-		current_shopping_list.recipes << @recipe
+		ShoppingListRecipe.create(shopping_list_id: current_shopping_list.id, recipe_id: params[:id])
 
 		shopping_list_portions_set(current_shopping_list)
 
