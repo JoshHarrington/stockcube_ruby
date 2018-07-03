@@ -1,10 +1,10 @@
-<p><%= @sl_portion.ingredient.name %> [<%= @sl_portion.portion_amount %> <%= @sl_portion.unit.name %>]</p>
-<% if @sl_portion.in_cupboard == true %>
+<p><%= sl_portion.ingredient.name %> [<%= sl_portion.portion_amount %> <%= sl_portion.unit.name %>]</p>
+<% if sl_portion.in_cupboard == true %>
   <span class="list_block--item--ingredient_note">
-    <% if @sl_portion.plenty_in_cupboard == true %>
+    <% if sl_portion.plenty_in_cupboard == true %>
       <span>Loads in cupboards</span>
     <% else %>
-      <span><%= @sl_portion.percent_in_cupboard %>% in cupboards</span>
+      <span><%= sl_portion.percent_in_cupboard %>% in cupboards</span>
     <% end %>
   </span>
 <% end %>
