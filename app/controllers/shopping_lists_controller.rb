@@ -191,7 +191,7 @@ class ShoppingListsController < ApplicationController
 
   private
     def shopping_list_params
-      params.require(:shopping_list).permit(:id, :date_created, :archived, recipes_attributes:[:id, :title, :description, :_destroy], shopping_list_portion_attributes:[:id, :unit_number, :_destroy], unit_attributes:[:id, :unit_type, :_destroy], shopping_list_item:[ingredient_id:[unit_number:[:amount]]])
+      params.require(:shopping_list).permit(:id, :date_created, :archived, recipes_attributes:[:id, :title, :description, :_destroy], shopping_list_portion_attributes:[:id, :ingredient_id, :shopping_list_id, :unit_number, :recipe_number, :portion_amount, :stock_amount, :in_cupboard, :percent_in_cupboard, :checked, :enough_in_cupboard, :plenty_in_cupboard, :_destroy], unit_attributes:[:id, :unit_type, :_destroy], shopping_list_item:[ingredient_id:[unit_number:[:amount]]])
     end
 
     def user_has_shopping_lists

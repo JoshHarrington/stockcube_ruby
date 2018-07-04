@@ -126,7 +126,7 @@ module ShoppingListsHelper
 
 			if similar_shopping_list_portion.id != shopping_list_portion.id && similar_shopping_list_portion_all.length != 0
 				if similar_shopping_list_portion.unit_number != nil && ingredient_unit_number == similar_shopping_list_portion.unit_number.to_i
-					portion_amount = similar_shopping_list_portion.portion_amount.to_f + portion_amount
+					portion_amount = similar_shopping_list_portion.portion_amount.to_f + portion_amount.to_f
 				else
 					similar_shli_portion_amount = similar_shopping_list_portion.portion_amount.to_f
           similar_shli_unit_number = similar_shopping_list_portion.unit_number.to_i
@@ -134,7 +134,7 @@ module ShoppingListsHelper
           if unit_model.metric_ratio
             similar_shli_portion_amount = similar_shli_portion_amount * unit_model.metric_ratio
           end
-          portion_amount = portion_amount + similar_shli_portion_amount
+          portion_amount = portion_amount.to_f + similar_shli_portion_amount
 				end
 			end
 

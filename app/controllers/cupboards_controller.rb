@@ -113,11 +113,11 @@ class CupboardsController < ApplicationController
 
 
 		if @cupboard.setup == true
-			@cupboard.hidden = true
+			@cupboard.update_attributes(hidden: true)
 		end
 
-		# redirect_to cupboards_path
-		redirect_to edit_cupboard_path(@cupboard.id)
+		redirect_to cupboards_path
+		# redirect_to edit_cupboard_path(@cupboard.id)
 
 		# @stock_ids = []
 		# @stocks.each do |stock|
