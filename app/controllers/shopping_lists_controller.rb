@@ -109,25 +109,25 @@ class ShoppingListsController < ApplicationController
 		@recipes = @shopping_list.recipes
 	end
 	def update
-    @shopping_list = ShoppingList.find(params[:id])
-    @recipes = @shopping_list.recipes
-    @existing_recipe_ids = []
-    @recipes.each do |recipe|
-      @existing_recipe_ids << recipe.id
-    end
+    # @shopping_list = ShoppingList.find(params[:id])
+    # @recipes = @shopping_list.recipes
+    # @existing_recipe_ids = []
+    # @recipes.each do |recipe|
+    #   @existing_recipe_ids << recipe.id
+    # end
 
-    @form_recipe_ids = params[:shopping_list][:recipes][:id]
+    # @form_recipe_ids = params[:shopping_list][:recipes][:id]
 
-    @recipes_to_remove = @existing_recipe_ids - @form_recipe_ids
-    @recipes_to_add = @form_recipe_ids - @existing_recipe_ids
+    # @recipes_to_remove = @existing_recipe_ids - @form_recipe_ids
+    # @recipes_to_add = @form_recipe_ids - @existing_recipe_ids
 
-    @recipe_unpick = Recipe.find(@recipes_to_remove)
-    @recipe_pick = Recipe.find(@recipes_to_add)
+    # @recipe_unpick = Recipe.find(@recipes_to_remove)
+    # @recipe_pick = Recipe.find(@recipes_to_add)
 
-    @recipes.delete(@recipe_unpick)
-    @recipes << @recipe_pick
+    # @recipes.delete(@recipe_unpick)
+    # @recipes << @recipe_pick
 
-    shopping_list_portions_set(@shopping_list)
+    shopping_list_portions_set(@form_recipe_ids, current_user.id, params[:id])
 
     if @shopping_list.update(shopping_list_params)
       redirect_to shopping_list_path(@shopping_list)
@@ -138,12 +138,12 @@ class ShoppingListsController < ApplicationController
 
   def autosave
     if params.has_key?(:shopping_list_id) && params[:shopping_list_id].to_s != '' && params.has_key?(:recipe_id) && params[:recipe_id].to_s != ''
-      shopping_list = ShoppingList.find(params[:shopping_list_id])
-      recipes_to_delete = Recipe.find(params[:recipe_id])
-      recipes_to_delete.each do |recipe|
-        shopping_list.recipes.delete(recipe)
-      end
-      shopping_list_portions_set(shopping_list)
+      # shopping_list = ShoppingList.find(params[:shopping_list_id])
+      # recipes_to_delete = Recipe.find(params[:recipe_id])
+      # recipes_to_delete.each do |recipe|
+      #   shopping_list.recipes.delete(recipe)
+      # end
+      shopping_list_portions_set(nil, params[:recipe_id], current_user.id, params[:shopping_list_id])
 		end
   end
 
