@@ -84,16 +84,16 @@ class ShoppingListsController < ApplicationController
   def shopping_list_to_cupboard
     @import_cupboard = Cupboard.create(location: "Import Cupboard (Hidden)", setup: true, user_id: current_user.id)
 
-    stocks = params[:shopping_list_item].to_unsafe_h.map do |ingredient_id, x|
-       unit_number = x.keys.first
-       amount = x.values.first
-       Stock.create(
-        unit_number: unit_number,
-        amount: amount,
-        ingredient_id: ingredient_id,
-        cupboard_id: @import_cupboard.id,
-        use_by_date: 2.weeks.from_now
-      )
+    if current_user.shopping_lists.length > 0 && current_user.shopping_lists.last.archived != true
+      current_user.shopping_lists.last.shopping_list_portions.each do |shopping_list_portion|
+        Stock.create(
+          unit_number: shopping_list_portion.unit_number,
+          amount: shopping_list_portion.portion_amount,
+          ingredient_id: shopping_list_portion.ingredient_id,
+          cupboard_id: @import_cupboard.id,
+          use_by_date: 2.weeks.from_now
+        )
+      end
     end
 
     current_user.shopping_lists.last.update_attributes(
@@ -127,7 +127,7 @@ class ShoppingListsController < ApplicationController
     # @recipes.delete(@recipe_unpick)
     # @recipes << @recipe_pick
 
-    shopping_list_portions_set(@form_recipe_ids, current_user.id, params[:id])
+    shopping_list_portions_set(@form_recipe_ids, nil, current_user.id, params[:id])
 
     if @shopping_list.update(shopping_list_params)
       redirect_to shopping_list_path(@shopping_list)
