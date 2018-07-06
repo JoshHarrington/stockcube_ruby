@@ -70,6 +70,17 @@ $bp-mobile: 600px;
 	}
 }
 
+@media (min-width: 1500px) {
+	.pretty_form > {
+		.pretty_form--sibling,
+		.pretty_form--actions,
+		#error_explanation {
+			margin-left: 22.5vw;
+			margin-right: 22.5vw;
+		}
+	}
+}
+
 .pretty_form--row,
 .pretty_form--sibling,
 .pretty_form--actions,
@@ -152,7 +163,9 @@ $bp-mobile: 600px;
 	-webkit-appearance: none;
 	padding: em(10, 15) em(20, 15);
 	border-radius: em(3, 15);
-	border-color: $teal-20;
+	border: 1px solid $teal-20;
+	color: black;
+	text-decoration: none;
 	cursor: pointer;
 	&:hover,
 	&:focus {
@@ -183,6 +196,10 @@ $bp-mobile: 600px;
 	}
 	& + & {
 		margin-top: em(20, 10);
+	}
+	h3,
+	p {
+		flex-basis: 100%;
 	}
 	label:not(.fancy_radio_button__label) {
 		flex-basis: 100%;

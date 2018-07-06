@@ -228,7 +228,7 @@ a.list_block {
 
 .list_block--title,
 .list_block--collection--wrap {
-	input[type="text"] {
+	input[type="text"]:not(.bordered) {
 		border: 1px solid transparent;
 		width: 100%;
 		&:focus {
