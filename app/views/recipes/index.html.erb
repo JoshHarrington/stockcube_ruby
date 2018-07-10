@@ -30,6 +30,9 @@
           <%= render 'recipe_list_partial', recipe: recipe %>
         <% end %>
       </div>
+      <% if @no_results == nil %>
+        <%= will_paginate(@recipes) %>
+      <% end %>
     </div>
     <% if @fav_recipes.length > 0 %>
       <div class="list_block--collection--wrap">
