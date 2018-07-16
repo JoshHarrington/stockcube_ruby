@@ -26,4 +26,6 @@
 //= require recipes
 //= require touch-punch.min.js
 //= require shopping_list
+//= require ./vendor/quagga.min.js
+//= require barcode_read1
 
