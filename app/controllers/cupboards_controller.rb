@@ -26,7 +26,11 @@ class CupboardsController < ApplicationController
   def create
 		@cupboard = Cupboard.new(cupboard_params)
 		if current_user
-			current_user.cupboards << @cupboard
+			CupboardUser.create(
+				cupboard_id: @cupboard.id,
+				user_id: current_user.id,
+				owner: true
+			)
 		end
     if @cupboard.save
 			redirect_to stocks_new_path(:cupboard_id => @cupboard.id)
@@ -55,9 +59,9 @@ class CupboardsController < ApplicationController
 			end
 		end
 		if params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != ''
-			@cupboard_to_delete = Cupboard.find(params[:cupboard_id_delete])
-			@cupboard_to_delete.update_attributes(
-				hidden: true
+			@cupboard_to_delete = Cupboard.find(params[:cupboard_id_delete].to_i)
+			@cupboard_to_delete.update_attribute(
+				:hidden, true
 			)
 		end
 	end
