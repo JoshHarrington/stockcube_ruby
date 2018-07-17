@@ -1,7 +1,10 @@
 <% provide(:title, 'Your cupboards') %>
 <div class="list_block--collection--wrap">
   <div class="list_block--collection--sibling">
-    <h2>All Cupboards</h2>
+    <h2>Your Cupboards</h2>
+    <%= link_to '#na', class: "list_block--collection--action", title: "edit cupboard sharing settings" do %>
+      Edit cupboard sharing settings
+    <% end %>
   </div>
   <div id="cupboard-list" class="list_block--collection">
     <% @cupboards.where(hidden: false).each do |cupboard| %>
