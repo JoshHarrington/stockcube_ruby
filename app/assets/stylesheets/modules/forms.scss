@@ -260,6 +260,8 @@ $bp-mobile: 600px;
 			filter: alpha(opacity=100);
 			opacity: 1;
 		}
+	}
+	[type="checkbox"]:not(.not_ordered) {
 		&:checked {
 			order: 4;
 			& + label {
@@ -368,6 +370,33 @@ $bp-mobile: 600px;
 	.list_block--item,
 	.list_block--item_placeholder {
 		order: 3;
+	}
+}
+
+.list_block-checkmark_label {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	z-index: 3;
+	top: 0;
+	left: 0;
+	background-color: rgba(255,255,255, .3);
+	transition: background-color .2s;
+	[type="checkbox"]:checked + & {
+		background-color: rgba($teal-30, .5);
+	}
+	.list_block--collection--wrap .cupboard.list_block--untouchable &::before {
+		top: 0;
+		right: 0;
+		left: auto;
+		border-style: solid;
+		border-width: 0 0 1px 1px;
+		border-color: $teal-100;
+	}
+	.list_block--collection--wrap .cupboard.list_block--untouchable &::after {
+		top: 7px;
+		right: 6px;
+		left: auto;
 	}
 }
 

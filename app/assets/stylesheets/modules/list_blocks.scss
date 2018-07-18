@@ -150,6 +150,10 @@ a.list_block {
 	}
 }
 
+.list_block--untouchable {
+	position: relative;
+}
+
 .edit_mode--message {
 	font-family: monospace;
 	color: $teal-80;
@@ -223,6 +227,13 @@ a.list_block {
 		&:hover {
 			color: $black-80;
 		}
+	}
+}
+
+.list_block--title_chunky {
+	padding-bottom: em(1, 10);
+	h3 {
+		padding: em(3, 17);
 	}
 }
 

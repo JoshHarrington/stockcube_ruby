@@ -11,7 +11,8 @@ input,
 textarea,
 .alert,
 .debug_dump,
-.pagination>* {
+.pagination>*,
+div.list_block--item {
 	font-size: 1.5em;
 }
 

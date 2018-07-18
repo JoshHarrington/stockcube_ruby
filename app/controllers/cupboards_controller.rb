@@ -2,7 +2,7 @@ class CupboardsController < ApplicationController
 	before_action :logged_in_user
 	before_action :correct_user,   only: [:show, :edit, :update]
 	def index
-		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false).where(setup: false)
+		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false, setup: false)
 		@out_of_date_exist = false
 		@cupboards.each do |cupboard|
 			cupboard.stocks.each do |stock|
@@ -40,6 +40,11 @@ class CupboardsController < ApplicationController
 	end
 	def edit_all
 		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false).where(setup: false)
+	end
+
+	def sharing
+		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false, setup: false)
+
 	end
 	def autosave
 		if params.has_key?(:cupboard_location) && params[:cupboard_location].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
