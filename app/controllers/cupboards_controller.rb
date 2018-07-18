@@ -179,7 +179,7 @@ class CupboardsController < ApplicationController
 		# Confirms the correct user.
 		def correct_user
 			@cupboard = Cupboard.find(params[:id])
-			@user = @cupboard.user
-			redirect_to(root_url) unless current_user?(@user)
+			@user_ids = @cupboard.users.map(&:id)
+			redirect_to(root_url) unless @user_ids.include?(current_user.id)
 		end
 end
