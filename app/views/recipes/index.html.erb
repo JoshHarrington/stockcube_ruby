@@ -16,11 +16,10 @@
 
     <div class="list_block--collection--wrap">
       <% if @no_results == true %>
+      <div class="list_block--collection--sibling list_block--collection--sibling_stack">
         <p>No results found! Maybe try a more generic search?</p>
-        <br />
         <p>Here are some random recipes you might like!</p>
-        <br />
-        <br />
+      </div>
       <% else %>
         <%= will_paginate(@recipes) %>
       <% end %>
