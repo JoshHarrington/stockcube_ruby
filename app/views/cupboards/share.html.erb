@@ -1,17 +1,19 @@
 <div class="pretty_form">
-	<div class="pretty_form--sibling pretty_form--sibling_row">
-		<h1>Sharing your cupboards</h1>
-	</div>
-	<form action="#na">
-		<input type="checkbox" id="1">
-		<label for="1"></label>
-		<input type="checkbox" id="2">
-		<label for="2"></label>
-		<input type="checkbox" id="3">
-		<label for="3"></label>
-		<input type="checkbox" id="4">
-		<label for="4"></label>
-		<input type="checkbox" id="5">
-		<label for="5"></label>
-	</form>
+	<h1>Sharing <%= @cupboard_name %></h1>
+	<% if @cupboard.users.length < 2 %>
+	Share it with whoever you want
+	<textarea name="emails_to_share_cupboard" id="emails_to_share_cupboard" cols="30" rows="10" placeholder="sparkle@fairydust.com"></textarea>
+	<% else %>
+	Currently shared with
+	<% @cupboard.users.each do |cupboard_user| %>
+		<% unless cupboard_user == current_user %>
+		<ul>
+			<li><%= cupboard_user.name %></li>
+		</ul>
+		<% end %>
+	<% end %>
+	<br />
+	Share it with whoever you want
+	<textarea name="emails_to_share_cupboard" id="emails_to_share_cupboard" cols="30" rows="10" placeholder="sparkle@fairydust.com"></textarea>
+	<% end %>
 </div>

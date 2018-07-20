@@ -42,11 +42,10 @@ class CupboardsController < ApplicationController
 		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false).where(setup: false)
 	end
 
-	def sharing
-		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false, setup: false)
-	end
 	def share
-		@cupboard_ids = params[:cupboards]
+		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false, setup: false)
+		@cupboard = Cupboard.find(params[:cupboard_id])
+		@cupboard_name = @cupboard.location
 	end
 	def autosave
 		if params.has_key?(:cupboard_location) && params[:cupboard_location].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''

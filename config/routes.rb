@@ -48,7 +48,6 @@ Rails.application.routes.draw do
   get '/cupboards' => 'cupboards#index'
   get '/cupboards/new' => 'cupboards#new'
   get '/cupboards/edit_all' => 'cupboards#edit_all', as: :edit_all_cupboard
-  get '/cupboards/sharing' => 'cupboards#sharing', as: :cupboard_sharing
   get '/cupboards/share' => 'cupboards#share', as: :cupboard_share
   get '/cupboards/:id' => 'cupboards#show', as: :cupboard
   get '/cupboards/:id/edit' => 'cupboards#edit', as: :edit_cupboard

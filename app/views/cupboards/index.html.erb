@@ -2,9 +2,6 @@
 <div class="list_block--collection--wrap">
   <div class="list_block--collection--sibling">
     <h2>Your Cupboards</h2>
-    <%= link_to cupboard_sharing_path, class: "list_block--collection--action", title: "edit cupboard sharing settings" do %>
-      Sharing settings
-    <% end %>
   </div>
   <div id="cupboard-list" class="list_block--collection">
     <% @cupboards.each do |cupboard| %>
@@ -49,16 +46,27 @@
         </div>
         <div class="list_block--content_end">
           <span class="edit_mode--message">EDIT MODE</span>
-          <div class="list_block--info_bar">
-            <div class="list_block--info_bar-content">
-              <p>
-                Sharing
-              </p>
-              <div class="people_marker">CB</div>
-              <div class="people_marker">TH</div>
+          <% if cupboard.users.length < 2 %>
+            <%= link_to "Start sharing this cupboard", cupboard_share_path(:cupboard_id => cupboard.id), class: "list_block--info_bar" %>
+          <% else %>
+            <div class="list_block--info_bar">
+              <div class="list_block--info_bar-content">
+                <p>
+                  Shared with
+                </p>
+                <% cupboard.users.each do |cupboard_user| %>
+                  <% unless cupboard_user == current_user %>
+                    <div class="people_marker" title="<%= cupboard_user.name.to_s %>" tabindex="0">
+                      <span>
+                        <%= cupboard_user.name[0, 1] %>
+                      </span>
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+              <%= link_to "+", cupboard_share_path(:cupboard_id => cupboard.id), class: "list_block--info_bar-action", title: "Share with more people" %>
             </div>
-            <button class="list_block--info_bar-action">+</button>
-          </div>
+          <% end %>
         </div>
       </div>
     <% end %>

@@ -101,7 +101,7 @@
 	order: 1;
 	position: relative;
 	@media (min-width: 1201px) {
-		flex-basis: calc(25% - 14px);
+		flex-basis: calc(33.3% - 14px);
 	}
 	@media (max-width: 700px) {
 		flex-basis: calc(100% - 14px);
@@ -170,6 +170,19 @@ a.list_block {
 	display: flex;
 	justify-content: space-between;
 	border-top: 1px solid $teal-80;
+	min-height: em(54, 15);
+	align-items: stretch;
+}
+
+a.list_block--info_bar {
+	align-items: center;
+	padding: em(12, 15) em(8, 15);
+	text-decoration: none;
+	color: black;
+	background-color: $teal-10;
+	&:hover {
+		background-color: $teal-20;
+	}
 }
 
 .list_block--info_bar-content {
@@ -182,23 +195,69 @@ a.list_block {
 .people_marker {
 	background-color: pink;
 	height: em(24, 10);
-	width: em(24, 10);
+	width: auto;
+	max-width: em(24, 10);
+	min-width: em(24, 10);
 	display: flex;
 	align-items: center;
-	justify-content: center;
-	margin-left: em(9, 10);
+	justify-content: flex-start;
+	margin-right: em(9, 10);
 	border-radius: em(12, 10);
 	overflow: hidden;
+	margin-top: em(3, 10);
+	margin-bottom: em(3, 10);
+	transition: max-width .3s;
+	white-space: nowrap;
+	cursor: default;
+	span {
+		width: 100%;
+		text-align: center;
+	}
+	&:nth-child(2){
+		margin-left: em(9, 10);
+	}
+	&:nth-child(n + 1) {
+		background-color: pink;
+	}
+	&:nth-child(2n + 1) {
+		background-color: lightblue;
+	}
+	&:nth-child(3n + 1) {
+		background-color: cornsilk;
+	}
+	&:nth-child(4n + 1) {
+		background-color: paleturquoise;
+	}
+	&:hover,
+	&:focus {
+		max-width: em(100, 10);
+		padding: em(10, 10);
+		&::after {
+			content: attr(title);
+			background-color: inherit;
+		}
+		span {
+			display: none;
+		}
+	}
 }
 
 .list_block--info_bar-action {
 	margin-left: auto;
 	font-size: em(28, 10);
-	width: em(45, 28);
-	background: $teal-30;
+	width: em(54, 28);
+	background: $teal-10;
 	border: none;
 	border: 1px solid $teal-80;
 	border-width: 0 0 0 1px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-decoration: none;
+	color: black;
+	&:hover {
+		background-color: $teal-20;
+	}
 }
 
 .list_block--untouchable {
