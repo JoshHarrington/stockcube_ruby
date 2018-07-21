@@ -213,24 +213,28 @@ a.list_block--info_bar {
 		width: 100%;
 		text-align: center;
 	}
-	&:nth-child(2){
+	.list_block--info_bar-content p + & {
 		margin-left: em(9, 10);
 	}
-	&:nth-child(n + 1),
-	li:nth-child(n + 1) & {
+	&:nth-child(5n + 1),
+	li:nth-child(5n + 1) & {
 		background-color: pink;
 	}
-	&:nth-child(2n + 1),
-	li:nth-child(2n + 1) & {
+	&:nth-child(5n + 2),
+	li:nth-child(5n + 2) & {
 		background-color: lightblue;
 	}
-	&:nth-child(3n + 1),
-	li:nth-child(3n + 1) & {
+	&:nth-child(5n + 3),
+	li:nth-child(5n + 3) & {
 		background-color: cornsilk;
 	}
-	&:nth-child(4n + 1),
-	li:nth-child(4n + 1) & {
+	&:nth-child(5n + 4),
+	li:nth-child(5n + 4) & {
 		background-color: paleturquoise;
+	}
+	&:nth-child(5n + 5),
+	li:nth-child(5n + 5) & {
+		background-color: palegoldenrod;
 	}
 	&:hover,
 	&:focus {

@@ -47,11 +47,28 @@ class CupboardsController < ApplicationController
 		@cupboard_name = @cupboard.location
 	end
 	def share_request
-		if params.has_key?(:cupboard_user_emails) && params[:cupboard_user_emails].to_s != ''
-
+		if params.has_key?(:cupboard_user_emails) && params[:cupboard_user_emails].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
+			cupboard = Cupboard.find(params[:cupboard_id].to_i)
+			cupboard_user_emails_string = params[:cupboard_user_emails].to_s
+			cupboard_user_emails_string = cupboard_user_emails_string.gsub(/\s+/, "")
+			if cupboard_user_emails_string.include? ","
+				cupboard_user_emails_array = cupboard_user_emails_string.split(',')
+			else
+				cupboard_user_emails_array = []
+				cupboard_user_emails_array.push(cupboard_user_emails_string)
+			end
+			if cupboard_user_emails_array.length > 0
+				cupboard_user_emails_array.each do |email|
+					if User.where(email: email).exists?
+						cupboard_sharing_user = User.where(email: email)
+						cupboard.users << cupboard_sharing_user
+					end
+				end
+			end
+			flash[:success] = "#{cupboard.location} shared!"
 		end
 
-		# redirect_to cupboards_path
+		redirect_to cupboards_path
 	end
 	def autosave
 		if params.has_key?(:cupboard_location) && params[:cupboard_location].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''

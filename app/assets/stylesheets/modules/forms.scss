@@ -14,7 +14,7 @@ $bp-mobile: 600px;
 	align-items: baseline;
 	flex-wrap: wrap;
 	justify-content: center;
-	*:not(.pretty_form--submit_button) {
+	*:not(.pretty_form--submit_button):not(.pretty_form--flex_list):not(.pretty_form--flex_list li) {
 		@media (max-width: $bp-mobile) {
 			width: 100%;
 			text-align: left;
@@ -75,6 +75,7 @@ $bp-mobile: 600px;
 		width: 100%;
 		max-width: 100%;
 		min-width: em(100, 15);
+		padding: em(5, 15);
 	}
 }
 
