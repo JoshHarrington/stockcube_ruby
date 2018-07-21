@@ -14,7 +14,7 @@ $bp-mobile: 600px;
 	align-items: baseline;
 	flex-wrap: wrap;
 	justify-content: center;
-	* {
+	*:not(.pretty_form--submit_button) {
 		@media (max-width: $bp-mobile) {
 			width: 100%;
 			text-align: left;
@@ -62,11 +62,19 @@ $bp-mobile: 600px;
 	input:not([type="submit"]):not([type="checkbox"]) {
 		width: 100%;
 	}
-	* + *:not([type="submit"]):not([type="checkbox"]) {
+	* + *:not([type="submit"]):not([type="checkbox"]):not(li) {
 		margin-top: em(10, 15);
 	}
 	a {
 		display: inline-block;
+	}
+	label {
+		display: block;
+	}
+	textarea {
+		width: 100%;
+		max-width: 100%;
+		min-width: em(100, 15);
 	}
 }
 
@@ -90,6 +98,11 @@ $bp-mobile: 600px;
 	@media (max-width: $bp-mobile) {
 		max-width: 90vw;
 	}
+}
+
+.pretty_form--flex_list {
+	display: flex;
+	flex-wrap: wrap;
 }
 
 #error_explanation {
@@ -167,6 +180,7 @@ $bp-mobile: 600px;
 	color: black;
 	text-decoration: none;
 	cursor: pointer;
+	text-align: center;
 	&:hover,
 	&:focus {
 		background-color: $teal-20;

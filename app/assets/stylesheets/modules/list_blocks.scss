@@ -216,16 +216,20 @@ a.list_block--info_bar {
 	&:nth-child(2){
 		margin-left: em(9, 10);
 	}
-	&:nth-child(n + 1) {
+	&:nth-child(n + 1),
+	li:nth-child(n + 1) & {
 		background-color: pink;
 	}
-	&:nth-child(2n + 1) {
+	&:nth-child(2n + 1),
+	li:nth-child(2n + 1) & {
 		background-color: lightblue;
 	}
-	&:nth-child(3n + 1) {
+	&:nth-child(3n + 1),
+	li:nth-child(3n + 1) & {
 		background-color: cornsilk;
 	}
-	&:nth-child(4n + 1) {
+	&:nth-child(4n + 1),
+	li:nth-child(4n + 1) & {
 		background-color: paleturquoise;
 	}
 	&:hover,
@@ -239,6 +243,13 @@ a.list_block--info_bar {
 		span {
 			display: none;
 		}
+	}
+	&.people_marker__wide {
+		max-width: max-content;
+		width: auto;
+		padding: em(6, 10) em(10, 10);
+		margin-top: em(5, 10);
+		margin-bottom: em(5, 10);
 	}
 }
 
