@@ -62,6 +62,7 @@ class CupboardsController < ApplicationController
 					if User.where(email: email).exists?
 						cupboard_sharing_user = User.where(email: email)
 						cupboard.users << cupboard_sharing_user
+
 					end
 				end
 			end
