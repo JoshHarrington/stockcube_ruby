@@ -24,6 +24,11 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     if @user.save
       @user.send_activation_email
+      if params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
+        crypt = ActiveSupport::MessageEncryptor.new(ENV['CUPBOARD_ID_KEY'])
+        decrypted_cupboard_id = crypt.decrypt_and_verify(params[:cupboard_id])
+        Cupboard.find(decrypted_cupboard_id).users << @user
+      end
       flash[:info] = "Please check your email to activate your account."
       redirect_to root_url
     else
@@ -55,7 +60,7 @@ class UsersController < ApplicationController
 
     def user_params
       params.require(:user).permit(:name, :email, :password,
-                                  :password_confirmation)
+                                  :password_confirmation, :cupboard_id)
     end
 
     ## Before action filters

@@ -1,0 +1,12 @@
+<h1>Stockcubes</h1>
+
+<p>Hi <%= @user.name %>,</p>
+
+<p>
+Thanks for signing up to the Stockcubes! We've added you to the cupboard your friend added you to.</p>
+
+<p>Click on the link below to activate your account and checkout your new cupboard:</p>
+
+<%= link_to "Activate", edit_account_activation_url(@user.activation_token,
+																										email: @user.email,
+																										cupboard_add: true) %>

@@ -10,6 +10,13 @@ class UserMailer < ApplicationMailer
     mail to: user.email, subject: "Account activation"
   end
 
+
+  def account_activation_with_cupboard_sharing(user, cupboard_id)
+    @user = user
+    @cupboard_id = cupboard_id
+    mail to: user.email, subject: "Account activation and joining a cupboard"
+  end
+
   # Subject can be set in your I18n file at config/locales/en.yml
   # with the following lookup:
   #

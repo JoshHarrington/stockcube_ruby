@@ -1,4 +1,6 @@
 class CupboardsController < ApplicationController
+	require 'securerandom'
+
 	before_action :logged_in_user
 	before_action :correct_user,   only: [:show, :edit, :update, :share]
 	def index
@@ -62,7 +64,13 @@ class CupboardsController < ApplicationController
 					if User.where(email: email).exists?
 						cupboard_sharing_user = User.where(email: email)
 						cupboard.users << cupboard_sharing_user
-
+					else
+						if email.include?("@") && email.include?(".")
+							crypt = ActiveSupport::MessageEncryptor.new(ENV['CUPBOARD_ID_KEY'])
+							puts ENV['CUPBOARD_ID_KEY'].size
+							encrypted_cupboard_id = crypt.encrypt_and_sign(params[:cupboard_id].to_s)
+							CupboardMailer.sharing_cupboard_request(email, current_user, encrypted_cupboard_id).deliver_now
+						end
 					end
 				end
 			end
@@ -71,6 +79,19 @@ class CupboardsController < ApplicationController
 
 		redirect_to cupboards_path
 	end
+	# def sharing_request
+
+	# 	new_sharing_user = User.find_or_create_by(email: params[:email])
+	# 	random_password = SecureRandom.hex(12)
+	# 	new_sharing_user.update_attributes(password: random_password, password_confirmation: random_password)
+	# 	new_sharing_user.send_activation_email
+
+	# 	Cupboard.find(cupboard_id.to_i).users << new_sharing_user
+
+	# 	flash[:info] = "Check your email to activate your account"
+	# 	redirect_to root_path
+
+	# end
 	def autosave
 		if params.has_key?(:cupboard_location) && params[:cupboard_location].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
 			@cupboard_id = params[:cupboard_id]

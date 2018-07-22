@@ -51,6 +51,7 @@ Rails.application.routes.draw do
   get '/cupboards/share' => 'cupboards#share', as: :cupboard_share
   get '/cupboards/:id' => 'cupboards#show', as: :cupboard
   get '/cupboards/:id/edit' => 'cupboards#edit', as: :edit_cupboard
+  get '/cupboards/sharing_request' => 'cupboards#sharing_request', as: :cupboard_sharing_request
   patch '/cupboards/:id' => 'cupboards#update'
   post '/cupboards' => 'cupboards#create'
   post '/cupboards/autosave' => 'cupboards#autosave'
