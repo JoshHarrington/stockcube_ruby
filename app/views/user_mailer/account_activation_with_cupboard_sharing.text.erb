@@ -1,10 +1,7 @@
 Hi <%= @user.name %>,
 
+Thanks for signing up to the Stockcubes! We've set you up with a shared cupboard, you can click below to activate your account and checkout your new cupboard:
 
-Thanks for signing up to the Stockcubes! We've added you to the cupboard your friend added you to.
-
-Click on the link below to activate your account and checkout your new cupboard:
-
-<%= link_to "Activate", edit_account_activation_url(@user.activation_token,
+<%= link_to "Activate account", edit_account_activation_url(@user.activation_token,
 																										email: @user.email,
 																										cupboard_add: true) %>

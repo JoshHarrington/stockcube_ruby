@@ -23,11 +23,19 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      @user.send_activation_email
-      if params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
-        crypt = ActiveSupport::MessageEncryptor.new(ENV['CUPBOARD_ID_KEY'])
-        decrypted_cupboard_id = crypt.decrypt_and_verify(params[:cupboard_id])
-        Cupboard.find(decrypted_cupboard_id).users << @user
+      if params.has_key?(:user) && params[:user][:cupboard_id].to_s != ''
+        @user.send_activation_email_with_cupboard_add
+        hashids = Hashids.new(ENV['CUPBOARD_ID_SALT'])
+        decrypted_cupboard_id = hashids.decode(params[:user][:cupboard_id])
+        if decrypted_cupboard_id.class.to_s == 'Array'
+          decrypted_cupboard_id.each do |cupboard_id|
+            Cupboard.find(cupboard_id).users << @user
+          end
+        else
+          Cupboard.find(decrypted_cupboard_id).users << @user
+        end
+      else
+        @user.send_activation_email
       end
       flash[:info] = "Please check your email to activate your account."
       redirect_to root_url

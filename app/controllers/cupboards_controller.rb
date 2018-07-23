@@ -66,9 +66,8 @@ class CupboardsController < ApplicationController
 						cupboard.users << cupboard_sharing_user
 					else
 						if email.include?("@") && email.include?(".")
-							crypt = ActiveSupport::MessageEncryptor.new(ENV['CUPBOARD_ID_KEY'])
-							puts ENV['CUPBOARD_ID_KEY'].size
-							encrypted_cupboard_id = crypt.encrypt_and_sign(params[:cupboard_id].to_s)
+							hashids = Hashids.new(ENV['CUPBOARD_ID_SALT'])
+							encrypted_cupboard_id = hashids.encode(params[:cupboard_id])
 							CupboardMailer.sharing_cupboard_request(email, current_user, encrypted_cupboard_id).deliver_now
 						end
 					end

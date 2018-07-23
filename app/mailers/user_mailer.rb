@@ -11,9 +11,8 @@ class UserMailer < ApplicationMailer
   end
 
 
-  def account_activation_with_cupboard_sharing(user, cupboard_id)
+  def account_activation_with_cupboard_sharing(user)
     @user = user
-    @cupboard_id = cupboard_id
     mail to: user.email, subject: "Account activation and joining a cupboard"
   end
 

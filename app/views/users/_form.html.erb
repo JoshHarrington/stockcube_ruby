@@ -6,9 +6,6 @@
     <%= f.text_field :name, class: 'form-control' %>
   </div>
 
-  <% if params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != '' %>
-    <%= f.hidden_field :cupboard_id, value: params[:cupboard_id]  %>
-  <% end %>
 
   <div class="pretty_form--row">
     <%= f.label :email %>
@@ -16,6 +13,9 @@
       <%= f.email_field :email, class: 'form-control', value: params[:email] %>
     <% else %>
       <%= f.email_field :email, class: 'form-control' %>
+    <% end %>
+    <% if params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != '' %>
+      <%= f.hidden_field :cupboard_id, value: params[:cupboard_id]  %>
     <% end %>
   </div>
 
