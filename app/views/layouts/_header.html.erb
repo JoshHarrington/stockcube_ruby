@@ -55,7 +55,7 @@
           --><% end %><!--
         --></li><!--
       --><% end %><% if logged_in? && current_user %><!--
-      --><li <% if current_section == "cupboards" %>class="current_section"<% end %>><%= link_to "Cupboard", cupboards_path %></li><% end %>
+      --><li <% if current_section == "cupboards" %>class="current_section"<% end %>><%= link_to "Cupboards", cupboards_path %></li><% end %>
       </ul>
       <% if not logged_in? && current_user %>
         <%= link_to login_path, class: "profile_item" do %>

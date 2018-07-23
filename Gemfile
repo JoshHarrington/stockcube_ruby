@@ -59,6 +59,8 @@ gem 'searchkick'
 gem 'pgsync'
 gem 'pry'
 
+gem 'hashid-rails', '~> 1.2', '>= 1.2.1'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

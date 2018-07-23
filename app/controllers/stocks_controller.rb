@@ -9,7 +9,7 @@ class StocksController < ApplicationController
 	end
 	def new
 		@stock = Stock.new
-		@cupboards = current_user.cupboards.where(hidden: false).where(setup: false)
+		@cupboards = current_user.cupboards.where(hidden: false, setup: false)
 		@ingredients = Ingredient.all.order('name ASC')
 		@two_weeks_from_now = Date.current + 2.weeks
 		@unit_select = Unit.where(unit_number: [5, 8, 11, 22, 25])
@@ -17,7 +17,7 @@ class StocksController < ApplicationController
 	end
 	def create
 		@stock = Stock.new(stock_params)
-		@cupboards = current_user.cupboards.where(hidden: false).where(setup: false)
+		@cupboards = current_user.cupboards.where(hidden: false, setup: false)
 		@ingredients = Ingredient.all.order('name ASC')
 		@two_weeks_from_now = Date.current + 2.weeks
 		@unit_select = Unit.where(unit_number: [5, 8, 11, 22, 25])
@@ -39,7 +39,6 @@ class StocksController < ApplicationController
 			unit_number: @stock_unit,
 			cupboard_id: (selected_cupboard_id || @cupboards.first),
 			ingredient_id: selected_ingredient_id,
-
 		)
 
 		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first

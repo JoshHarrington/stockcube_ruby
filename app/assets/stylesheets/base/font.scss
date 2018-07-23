@@ -11,7 +11,8 @@ input,
 textarea,
 .alert,
 .debug_dump,
-.pagination>* {
+.pagination>*,
+div.list_block--item {
 	font-size: 1.5em;
 }
 
@@ -53,14 +54,17 @@ h3, .h3 {
 
 h4, .h4 {
 	font-size: 1.6rem;
+	line-height: 2rem;
 }
 
 h5, .h5 {
 	font-size: 1.4rem;
+	line-height: 1.9rem;
 }
 
 h6, .h6 {
 	font-size: 1.3rem;
+	line-height: 1.7rem;
 }
 
 sup {

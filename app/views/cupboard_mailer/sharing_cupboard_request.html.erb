@@ -1,0 +1,14 @@
+<h1>Stockcubes</h1>
+
+<p>Hi there,</p>
+
+<p><%= @requester.name  %> wants to share a cupboard with you on <%= link_to "Stockcubes", root_url, target: "_blank" %>.</p>
+
+<p>Click the link below to go to Stockcubes to create your account, and then we'll add you to the shared cupboard.</p>
+
+<%= link_to "Create your Stockcubes account", users_new_url(cupboard_id: @encrypted_cupboard_id, email: @sharing_email) %>
+
+<p>If you don't recognise the person sending the request, please ignore this email and nothing else will happen.</p>
+
+<p>Thanks,</p>
+<p><%= link_to "Stockcubes Team", "mailto:team@stockcub.es" %></p>

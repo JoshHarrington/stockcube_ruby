@@ -21,15 +21,19 @@
 				<% end %>
 			</div>
 		</div>
-		<p><% if vegan?(recipe) %>Vegan &check;<% end %></p>
-		<p><% if vegetarian?(recipe) %>Vegetarian &check;<% end %></p>
-		<p><% if gluten_free?(recipe) %>Gluten Free &check;<% end %></p>
-		<p><% if dairy_free?(recipe) %>Dairy Free &check;<% end %></p>
-		<p><% if kosher?(recipe) %>kosher &check;<% end %></p>
+		<div class="list_block--info_rows">
+			<% if vegan?(recipe) %><p>Vegan &check;</p><% end %>
+			<% if vegetarian?(recipe) %><p>Vegetarian &check;</p><% end %>
+			<% if gluten_free?(recipe) %><p>Gluten Free &check;</p><% end %>
+			<% if dairy_free?(recipe) %><p>Dairy Free &check;</p><% end %>
+			<% if kosher?(recipe) %><p>kosher &check;</p><% end %>
+		</div>
 	</div>
 	<% if recipe.cuisine %>
-		<div class="list_block--tag_bar list_block--content">
-			<p><%= recipe.cuisine %></p>
+		<div class="list_block--content_end">
+			<div class="list_block--tag_bar">
+				<p><%= recipe.cuisine %></p>
+			</div>
 		</div>
 	<% end %>
 </div>

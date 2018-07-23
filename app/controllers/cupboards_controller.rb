@@ -1,8 +1,10 @@
 class CupboardsController < ApplicationController
+	require 'securerandom'
+
 	before_action :logged_in_user
-	before_action :correct_user,   only: [:show, :edit, :update]
+	before_action :correct_user,   only: [:show, :edit, :update, :share]
 	def index
-		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false).where(setup: false)
+		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false, setup: false)
 		@out_of_date_exist = false
 		@cupboards.each do |cupboard|
 			cupboard.stocks.each do |stock|
@@ -26,7 +28,11 @@ class CupboardsController < ApplicationController
   def create
 		@cupboard = Cupboard.new(cupboard_params)
 		if current_user
-			current_user.cupboards << @cupboard
+			CupboardUser.create(
+				cupboard_id: @cupboard.id,
+				user_id: current_user.id,
+				owner: true
+			)
 		end
     if @cupboard.save
 			redirect_to stocks_new_path(:cupboard_id => @cupboard.id)
@@ -37,6 +43,54 @@ class CupboardsController < ApplicationController
 	def edit_all
 		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false).where(setup: false)
 	end
+	def share
+		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false, setup: false)
+		@cupboard = Cupboard.find(params[:cupboard_id])
+		@cupboard_name = @cupboard.location
+	end
+	def share_request
+		if params.has_key?(:cupboard_user_emails) && params[:cupboard_user_emails].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
+			cupboard = Cupboard.find(params[:cupboard_id].to_i)
+			cupboard_user_emails_string = params[:cupboard_user_emails].to_s
+			cupboard_user_emails_string = cupboard_user_emails_string.gsub(/\s+/, "")
+			if cupboard_user_emails_string.include? ","
+				cupboard_user_emails_array = cupboard_user_emails_string.split(',')
+			else
+				cupboard_user_emails_array = []
+				cupboard_user_emails_array.push(cupboard_user_emails_string)
+			end
+			if cupboard_user_emails_array.length > 0
+				cupboard_user_emails_array.each do |email|
+					if User.where(email: email).exists?
+						cupboard_sharing_user = User.where(email: email)
+						cupboard.users << cupboard_sharing_user
+					else
+						if email.include?("@") && email.include?(".")
+							hashids = Hashids.new(ENV['CUPBOARD_ID_SALT'])
+							encrypted_cupboard_id = hashids.encode(params[:cupboard_id])
+							CupboardMailer.sharing_cupboard_request(email, current_user, encrypted_cupboard_id).deliver_now
+						end
+					end
+				end
+			end
+			flash[:success] = "#{cupboard.location} shared!"
+		end
+
+		redirect_to cupboards_path
+	end
+	# def sharing_request
+
+	# 	new_sharing_user = User.find_or_create_by(email: params[:email])
+	# 	random_password = SecureRandom.hex(12)
+	# 	new_sharing_user.update_attributes(password: random_password, password_confirmation: random_password)
+	# 	new_sharing_user.send_activation_email
+
+	# 	Cupboard.find(cupboard_id.to_i).users << new_sharing_user
+
+	# 	flash[:info] = "Check your email to activate your account"
+	# 	redirect_to root_path
+
+	# end
 	def autosave
 		if params.has_key?(:cupboard_location) && params[:cupboard_location].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
 			@cupboard_id = params[:cupboard_id]
@@ -55,9 +109,9 @@ class CupboardsController < ApplicationController
 			end
 		end
 		if params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != ''
-			@cupboard_to_delete = Cupboard.find(params[:cupboard_id_delete])
-			@cupboard_to_delete.update_attributes(
-				hidden: true
+			@cupboard_to_delete = Cupboard.find(params[:cupboard_id_delete].to_i)
+			@cupboard_to_delete.update_attribute(
+				:hidden, true
 			)
 		end
 	end
@@ -117,46 +171,6 @@ class CupboardsController < ApplicationController
 		end
 
 		redirect_to cupboards_path
-		# redirect_to edit_cupboard_path(@cupboard.id)
-
-		# @stock_ids = []
-		# @stocks.each do |stock|
-		# 	@stock_ids.push(stock.id)
-		# end
-
-		# @delete_stock_check_ids = params[:cupboard][:stock][:id]
-		# @form_stock_ids = params[:cupboard][:stock_ids]
-		# @form_stock_amounts = params[:cupboard][:stock][:amount]
-		# @form_stock_ingredient_units = params[:cupboard][:stock][:ingredient][:unit]
-
-		# # Rails.logger.debug @delete_stock_check_ids
-		# if @delete_stock_check_ids
-		# 	@stock_unpick = Stock.find(@delete_stock_check_ids)
-		# 	@stocks.delete(@stock_unpick)
-		# end
-
-		# if @form_stock_amounts.length == @stocks.length
-		# 	@stocks.each_with_index do |stock, index|
-		# 		if not stock[:amount].to_f == @form_stock_amounts[index].to_f
-		# 			stock.update_attributes(
-		# 				:amount => @form_stock_amounts[index].to_f
-		# 			)
-		# 		end
-		# 		if @form_stock_ingredient_units.length == @stocks.length
-		# 			if not stock.ingredient.unit_id.to_f == @form_stock_ingredient_units[index].to_f
-		# 				stock.ingredient.update_attributes(
-		# 					:unit_id => @form_stock_ingredient_units[index].to_f
-		# 				)
-		# 			end
-		# 		end
-		# 	end
-		# end
-
-		# if @cupboard.update(cupboard_params)
-		# 	redirect_to @cupboard
-		# else
-		# 	render 'edit'
-		# end
   end
 	private
 		def cupboard_params
@@ -174,8 +188,12 @@ class CupboardsController < ApplicationController
 
 		# Confirms the correct user.
 		def correct_user
-			@cupboard = Cupboard.find(params[:id])
-			@user = @cupboard.user
-			redirect_to(root_url) unless current_user?(@user)
+			if params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
+				@cupboard = Cupboard.find(params[:cupboard_id])
+			elsif params.has_key?(:id) && params[:id].to_s != ''
+				@cupboard = Cupboard.find(params[:id])
+			end
+			@user_ids = @cupboard.users.map(&:id)
+			redirect_to(root_url) unless @user_ids.include?(current_user.id)
 		end
 end

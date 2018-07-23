@@ -17,7 +17,7 @@
 		<div class="list_block--collection">
 
 		<% for stock in @stocks %>
-			<%= check_box_tag "stock_items[#{stock.id}][delete]", stock.id, false, class: "list_block--item_edit--checkbox checkbox_standard list_block--delete_status_checkbox" %>
+			<%= check_box_tag "stock_items[#{stock.id}][delete]", stock.id, false, class: "list_block--item_edit--checkbox checkbox_standard not_ordered list_block--delete_status_checkbox" %>
 			<div class="list_block">
 				<div class="list_block--title">
 					<h3><%= stock.ingredient.name %></h3>

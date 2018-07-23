@@ -1,0 +1,33 @@
+<% provide(:title, 'Cupboard sharing') %>
+<div class="pretty_form">
+	<%= form_tag({controller: "cupboards", action: "share_request" }, id: "cupboard_share_request_form",  method: :post) do %>
+		<div class="pretty_form--row">
+			<h1><%= @cupboard_name %> - Sharing settings</h1>
+		</div>
+		<% if @cupboard.users.length > 1 %>
+			<div class="pretty_form--row">
+				<h2 class="h3">Currently shared with:</h2>
+				<ul class="pretty_form--flex_list">
+					<% @cupboard.users.each do |cupboard_user| %>
+						<% unless cupboard_user == current_user %>
+							<li><p class="people_marker people_marker__wide"><%= cupboard_user.name %></p></li>
+						<% end %>
+					<% end %>
+				</ul>
+			</div>
+			<hr class="pretty_form--row" />
+		<% end %>
+		<div class="pretty_form--row">
+			<%= hidden_field_tag 'cupboard_id', params[:cupboard_id] %>
+			<%= label_tag "cupboard_user_emails" do %>
+				<h3>Share it with whoever you want</h3>
+				<p class="h5">Add email addresses to share with those people. When adding multiple addresses, separate them with a comma eg:
+				<strong>"h.granger@spew.org, genie@lamplife.net"</strong></p>
+			<% end %>
+			<%= text_area_tag :cupboard_user_emails, nil,  cols: 60, rows: 10, placeholder: "timon@hakunamatata.com" %>
+		</div>
+		<div class="pretty_form--row">
+			<%= button_tag "Update sharing settings", class: "pretty_form--submit_button" %>
+		</div>
+	<% end %>
+</div>
