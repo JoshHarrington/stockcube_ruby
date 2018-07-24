@@ -3,7 +3,8 @@
     current_section = request.path_parameters[:controller]
     current_user && current_user.cupboards.where(setup: true, hidden: false).length > 0 ? update_cupboard = current_user.cupboards.where(setup: true, hidden: false).last : update_cupboard = false
     current_user && current_user.shopping_lists.length > 0 && current_user.shopping_lists.last.archived == false && current_user.shopping_lists.last.recipes.length != 0 && current_user.shopping_lists.last.shopping_list_portions.where(checked: true).length > 0 ? shop_mode = true : shop_mode = false
-    shop_mode || update_cupboard ? notification_count = true : notification_count = false # true = red icon shows up, integer = red icon with number shows up
+    current_user && CupboardUser.where(user_id: current_user.id, accepted: false).length > 0 ? cupboard_invites = true : cupboard_invites = false
+    shop_mode || update_cupboard || cupboard_invites ? notification_count = true : notification_count = false # true = red icon shows up, integer = red icon with number shows up
   %>
   <% if current_user && current_user.demo == true %>
     <div class="site_notice">

@@ -5,7 +5,7 @@
   </div>
   <div id="cupboard-list" class="list_block--collection">
     <% @cupboards.each do |cupboard| %>
-      <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack" data-id="<%= cupboard.id %>">
+      <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack" id="<%= cupboard.id %>" data-id="<%= cupboard.id %>">
         <div class="list_block--content">
           <div class="list_block--title">
             <span class="delete_list_block_button list_block--action">
@@ -55,11 +55,11 @@
                   <p>
                     Shared with
                   </p>
-                  <% cupboard.users.each do |cupboard_user| %>
-                    <% unless cupboard_user == current_user %>
-                      <div class="people_marker" title="<%= cupboard_user.name.to_s %>" tabindex="0">
+                  <% cupboard.cupboard_users.each do |cupboard_user| %>
+                    <% if cupboard_user.user && cupboard_user.user != current_user %>
+                      <div class="people_marker<%= cupboard_user.accepted == false ? ' not_accepted' : '' %>" title="<%= cupboard_user.user.name.to_s %>" tabindex="0">
                         <span>
-                          <%= cupboard_user.name[0, 1] %>
+                          <%= cupboard_user.user.name[0, 1] %>
                         </span>
                       </div>
                     <% end %>

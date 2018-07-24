@@ -8,9 +8,9 @@
 			<div class="pretty_form--row">
 				<h2 class="h3">Currently shared with:</h2>
 				<ul class="pretty_form--flex_list">
-					<% @cupboard.users.each do |cupboard_user| %>
-						<% unless cupboard_user == current_user %>
-							<li><p class="people_marker people_marker__wide"><%= cupboard_user.name %></p></li>
+					<% @cupboard.cupboard_users.each do |cupboard_user| %>
+						<% unless cupboard_user.user == current_user %>
+							<li><p class="people_marker people_marker__wide<%= cupboard_user.accepted == false ? ' not_accepted' : '' %>"><%= cupboard_user.user.name %><%= cupboard_user.accepted == false ? ' (Waiting for invite to be accepted)' : '' %></p></li>
 						<% end %>
 					<% end %>
 				</ul>

@@ -131,6 +131,23 @@
 			display: none;
 		}
 	}
+	&:target {
+		animation: list_block_fade 4s 1;
+    -webkit-animation: list_block_fade 4s 1;
+    animation-fill-mode: forwards;
+	}
+}
+
+@keyframes list_block_fade {
+	0% { background-color: white; }
+	20% { background-color: $teal-10; }
+	100% { background-color: white; }
+}
+
+@-webkit-keyframes list_block_fade {
+	0% { background-color: white; }
+	20% { background-color: $teal-10; }
+	100% { background-color: white; }
 }
 
 a.list_block {
@@ -170,13 +187,14 @@ a.list_block {
 	display: flex;
 	justify-content: space-between;
 	border-top: 1px solid $teal-80;
-	min-height: em(54, 15);
+	min-height: em(54, 10);
 	align-items: stretch;
 }
 
 a.list_block--info_bar {
 	align-items: center;
 	padding: em(12, 15) em(8, 15);
+	min-height: em(54, 15);
 	text-decoration: none;
 	color: black;
 	background-color: $teal-10;
@@ -189,7 +207,8 @@ a.list_block--info_bar {
 	padding: em(12, 10) em(8, 10);
 	display: flex;
 	flex-wrap: wrap;
-	align-items: baseline;
+	align-items: center;
+	align-content: center;
 }
 
 .people_marker {
@@ -254,6 +273,10 @@ a.list_block--info_bar {
 		padding: em(6, 10) em(10, 10);
 		margin-top: em(5, 10);
 		margin-bottom: em(5, 10);
+	}
+	&.not_accepted {
+		border: 1px solid $warning-red-strong;
+		opacity: .7;
 	}
 }
 
