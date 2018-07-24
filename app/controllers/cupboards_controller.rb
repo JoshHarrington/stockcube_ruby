@@ -27,14 +27,16 @@ class CupboardsController < ApplicationController
   end
   def create
 		@cupboard = Cupboard.new(cupboard_params)
-		if current_user
-			CupboardUser.create(
-				cupboard_id: @cupboard.id,
-				user_id: current_user.id,
-				owner: true
-			)
-		end
-    if @cupboard.save
+
+		if @cupboard.save
+			if current_user
+				CupboardUser.create(
+					cupboard_id: @cupboard.id,
+					user_id: current_user.id,
+					owner: true
+				)
+			end
+
 			redirect_to stocks_new_path(:cupboard_id => @cupboard.id)
     else
       render 'new'
@@ -78,19 +80,6 @@ class CupboardsController < ApplicationController
 
 		redirect_to cupboards_path
 	end
-	# def sharing_request
-
-	# 	new_sharing_user = User.find_or_create_by(email: params[:email])
-	# 	random_password = SecureRandom.hex(12)
-	# 	new_sharing_user.update_attributes(password: random_password, password_confirmation: random_password)
-	# 	new_sharing_user.send_activation_email
-
-	# 	Cupboard.find(cupboard_id.to_i).users << new_sharing_user
-
-	# 	flash[:info] = "Check your email to activate your account"
-	# 	redirect_to root_path
-
-	# end
 	def autosave
 		if params.has_key?(:cupboard_location) && params[:cupboard_location].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
 			@cupboard_id = params[:cupboard_id]
