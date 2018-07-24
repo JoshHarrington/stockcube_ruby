@@ -27,12 +27,16 @@ class UsersController < ApplicationController
         @user.send_activation_email_with_cupboard_add
         hashids = Hashids.new(ENV['CUPBOARD_ID_SALT'])
         decrypted_cupboard_id = hashids.decode(params[:user][:cupboard_id])
-        if decrypted_cupboard_id.class.to_s == 'Array'
-          decrypted_cupboard_id.each do |cupboard_id|
-            Cupboard.find(cupboard_id).users << @user
+        if CupboardUser.where(cupboard_id: params[:user][:cupboard_id], user_id: @user.id).length == 0
+          if decrypted_cupboard_id.class.to_s == 'Array'
+            decrypted_cupboard_id.each do |cupboard_id|
+              Cupboard.find(cupboard_id).users << @user
+            end
+          else
+            Cupboard.find(decrypted_cupboard_id).users << @user
           end
         else
-          Cupboard.find(decrypted_cupboard_id).users << @user
+          flash[:info] = "Looks like you might already have been added to that cupboard"
         end
       else
         @user.send_activation_email
