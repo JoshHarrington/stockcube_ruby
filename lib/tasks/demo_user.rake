@@ -35,7 +35,7 @@ namespace :demo_user do
 
 		ingredient_picks.each do |ingredient|
 
-			cupboard_pick = demo_user.cupboards.sample
+			cupboard_pick_id = CupboardUser.where(user_id: demo_user.id).sample.cupboard_id
 
 			extra_days_random = [*5..30].sample
 
@@ -47,7 +47,7 @@ namespace :demo_user do
 				amount: random_amount,
 				use_by_date: test_use_by_date,
 				unit_number: ingredient.unit.unit_number,
-				cupboard_id: cupboard_pick.id,
+				cupboard_id: cupboard_pick_id,
 				ingredient_id: ingredient.id
 			)
 
