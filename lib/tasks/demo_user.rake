@@ -58,7 +58,7 @@ namespace :demo_user do
 
 		recipe_shopping_list_picks.each do |recipe|
 			recipe.portions.each do |portion|
-				shopping_list_portion = ShoppingListPortion.create(shopping_list_id: new_shopping_list.id, recipe_number: recipe.id, amount: portion.amount, ingredient_id: portion.ingredient_id, unit_number: portion.unit_number)
+				shopping_list_portion = ShoppingListPortion.create(shopping_list_id: new_shopping_list.id, recipe_number: recipe.id, portion_amount: portion.amount, ingredient_id: portion.ingredient_id, unit_number: portion.unit_number)
 			end
 		end
 
