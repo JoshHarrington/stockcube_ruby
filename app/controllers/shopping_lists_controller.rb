@@ -82,7 +82,8 @@ class ShoppingListsController < ApplicationController
   end
 
   def shopping_list_to_cupboard
-    @import_cupboard = Cupboard.create(location: "Import Cupboard (Hidden)", setup: true, user_id: current_user.id)
+    @import_cupboard = Cupboard.create(location: "Import Cupboard (Hidden)", setup: true)
+    CupboardUser.create(cupboard_id: @import_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
 
     if current_user.shopping_lists.length > 0 && current_user.shopping_lists.last.archived != true
       current_user.shopping_lists.last.shopping_list_portions.each do |shopping_list_portion|

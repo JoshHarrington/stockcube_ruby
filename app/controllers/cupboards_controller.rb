@@ -42,7 +42,8 @@ class CupboardsController < ApplicationController
     end
 	end
 	def edit_all
-		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false).where(setup: false)
+		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map(&:cupboard_id)
+		@cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
 	end
 	def share
 		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false, setup: false)
@@ -152,13 +153,15 @@ class CupboardsController < ApplicationController
 	end
 	def edit
 		@cupboard = Cupboard.find(params[:id])
-		@all_cupboards = current_user.cupboards.where(hidden: false).where(setup: false)
+		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map(&:cupboard_id)
+		@all_cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)
 		@units = Unit.all
 	end
 	def update
 		@cupboard = Cupboard.find(params[:id])
-		@all_cupboards = current_user.cupboards.where(hidden: false).where(setup: false)
+		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map(&:cupboard_id)
+		@all_cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)
 		@units = Unit.all
 
@@ -217,12 +220,17 @@ class CupboardsController < ApplicationController
 		def correct_user
 			if params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != '' && params[:id] != 'accept_cupboard_invite'
 				@cupboard = Cupboard.find(params[:cupboard_id])
-			elsif params.has_key?(:id) && params[:id].to_s != ''&& params[:id] != 'accept_cupboard_invite'
+				puts 'cupboard_id ' + params[:cupboard_id].to_s
+			elsif params.has_key?(:id) && params[:id].to_s != '' && params[:id] != 'accept_cupboard_invite'
 				@cupboard = Cupboard.find(params[:id])
-			end
-			unless params[:id] == 'accept_cupboard_invite'
+				puts "cupboard id " + @cupboard.id.to_s
+				puts "id " + params[:id].to_s
+				puts "cupboard users " + @cupboard.users.to_s
 				@user_ids = @cupboard.users.map(&:id)
+				puts 'user ids ' + @user_ids.to_s
+				puts 'current_user id ' + current_user.id.to_s
 				redirect_to(root_url) unless @user_ids.include?(current_user.id)
 			end
+
 		end
 end

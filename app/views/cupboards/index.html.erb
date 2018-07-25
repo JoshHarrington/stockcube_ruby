@@ -8,10 +8,12 @@
       <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack <%= cupboard_shared_class(cupboard) %>" id="<%= cupboard.id %>" data-id="<%= cupboard.id %>">
         <div class="list_block--content">
           <div class="list_block--title">
-            <span class="delete_list_block_button list_block--action">
-              <%= icomoon('bin') %>
-              <%= hidden_field_tag "cupboard_id_delete", cupboard.id %>
-            </span>
+            <% if current_user.cupboard_users.where(cupboard_id: cupboard.id).first.owner == true %>
+              <span class="delete_list_block_button list_block--action">
+                <%= icomoon('bin') %>
+                <%= hidden_field_tag "cupboard_id_delete", cupboard.id %>
+              </span>
+            <% end %>
             <h3>
               <%= hidden_field_tag "cupboard_id", cupboard.id %>
               <%= text_field_tag "cupboard_location", cupboard.location %>

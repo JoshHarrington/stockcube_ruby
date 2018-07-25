@@ -114,7 +114,7 @@ module ShoppingListsHelper
 		@portion_ids = @portions.map(&:id)
 		@uniq_ingredient_ids = @portions.map(&:ingredient_id).uniq
 
-    @user_cupboard_ids = current_user_set.cupboards.where(hidden: false).where(setup: false).map(&:id)
+		@user_cupboard_ids = CupboardUser.where(user_id: current_user_id, accepted: true).map(&:cupboard_id)
 
     @stock = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: @uniq_ingredient_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days)
     @stock_ingredient_ids = @stock.map(&:ingredient_id)
