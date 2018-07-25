@@ -54,11 +54,3 @@ var cupboardEdit = function() {
 	console.log('hello');
 }
 
-
-// catch when user navigating away from page without submitting
-// -- both on turbolinks:unload and window.onbeforeunload
-
-// $(document).on("turbolinks:beforeunload", function() {
-// 	console.log('hi');
-// 	alert('hi');
-// });

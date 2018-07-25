@@ -1,5 +1,4 @@
 class ShoppingListsController < ApplicationController
-  require 'set'
   include ActionView::Helpers::NumberHelper
   include ShoppingListsHelper
   before_action :logged_in_user
