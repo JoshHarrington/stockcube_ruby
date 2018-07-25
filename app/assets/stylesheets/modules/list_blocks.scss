@@ -126,7 +126,6 @@
 	}
 	&.hide_add {
 		min-height: em(123, 10);
-		align-content: flex-start;
 		.list_block--item-new {
 			display: none;
 		}

@@ -52,8 +52,21 @@ class StocksController < ApplicationController
 	end
 	def edit
 		@stock = Stock.find(params[:id])
-		@cupboards = current_user.cupboards.where(hidden: false).where(setup: false)
 		@current_cupboard = @stock.cupboard
+
+
+		@cupboards = []
+		current_user.cupboards.where(hidden: false, setup: false).each do |cupboard|
+			if @current_cupboard.users.map(&:id) == cupboard.users.map(&:id)
+				@cupboards << cupboard
+			end
+		end
+
+		if @cupboards.length != current_user.cupboards.where(hidden: false, setup: false).length
+			@shared_cupboards = true
+		end
+
+
 		@ingredients = Ingredient.all.order('name ASC')
 		@current_ingredient = @stock.ingredient
 
@@ -69,15 +82,22 @@ class StocksController < ApplicationController
 	end
 	def update
 		@stock = Stock.find(params[:id])
-		@cupboards = current_user.cupboards.where(hidden: false).where(setup: false)
 		@current_cupboard = @stock.cupboard
+
+		@cupboards = []
+		current_user.cupboards.where(hidden: false, setup: false).each do |cupboard|
+			if @current_cupboard.id != cupboard.id && (@current_cupboard.users.map(&:id) == cupboard.users.map(&:id))
+				@cupboards << cupboard
+			end
+		end
+
 		@ingredients = Ingredient.all.order('name ASC')
 		@current_ingredient = @stock.ingredient
 		@current_ingredient_unit = @stock.ingredient.unit
 		@current_ingredient_unit_number = @current_ingredient_unit.unit_number
 		@stock_unit = @stock.unit
 
-		unless params[:cupboard_id] == @current_cupboard.id
+		unless params[:cupboard_id] == @current_cupboard.id || @current_cupboard.cupboard_users.length > 1
 			@stock.update_attributes(
 				cupboard_id: params[:cupboard_id]
 			)
