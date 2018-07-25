@@ -25,4 +25,5 @@
 //= require stocks
 //= require recipes
 //= require shopping_list
+//= require cupboard_share
 
