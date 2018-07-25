@@ -1,7 +1,7 @@
 var cupboard = function() {
 
-	$( '.cupboard.list_block' ).sortable({
-		connectWith: '.cupboard.list_block',
+	$( '.cupboard.list_block:not(.shared)' ).sortable({
+		connectWith: '.cupboard.list_block:not(.shared)',
 		placeholder: 'list_block--item_placeholder',
 		items: '.list_block--item_show',
 		cancel: '.empty-card'

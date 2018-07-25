@@ -5,7 +5,7 @@
   </div>
   <div id="cupboard-list" class="list_block--collection">
     <% @cupboards.each do |cupboard| %>
-      <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack" id="<%= cupboard.id %>" data-id="<%= cupboard.id %>">
+      <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack <%= cupboard_shared_class(cupboard) %>" id="<%= cupboard.id %>" data-id="<%= cupboard.id %>">
         <div class="list_block--content">
           <div class="list_block--title">
             <span class="delete_list_block_button list_block--action">
