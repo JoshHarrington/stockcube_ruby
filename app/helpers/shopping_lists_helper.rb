@@ -1,5 +1,4 @@
 module ShoppingListsHelper
-	require 'set'
 	include ActionView::Helpers::NumberHelper
 	def shoppingListIndex(shopping_list)
 		if current_user && current_user.shopping_lists.length > 0

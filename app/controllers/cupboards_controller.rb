@@ -1,4 +1,5 @@
 class CupboardsController < ApplicationController
+	require 'set'
 	before_action :logged_in_user, only: [:index, :show, :new, :create, :edit_all, :share, :share_request, :accept_cupboard_invite, :autosave, :autosave_sorting, :edit, :update]
 	before_action :correct_user,   only: [:show, :edit, :update, :share]
 	def index
@@ -48,6 +49,17 @@ class CupboardsController < ApplicationController
 		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false, setup: false)
 		@cupboard = Cupboard.find(params[:cupboard_id])
 		@cupboard_name = @cupboard.location
+		if @cupboard.users.length > 0
+			@current_cupboard_user_ids = @cupboard.users.map(&:id)
+		end
+		@all_cupboard_user_ids = Set[]
+		@cupboards.each do |cupboard|
+			cupboard.cupboard_users.each do |cupboard_user|
+				@all_cupboard_user_ids << cupboard_user.user_id
+			end
+		end
+		@other_cupboard_user_ids = @all_cupboard_user_ids.to_a - @current_cupboard_user_ids
+		@other_cupboard_users = User.find(@other_cupboard_user_ids)
 	end
 	def share_request
 		if params.has_key?(:cupboard_user_emails) && params[:cupboard_user_emails].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''

@@ -25,15 +25,16 @@
 				<strong>"h.granger@spew.org, genie@lamplife.net"</strong></p>
 			<% end %>
 			<%= text_area_tag :cupboard_user_emails, nil,  cols: 60, rows: 10, placeholder: "timon@hakunamatata.com" %>
-			<h4 id="cupboard_share_add_user_list__title">Add people from other cupboards</h4>
-			<ul class="pretty_form--flex_list" id="cupboard_share_add_user_list">
-				<li>
-					<p class="people_marker people_marker__wide" data-email="another_user@email.com">+ Another user</p>
-				</li>
-				<li>
-					<p class="people_marker people_marker__wide" data-email="someone_else@email.com">+ Somone else</p>
-				</li>
-			</ul>
+			<% if @other_cupboard_users.length > 0 %>
+				<h4 id="cupboard_share_add_user_list__title">Add people from other cupboards</h4>
+				<ul class="pretty_form--flex_list" id="cupboard_share_add_user_list">
+					<% @other_cupboard_users.each do |user| %>
+						<li>
+							<p class="people_marker people_marker__wide" data-email="<%= user.email %>">+ <%= user.name %></p>
+						</li>
+					<% end %>
+				</ul>
+			<% end %>
 		</div>
 		<div class="pretty_form--row">
 			<%= button_tag "Update sharing settings", class: "pretty_form--submit_button" %>
