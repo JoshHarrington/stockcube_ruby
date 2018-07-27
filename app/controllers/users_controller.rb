@@ -23,6 +23,13 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
+      new_cupboard = Cupboard.create(location: "Fridge (Default cupboard)")
+      CupboardUser.create(
+        cupboard_id: new_cupboard.id,
+        user_id: @user.id,
+        owner: true,
+        accepted: true
+      )
       if params.has_key?(:user) && params[:user][:cupboard_id].to_s != ''
         @user.send_activation_email_with_cupboard_add
         hashids = Hashids.new(ENV['CUPBOARD_ID_SALT'])

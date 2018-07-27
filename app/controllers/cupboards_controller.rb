@@ -65,7 +65,7 @@ class CupboardsController < ApplicationController
 	def share_request
 		if params.has_key?(:cupboard_user_emails) && params[:cupboard_user_emails].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
 			cupboard = Cupboard.find(params[:cupboard_id].to_i)
-			cupboard_user_emails_string = params[:cupboard_user_emails].to_s
+			cupboard_user_emails_string = params[:cupboard_user_emails].to_s.downcase
 			cupboard_user_emails_string = cupboard_user_emails_string.gsub(/\s+/, "")
 			if cupboard_user_emails_string.include? ","
 				cupboard_user_emails_array = cupboard_user_emails_string.split(',')
