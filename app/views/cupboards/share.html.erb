@@ -1,0 +1,43 @@
+<% provide(:title, 'Cupboard sharing') %>
+<div class="pretty_form" id="cupboard_share">
+	<%= form_tag({controller: "cupboards", action: "share_request" }, id: "cupboard_share_request_form",  method: :post) do %>
+		<div class="pretty_form--row">
+			<h1><%= @cupboard_name %> - Sharing settings</h1>
+		</div>
+		<% if @cupboard.users.length > 1 %>
+			<div class="pretty_form--row">
+				<h2 class="h3">Currently shared with:</h2>
+				<ul class="pretty_form--flex_list">
+					<% @cupboard.cupboard_users.each do |cupboard_user| %>
+						<% unless cupboard_user.user == current_user %>
+							<li><p class="people_marker people_marker__wide<%= cupboard_user.accepted == false ? ' not_accepted' : '' %>"><%= cupboard_user.user.name %><%= cupboard_user.accepted == false ? ' (Waiting for invite to be accepted)' : '' %></p></li>
+						<% end %>
+					<% end %>
+				</ul>
+			</div>
+			<hr class="pretty_form--row" />
+		<% end %>
+		<div class="pretty_form--row">
+			<%= hidden_field_tag 'cupboard_id', params[:cupboard_id] %>
+			<%= label_tag "cupboard_user_emails" do %>
+				<h3>Share it with whoever you want</h3>
+				<p class="h5">Add email addresses to share with those people. When adding multiple addresses, separate them with a comma eg:
+				<strong>"h.granger@spew.org, genie@lamplife.net"</strong></p>
+			<% end %>
+			<%= text_area_tag :cupboard_user_emails, nil,  cols: 60, rows: 10, placeholder: "timon@hakunamatata.com" %>
+			<% if @other_cupboard_users.length > 0 %>
+				<h4 id="cupboard_share_add_user_list__title">Add people from other cupboards</h4>
+				<ul class="pretty_form--flex_list" id="cupboard_share_add_user_list">
+					<% @other_cupboard_users.each do |user| %>
+						<li>
+							<p class="people_marker people_marker__wide" data-email="<%= user.email %>">+ <%= user.name %></p>
+						</li>
+					<% end %>
+				</ul>
+			<% end %>
+		</div>
+		<div class="pretty_form--row">
+			<%= button_tag "Update sharing settings", class: "pretty_form--submit_button" %>
+		</div>
+	<% end %>
+</div>

@@ -1,5 +1,4 @@
 class ShoppingListsController < ApplicationController
-  require 'set'
   include ActionView::Helpers::NumberHelper
   include ShoppingListsHelper
   before_action :logged_in_user
@@ -82,18 +81,19 @@ class ShoppingListsController < ApplicationController
   end
 
   def shopping_list_to_cupboard
-    @import_cupboard = Cupboard.create(location: "Import Cupboard (Hidden)", setup: true, user_id: current_user.id)
+    @import_cupboard = Cupboard.create(location: "Import Cupboard (Hidden)", setup: true)
+    CupboardUser.create(cupboard_id: @import_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
 
-    stocks = params[:shopping_list_item].to_unsafe_h.map do |ingredient_id, x|
-       unit_number = x.keys.first
-       amount = x.values.first
-       Stock.create(
-        unit_number: unit_number,
-        amount: amount,
-        ingredient_id: ingredient_id,
-        cupboard_id: @import_cupboard.id,
-        use_by_date: 2.weeks.from_now
-      )
+    if current_user.shopping_lists.length > 0 && current_user.shopping_lists.last.archived != true
+      current_user.shopping_lists.last.shopping_list_portions.each do |shopping_list_portion|
+        Stock.create(
+          unit_number: shopping_list_portion.unit_number,
+          amount: shopping_list_portion.portion_amount,
+          ingredient_id: shopping_list_portion.ingredient_id,
+          cupboard_id: @import_cupboard.id,
+          use_by_date: 2.weeks.from_now
+        )
+      end
     end
 
     current_user.shopping_lists.last.update_attributes(
@@ -109,25 +109,25 @@ class ShoppingListsController < ApplicationController
 		@recipes = @shopping_list.recipes
 	end
 	def update
-    @shopping_list = ShoppingList.find(params[:id])
-    @recipes = @shopping_list.recipes
-    @existing_recipe_ids = []
-    @recipes.each do |recipe|
-      @existing_recipe_ids << recipe.id
-    end
+    # @shopping_list = ShoppingList.find(params[:id])
+    # @recipes = @shopping_list.recipes
+    # @existing_recipe_ids = []
+    # @recipes.each do |recipe|
+    #   @existing_recipe_ids << recipe.id
+    # end
 
-    @form_recipe_ids = params[:shopping_list][:recipes][:id]
+    # @form_recipe_ids = params[:shopping_list][:recipes][:id]
 
-    @recipes_to_remove = @existing_recipe_ids - @form_recipe_ids
-    @recipes_to_add = @form_recipe_ids - @existing_recipe_ids
+    # @recipes_to_remove = @existing_recipe_ids - @form_recipe_ids
+    # @recipes_to_add = @form_recipe_ids - @existing_recipe_ids
 
-    @recipe_unpick = Recipe.find(@recipes_to_remove)
-    @recipe_pick = Recipe.find(@recipes_to_add)
+    # @recipe_unpick = Recipe.find(@recipes_to_remove)
+    # @recipe_pick = Recipe.find(@recipes_to_add)
 
-    @recipes.delete(@recipe_unpick)
-    @recipes << @recipe_pick
+    # @recipes.delete(@recipe_unpick)
+    # @recipes << @recipe_pick
 
-    shopping_list_portions_set(@shopping_list)
+    shopping_list_portions_set(@form_recipe_ids, nil, current_user.id, params[:id])
 
     if @shopping_list.update(shopping_list_params)
       redirect_to shopping_list_path(@shopping_list)
@@ -138,12 +138,12 @@ class ShoppingListsController < ApplicationController
 
   def autosave
     if params.has_key?(:shopping_list_id) && params[:shopping_list_id].to_s != '' && params.has_key?(:recipe_id) && params[:recipe_id].to_s != ''
-      shopping_list = ShoppingList.find(params[:shopping_list_id])
-      recipes_to_delete = Recipe.find(params[:recipe_id])
-      recipes_to_delete.each do |recipe|
-        shopping_list.recipes.delete(recipe)
-      end
-      shopping_list_portions_set(shopping_list)
+      # shopping_list = ShoppingList.find(params[:shopping_list_id])
+      # recipes_to_delete = Recipe.find(params[:recipe_id])
+      # recipes_to_delete.each do |recipe|
+      #   shopping_list.recipes.delete(recipe)
+      # end
+      shopping_list_portions_set(nil, params[:recipe_id], current_user.id, params[:shopping_list_id])
 		end
   end
 
@@ -191,11 +191,11 @@ class ShoppingListsController < ApplicationController
 
   private
     def shopping_list_params
-      params.require(:shopping_list).permit(:id, :date_created, :archived, recipes_attributes:[:id, :title, :description, :_destroy], shopping_list_portion_attributes:[:id, :unit_number, :_destroy], unit_attributes:[:id, :unit_type, :_destroy], shopping_list_item:[ingredient_id:[unit_number:[:amount]]])
+      params.require(:shopping_list).permit(:id, :date_created, :archived, recipes_attributes:[:id, :title, :description, :_destroy], shopping_list_portion_attributes:[:id, :ingredient_id, :shopping_list_id, :unit_number, :recipe_number, :portion_amount, :stock_amount, :in_cupboard, :percent_in_cupboard, :checked, :enough_in_cupboard, :plenty_in_cupboard, :_destroy], unit_attributes:[:id, :unit_type, :_destroy], shopping_list_item:[ingredient_id:[unit_number:[:amount]]])
     end
 
     def user_has_shopping_lists
-			unless current_user.shopping_lists.last.archived == false && current_user.shopping_lists.last.recipes.length != 0
+			if current_user && current_user.shopping_lists.last && current_user.shopping_lists.last.archived == true && current_user.shopping_lists.last.recipes.length == 0
 				redirect_to root_url
 			end
 		end

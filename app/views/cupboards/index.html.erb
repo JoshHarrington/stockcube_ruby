@@ -1,48 +1,75 @@
 <% provide(:title, 'Your cupboards') %>
 <div class="list_block--collection--wrap">
   <div class="list_block--collection--sibling">
-    <h2>All Cupboards</h2>
+    <h2>Your Cupboards</h2>
   </div>
   <div id="cupboard-list" class="list_block--collection">
-    <% @cupboards.where(hidden: false).each do |cupboard| %>
-      <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %>" data-id="<%= cupboard.id %>">
-        <div class="list_block--title">
-          <span class="delete_list_block_button list_block--action">
-            <%= icomoon('bin') %>
-            <%= hidden_field_tag "cupboard_id_delete", cupboard.id %>
-          </span>
-          <h3>
-            <%= hidden_field_tag "cupboard_id", cupboard.id %>
-            <%= text_field_tag "cupboard_location", cupboard.location %>
-          </h3>
-          <%= link_to edit_cupboard_path(cupboard), class: "edit_list_block_button list_block--action", title: "pick items to remove" do %>
-            <%= icomoon('edit') %>
-          <% end %>
-          <span class="finish_editing_list_block_button list_block--action">
-            <%= icomoon('bin') %>
-          </span>
-          <span class="close_without_edit_list_block_button list_block--action">
-            <%= icomoon('close') %>
-          </span>
-        </div>
-        <% if cupboard.stocks.first %>
-          <% cupboard_stocks_selection(cupboard).each do |stock| %>
-            <% if params[:show_all] == 'true' || (stock.use_by_date - Date.current).to_i >= -2 %>
-              <%= link_to edit_stock_path(stock.id), class: "list_block--item list_block--item_stacked list_block--item_show#{date_warning_class(stock)} stock_#{stock.id}", :data => { :cupboard_id => "#{cupboard.id}", :stock_id => "#{stock.id}" } do %>
-                <p><%= stock.ingredient.name %></p>
-                <p><%= stock.amount %> <%= stock.ingredient.unit.name %></p>
-              <% end %>
-              <%= check_box_tag "stock_id[]", value = "#{stock.id}", checked = false, id: "stock_#{stock.id}", class: "list_block--item_edit--checkbox" %>
-              <%= label_tag "stock_#{stock.id}", class: "list_block--item list_block--item_stacked list_block--item_edit#{date_warning_class(stock)}" do %>
-                <span class="list_block--item_edit_marker"><%= icomoon('bin') %></span>
-                <p><%= stock.ingredient.name %></p>
-                <p><%= stock.amount %> <%= stock.ingredient.unit.name %></p>
+    <% @cupboards.each do |cupboard| %>
+      <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack <%= cupboard_shared_class(cupboard) %>" id="<%= cupboard.id %>" data-id="<%= cupboard.id %>">
+        <div class="list_block--content">
+          <div class="list_block--title">
+            <% if current_user.cupboard_users.where(cupboard_id: cupboard.id).first.owner == true %>
+              <span class="delete_list_block_button list_block--action">
+                <%= icomoon('bin') %>
+                <%= hidden_field_tag "cupboard_id_delete", cupboard.id %>
+              </span>
+            <% end %>
+            <h3>
+              <%= hidden_field_tag "cupboard_id", cupboard.id %>
+              <%= text_field_tag "cupboard_location", cupboard.location %>
+            </h3>
+            <%= link_to edit_cupboard_path(cupboard), class: "edit_list_block_button list_block--action", title: "pick items to remove" do %>
+              <%= icomoon('edit') %>
+            <% end %>
+            <span class="finish_editing_list_block_button list_block--action">
+              <%= icomoon('bin') %>
+            </span>
+            <span class="close_without_edit_list_block_button list_block--action">
+              <%= icomoon('close') %>
+            </span>
+          </div>
+          <% if cupboard.stocks.first %>
+            <% cupboard_stocks_selection(cupboard).each do |stock| %>
+              <% if params[:show_all] == 'true' || (stock.use_by_date - Date.current).to_i >= -2 %>
+                <%= link_to edit_stock_path(stock.id), class: "list_block--item list_block--item_stacked list_block--item_show#{date_warning_class(stock)} stock_#{stock.id}", :data => { :cupboard_id => "#{cupboard.id}", :stock_id => "#{stock.id}" } do %>
+                  <p><%= stock.ingredient.name %></p>
+                  <p><%= stock.amount %> <%= stock.ingredient.unit.name %></p>
+                <% end %>
+                <%= check_box_tag "stock_id[]", value = "#{stock.id}", checked = false, id: "stock_#{stock.id}", class: "list_block--item_edit--checkbox" %>
+                <%= label_tag "stock_#{stock.id}", class: "list_block--item list_block--item_stacked list_block--item_edit#{date_warning_class(stock)}" do %>
+                  <span class="list_block--item_edit_marker"><%= icomoon('bin') %></span>
+                  <p><%= stock.ingredient.name %></p>
+                  <p><%= stock.amount %> <%= stock.ingredient.unit.name %></p>
+                <% end %>
               <% end %>
             <% end %>
           <% end %>
-        <% end %>
-        <%= link_to "Add more stock", stocks_new_path(:cupboard_id => cupboard.id), class: "list_block--item list_block--item-new" %>
-        <span class="edit_mode--message">EDIT MODE</span>
+          <%= link_to "Add more stock", stocks_new_path(:cupboard_id => cupboard.id), class: "list_block--item list_block--item-new" %>
+        </div>
+        <div class="list_block--content_end">
+          <span class="edit_mode--message">EDIT MODE</span>
+          <% if cupboard.users.length < 2 %>
+            <%= link_to "Start sharing this cupboard", cupboard_share_path(:cupboard_id => cupboard.id), class: "list_block--info_bar" %>
+          <% else %>
+            <div class="list_block--info_bar">
+              <div class="list_block--info_bar-content">
+                <p>
+                  Shared with
+                </p>
+                <% cupboard.cupboard_users.each do |cupboard_user| %>
+                  <% if cupboard_user.user && cupboard_user.user != current_user %>
+                    <div class="people_marker<%= cupboard_user.accepted == false ? ' not_accepted' : '' %>" title="<%= cupboard_user.user.name.to_s %>" tabindex="0">
+                      <span>
+                        <%= cupboard_user.user.name[0, 1] %>
+                      </span>
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+              <%= link_to "+", cupboard_share_path(:cupboard_id => cupboard.id), class: "list_block--info_bar-action", title: "Share with more people" %>
+            </div>
+          <% end %>
+        </div>
       </div>
     <% end %>
     <%= link_to cupboards_new_path, class: "list_block" do %>

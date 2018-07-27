@@ -22,13 +22,20 @@ namespace :demo_user do
 		c3 = Cupboard.create(location: "Fridge Top Shelf")
 		c4 = Cupboard.create(location: "Cupboard by the Oven")
 
-		demo_user.cupboards << [c1, c2, c3, c4]
+		[c1, c2, c3, c4].each do |cupboard|
+			 CupboardUser.create(
+				cupboard_id: cupboard.id,
+				user_id: demo_user.id,
+				owner: true,
+				accepted: true
+			 )
+		end
 
 		ingredient_picks = Ingredient.where(searchable: true).sample(15)
 
 		ingredient_picks.each do |ingredient|
 
-			cupboard_pick = demo_user.cupboards.sample
+			cupboard_pick_id = CupboardUser.where(user_id: demo_user.id).sample.cupboard_id
 
 			extra_days_random = [*5..30].sample
 
@@ -40,7 +47,7 @@ namespace :demo_user do
 				amount: random_amount,
 				use_by_date: test_use_by_date,
 				unit_number: ingredient.unit.unit_number,
-				cupboard_id: cupboard_pick.id,
+				cupboard_id: cupboard_pick_id,
 				ingredient_id: ingredient.id
 			)
 
@@ -58,7 +65,7 @@ namespace :demo_user do
 
 		recipe_shopping_list_picks.each do |recipe|
 			recipe.portions.each do |portion|
-				shopping_list_portion = ShoppingListPortion.create(shopping_list_id: new_shopping_list.id, recipe_number: recipe.id, amount: portion.amount, ingredient_id: portion.ingredient_id, unit_number: portion.unit_number)
+				shopping_list_portion = ShoppingListPortion.create(shopping_list_id: new_shopping_list.id, recipe_number: recipe.id, portion_amount: portion.amount, ingredient_id: portion.ingredient_id, unit_number: portion.unit_number)
 			end
 		end
 

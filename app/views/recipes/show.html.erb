@@ -21,6 +21,9 @@
             <%= icomoon('edit') %>
           <% end  %>
         <% end %>
+        <% unless current_user.shopping_lists.length > 0 && current_user.shopping_lists.last.archived == false && @recipe.shopping_lists.include?(current_user.shopping_lists.last) %>
+          <%= link_to 'Add this recipe to your shopping list', add_to_shopping_list_recipe_path(@recipe), class: 'list_block--collection--action content_rich--title--action', title: 'add to shopping list', method: :put %>
+        <% end %>
       </div>
       <p class="recipe_cuisine"><%= @recipe.cuisine.to_s %></p>
       <% if vegetarian?(@recipe) || vegan?(@recipe) || gluten_free?(@recipe) || dairy_free?(@recipe) || kosher?(@recipe) %>

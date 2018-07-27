@@ -2,11 +2,13 @@ var listBlockEdit = function(page) {
 
 	if (page == 'cupboard') {
 		$('.list_block--title input').change(function(){
-			var $list_block_inputs = $(this).closest('.list_block').find('.list_block--title input');
+			var $list_block_title = $(this).val();
+			var $cupboard_id = $(this).closest('.list_block').data('id');
+			var dataString = 'cupboard_location='+ $list_block_title +'&cupboard_id='+ $cupboard_id;
 			$.ajax({
 				type: "POST",
 				url: "/" + page + "s/autosave",
-				data: $list_block_inputs.serializeArray(),
+				data: dataString,
 				dataType: "script"
 			});
 		});
@@ -79,7 +81,6 @@ var listBlockEdit = function(page) {
 		var shopping_list_id = $list_block.data('shopping-list');
 		dataString += ((page == 'shopping_list') ? ('&shopping_list_id=' + shopping_list_id) : '');
 
-		console.log(dataString);
 		$list_block.removeClass('edit_mode delete_mode');
 
 		if (dataString != '') {

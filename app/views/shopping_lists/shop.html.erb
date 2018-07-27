@@ -12,41 +12,44 @@
   </div>
   <div class="list_block--collection">
     <%= form_tag({controller: "shopping_lists", action: "shopping_list_to_cupboard" }, class: "list_block list_block__full", id: "shopping_list_shop_mode_form",  method: :post) do %>
-      <% @shopping_list_portions.each_with_index do |sl_portion, index| %>
-        <% if sl_portion.in_cupboard == true && sl_portion.enough_in_cupboard == true %>
-          <%= check_box_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", "#{sl_portion.portion_amount}", sl_portion.checked, data: {"id" => sl_portion.id} %>
-          <%= label_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode' do %>
-            <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
-          <% end %>
-        <% elsif sl_portion.in_cupboard == true && (sl_portion.plenty_in_cupboard == nil || sl_portion.plenty_in_cupboard == false) %>
-          <%= check_box_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", "#{sl_portion.portion_amount}", sl_portion.checked, data: {"id" => sl_portion.id} %>
-          <%= label_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode date-part-warning' do %>
-            <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
-          <% end %>
-        <% elsif sl_portion.in_cupboard == false %>
-          <%= check_box_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", "#{sl_portion.portion_amount}", sl_portion.checked, data: {"id" => sl_portion.id} %>
-          <%= label_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode date-full-warning' do %>
-            <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
+      <div class="list_block--content">
+        <% @shopping_list_portions.each_with_index do |sl_portion, index| %>
+          <% if sl_portion.in_cupboard == true && sl_portion.enough_in_cupboard == true %>
+            <%= check_box_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", "#{sl_portion.portion_amount}", sl_portion.checked, data: {"id" => sl_portion.id} %>
+            <%= label_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode' do %>
+              <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
+            <% end %>
+          <% elsif sl_portion.in_cupboard == true && (sl_portion.plenty_in_cupboard == nil || sl_portion.plenty_in_cupboard == false) %>
+            <%= check_box_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", "#{sl_portion.portion_amount}", sl_portion.checked, data: {"id" => sl_portion.id} %>
+            <%= label_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode date-part-warning' do %>
+              <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
+            <% end %>
+          <% elsif sl_portion.in_cupboard == false %>
+            <%= check_box_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", "#{sl_portion.portion_amount}", sl_portion.checked, data: {"id" => sl_portion.id} %>
+            <%= label_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode date-full-warning' do %>
+              <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
+            <% end %>
           <% end %>
         <% end %>
-      <% end %>
-      <hr class="list_block--form--divider">
-      <break></break>
-      <hr class="list_block--form_actions--divider_wide" />
-      <div class="list_block--form_actions">
-        <div class="list_block--form_actions--title_row">
-          <h3 class="list_block--form_action--title">Move stock to cupboards now?</h3>
-          <p class="list_block--form_action--sub_title">It should only take a couple of minutes</p>
-        </div>
-        <div class="list_block--form_action--container">
-          <%= button_tag "Yes", name: nil, class: 'list_block--form_action' %>
-        </div>
-        <vr class="list_block--form_actions--vertical_divider"></vr>
-        <div class="list_block--form_action--container">
-          <%= check_box_tag "reminder_pick", "reminder_pick_status", true %>
-          <span class="form_action--reminder_pick--with_notification"><%= link_to "Do it later", shopping_list_delay_path, title: 'add to shopping list', class: 'list_block--form_action' %><span class="reminder_text"> (with reminder)</span></span>
-          <span class="form_action--reminder_pick--no_notification"><%= link_to "Do it later", shopping_list_delay__with_notification_path, title: 'add to shopping list', class: 'list_block--form_action' %><span class="reminder_text"> (no reminder)</span></span>
-          <%= label_tag "reminder_pick", "Send an email reminder in 24 hours", class: "reminder_pick--label" %>
+        <hr class="list_block--form--divider">
+        <break></break>
+        <hr class="list_block--form_actions--divider_wide" />
+        <div class="list_block--form_actions">
+          <div class="list_block--form_actions--title_row">
+            <h3 class="list_block--form_action--title">Move stock to cupboards now?</h3>
+            <p class="list_block--form_action--sub_title">It should only take a couple of minutes.</p>
+            <p class="list_block--form_action--sub_title"><strong>NB: Anything not checked when you start the move to cupboards, <br />will be deleted from your shopping list! #drama</strong></p>
+          </div>
+          <div class="list_block--form_action--container">
+            <%= button_tag "Yes", name: nil, class: 'list_block--form_action' %>
+          </div>
+          <vr class="list_block--form_actions--vertical_divider"></vr>
+          <div class="list_block--form_action--container">
+            <%= check_box_tag "reminder_pick", "reminder_pick_status", true %>
+            <span class="form_action--reminder_pick--with_notification"><%= link_to "Do it later", shopping_list_delay_path, title: 'add to shopping list', class: 'list_block--form_action' %><span class="reminder_text"> (with reminder)</span></span>
+            <span class="form_action--reminder_pick--no_notification"><%= link_to "Do it later", shopping_list_delay__with_notification_path, title: 'add to shopping list', class: 'list_block--form_action' %><span class="reminder_text"> (no reminder)</span></span>
+            <%= label_tag "reminder_pick", "Send an email reminder in 24 hours", class: "reminder_pick--label" %>
+          </div>
         </div>
       </div>
     <% end %>

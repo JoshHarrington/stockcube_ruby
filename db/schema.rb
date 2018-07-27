@@ -10,10 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180623172001) do
+ActiveRecord::Schema.define(version: 20180721091003) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "cupboard_users", force: :cascade do |t|
+    t.bigint "cupboard_id"
+    t.bigint "user_id"
+    t.boolean "owner"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "accepted", default: false
+    t.index ["cupboard_id"], name: "index_cupboard_users_on_cupboard_id"
+    t.index ["user_id"], name: "index_cupboard_users_on_user_id"
+  end
 
   create_table "cupboards", force: :cascade do |t|
     t.bigint "user_id"
@@ -88,6 +99,7 @@ ActiveRecord::Schema.define(version: 20180623172001) do
     t.boolean "checked", default: false
     t.boolean "enough_in_cupboard", default: false
     t.boolean "plenty_in_cupboard", default: false
+    t.string "unit_name"
     t.index ["ingredient_id"], name: "index_shopping_list_portions_on_ingredient_id"
     t.index ["shopping_list_id"], name: "index_shopping_list_portions_on_shopping_list_id"
   end

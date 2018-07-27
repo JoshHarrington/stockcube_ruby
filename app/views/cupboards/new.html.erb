@@ -1,8 +1,15 @@
-<%= form_for @cupboard do |f| %>
-	<div class="field">
-		<h2>Stock Location (Cupboard)</h2> <%= f.text_field :location %><br />
+<% provide(:title, 'Create cupboard') %>
+<div class="pretty_form">
+	<div class="pretty_form--sibling">
+		<h1>New Cupboard</h1>
 	</div>
-	<br />
-	<br />
-	<%= f.submit "Add stock" %>
-<% end %>
+	<%= form_for @cupboard, :validate => true do |f| %>
+		<div class="pretty_form--row">
+			<%= f.label :location, 'Name for cupboard' %>
+			<%= f.text_field :location, placeholder: 'Fridge / Cupboard by the Oven' %><br />
+		</div>
+		<div class="pretty_form--actions">
+			<%= button_tag "Create cupboard and start adding stock", class: "pretty_form--submit_button" %>
+		</div>
+	<% end %>
+</div>
