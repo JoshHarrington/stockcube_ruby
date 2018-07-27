@@ -18,10 +18,10 @@ ActiveRecord::Schema.define(version: 20180721091003) do
   create_table "cupboard_users", force: :cascade do |t|
     t.bigint "cupboard_id"
     t.bigint "user_id"
-    t.boolean "owner"
+    t.boolean "owner", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "accepted", default: false
+    t.boolean "accepted", default: false, null: false
     t.index ["cupboard_id"], name: "index_cupboard_users_on_cupboard_id"
     t.index ["user_id"], name: "index_cupboard_users_on_user_id"
   end
@@ -57,7 +57,6 @@ ActiveRecord::Schema.define(version: 20180721091003) do
     t.bigint "unit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "hidden", default: false
     t.index ["unit_id"], name: "index_ingredients_on_unit_id"
   end
 
@@ -90,15 +89,15 @@ ActiveRecord::Schema.define(version: 20180721091003) do
     t.bigint "shopping_list_id"
     t.integer "unit_number"
     t.integer "recipe_number"
-    t.decimal "portion_amount"
+    t.decimal "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "stock_amount"
     t.boolean "in_cupboard", default: false
     t.decimal "percent_in_cupboard"
-    t.boolean "checked", default: false
     t.boolean "enough_in_cupboard", default: false
     t.boolean "plenty_in_cupboard", default: false
+    t.boolean "checked", default: false
     t.string "unit_name"
     t.index ["ingredient_id"], name: "index_shopping_list_portions_on_ingredient_id"
     t.index ["shopping_list_id"], name: "index_shopping_list_portions_on_shopping_list_id"
