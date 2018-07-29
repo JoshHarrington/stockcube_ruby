@@ -54,7 +54,9 @@ gem 'jquery-ui-rails'
 
 gem 'momentjs-rails'
 
-gem 'searchkick'
+group :production do
+  gem 'searchkick'
+end
 
 gem 'pgsync'
 gem 'pry'
