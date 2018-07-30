@@ -1,7 +1,7 @@
 class Stock < ApplicationRecord
 	belongs_to :cupboard
 	belongs_to :ingredient
-	has_one :unit, through: :ingredient
+	has_one :unit
 
 	accepts_nested_attributes_for :ingredient,
 	:reject_if => :all_blank

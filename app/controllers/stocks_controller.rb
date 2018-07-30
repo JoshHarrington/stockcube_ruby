@@ -12,7 +12,7 @@ class StocksController < ApplicationController
 		@cupboards = current_user.cupboards.where(hidden: false, setup: false)
 		@ingredients = Ingredient.all.order('name ASC')
 		@two_weeks_from_now = Date.current + 2.weeks
-		@unit_select = Unit.where(unit_number: [5, 8, 11, 22, 25])
+		@unit_select = Unit.where.not(name: nil)
 
 	end
 	def create
@@ -20,7 +20,7 @@ class StocksController < ApplicationController
 		@cupboards = current_user.cupboards.where(hidden: false, setup: false)
 		@ingredients = Ingredient.all.order('name ASC')
 		@two_weeks_from_now = Date.current + 2.weeks
-		@unit_select = Unit.where(unit_number: [5, 8, 11, 22, 25])
+		@unit_select = Unit.where.not(name: nil)
 
 		if params.has_key?(:ingredient_id) && params[:ingredient_id].present?
 			selected_ingredient_id = params[:ingredient_id]
@@ -70,13 +70,7 @@ class StocksController < ApplicationController
 		@ingredients = Ingredient.all.order('name ASC')
 		@current_ingredient = @stock.ingredient
 
-		if @stock.ingredient.unit.unit_type == "volume"
-			@units_select = Unit.where(:unit_type => "volume")
-		elsif @stock.ingredient.unit.unit_type == "mass"
-			@units_select = Unit.where(unit_type: "mass")
-		else
-			@units_select = Unit.where(unit_type: "other")
-		end
+		@units_select = Unit.where.not(name: nil)
 
 		@preselect_unit = @stock.unit
 	end
@@ -103,13 +97,7 @@ class StocksController < ApplicationController
 			)
 		end
 
-		if @current_ingredient_unit.unit_type == "volume"
-			@units_select = Unit.where(:unit_type => "volume")
-		elsif @current_ingredient_unit.unit_type == "mass"
-			@units_select = Unit.where(unit_type: "mass")
-		else
-			@units_select = Unit.where(unit_type: "other")
-		end
+		@units_select = Unit.where.not(name: nil)
 
 		@preselect_unit = @stock.unit
 

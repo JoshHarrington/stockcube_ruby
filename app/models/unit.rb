@@ -1,7 +1,7 @@
 class Unit < ApplicationRecord
   has_many :ingredients
   has_many :portions, through: :ingredients
-  has_many :stocks, through: :ingredients
+  has_many :stocks
 
   accepts_nested_attributes_for :stocks,
   :reject_if => :all_blank,

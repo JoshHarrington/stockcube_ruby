@@ -12,7 +12,7 @@ chantelle_user = User.create(name:  "Chantelle",
 			password_confirmation: ENV['CHANTELLE_ADMIN_PASSWORD'],
 			admin: true,
 			activated: true,
-      activated_at: Time.zone.now)
+			activated_at: Time.zone.now)
 
 standard_user = User.create(name:  "Standard User",
 			email: ENV['PERSONAL_STANDARD_EMAIL'],
