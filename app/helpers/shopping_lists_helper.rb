@@ -31,7 +31,7 @@ module ShoppingListsHelper
 			metric_transform(portion_obj, portion_unit_obj)
 
 			shopping_list_portion.update_attributes(
-				:amount => metric_amount,
+				:portion_amount => metric_amount,
 				:recipe_number => portion_obj.recipe_id
 			)
 			if portion_unit_obj.unit_type == "volume" && metric_amount < 1000
@@ -44,7 +44,7 @@ module ShoppingListsHelper
 				## convert to liters
 				shopping_list_portion.update_attributes(
 					:unit_number => 12,
-					:amount => metric_amount
+					:portion_amount => metric_amount
 				)
 			elsif portion_unit_obj.unit_type == "mass" && metric_amount < 1000
 				## add unit number for grams
@@ -56,12 +56,12 @@ module ShoppingListsHelper
 				## convert to kilograms
 				shopping_list_portion.update_attributes(
 					:unit_number => 9,
-					:amount => metric_amount
+					:portion_amount => metric_amount
 				)
 			end
 		else
 			shopping_list_portion.update_attributes(
-				:amount => portion_obj.amount,
+				:portion_amount => portion_obj.amount,
 				:unit_number => portion_obj.unit_number,
 				:recipe_number => portion_obj.recipe_id
 			)
@@ -179,7 +179,7 @@ module ShoppingListsHelper
         stock_amount = 0
 
 				matching_stocks.each do |stock|
-					stock_unit = Unit.where(unit_number: stock.unit_number).first
+					stock_unit = stock.unit
 					if stock_unit.metric_ratio
 						stock_amount += stock.amount * stock_unit.metric_ratio
 					else

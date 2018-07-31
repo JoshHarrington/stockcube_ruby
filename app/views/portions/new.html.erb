@@ -5,7 +5,7 @@
 
 		<%= hidden_field_tag "recipe_id", params[:recipe_id] %>
 		Amount <%= p.text_field(:amount, value: '', placeholder: '250', validate: true) %><br/>
-		Units <%= select_tag "unit_number", options_from_collection_for_select(@unit_select, "unit_number", "name", 8) %>
+		Units <%= select_tag "unit_number", options_from_collection_for_select(@unit_select, "id", "name", 8) %>
 		<br/>
 	</div>
 	<div class="actions">

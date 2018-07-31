@@ -87,7 +87,7 @@ class ShoppingListsController < ApplicationController
     if current_user.shopping_lists.length > 0 && current_user.shopping_lists.last.archived != true
       current_user.shopping_lists.last.shopping_list_portions.each do |shopping_list_portion|
         Stock.create(
-          unit_number: shopping_list_portion.unit_number,
+          unit_id: shopping_list_portion.unit_number,
           amount: shopping_list_portion.portion_amount,
           ingredient_id: shopping_list_portion.ingredient_id,
           cupboard_id: @import_cupboard.id,

@@ -1,7 +1,7 @@
 	<div class="field">
 		<p>Ingredient Name</p> <%= i.text_field :name %><br>
 		<br />
-		<p>Unit</p> <%= select_tag "unit_number", options_from_collection_for_select(@units, "unit_number", "name") %><br />
+		<p>Unit</p> <%= select_tag "unit_number", options_from_collection_for_select(@units, "id", "name") %><br />
 		<br />
 		<p>Vegan <%= i.check_box "vegan" %></p><br	/>
 		<p>Vegetarian <%= i.check_box "vegetarian" %></p><br	/>
