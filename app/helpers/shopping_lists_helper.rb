@@ -132,7 +132,8 @@ module ShoppingListsHelper
 
 			shopping_list_portion = ShoppingListPortion.find_or_create_by(
 				shopping_list_id: current_shopping_list_id,
-				ingredient_id: portion.ingredient_id
+				ingredient_id: portion.ingredient_id,
+				unit_number: portion.unit_number
 			)
 
 			set_portion_amount = 0

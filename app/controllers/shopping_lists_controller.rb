@@ -37,13 +37,9 @@ class ShoppingListsController < ApplicationController
       portion_obj = Portion.where(id: portion_id).first
       ingredient_obj = Ingredient.where(id: portion_obj.ingredient_id).first
       if ingredient_obj
-        @shopping_list.ingredients << ingredient_obj
-        shopping_list_portion_obj = ShoppingListPortion.where(ingredient_id: ingredient_obj.id, shopping_list_id: @shopping_list.id)
+        shopping_list_portion = ShoppingListPortion.find_or_create_by(ingredient_id: ingredient_obj.id, shopping_list_id: @shopping_list.id)
         portion_unit_obj = Unit.where(id: portion_obj.unit_number).first
-
-        shopping_list_portion_obj.each do |shopping_list_portion|
-          view_context.metric_transform_portion_update(shopping_list_portion, portion_unit_obj, portion_obj, ingredient_obj)
-        end
+        view_context.metric_transform_portion_update(shopping_list_portion, portion_unit_obj, portion_obj, ingredient_obj)
       end
     end
 
