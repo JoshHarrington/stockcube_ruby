@@ -262,6 +262,8 @@ a.list_block--info_bar {
 		&::after {
 			content: attr(title);
 			background-color: inherit;
+			text-overflow: ellipsis;
+			overflow: hidden;
 		}
 		span {
 			display: none;
