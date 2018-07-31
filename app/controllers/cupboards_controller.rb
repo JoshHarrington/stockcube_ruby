@@ -168,14 +168,14 @@ class CupboardsController < ApplicationController
 		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map(&:cupboard_id)
 		@all_cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)
-		@units = Unit.all
+		@units = Unit.where.not(name: nil)
 	end
 	def update
 		@cupboard = Cupboard.find(params[:id])
 		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map(&:cupboard_id)
 		@all_cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)
-		@units = Unit.all
+		@units = Unit.where.not(name: nil)
 
 
 		if params.has_key?(:stock_items)
@@ -186,9 +186,9 @@ class CupboardsController < ApplicationController
 						amount: values[:amount]
 					)
 				end
-				unless stock.unit_number == values[:unit_number]
+				unless stock.unit_id == values[:unit_id]
 					stock.update_attributes(
-						unit_number: values[:unit_number]
+						unit_id: values[:unit_id]
 					)
 				end
 				unless stock.use_by_date == values[:use_by_date]

@@ -32,11 +32,11 @@ class StocksController < ApplicationController
 
 		@stock_amount = params[:amount]
 		@stock_use_by_date = params[:stock][:use_by_date]
-		@stock_unit = params[:unit_number]
+		@stock_unit = params[:unit_id]
 
 
 		@stock.update_attributes(
-			unit_number: @stock_unit,
+			unit_id: @stock_unit,
 			cupboard_id: (selected_cupboard_id || @cupboards.first),
 			ingredient_id: selected_ingredient_id,
 		)
@@ -72,7 +72,7 @@ class StocksController < ApplicationController
 
 		@units_select = Unit.where.not(name: nil)
 
-		@preselect_unit = @stock.unit
+		@preselect_unit = @stock.unit_id
 	end
 	def update
 		@stock = Stock.find(params[:id])
@@ -87,10 +87,15 @@ class StocksController < ApplicationController
 
 		@ingredients = Ingredient.all.order('name ASC')
 		@current_ingredient = @stock.ingredient
-		@current_ingredient_unit = @stock.ingredient.unit
-		@current_ingredient_unit_number = @current_ingredient_unit.unit_number
+		# @current_unit = @stock.unit
+		# @current_ingredient_unit_number = @current_ingredient_unit.unit_number
 		@stock_unit = @stock.unit
 
+
+		### What's going on here?!
+		### Can't update the cupboard id if more cupboard_users than 1?
+		### need a system to figure if the people on the cupboard match?
+		### or just notify the user before changing?
 		unless params[:cupboard_id] == @current_cupboard.id || @current_cupboard.cupboard_users.length > 1
 			@stock.update_attributes(
 				cupboard_id: params[:cupboard_id]
@@ -99,11 +104,11 @@ class StocksController < ApplicationController
 
 		@units_select = Unit.where.not(name: nil)
 
-		@preselect_unit = @stock.unit
+		@preselect_unit = @stock.unit_id
 
-		unless params[:unit_number] == @stock_unit.unit_number
+		unless params[:unit_id] == @stock.unit_id
 			@stock.update_attributes(
-				unit_number: params[:unit_number]
+				unit_id: params[:unit_id]
 			)
 		end
 
@@ -115,7 +120,7 @@ class StocksController < ApplicationController
 	end
 	private
 		def stock_params
-			params.require(:stock).permit(:amount, :use_by_date, :unit_number, ingredient_attributes: [:id, :name, :image, :unit, :_destroy])
+			params.require(:stock).permit(:amount, :use_by_date, :unit_id, ingredient_attributes: [:id, :name, :image, :unit, :_destroy])
 		end
 
 		# Confirms a logged-in user.

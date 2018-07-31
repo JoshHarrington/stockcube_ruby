@@ -33,13 +33,13 @@
               <% if params[:show_all] == 'true' || (stock.use_by_date - Date.current).to_i >= -2 %>
                 <%= link_to edit_stock_path(stock.id), class: "list_block--item list_block--item_stacked list_block--item_show#{date_warning_class(stock)} stock_#{stock.id}", :data => { :cupboard_id => "#{cupboard.id}", :stock_id => "#{stock.id}" } do %>
                   <p><%= stock.ingredient.name %></p>
-                  <p><%= stock.amount %> <%= stock.ingredient.unit.name %></p>
+                  <p><%= stock.amount %> <%= stock.unit.name %></p>
                 <% end %>
                 <%= check_box_tag "stock_id[]", value = "#{stock.id}", checked = false, id: "stock_#{stock.id}", class: "list_block--item_edit--checkbox" %>
                 <%= label_tag "stock_#{stock.id}", class: "list_block--item list_block--item_stacked list_block--item_edit#{date_warning_class(stock)}" do %>
                   <span class="list_block--item_edit_marker"><%= icomoon('bin') %></span>
                   <p><%= stock.ingredient.name %></p>
-                  <p><%= stock.amount %> <%= stock.ingredient.unit.name %></p>
+                  <p><%= stock.amount %> <%= stock.unit.name %></p>
                 <% end %>
               <% end %>
             <% end %>

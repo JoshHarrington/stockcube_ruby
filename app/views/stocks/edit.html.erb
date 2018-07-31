@@ -7,7 +7,7 @@
 		</div>
 		<div class="item_form--contents">
 			<div class="item_form--content_row">
-				<%= label_tag 'stock_amount', 'Amount of stock' %> <%= s.text_field(:amount, validate: true) %> <%= select_tag "unit_number", options_from_collection_for_select(@units_select, "unit_number", "name", @preselect_unit) %>
+				<%= label_tag 'stock_amount', 'Amount of stock' %> <%= s.text_field(:amount, validate: true) %> <%= select_tag "unit_id", options_from_collection_for_select(@units_select, "id", "name", @preselect_unit) %>
 			</div>
 
 			<div class="item_form--content_row">

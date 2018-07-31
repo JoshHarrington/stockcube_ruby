@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180730074848) do
+ActiveRecord::Schema.define(version: 20180731102556) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -89,7 +89,7 @@ ActiveRecord::Schema.define(version: 20180730074848) do
     t.bigint "shopping_list_id"
     t.integer "unit_number"
     t.integer "recipe_number"
-    t.decimal "amount"
+    t.decimal "portion_amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "stock_amount"

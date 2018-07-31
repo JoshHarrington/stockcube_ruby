@@ -57,7 +57,7 @@ ingredient_picks.each_with_index do |ingredient, index|
   stock = Stock.create(
     amount: 0.1,
     use_by_date: test_use_by_date,
-    unit_number: ingredient_obj.unit.unit_number,
+    unit_id: ingredient_obj.unit_id,
     cupboard_id: cupboard_pick_id,
     ingredient_id: ingredient_obj.id
   )
