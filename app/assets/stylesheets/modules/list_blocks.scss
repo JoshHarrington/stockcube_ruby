@@ -158,6 +158,7 @@ a.list_block {
 	order: 3;
 	text-decoration: none;
 	color: black;
+	max-height: em(100, 10);
 	&:hover {
 		background-color: $teal-20;
 	}
@@ -186,19 +187,26 @@ a.list_block {
 	display: flex;
 	justify-content: space-between;
 	border-top: 1px solid $teal-80;
-	min-height: em(54, 10);
 	align-items: stretch;
-}
-
-a.list_block--info_bar {
-	align-items: center;
-	padding: em(12, 15) em(8, 15);
-	min-height: em(54, 15);
+	font-size: 10px;
+	min-height: em(54, 10);
 	text-decoration: none;
 	color: black;
-	background-color: $teal-10;
 	&:hover {
-		background-color: $teal-20;
+		background-color: $teal-10;
+		.list_block--info_bar-action {
+			background-color: $teal-20;
+		}
+	}
+	&.list_block--info_bar--sharing_active {
+		align-items: center;
+		min-height: em(54, 15);
+		padding: em(12, 15) em(8, 15);
+		background-color: $teal-10;
+		font-size: em(15, 10);
+		&:hover {
+			background-color: $teal-20;
+		}
 	}
 }
 
@@ -227,6 +235,9 @@ a.list_block--info_bar {
 	transition: max-width .3s;
 	white-space: nowrap;
 	cursor: default;
+	.list_block--info_bar-content & {
+		cursor: pointer;
+	}
 	span {
 		width: 100%;
 		text-align: center;
@@ -248,7 +259,7 @@ a.list_block--info_bar {
 	}
 	&:nth-child(5n + 4),
 	li:nth-child(5n + 4) & {
-		background-color: paleturquoise;
+		background-color: aliceblue;
 	}
 	&:nth-child(5n + 5),
 	li:nth-child(5n + 5) & {
@@ -257,10 +268,13 @@ a.list_block--info_bar {
 	&:hover,
 	&:focus {
 		max-width: em(100, 10);
-		padding: em(10, 10);
+		padding: em(6, 10) em(10, 10);
 		&::after {
 			content: attr(title);
 			background-color: inherit;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			height: em(11, 10);
 		}
 		span {
 			display: none;
@@ -269,9 +283,12 @@ a.list_block--info_bar {
 	&.people_marker__wide {
 		max-width: max-content;
 		width: auto;
-		padding: em(6, 10) em(10, 10);
-		margin-top: em(5, 10);
-		margin-bottom: em(5, 10);
+		padding: em(8, 15) em(12, 15);
+		margin-top: em(5, 15);
+		margin-bottom: em(5, 15);
+		height: auto;
+		white-space: normal;
+		line-height: em(19, 15);
 	}
 	&.not_accepted {
 		border: 1px solid $warning-red-strong;
@@ -292,9 +309,6 @@ a.list_block--info_bar {
 	justify-content: center;
 	text-decoration: none;
 	color: black;
-	&:hover {
-		background-color: $teal-20;
-	}
 }
 
 .list_block--untouchable {

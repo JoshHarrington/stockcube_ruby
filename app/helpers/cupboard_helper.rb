@@ -28,9 +28,7 @@ module CupboardHelper
 		end
 	end
 	def stock_unit(stock)
-		unit_number = stock.unit_number
-		correct_unit = Unit.where(unit_number: unit_number).first
-		return correct_unit.name
+		return stock.unit
 	end
 	def cupboard_shared_class(cupboard)
 		if cupboard.cupboard_users.length > 1

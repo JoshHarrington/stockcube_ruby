@@ -46,7 +46,7 @@ namespace :demo_user do
 			stock = Stock.create(
 				amount: random_amount,
 				use_by_date: test_use_by_date,
-				unit_number: ingredient.unit.unit_number,
+				unit_number: ingredient.unit.id,
 				cupboard_id: cupboard_pick_id,
 				ingredient_id: ingredient.id
 			)

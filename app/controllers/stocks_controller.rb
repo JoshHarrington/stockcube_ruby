@@ -1,4 +1,5 @@
 class StocksController < ApplicationController
+	helper IntegerHelper
 	before_action :logged_in_user
 	def index
 		@stocks = Stock.all

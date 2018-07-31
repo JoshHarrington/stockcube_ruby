@@ -4,7 +4,7 @@
     <%= f.text_field :amount %>
 
     <%= f.fields_for :ingredient do |portion_ingredient| %>
-      <%= portion_ingredient.select :unit_id, Unit.all.collect { |unit| [ unit.name, unit.unit_number ] } %>
+      <%= portion_ingredient.select :unit_id, Unit.all.collect { |unit| [ unit.name, unit.id ] } %>
 			<%= portion_ingredient.select :id, Ingredient.all.collect { |ingredient| [ ingredient.name, ingredient.id ] } %>
     <% end %>
 
