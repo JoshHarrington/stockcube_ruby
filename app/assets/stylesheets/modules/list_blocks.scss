@@ -268,12 +268,13 @@ a.list_block {
 	&:hover,
 	&:focus {
 		max-width: em(100, 10);
-		padding: em(10, 10);
+		padding: em(6, 10) em(10, 10);
 		&::after {
 			content: attr(title);
 			background-color: inherit;
 			text-overflow: ellipsis;
 			overflow: hidden;
+			height: em(11, 10);
 		}
 		span {
 			display: none;
