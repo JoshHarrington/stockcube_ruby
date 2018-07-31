@@ -1,0 +1,29 @@
+<% provide(:title, "Stock picks for your cupboard") %>
+
+<div class="item_form--wrapper">
+	<%= form_for @stock, :html => {id: "stock-form", class: "item_form"}, :validate => true do |s| %>
+		<div class="item_form--title">
+			<h1>Adding stock to cupboards</h1>
+		</div>
+		<div class="item_form--contents">
+			<div class="item_form--content_row">
+				<%= select_tag :ingredient_id, options_from_collection_for_select(@ingredients, "id", "name"), prompt: "Pick your ingredient", required: true %>
+			</div>
+			<div class="item_form--content_row">
+				<%= label_tag 'stock_amount', 'Amount of stock' %> <%= s.text_field(:amount, value: '', placeholder: '250', validate: true) %><%= select_tag "unit_id", options_from_collection_for_select(@unit_select, "id", "name", 8) %>
+			</div>
+			<div class="item_form--content_row">
+				<%= label_tag 'stock_use_by_date', 'Use by date'  %> <%= s.date_field :use_by_date, min: Date.current, value: @two_weeks_from_now, validate: true %>
+			</div>
+			<div class="item_form--content_row">
+				<% @cupboards.each do |cupboard| %>
+					<%= radio_button_tag "cupboard_id", cupboard.id, (cupboard.id.to_i == params[:cupboard_id].to_i ? true : false), class: "fancy_radio_button" %>
+					<%= label_tag "cupboard_id_#{cupboard.id}", cupboard.location, class: "fancy_radio_button__label" %>
+				<% end %>
+			</div>
+			<div class="item_form--content_row">
+				<%= s.button "Save" %>
+			</div>
+		</div>
+	<% end %>
+</div>

@@ -1,12 +1,16 @@
 class StocksController < ApplicationController
 	before_action :logged_in_user
-	# before_action :cupboard_id_param_check, only: [:create, :new, :edit, :update]
 	def index
 		@stocks = Stock.all
 	end
 	def show
 		@stock = Stock.find(params[:id])
 	end
+	def picks
+	end
+	def pick_stock
+	end
+
 	def new
 		@stock = Stock.new
 		@cupboards = current_user.cupboards.where(hidden: false, setup: false)
