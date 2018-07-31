@@ -45,7 +45,6 @@ Rails.application.routes.draw do
   get '/stocks/:id/edit' => 'stocks#edit', as: :edit_stock
   patch '/stocks/:id' => 'stocks#update'
   post '/stocks' => 'stocks#create'
-  post '/stocks/pick_stock' => 'stocks#pick_stock'
 
   get '/cupboards' => 'cupboards#index'
   get '/cupboards/new' => 'cupboards#new'

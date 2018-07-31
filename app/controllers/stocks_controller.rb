@@ -8,8 +8,8 @@ class StocksController < ApplicationController
 		@stock = Stock.find(params[:id])
 	end
 	def picks
-	end
-	def pick_stock
+		@tomatoe_id = Ingredient.where(name: "Tomatoes").first.id
+		@each_unit_id = Unit.where(name: "Each").first.id
 	end
 
 	def new
