@@ -87,16 +87,8 @@ class StocksController < ApplicationController
 
 		@ingredients = Ingredient.all.order('name ASC')
 		@current_ingredient = @stock.ingredient
-		# @current_unit = @stock.unit
-		# @current_ingredient_unit_number = @current_ingredient_unit.unit_number
-		@stock_unit = @stock.unit
 
-
-		### What's going on here?!
-		### Can't update the cupboard id if more cupboard_users than 1?
-		### need a system to figure if the people on the cupboard match?
-		### or just notify the user before changing?
-		unless params[:cupboard_id] == @current_cupboard.id || @current_cupboard.cupboard_users.length > 1
+		unless params[:cupboard_id] == @current_cupboard.id
 			@stock.update_attributes(
 				cupboard_id: params[:cupboard_id]
 			)
