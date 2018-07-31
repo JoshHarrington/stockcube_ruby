@@ -49,9 +49,9 @@
         <div class="list_block--content_end">
           <span class="edit_mode--message">EDIT MODE</span>
           <% if cupboard.users.length < 2 %>
-            <%= link_to "Start sharing this cupboard", cupboard_share_path(:cupboard_id => cupboard.id), class: "list_block--info_bar" %>
+            <%= link_to "Start sharing this cupboard", cupboard_share_path(:cupboard_id => cupboard.id), class: "list_block--info_bar list_block--info_bar--sharing_active", title: "Start sharing this cupboard" %>
           <% else %>
-            <div class="list_block--info_bar">
+            <%= link_to cupboard_share_path(:cupboard_id => cupboard.id), class: "list_block--info_bar", title: "Sharing settings" do %>
               <div class="list_block--info_bar-content">
                 <p>
                   Shared with
@@ -66,8 +66,8 @@
                   <% end %>
                 <% end %>
               </div>
-              <%= link_to "+", cupboard_share_path(:cupboard_id => cupboard.id), class: "list_block--info_bar-action", title: "Share with more people" %>
-            </div>
+              <span class="list_block--info_bar-action">+</span>
+            <% end %>
           <% end %>
         </div>
       </div>
