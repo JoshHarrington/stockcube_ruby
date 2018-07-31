@@ -1,4 +1,5 @@
 class StocksController < ApplicationController
+	helper IntegerHelper
 	before_action :logged_in_user
 	# before_action :cupboard_id_param_check, only: [:create, :new, :edit, :update]
 	def index

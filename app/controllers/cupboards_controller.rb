@@ -1,5 +1,6 @@
 class CupboardsController < ApplicationController
 	require 'set'
+	helper IntegerHelper
 	before_action :logged_in_user, only: [:index, :show, :new, :create, :edit_all, :share, :share_request, :accept_cupboard_invite, :autosave, :autosave_sorting, :edit, :update]
 	before_action :correct_user,   only: [:show, :edit, :update, :share]
 	def index

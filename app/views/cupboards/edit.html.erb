@@ -27,7 +27,7 @@
 						<% end %>
 					</div>
 					<div class="item_form--content_row">
-						<%= text_field_tag "stock_items[#{stock.id}][amount]", stock.amount, class: 'bordered' %>
+						<%= text_field_tag "stock_items[#{stock.id}][amount]", round_if_whole(stock.amount), class: 'bordered' %>
 						<%= select_tag "stock_items[#{stock.id}][unit_id]", options_from_collection_for_select(@units, "id", "name", stock.ingredient.unit_id) %>
 					</div>
 					<div class="item_form--content_row">
