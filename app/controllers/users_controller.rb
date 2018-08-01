@@ -23,6 +23,58 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
+
+      ### setup user with some fav stock for quick add
+      @tomatoe_id = Ingredient.where(name: "Tomatoes").first.id
+      @egg_id = Ingredient.where(name: "Egg").first.id
+      @bread_id = Ingredient.where(name: "Bread (White)").first.id  ## need to add (to production)
+      @milk_id = Ingredient.where(name: "Milk").first.id
+      @onion_id = Ingredient.where(name: "Onion").first.id
+      @cheese_id = Ingredient.where(name: "Cheese (Cheddar)").first.id
+
+      @each_unit_id = Unit.where(name: "Each").first.id
+      @loaf_unit_id = Unit.where(name: "Loaf").first.id 	## need to add (to production)
+      @pint_unit_id = Unit.where(name: "Pint").first.id
+      @gram_unit_id = Unit.where(name: "Gram").first.id
+
+      UserFavStock.create (
+        ingredient_id: @tomatoe_id,
+        stock_amount: 4,
+        unit_id: @each_unit_id,
+        user_id: @user.id
+      )
+      UserFavStock.create (
+        ingredient_id: @egg_id,
+        stock_amount: 6,
+        unit_id: @each_unit_id,
+        user_id: @user.id
+      )
+      UserFavStock.create (
+        ingredient_id: @bread_id,
+        stock_amount: 1,
+        unit_id: @loaf_unit_id,
+        user_id: @user.id
+      )
+      UserFavStock.create (
+        ingredient_id: @milk_id,
+        stock_amount: 1,
+        unit_id: @pint_unit_id,
+        user_id: @user.id
+      )
+      UserFavStock.create (
+        ingredient_id: @onion_id,
+        stock_amount: 3,
+        unit_id: @each_unit_id,
+        user_id: @user.id
+      )
+      UserFavStock.create (
+        ingredient_id: @cheese_id,
+        stock_amount: 350,
+        unit_id: @gram_unit_id,
+        user_id: @user.id
+      )
+
+      ### setup user with default cupboard
       new_cupboard = Cupboard.create(location: "Fridge (Default cupboard)")
       CupboardUser.create(
         cupboard_id: new_cupboard.id,
@@ -30,6 +82,7 @@ class UsersController < ApplicationController
         owner: true,
         accepted: true
       )
+
       if params.has_key?(:user) && params[:user][:cupboard_id].to_s != ''
         @user.send_activation_email_with_cupboard_add
         hashids = Hashids.new(ENV['CUPBOARD_ID_SALT'])
@@ -48,7 +101,8 @@ class UsersController < ApplicationController
       else
         @user.send_activation_email
       end
-      flash[:info] = "Please check your email to activate your account."
+      flash[:info] = "Check your email to activate your account."
+      log_in @user
       redirect_to root_url
     else
       render 'new'

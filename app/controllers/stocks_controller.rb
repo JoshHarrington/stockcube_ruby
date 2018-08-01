@@ -9,7 +9,16 @@ class StocksController < ApplicationController
 	end
 	def picks
 		@tomatoe_id = Ingredient.where(name: "Tomatoes").first.id
+		@egg_id = Ingredient.where(name: "Egg").first.id
+		@bread_id = Ingredient.where(name: "Bread (White)").first.id  ## need to add (to production)
+		@milk_id = Ingredient.where(name: "Milk").first.id
+		@onion_id = Ingredient.where(name: "Onion").first.id
+		@cheese_id = Ingredient.where(name: "Cheese (Cheddar)").first.id
+
 		@each_unit_id = Unit.where(name: "Each").first.id
+		@loaf_unit_id = Unit.where(name: "Loaf").first.id 	## need to add (to production)
+		@pint_unit_id = Unit.where(name: "Pint").first.id
+		@gram_unit_id = Unit.where(name: "Gram").first.id
 	end
 
 	def new

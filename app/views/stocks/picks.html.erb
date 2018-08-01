@@ -1,5 +1,12 @@
 <% provide(:title, "Stock picks for your cupboard") %>
 
+
+<%# Best place to put these quick add items? Add the list blocks on the cupboard page? %>
 <div class="item_form--wrapper">
-	<%= link_to 'Tomatoes', stocks_new_path(ingredient: @tomatoe_id, stock_amount: 4, unit: @each_unit_id)%>
+	<%= link_to '4 Tomatoes', stocks_new_path(ingredient: @tomatoe_id, stock_amount: 4, unit: @each_unit_id)%>
+	<%= link_to '6 Eggs', stocks_new_path(ingredient: @egg_id, stock_amount: 6, unit: @each_unit_id)%>
+	<%= link_to '1 Loaf of Bread', stocks_new_path(ingredient: @bread_id, stock_amount: 1, unit: @loaf_unit_id)%>
+	<%= link_to '1 Pint of Milk', stocks_new_path(ingredient: @milk_id, stock_amount: 1, unit: @pint_unit_id)%>
+	<%= link_to '3 Onions', stocks_new_path(ingredient: @onion_id, stock_amount: 3, unit: @each_unit_id)%>
+	<%= link_to 'Cheddar Cheese', stocks_new_path(ingredient: @cheese_id, stock_amount: 350, unit: @gram_unit_id)%>
 </div>

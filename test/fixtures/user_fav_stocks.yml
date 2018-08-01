@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  ingredient_id: 1
+  stock_amount: 1
+  unit_id: 1
+  standar_use_by_limit: 1
+
+two:
+  ingredient_id: 1
+  stock_amount: 1
+  unit_id: 1
+  standar_use_by_limit: 1

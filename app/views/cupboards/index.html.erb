@@ -1,5 +1,18 @@
 <% provide(:title, 'Your cupboards') %>
 <div class="list_block--collection--wrap">
+  <div class="list_block--collection--sibling list_block--collection--sibling_stack">
+    <h2>Common Stock picks</h2>
+    <p>Use our common stock picks to add stock to your cupboards quickly, or add your own!</p>
+  </div>
+  <div class="list_block--collection">
+    <div class="list_block list_block-wide">
+      <div class="list_block--content">
+        <% @user_fav_stocks.each do |fav_stock| %>
+          <%= link_to (fav_stock.stock_amount.to_s + ' ' + fav_stock.unit.name.to_s + ' ' + fav_stock.ingredient.name), stocks_new_path(ingredient: fav_stock.ingredient_id, stock_amount: fav_stock.stock_amount, unit: fav_stock.unit_id), class: "list_block--item"%>
+        <% end %>
+      </div>
+    </div>
+  </div>
   <div class="list_block--collection--sibling">
     <h2>Your Cupboards</h2>
   </div>
