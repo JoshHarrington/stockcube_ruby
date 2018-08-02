@@ -24,7 +24,7 @@ var cupboard = function() {
 			if (moved_item.parent().hasClass('empty')) {
 				moved_item.parent().removeClass('empty all-out-of-date');
 			}
-			if ($('.cupboard.list_block[data-id="'+ old_cupboard_id +'"] .list_block--item:not(.list_block--item-new)').length == 0) {
+			if ($('.cupboard.list_block[data-id="'+ old_cupboard_id +'"] .list_block--item:not(.list_block--item_new)').length == 0) {
 				$('.cupboard.list_block[data-id="'+ old_cupboard_id +'"]').addClass('empty');
 			}
 			$.ajax({

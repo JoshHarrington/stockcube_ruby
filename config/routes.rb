@@ -75,6 +75,9 @@ Rails.application.routes.draw do
   delete '/logout',  to: 'sessions#destroy'
   delete '/demo_logout',   to: 'sessions#demo_logout'
 
+  get '/quick_add_stock/new', to: 'user_fav_stocks#new'
+  get '/quick_add_stock/:id/edit', to: 'user_fav_stocks#edit', as: :quick_add_stock_edit
+
   resources :users
   resources :user_fav_stocks
   resources :account_activations, only: [:edit]

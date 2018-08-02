@@ -126,7 +126,7 @@
 	}
 	&.hide_add {
 		min-height: em(123, 10);
-		.list_block--item-new {
+		.list_block--item_new {
 			display: none;
 		}
 	}
@@ -187,6 +187,7 @@ a.list_block {
 	.list_block-wide & {
 		width: 100%;
 		overflow-x: auto;
+		padding-bottom: em(12, 10);
 		&::after {
 			content: " ";
 			width: em(8, 10);
@@ -343,7 +344,7 @@ a.list_block {
 }
 
 .list_block.edit_mode .list_block--item_show,
-.list_block.edit_mode .list_block--item-new,
+.list_block.edit_mode .list_block--item_new,
 .list_block.edit_mode .edit_list_block_button,
 .list_block:not(.edit_mode) .list_block--item_edit,
 .list_block:not(.edit_mode) .close_without_edit_list_block_button,
@@ -521,10 +522,32 @@ a.list_block {
 		margin-top: .4rem;
 	}
 	.list_block-wide & {
-		min-width: em(80, 15);
-    max-width: em(100, 15);
+		min-width: em(160, 15);
+		max-width: em(160, 15);
+		display: flex;
+		flex-wrap: wrap;
+		align-content: space-between;
+		line-height: em(20, 15);
+		.list_block--item--action {
+			font-size: 1em;
+			padding: em(5, 15) em(7, 15);
+			&:hover,
+			&:focus {
+				background-color: $teal-10;
+			}
+		}
 	}
 }
+
+.list_block--item--content {
+	flex-basis: 100%;
+	margin-bottom: em(10, 15);
+}
+
+.list_block--item--action {
+	@extend .pretty_form--submit_button;
+}
+
 
 .list_block--item_placeholder {
 	background-color: $teal-10;
@@ -581,7 +604,7 @@ a.list_block--item {
 	cursor: pointer;
 }
 
-.list_block--item-new {
+.list_block--item_new {
 	background-color: white;
 	min-height: em(40, 15);
 	color: black;
@@ -589,7 +612,9 @@ a.list_block--item {
 	display: flex;
 	align-items: center;
 	border: 1px solid $teal-110;
-	order: 2;
+	.list_block:not(.list_block-wide) & {
+		order: 2;
+	}
 	&.list_block--item:hover {
 		background-color: $teal-5;
 	}
