@@ -76,6 +76,7 @@ Rails.application.routes.draw do
   delete '/demo_logout',   to: 'sessions#demo_logout'
 
   resources :users
+  resources :user_fav_stocks
   resources :account_activations, only: [:edit]
   resources :password_resets,     only: [:new, :create, :edit, :update]
   resources :recipes do

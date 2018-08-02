@@ -79,6 +79,26 @@ $bp-mobile: 600px;
 	}
 }
 
+.pretty_form--row--multiple_input {
+	display: flex;
+	align-items: stretch;
+	select:last-child {
+		@at-root {
+			&,
+			select.pretty_form--row--pretty_select {
+				font-size: em(15, 10);
+				height: em(42, 15);
+				border: 1px solid $black-30;
+			}
+		}
+	}
+
+	.pretty_form--row & input + select:last-child {
+		margin-top: 0;
+		margin-left: em(8, 15);
+	}
+}
+
 @media (min-width: 1500px) {
 	.pretty_form > {
 		.pretty_form--sibling,

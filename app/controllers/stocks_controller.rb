@@ -24,6 +24,10 @@ class StocksController < ApplicationController
 	def new
 		@stock = Stock.new
 		@cupboards = current_user.cupboards.where(hidden: false, setup: false)
+		if @cupboards.length == 0
+			new_cupboard = Cupboard.create(location: "Fridge (Default cupboard)")
+			CupboardUser.create(cupboard_id: new_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
+		end
 		@ingredients = Ingredient.all.order('name ASC')
 		@two_weeks_from_now = Date.current + 2.weeks
 		@unit_select = Unit.where.not(name: nil)

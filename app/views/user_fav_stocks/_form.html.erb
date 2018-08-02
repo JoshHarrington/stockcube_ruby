@@ -1,0 +1,26 @@
+<%= form_for(@user_fav_stock) do |f| %>
+  <%= render 'shared/error_messages', object: @user_fav_stock %>
+
+  <div class="pretty_form--row">
+    <%= label_tag :ingredient_id, 'Stock ingredient' %>
+    <%= select_tag "user_fav_stock[ingredient_id]", options_from_collection_for_select(@ingredients, "id", "name" ), class: "pretty_form--row--pretty_select", prompt: "Pick your ingredient", required: true %>
+  </div>
+
+  <div class="pretty_form--row">
+    <%= label_tag :stock_amount, 'Amount of stock' %>
+    <div class="pretty_form--row--multiple_input">
+      <%= f.text_field(:stock_amount, value: '', placeholder: '250', validate: true) %>
+      <%= select_tag "user_fav_stock[unit_id]", options_from_collection_for_select(@unit_select, "id", "name", 8) %>
+    </div>
+  </div>
+
+  <div class="pretty_form--row">
+    <%= label_tag :standard_use_by_limit, 'Estimated number of days until out of date' %>
+    <%= f.text_field(:standard_use_by_limit, value: '', placeholder: '6', validate: true) %>
+  </div>
+
+
+  <div class="pretty_form--actions">
+    <%= button_tag yield(:button_text), class: "pretty_form--submit_button" %>
+  </div>
+<% end %>

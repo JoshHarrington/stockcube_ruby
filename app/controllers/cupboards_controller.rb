@@ -17,7 +17,7 @@ class CupboardsController < ApplicationController
 			end
 			break if @out_of_date_exist == true
 		end
-		@user_fav_stocks = UserFavStock.where(user_id: current_user.id)
+		@user_fav_stocks = UserFavStock.where(user_id: current_user.id).order('updated_at desc')
 	end
 	def show
 		@cupboard = Cupboard.find(params[:id])
