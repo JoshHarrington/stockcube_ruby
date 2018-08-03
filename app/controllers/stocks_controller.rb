@@ -29,7 +29,11 @@ class StocksController < ApplicationController
 			CupboardUser.create(cupboard_id: new_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
 		end
 		@ingredients = Ingredient.all.order('name ASC')
-		@two_weeks_from_now = Date.current + 2.weeks
+		if params.has_key?(:standard_use_by_limit) && params[:standard_use_by_limit]
+			@use_by_limit = Date.current + params[:standard_use_by_limit].to_i.days
+		else
+			@use_by_limit = Date.current + 2.weeks
+		end
 		@unit_select = Unit.where.not(name: nil)
 
 	end
