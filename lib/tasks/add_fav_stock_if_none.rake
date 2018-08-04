@@ -4,17 +4,17 @@ namespace :add_fav_stock_if_none do
 		User.all.each do |user|
 			if UserFavStock.where(user_id: user.id).length == 0
 				### setup user with some fav stock for quick add
-				@tomatoe_id = Ingredient.where(name: "Tomatoes").first.id
-				@egg_id = Ingredient.where(name: "Egg").first.id
-				@bread_id = Ingredient.where(name: "Bread (White)").first.id  ## need to add (to production)
-				@milk_id = Ingredient.where(name: "Milk").first.id
-				@onion_id = Ingredient.where(name: "Onion").first.id
-				@cheese_id = Ingredient.where(name: "Cheese (Cheddar)").first.id
+				@tomatoe_id = Ingredient.find_or_create_by(name: "Tomatoes").id
+				@egg_id = Ingredient.find_or_create_by(name: "Egg").id
+				@bread_id = Ingredient.find_or_create_by(name: "Bread (White)").id
+				@milk_id = Ingredient.find_or_create_by(name: "Milk").id
+				@onion_id = Ingredient.find_or_create_by(name: "Onion").id
+				@cheese_id = Ingredient.find_or_create_by(name: "Cheese (Cheddar)").id
 
-				@each_unit_id = Unit.where(name: "Each").first.id
-				@loaf_unit_id = Unit.where(name: "Loaf").first.id 	## need to add (to production)
-				@pint_unit_id = Unit.where(name: "Pint").first.id
-				@gram_unit_id = Unit.where(name: "Gram").first.id
+				@each_unit_id = Unit.find_or_create_by(name: "Each").id
+				@loaf_unit_id = Unit.find_or_create_by(name: "Loaf").id
+				@pint_unit_id = Unit.find_or_create_by(name: "Pint").id
+				@gram_unit_id = Unit.find_or_create_by(name: "Gram").id
 
 				UserFavStock.create(
 					ingredient_id: @tomatoe_id,
