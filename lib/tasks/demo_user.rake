@@ -8,9 +8,9 @@ namespace :demo_user do
 			demo_user.favourites.delete_all
 		else
 			demo_user = User.create(name:  "Demo User",
-				email: "demo@stockcub.es",
-				password:              "password",
-				password_confirmation: "password",
+				email: ENV['DEMO_EMAIL'],
+				password:              ENV['DEMO_PASSWORD'],
+				password_confirmation: ENV['DEMO_PASSWORD'],
 				admin: false,
 				demo: true,
 				activated: true,
@@ -46,7 +46,7 @@ namespace :demo_user do
 			stock = Stock.create(
 				amount: random_amount,
 				use_by_date: test_use_by_date,
-				unit_number: ingredient.unit.id,
+				unit_id: ingredient.unit_id,
 				cupboard_id: cupboard_pick_id,
 				ingredient_id: ingredient.id
 			)
