@@ -26,4 +26,5 @@
 //= require recipes
 //= require shopping_list
 //= require cupboard_share
+//= require vendor/selectize.min.js
 

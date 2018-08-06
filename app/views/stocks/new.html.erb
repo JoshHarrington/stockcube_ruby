@@ -1,21 +1,23 @@
 <% provide(:title, "Adding stock to cupboards") %>
 
 <div class="item_form--wrapper">
-	<%= form_for @stock, :html => {id: "stock-form", class: "item_form"}, :validate => true do |s| %>
+<% %>
+	<%= form_for @stock, :html => {id: "stock_form", class: "item_form"}, :validate => true do |s| %>
 		<div class="item_form--title">
 			<h1>Adding stock to cupboards</h1>
 		</div>
 		<div class="item_form--contents">
 			<div class="item_form--content_row">
-				<%= select_tag :ingredient_id, options_from_collection_for_select(@ingredients, "id", "name", (params.has_key?(:ingredient) ? params[:ingredient] : '')), prompt: "Pick your ingredient", required: true %>
+				<%= select_tag :ingredient_id, options_from_collection_for_select(@ingredients, "id", "name", (params.has_key?(:ingredient) ? params[:ingredient] : '')), prompt: "Pick your ingredient", class: "wide_select", required: true %>
 			</div>
 			<div class="item_form--content_row">
-				<%= label_tag 'stock_amount', 'Amount of stock' %> <%= s.text_field(:amount, value: (params.has_key?(:stock_amount) ? params[:stock_amount] : ''), placeholder: '250', validate: true) %><%= select_tag "unit_id", options_from_collection_for_select(@unit_select, "id", "name", (params.has_key?(:unit) ? params[:unit] : 8)) %>
+				<%= label_tag 'stock_amount', 'Amount of stock' %> <%= s.text_field(:amount, value: (params.has_key?(:stock_amount) ? params[:stock_amount] : ''), placeholder: '250', class: "item_form--content_row--half_width_input", validate: true) %><%= select_tag "unit_id", options_from_collection_for_select(@unit_select, "id", "name", (params.has_key?(:unit) ? params[:unit] : 8)), class: "half_select" %>
 			</div>
 			<div class="item_form--content_row">
 				<%= label_tag 'stock_use_by_date', 'Use by date'  %> <%= s.date_field :use_by_date, min: Date.current, value: @use_by_limit, validate: true %>
 			</div>
 			<div class="item_form--content_row">
+				<%= label_tag 'cupboard_pick', 'Cupboard pick'  %>
 				<% @cupboards.each_with_index do |cupboard, index| %>
 					<%= radio_button_tag "cupboard_id", cupboard.id, (params.has_key?(:cupboard_id) ? (cupboard.id.to_i == params[:cupboard_id].to_i ? true : false) : (index == 0 ? true : false)), class: "fancy_radio_button" %>
 					<%= label_tag "cupboard_id_#{cupboard.id}", cupboard.location, class: "fancy_radio_button__label" %>

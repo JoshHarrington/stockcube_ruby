@@ -1,13 +1,13 @@
 <% provide(:title, "Editing your stock of #{@current_ingredient.name}") %>
 
 <div class="item_form--wrapper">
-	<%= form_for @stock, :html => {id: "stock-form", class: "item_form"}, :validate => true do |s| %>
+	<%= form_for @stock, :html => {id: "stock_form", class: "item_form"}, :validate => true do |s| %>
 		<div class="item_form--title">
 			<h1><%= @current_ingredient.name %></h1>
 		</div>
 		<div class="item_form--contents">
 			<div class="item_form--content_row">
-				<%= label_tag 'stock_amount', 'Amount of stock' %> <%= text_field_tag :amount, round_if_whole(@stock.amount), validate: true %> <%= select_tag "unit_id", options_from_collection_for_select(@units_select, "id", "name", @preselect_unit) %>
+				<%= label_tag 'stock_amount', 'Amount of stock' %> <%= text_field_tag :amount, round_if_whole(@stock.amount), class: "item_form--content_row--half_width_input", validate: true %> <%= select_tag "unit_id", options_from_collection_for_select(@units_select, "id", "name", @preselect_unit), class: "half_select" %>
 			</div>
 
 			<div class="item_form--content_row">
@@ -16,6 +16,7 @@
 			</div>
 
 			<div class="item_form--content_row">
+				<%= label_tag 'cupboard_pick', 'Cupboard pick'  %>
 				<% @cupboards.each do |cupboard| %>
 					<%= radio_button_tag "cupboard_id", cupboard.id, (cupboard.id == @current_cupboard.id ? true : false), class: "fancy_radio_button" %>
 					<%= label_tag "cupboard_id_#{cupboard.id}", cupboard.location, class: "fancy_radio_button__label" %>
