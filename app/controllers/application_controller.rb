@@ -1,7 +1,9 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
-  helper SessionsHelper
-  helper ApplicationHelper
+  include SessionsHelper
+  include ActionController::Helpers
+  before_filter :run_demo_domain_check
+  def run_demo_domain_check
     if domain_check('demo') == true
       if logged_in? && current_user && current_user.demo
         log_out
@@ -11,4 +13,5 @@ class ApplicationController < ActionController::Base
         log_in demo_user
       end
     end
+  end
 end
