@@ -1,6 +1,5 @@
 puts "Including required files\n\n"
 require 'nokogiri'
-require 'set'
 require 'uri'
 require 'date'
 

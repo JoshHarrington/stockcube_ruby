@@ -24,6 +24,7 @@
 //= require navigation
 //= require stocks
 //= require recipes
-//= require touch-punch.min.js
 //= require shopping_list
+//= require cupboard_share
+//= require vendor/selectize.min.js
 

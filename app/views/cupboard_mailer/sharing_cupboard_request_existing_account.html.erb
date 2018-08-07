@@ -1,0 +1,14 @@
+<h1>Stockcubes</h1>
+
+<p>Hi there,</p>
+
+<p><%= @requester.name  %> wants to share a cupboard with you on <%= link_to "Stockcubes", root_url, target: "_blank" %>.</p>
+
+<p>Click the link below to accept the invite and see all your cupboards.</p>
+
+<%= link_to "Add shared Stockcubes cupboard", accept_cupboard_invite_url(cupboard_id: @encrypted_cupboard_id), method: :post %>
+
+<p>If you don't recognise the person sending the request, please ignore this email and it won't be added to your cupboards.</p>
+
+<p>Thanks,</p>
+<p><%= link_to "Stockcubes Team", "mailto:team@stockcub.es" %></p>

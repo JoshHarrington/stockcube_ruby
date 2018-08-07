@@ -151,31 +151,31 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
       #### duplicate, needed??
 
       ## add the ingredient to the recipe's ingredients
-      recipe_new.ingredients << ingredient_obj
+      # recipe_new.ingredients << ingredient_obj
 
-      ## find the portion for the recipe and ingredient ids
-      portion_obj = Portion.where(recipe_id: recipe_new.id, ingredient_id: ingredient_obj.id).first
 
       ## catch the ingredients with units which already match a more common unit
       if ingredient_unit == '19' || ingredient_unit == '56' || ingredient_unit == '79'
         ## catch ingredients with units the same as ounces (unit3)
         ingredient_unit = 3
       elsif ingredient_unit.to_s == '78'
-          ## catch ingredients with units the same as cups (unit6)
+        ## catch ingredients with units the same as cups (unit6)
         ingredient_unit = 6
         ## otherwise find the correct unit object
       end
 
+      ## create the portion for the recipe and ingredient ids
+      portion_obj = Portion.find_or_create_by(
+        recipe_id: recipe_new.id,
+        ingredient_id: ingredient_obj.id,
+        amount: ingredient_amount,
+        unit_number: ingredient_unit
+      )
       unit_obj = Unit.find_or_create_by(unit_number: ingredient_unit)
 
       ## link the units and ingredients tables on the correct unit
       unit_obj.ingredients << ingredient_obj
 
-      ## update the portions ingredient amount
-      portion_obj.update_attributes(
-        :amount => ingredient_amount,
-        :unit_number => ingredient_unit
-      )
 
     else
       puts " -- same ingredient in recipe, need to update same ingredient portion amount"

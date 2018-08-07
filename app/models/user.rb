@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  attr_accessor :remember_token, :activation_token, :reset_token
+  attr_accessor :remember_token, :activation_token, :reset_token, :cupboard_id
   before_save   :downcase_email
   before_create :create_activation_digest
   validates :name,  presence: true, length: { maximum: 50 }
@@ -11,8 +11,12 @@ class User < ApplicationRecord
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
 
   has_many :recipes
-  has_many :cupboards
+
+  has_many :cupboard_users
+  has_many :cupboards, through: :cupboard_users
+
   has_many :shopping_lists
+  has_one :user_fav_stock
 
   # Favourite recipes of user
   has_many :favourite_recipes # just the 'relationships'
@@ -58,6 +62,11 @@ class User < ApplicationRecord
   # Sends activation email.
   def send_activation_email
     UserMailer.account_activation(self).deliver_now
+  end
+
+  # Sends activation email with cupboard add.
+  def send_activation_email_with_cupboard_add
+    UserMailer.account_activation_with_cupboard_sharing(self).deliver_now
   end
 
   # Sets the password reset attributes.

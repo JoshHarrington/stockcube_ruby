@@ -1,8 +1,11 @@
 class CupboardsController < ApplicationController
-	before_action :logged_in_user
-	before_action :correct_user,   only: [:show, :edit, :update]
+	require 'set'
+	helper IntegerHelper
+	before_action :logged_in_user, only: [:index, :show, :new, :create, :edit_all, :share, :share_request, :accept_cupboard_invite, :autosave, :autosave_sorting, :edit, :update]
+	before_action :correct_user,   only: [:show, :edit, :update, :share]
 	def index
-		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false).where(setup: false)
+		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map(&:cupboard_id)
+		@cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
 		@out_of_date_exist = false
 		@cupboards.each do |cupboard|
 			cupboard.stocks.each do |stock|
@@ -14,7 +17,7 @@ class CupboardsController < ApplicationController
 			end
 			break if @out_of_date_exist == true
 		end
-		# redirect_to root_url and return unless @user.activated?
+		@user_fav_stocks = UserFavStock.where(user_id: current_user.id).order('updated_at desc')
 	end
 	def show
 		@cupboard = Cupboard.find(params[:id])
@@ -25,17 +28,110 @@ class CupboardsController < ApplicationController
   end
   def create
 		@cupboard = Cupboard.new(cupboard_params)
-		if current_user
-			current_user.cupboards << @cupboard
-		end
-    if @cupboard.save
+
+		if @cupboard.save
+			if current_user
+				CupboardUser.create(
+					cupboard_id: @cupboard.id,
+					user_id: current_user.id,
+					owner: true,
+					accepted: true
+				)
+			end
+
 			redirect_to stocks_new_path(:cupboard_id => @cupboard.id)
     else
       render 'new'
     end
 	end
 	def edit_all
-		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false).where(setup: false)
+		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map(&:cupboard_id)
+		@cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
+	end
+	def share
+		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false, setup: false)
+		@cupboard = Cupboard.find(params[:cupboard_id])
+		@cupboard_name = @cupboard.location
+		if @cupboard.users.length > 0
+			@current_cupboard_user_ids = @cupboard.users.map(&:id)
+		end
+		@all_cupboard_user_ids = Set[]
+		@cupboards.each do |cupboard|
+			cupboard.cupboard_users.each do |cupboard_user|
+				@all_cupboard_user_ids << cupboard_user.user_id
+			end
+		end
+		@other_cupboard_user_ids = @all_cupboard_user_ids.to_a - @current_cupboard_user_ids
+		@other_cupboard_users = User.find(@other_cupboard_user_ids)
+	end
+	def share_request
+		if params.has_key?(:cupboard_user_emails) && params[:cupboard_user_emails].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
+			cupboard = Cupboard.find(params[:cupboard_id].to_i)
+			cupboard_user_emails_string = params[:cupboard_user_emails].to_s.downcase
+			cupboard_user_emails_string = cupboard_user_emails_string.gsub(/\s+/, "")
+			if cupboard_user_emails_string.include? ","
+				cupboard_user_emails_array = cupboard_user_emails_string.split(',')
+			else
+				cupboard_user_emails_array = []
+				cupboard_user_emails_array.push(cupboard_user_emails_string)
+			end
+			if cupboard_user_emails_array.length > 0
+				hashids = Hashids.new(ENV['CUPBOARD_ID_SALT'])
+				encrypted_cupboard_id = hashids.encode(params[:cupboard_id])
+				cupboard_user_emails_array.each do |email|
+					if User.where(email: email).exists?
+						cupboard_sharing_user = User.where(email: email).last
+						if CupboardUser.where(cupboard_id: params[:cupboard_id], user_id: cupboard_sharing_user.id).length > 1
+							## delete extra cupboard_users
+							extra_cupboard_user_ids = CupboardUser.where(cupboard_id: params[:cupboard_id], user_id: cupboard_sharing_user.id).map(&:id)
+							extra_cupboard_user_ids__less_first = extra_cupboard_user_ids[1..-1]
+							CupboardUser.find(extra_cupboard_user_ids__less_first).delete_all
+						elsif CupboardUser.where(cupboard_id: params[:cupboard_id], user_id: cupboard_sharing_user.id).length > 0
+							flash[:info] = %Q[That cupboard has already been shared with that person! <br/><br/>They may need to accept it though]
+						else
+							cupboard.users << cupboard_sharing_user
+							if email.include?("@") && email.include?(".")
+								CupboardMailer.sharing_cupboard_request_existing_account(email, current_user, encrypted_cupboard_id).deliver_now
+							end
+							flash[:success] = "#{cupboard.location} shared!"
+						end
+					else
+						if email.include?("@") && email.include?(".")
+							CupboardMailer.sharing_cupboard_request_new_account(email, current_user, encrypted_cupboard_id).deliver_now
+							flash[:success] = "#{cupboard.location} shared!"
+						end
+					end
+				end
+			end
+		end
+
+		redirect_to cupboards_path
+	end
+
+	def accept_cupboard_invite
+		if params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
+			hashids = Hashids.new(ENV['CUPBOARD_ID_SALT'])
+			decrypted_cupboard_id = hashids.decode(params[:cupboard_id])
+			if decrypted_cupboard_id.class.to_s == 'Array'
+				decrypted_cupboard_id.each do |cupboard_id|
+					CupboardUser.where(cupboard_id: cupboard_id, user_id: current_user.id).update_all(accepted: true)
+				end
+				if decrypted_cupboard_id.length > 1
+					flash[:success] = "Multiple cupboards have been added!"
+				else
+					cupboard = Cupboard.where(id: decrypted_cupboard_id).first
+					flash[:success] = "#{cupboard.location} has been added!"
+				end
+			else
+				CupboardUser.where(cupboard_id: decrypted_cupboard_id, user_id: current_user.id).update_attributes(accepted: true)
+				cupboard = Cupboard.where(id: decrypted_cupboard_id).first
+				flash[:success] = "#{cupboard.location} has been added!"
+			end
+			redirect_to cupboards_path(anchor: decrypted_cupboard_id.first.to_s)
+		else
+			flash[:danger] = %Q[Something went wrong! Email the team for help: <a href="mailto:team@stockcub.es?subject=Something%20went%20wrong%20when%20accepting%20a%20shared%20cupboard%20request" target="_blank">team@stockcub.es</a>]
+			redirect_to root_path
+		end
 	end
 	def autosave
 		if params.has_key?(:cupboard_location) && params[:cupboard_location].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
@@ -55,9 +151,9 @@ class CupboardsController < ApplicationController
 			end
 		end
 		if params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != ''
-			@cupboard_to_delete = Cupboard.find(params[:cupboard_id_delete])
-			@cupboard_to_delete.update_attributes(
-				hidden: true
+			@cupboard_to_delete = Cupboard.find(params[:cupboard_id_delete].to_i)
+			@cupboard_to_delete.update_attribute(
+				:hidden, true
 			)
 		end
 	end
@@ -71,15 +167,17 @@ class CupboardsController < ApplicationController
 	end
 	def edit
 		@cupboard = Cupboard.find(params[:id])
-		@all_cupboards = current_user.cupboards.where(hidden: false).where(setup: false)
+		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map(&:cupboard_id)
+		@all_cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)
-		@units = Unit.all
+		@units = Unit.where.not(name: nil)
 	end
 	def update
 		@cupboard = Cupboard.find(params[:id])
-		@all_cupboards = current_user.cupboards.where(hidden: false).where(setup: false)
+		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map(&:cupboard_id)
+		@all_cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)
-		@units = Unit.all
+		@units = Unit.where.not(name: nil)
 
 
 		if params.has_key?(:stock_items)
@@ -90,9 +188,9 @@ class CupboardsController < ApplicationController
 						amount: values[:amount]
 					)
 				end
-				unless stock.unit_number == values[:unit_number]
+				unless stock.unit_id == values[:unit_id]
 					stock.update_attributes(
-						unit_number: values[:unit_number]
+						unit_id: values[:unit_id]
 					)
 				end
 				unless stock.use_by_date == values[:use_by_date]
@@ -113,50 +211,10 @@ class CupboardsController < ApplicationController
 
 
 		if @cupboard.setup == true
-			@cupboard.hidden = true
+			@cupboard.update_attributes(hidden: true)
 		end
 
-		# redirect_to cupboards_path
-		redirect_to edit_cupboard_path(@cupboard.id)
-
-		# @stock_ids = []
-		# @stocks.each do |stock|
-		# 	@stock_ids.push(stock.id)
-		# end
-
-		# @delete_stock_check_ids = params[:cupboard][:stock][:id]
-		# @form_stock_ids = params[:cupboard][:stock_ids]
-		# @form_stock_amounts = params[:cupboard][:stock][:amount]
-		# @form_stock_ingredient_units = params[:cupboard][:stock][:ingredient][:unit]
-
-		# # Rails.logger.debug @delete_stock_check_ids
-		# if @delete_stock_check_ids
-		# 	@stock_unpick = Stock.find(@delete_stock_check_ids)
-		# 	@stocks.delete(@stock_unpick)
-		# end
-
-		# if @form_stock_amounts.length == @stocks.length
-		# 	@stocks.each_with_index do |stock, index|
-		# 		if not stock[:amount].to_f == @form_stock_amounts[index].to_f
-		# 			stock.update_attributes(
-		# 				:amount => @form_stock_amounts[index].to_f
-		# 			)
-		# 		end
-		# 		if @form_stock_ingredient_units.length == @stocks.length
-		# 			if not stock.ingredient.unit_id.to_f == @form_stock_ingredient_units[index].to_f
-		# 				stock.ingredient.update_attributes(
-		# 					:unit_id => @form_stock_ingredient_units[index].to_f
-		# 				)
-		# 			end
-		# 		end
-		# 	end
-		# end
-
-		# if @cupboard.update(cupboard_params)
-		# 	redirect_to @cupboard
-		# else
-		# 	render 'edit'
-		# end
+		redirect_to cupboards_path
   end
 	private
 		def cupboard_params
@@ -174,8 +232,19 @@ class CupboardsController < ApplicationController
 
 		# Confirms the correct user.
 		def correct_user
-			@cupboard = Cupboard.find(params[:id])
-			@user = @cupboard.user
-			redirect_to(root_url) unless current_user?(@user)
+			if params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != '' && params[:id] != 'accept_cupboard_invite'
+				@cupboard = Cupboard.find(params[:cupboard_id])
+				puts 'cupboard_id ' + params[:cupboard_id].to_s
+			elsif params.has_key?(:id) && params[:id].to_s != '' && params[:id] != 'accept_cupboard_invite'
+				@cupboard = Cupboard.find(params[:id])
+				puts "cupboard id " + @cupboard.id.to_s
+				puts "id " + params[:id].to_s
+				puts "cupboard users " + @cupboard.users.to_s
+				@user_ids = @cupboard.users.map(&:id)
+				puts 'user ids ' + @user_ids.to_s
+				puts 'current_user id ' + current_user.id.to_s
+				redirect_to(root_url) unless @user_ids.include?(current_user.id)
+			end
+
 		end
 end

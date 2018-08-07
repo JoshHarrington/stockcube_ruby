@@ -17,33 +17,35 @@
 		<div class="list_block--collection">
 
 		<% for stock in @stocks %>
-			<%= check_box_tag "stock_items[#{stock.id}][delete]", stock.id, false, class: "list_block--item_edit--checkbox checkbox_standard list_block--delete_status_checkbox" %>
+			<%= check_box_tag "stock_items[#{stock.id}][delete]", stock.id, false, class: "list_block--item_edit--checkbox checkbox_standard not_ordered list_block--delete_status_checkbox" %>
 			<div class="list_block">
-				<div class="list_block--title">
-					<h3><%= stock.ingredient.name %></h3>
-					<%= label_tag "stock_items[#{stock.id}][delete]", class: "edit_list_block_button list_block--action cupboard_form--delete_stock_button" do %>
-						<%= icomoon('bin') %>
-					<% end %>
-        </div>
-				<div class="item_form--content_row">
-					<%= text_field_tag "stock_items[#{stock.id}][amount]", stock.amount %>
-					<%= select_tag "stock_items[#{stock.id}][unit_number]", options_from_collection_for_select(@units, "unit_number", "name", stock.ingredient.unit.unit_number) %>
-				</div>
-				<div class="item_form--content_row">
-					<%= label_tag "stock_items[#{stock.id}][use_by_date]", 'Use by date'  %> <%= date_field_tag "stock_items[#{stock.id}][use_by_date]", stock.use_by_date, min: Date.current, validate: true %>
-				</div>
-				<div class="item_form--content_row">
-						<h3>Cupboard</h3>
-					<% if @cupboard.setup %>
-					<p>
-						Pick the cupboard you want your new stock to go into
-					</p>
-					<% end %>
-					<break order="false"></break>
-					<% @all_cupboards.each do |cupboard| %>
-						<%= radio_button_tag "stock_items[#{stock.id}][cupboard]", cupboard.id, ((cupboard.id == @cupboard.id || cupboard.id == @all_cupboards.first.id) ? true : false), class: "fancy_radio_button" %>
-						<%= label_tag "stock_items[#{stock.id}][cupboard]_#{cupboard.id}", cupboard.location, class: "fancy_radio_button__label" %>
-					<% end %>
+				<div class="list_block--content">
+					<div class="list_block--title">
+						<h3><%= stock.ingredient.name %></h3>
+						<%= label_tag "stock_items[#{stock.id}][delete]", class: "edit_list_block_button list_block--action cupboard_form--delete_stock_button" do %>
+							<%= icomoon('bin') %>
+						<% end %>
+					</div>
+					<div class="item_form--content_row">
+						<%= text_field_tag "stock_items[#{stock.id}][amount]", round_if_whole(stock.amount), class: 'bordered' %>
+						<%= select_tag "stock_items[#{stock.id}][unit_id]", options_from_collection_for_select(@units, "id", "name", stock.ingredient.unit_id) %>
+					</div>
+					<div class="item_form--content_row">
+						<%= label_tag "stock_items[#{stock.id}][use_by_date]", 'Use by date'  %> <%= date_field_tag "stock_items[#{stock.id}][use_by_date]", stock.use_by_date, min: Date.current, validate: true %>
+					</div>
+					<div class="item_form--content_row">
+							<h3>Cupboard</h3>
+						<% if @cupboard.setup %>
+						<p>
+							Pick the cupboard you want your new stock to go into
+						</p>
+						<% end %>
+						<break order="false"></break>
+						<% @all_cupboards.each do |cupboard| %>
+							<%= radio_button_tag "stock_items[#{stock.id}][cupboard]", cupboard.id, ((cupboard.id == @cupboard.id || cupboard.id == @all_cupboards.first.id) ? true : false), class: "fancy_radio_button" %>
+							<%= label_tag "stock_items[#{stock.id}][cupboard]_#{cupboard.id}", cupboard.location, class: "fancy_radio_button__label" %>
+						<% end %>
+					</div>
 				</div>
 			</div>
 

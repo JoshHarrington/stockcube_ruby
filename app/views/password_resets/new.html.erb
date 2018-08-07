@@ -4,9 +4,13 @@
     <h1>Forgot password</h1>
   </div>
   <%= form_for(:password_reset, url: password_resets_path) do |f| %>
-    <%= f.label :email %>
-    <%= f.email_field :email, class: 'form-control' %>
+    <div class="pretty_form--row">
+      <%= f.label :email %>
+      <%= f.email_field :email, class: 'form-control' %>
+    </div>
 
-    <%= f.submit "Submit", class: "btn btn-primary" %>
+    <div class="pretty_form--actions">
+      <%= f.submit "Submit", class: "btn btn-primary" %>
+    </div>
   <% end %>
 </div>

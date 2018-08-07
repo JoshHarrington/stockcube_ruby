@@ -54,10 +54,14 @@ gem 'jquery-ui-rails'
 
 gem 'momentjs-rails'
 
-gem 'searchkick'
+group :production do
+  gem 'searchkick'
+end
 
 gem 'pgsync'
 gem 'pry'
+
+gem 'hashid-rails', '~> 1.2', '>= 1.2.1'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

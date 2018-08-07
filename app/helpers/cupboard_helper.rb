@@ -28,18 +28,21 @@ module CupboardHelper
 		end
 	end
 	def stock_unit(stock)
-		unit_number = stock.unit_number
-		correct_unit = Unit.where(unit_number: unit_number).first
-		return correct_unit.name
+		return stock.unit
+	end
+	def cupboard_shared_class(cupboard)
+		if cupboard.cupboard_users.length > 1
+			return 'shared'
+		end
 	end
 	def cupboard_empty_class(cupboard)
 		if cupboard.stocks.where(hidden: false).length == 0 || cupboard.stocks.empty?
-			return ' empty'
+			return 'empty'
 		else
 			stocks = cupboard.stocks.where(hidden: false).order(use_by_date: :desc)
 			days_from_now = (stocks.first.use_by_date - Date.current).to_i
 			if days_from_now <= -2
-				return ' empty all-out-of-date'
+				return 'empty all-out-of-date'
 			end
 		end
 	end

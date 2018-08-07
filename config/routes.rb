@@ -40,6 +40,7 @@ Rails.application.routes.draw do
 
   get '/stocks' => 'stocks#index'
   get '/stocks/new' => 'stocks#new'
+  get '/stocks/picks' => 'stocks#picks'
   get '/stocks/:id' => 'stocks#show', as: :stock
   get '/stocks/:id/edit' => 'stocks#edit', as: :edit_stock
   patch '/stocks/:id' => 'stocks#update'
@@ -48,12 +49,17 @@ Rails.application.routes.draw do
   get '/cupboards' => 'cupboards#index'
   get '/cupboards/new' => 'cupboards#new'
   get '/cupboards/edit_all' => 'cupboards#edit_all', as: :edit_all_cupboard
+  get '/cupboards/share' => 'cupboards#share', as: :cupboard_share
+  get '/cupboards/accept_cupboard_invite' => 'cupboards#accept_cupboard_invite'
+  post '/cupboards/accept_cupboard_invite' => 'cupboards#accept_cupboard_invite', as: :accept_cupboard_invite
+  get '/cupboards/sharing_request' => 'cupboards#sharing_request', as: :cupboard_sharing_request
   get '/cupboards/:id' => 'cupboards#show', as: :cupboard
   get '/cupboards/:id/edit' => 'cupboards#edit', as: :edit_cupboard
   patch '/cupboards/:id' => 'cupboards#update'
   post '/cupboards' => 'cupboards#create'
   post '/cupboards/autosave' => 'cupboards#autosave'
   post '/cupboards/autosave_sorting' => 'cupboards#autosave_sorting'
+  post '/cupboards/share_request' => 'cupboards#share_request'
 
   get '/ingredients' => 'ingredients#index'
   get '/ingredients/new' => 'ingredients#new'
@@ -69,7 +75,11 @@ Rails.application.routes.draw do
   delete '/logout',  to: 'sessions#destroy'
   delete '/demo_logout',   to: 'sessions#demo_logout'
 
+  get '/quick_add_stock/new', to: 'user_fav_stocks#new'
+  get '/quick_add_stock/:id/edit', to: 'user_fav_stocks#edit', as: :quick_add_stock_edit
+
   resources :users
+  resources :user_fav_stocks
   resources :account_activations, only: [:edit]
   resources :password_resets,     only: [:new, :create, :edit, :update]
   resources :recipes do

@@ -31,21 +31,23 @@
   </div>
   <div class="list_block--collection">
     <div class="list_block list_block__full">
-      <% shopping_list_portions.each do |sl_portion| %>
-        <% if sl_portion.in_cupboard == true && sl_portion.enough_in_cupboard == true %>
-          <div class="list_block--item list_block--item_stacked">
-            <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
-          </div>
-        <% elsif sl_portion.in_cupboard == true && (sl_portion.plenty_in_cupboard == nil || sl_portion.plenty_in_cupboard == false) %>
-          <div class="list_block--item list_block--item_stacked date-part-warning">
-            <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
-          </div>
-        <% elsif sl_portion.in_cupboard == nil || sl_portion.in_cupboard == false  %>
-          <div class="list_block--item list_block--item_stacked date-full-warning">
-            <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
-          </div>
+      <div class="list_block--content">
+        <% @shopping_list_portions.each do |sl_portion| %>
+          <% if sl_portion.in_cupboard == true && sl_portion.enough_in_cupboard == true %>
+            <div class="list_block--item list_block--item_stacked">
+              <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
+            </div>
+          <% elsif sl_portion.in_cupboard == true && (sl_portion.plenty_in_cupboard == nil || sl_portion.plenty_in_cupboard == false) %>
+            <div class="list_block--item list_block--item_stacked date-part-warning">
+              <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
+            </div>
+          <% elsif sl_portion.in_cupboard == nil || sl_portion.in_cupboard == false  %>
+            <div class="list_block--item list_block--item_stacked date-full-warning">
+              <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
+            </div>
+          <% end %>
         <% end %>
-      <% end %>
+      </div>
     </div>
   </div>
   <div class="list_block--collection--sibling list_block--collection--sibling_stack">
