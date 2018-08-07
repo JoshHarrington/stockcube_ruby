@@ -43,18 +43,38 @@ class StocksController < ApplicationController
 		@ingredients = Ingredient.all.order('name ASC')
 		@two_weeks_from_now = Date.current + 2.weeks
 		@unit_select = Unit.where.not(name: nil)
-
-		if params.has_key?(:ingredient_id) && params[:ingredient_id].present?
-			selected_ingredient_id = params[:ingredient_id]
-		end
+		new_stuff_added = false
 
 		if params.has_key?(:cupboard_id) && params[:cupboard_id].present?
 			selected_cupboard_id = params[:cupboard_id]
 		end
 
+		if params.has_key?(:unit_id) && params[:unit_id].present?
+			if params[:unit_id].to_i == 0
+				new_unit_from_stock = Unit.find_or_create_by(name: params[:unit_id])
+				@stock_unit = new_unit_from_stock.id
+				new_stuff_added = true
+			else
+				@stock_unit = params[:unit_id]
+			end
+		else
+			flash[:danger] = "Make sure you select or add a unit"
+		end
+
+		if params.has_key?(:ingredient_id)&& params[:ingredient_id].present?  && params[:ingredient_id].present?
+			if params[:ingredient_id].to_i == 0
+				new_ingredient_from_stock = Ingredient.find_or_create_by(name: params[:ingredient_id], unit_id: (@stock_unit || 8))
+				selected_ingredient_id = new_ingredient_from_stock.id
+				new_stuff_added = true
+			else
+				selected_ingredient_id = params[:ingredient_id]
+			end
+		else
+			flash[:danger] = "Make sure you select an ingredient"
+		end
+
 		@stock_amount = params[:amount]
 		@stock_use_by_date = params[:stock][:use_by_date]
-		@stock_unit = params[:unit_id]
 
 
 		@stock.update_attributes(
@@ -66,10 +86,21 @@ class StocksController < ApplicationController
 		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first
 
     if @stock.save
-      redirect_to cupboards_path
-    else
-			render 'new'
-			flash[:danger] = "Make sure you select an ingredient"
+			redirect_to cupboards_path
+			# if new_stuff_added == true
+			### 	send_admin_update_notificiation
+			# end
+		else
+			if params.has_key?(:unit_id) && params[:unit_id].to_i != 0 && params.has_key?(:ingredient_id) && params[:ingredient_id].to_i != 0
+				redirect_to stocks_new_path(unit: params[:unit_id], ingredient: params[:ingredient_id])
+			elsif params.has_key?(:unit_id) && params[:unit_id].present? && params[:unit_id].to_i != 0
+				redirect_to stocks_new_path(unit: params[:unit_id])
+			elsif params.has_key?(:ingredient_id) && params[:ingredient_id].present? && params[:ingredient_id].to_i != 0
+				redirect_to stocks_new_path(ingredient: params[:ingredient_id])
+			else
+				redirect_to stocks_new_path
+			end
+			# render 'new'
     end
 	end
 	def edit

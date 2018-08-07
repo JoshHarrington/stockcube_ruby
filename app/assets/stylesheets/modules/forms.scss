@@ -60,7 +60,7 @@ input[type=date]{
 	padding: em(6, 15);
 	min-height: em(36, 15);
 	min-width: 50%;
-	font-family: Lato;
+	font-family: Lato, sans-serif;
 }
 
 .pretty_form--row {
@@ -626,6 +626,11 @@ input[type=date]{
 .selectize-control.half_select {
   width: 50%;
   margin-bottom: 0;
+}
+
+.selectize-control input[type="select-one"] {
+	width: 100%;
+	min-width: em(117, 13);
 }
 
 .item_form--content_row--half_width_input {
