@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
-  include SessionsHelper
-  include ApplicationHelper
+  helper SessionsHelper
+  helper ApplicationHelper
     if domain_check('demo') == true
       if logged_in? && current_user && current_user.demo
         log_out
