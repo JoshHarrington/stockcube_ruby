@@ -157,6 +157,12 @@ class StocksController < ApplicationController
 			)
 		end
 
+		unless params[:amount] == @stock.amount
+			@stock.update_attributes(
+				amount: params[:amount]
+			)
+		end
+
 		if @stock.update(stock_params)
 			redirect_to cupboards_path
 		else
