@@ -9,45 +9,46 @@ class ShoppingListsController < ApplicationController
     @shopping_lists = current_user.shopping_lists.order('created_at DESC').paginate(:page => params[:page], :per_page => 12)
   end
 	def new
-    @shopping_lists = ShoppingList.new
-    @recipes = Recipe.all
-    @user_id = current_user.id
+    # @shopping_lists = ShoppingList.new
+    # @recipes = Recipe.all
+    # @user_id = current_user.id
   end
   def create
-    @recipe_ids = params[:shopping_list][:recipes][:id]
-    @user = current_user
-    @user_id = current_user.id
-    @recipes = Recipe.all
-    @recipe_pick = Recipe.find(@recipe_ids)
+    # @recipe_ids = params[:shopping_list][:recipes][:id]
+    # @user = current_user
+    # @user_id = current_user.id
+    # @recipes = Recipe.all
+    # @recipe_pick = Recipe.find(@recipe_ids)
 
-    @current_date = Date.today
-    @shopping_list = ShoppingList.new(shopping_list_params)
+    # @current_date = Date.today
+    # @shopping_list = ShoppingList.new(shopping_list_params)
 
-    @user.shopping_lists << @shopping_list
-    @shopping_list.recipes << @recipe_pick
+    # @user.shopping_lists << @shopping_list
+    # @shopping_list.recipes << @recipe_pick
 
-    shopping_list_portion_ids = []
-    @shopping_list.recipes.each do |recipe|
-      recipe.portions.each do |portion|
-        shopping_list_portion_ids.push(portion.id)
-      end
-    end
+    # shopping_list_portion_ids = []
+    # @shopping_list.recipes.each do |recipe|
+    #   recipe.portions.each do |portion|
+    #     shopping_list_portion_ids.push(portion.id)
+    #   end
+    # end
 
-    shopping_list_portion_ids.each do |portion_id|
-      portion_obj = Portion.where(id: portion_id).first
-      ingredient_obj = Ingredient.where(id: portion_obj.ingredient_id).first
-      if ingredient_obj
-        shopping_list_portion = ShoppingListPortion.find_or_create_by(ingredient_id: ingredient_obj.id, shopping_list_id: @shopping_list.id)
-        portion_unit_obj = Unit.where(id: portion_obj.unit_number).first
-        view_context.metric_transform_portion_update(shopping_list_portion, portion_unit_obj, portion_obj, ingredient_obj)
-      end
-    end
+    # shopping_list_portion_ids.each do |portion_id|
+    #   portion_obj = Portion.where(id: portion_id).first
+    #   ingredient_obj = Ingredient.where(id: portion_obj.ingredient_id).first
+    #   if ingredient_obj
+    #     shopping_list_portion = ShoppingListPortion.find_or_create_by(ingredient_id: ingredient_obj.id, shopping_list_id: @shopping_list.id)
+    #     portion_unit_obj = portion_obj.unit
+    #     puts 'hhhello'
+    #     view_context.metric_transform_portion_update(shopping_list_portion, portion_unit_obj, portion_obj, ingredient_obj)
+    #   end
+    # end
 
-    if @shopping_list.save
-      redirect_to shopping_list_path(@shopping_list.id)
-    else
-      render 'new'
-    end
+    # if @shopping_list.save
+    #   redirect_to shopping_list_path(@shopping_list.id)
+    # else
+    #   render 'new'
+    # end
   end
 
 	def show
@@ -82,13 +83,15 @@ class ShoppingListsController < ApplicationController
 
     if current_user.shopping_lists.length > 0 && current_user.shopping_lists.last.archived != true
       current_user.shopping_lists.last.shopping_list_portions.each do |shopping_list_portion|
-        Stock.create(
-          unit_id: shopping_list_portion.unit_number,
-          amount: shopping_list_portion.portion_amount,
-          ingredient_id: shopping_list_portion.ingredient_id,
-          cupboard_id: @import_cupboard.id,
-          use_by_date: 2.weeks.from_now
-        )
+        if shopping_list_portion.checked == true
+          Stock.create(
+            unit_id: shopping_list_portion.unit_number,
+            amount: shopping_list_portion.portion_amount,
+            ingredient_id: shopping_list_portion.ingredient_id,
+            cupboard_id: @import_cupboard.id,
+            use_by_date: 2.weeks.from_now
+          )
+        end
       end
     end
 

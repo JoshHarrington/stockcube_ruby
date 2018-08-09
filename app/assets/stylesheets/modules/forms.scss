@@ -583,7 +583,7 @@ input[type=date]{
 		position: relative;
 		color: black;
 	}
-	&::before {
+	& .list_block--content::before {
 		content: " ";
 		background-color: $teal-20;
 		opacity: .3;
