@@ -25,33 +25,37 @@ module ShoppingListsHelper
 	end
 
 	def metric_transform_portion_update(shopping_list_portion, portion_unit_obj, portion_obj, ingredient_obj)
+		puts "---- before if metric_ratio"
 		if portion_unit_obj.metric_ratio
 
-			metric_amount = portion_obj.amount * portion_unit_obj.metric_ratio
+			metric_amount = portion_obj.amount.to_f * portion_unit_obj.metric_ratio.to_f
 			metric_transform(portion_obj, portion_unit_obj)
 
 			shopping_list_portion.update_attributes(
 				:portion_amount => metric_amount,
 				:recipe_number => portion_obj.recipe_id
 			)
-			if portion_unit_obj.unit_type == "volume" && metric_amount < 1000
+			puts "---- inside if metric_ratio"
+			puts metric_amount
+			puts metric_amount < 1000
+			if portion_unit_obj.unit_type.to_s == "volume" && metric_amount < 1000
 				## add unit number for milliliters
 				shopping_list_portion.update_attributes(
 					:unit_number => 11
 				)
-			elsif portion_unit_obj.unit_type == "volume" && metric_amount >= 1000
+			elsif portion_unit_obj.unit_type.to_s == "volume" && metric_amount >= 1000
 				metric_amount = metric_amount / 1000
 				## convert to liters
 				shopping_list_portion.update_attributes(
 					:unit_number => 12,
 					:portion_amount => metric_amount
 				)
-			elsif portion_unit_obj.unit_type == "mass" && metric_amount < 1000
+			elsif portion_unit_obj.unit_type.to_s == "mass" && metric_amount < 1000
 				## add unit number for grams
 				shopping_list_portion.update_attributes(
 					:unit_number => 8
 				)
-			elsif portion_unit_obj.unit_type == "mass" && metric_amount >= 1000
+			elsif portion_unit_obj.unit_type.to_s == "mass" && metric_amount >= 1000
 				metric_amount = metric_amount / 1000
 				## convert to kilograms
 				shopping_list_portion.update_attributes(
@@ -143,10 +147,10 @@ module ShoppingListsHelper
 			default_mass_unit = Unit.where(unit_number: 8).first
 			default_volume_unit = Unit.where(unit_number: 11).first
 			if portion_unit.metric_ratio != nil
-				if portion_unit.unit_type == "mass"
+				if portion_unit.unit_type.to_s == "mass"
 					ingredient_unit_number = 8
 					default_mass_unit.short_name ? ingredient_unit_name = default_mass_unit.short_name : ingredient_unit_name = default_mass_unit.name
-				elsif portion_unit.unit_type == "volume"
+				elsif portion_unit.unit_type.to_s == "volume"
 					ingredient_unit_number = 11
 					default_volume_unit.short_name ? ingredient_unit_name = default_volume_unit.short_name : ingredient_unit_name = default_volume_unit.name
 				end
@@ -224,7 +228,8 @@ module ShoppingListsHelper
 
       shopping_list_portion.update_attributes(
 				portion_amount: set_portion_amount,
-				unit_name: ingredient_unit_name.downcase
+				unit_name: ingredient_unit_name.downcase,
+				unit_number: ingredient_unit_number
 			)
     end
 
