@@ -61,7 +61,19 @@
 		<h2>Shopping Mode</h2>
 		<p>
 			Ready to check these ingredients off and add to your cupboards?
-			<%= link_to 'Start shop mode', shopping_lists_current_shop_path %>
 		</p>
+    <%= link_to 'Start shop mode', shopping_lists_current_shop_path, class: "list_block--item--action" %>
+  </div>
+  <div class="list_block--collection--sibling list_block--collection--sibling_stack">
+    <p>Check out what the 'shop mode' process looks like:</p>
+    <div class="video_block">
+      <img src="<%= asset_path('iphone_8_video_bg.png') %>" alt="Phone to for video presentation">
+      <video autoplay poster="<%= asset_path('shopping_list_screenshot.jpg') %>" playsinline loop muted>
+        <source src="<%= asset_path('shopping_list_check.webm') %>" type="video/webm" />
+        <source src="<%= asset_path('shopping_list_check.mp4') %>" type="video/mp4" />
+      </video>
+    </div>
   </div>
 </div>
+
+
