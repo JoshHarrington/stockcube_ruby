@@ -1,0 +1,14 @@
+ul.basic_list {
+	list-style-type: disc;
+	padding-left: em(20, 10);
+	margin-top: em(15, 10);
+	li {
+		font-size: em(15, 10);
+		* {
+			font-size: inherit;
+		}
+		& + li {
+			margin-top: em(6, 15);
+		}
+	}
+}

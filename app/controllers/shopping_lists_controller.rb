@@ -65,11 +65,13 @@ class ShoppingListsController < ApplicationController
   def show_ingredients
     @shopping_list = ShoppingList.find(params[:id])
     @shopping_list_portions = @shopping_list.shopping_list_portions
+    @recipes = @shopping_list.recipes
   end
 
   def show_ingredients_current
     @shopping_list = current_user.shopping_lists.last
     @shopping_list_portions = @shopping_list.shopping_list_portions
+    @recipes = @shopping_list.recipes
   end
 
   def shop
