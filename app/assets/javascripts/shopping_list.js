@@ -25,3 +25,16 @@ $(document).on("turbolinks:load", function() {
 		shoppingList();
 	}
 });
+
+
+var shoppingListShow = function() {
+	$('#archive_current_shopping_list').on('click', function(){
+		return confirm('Are you sure you want to delete this shopping list?')
+	});
+}
+
+$(document).on("turbolinks:load", function() {
+	if ($('#shopping_list_show').length > 0) {
+		shoppingListShow();
+	}
+});

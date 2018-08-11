@@ -51,17 +51,6 @@ class ShoppingListsController < ApplicationController
     # end
   end
 
-	def show
-		@shopping_list = ShoppingList.find(params[:id])
-		@recipes = @shopping_list.recipes
-  end
-
-  def show_current
-    @shopping_list = current_user.shopping_lists.last
-    @shopping_list_portions = @shopping_list.shopping_list_portions
-    @recipes = @shopping_list.recipes
-  end
-
   def show_ingredients
     @shopping_list = ShoppingList.find(params[:id])
     @shopping_list_portions = @shopping_list.shopping_list_portions
@@ -82,8 +71,13 @@ class ShoppingListsController < ApplicationController
   def shopping_list_to_cupboard
     @import_cupboard = Cupboard.create(location: "Import Cupboard (Hidden)", setup: true)
     CupboardUser.create(cupboard_id: @import_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
+    Rails.logger.debug 'shopping_list checked ids ' + params[:shopping_list_item].to_unsafe_h.map {|id| id[0].to_i }.to_s
+    shopping_list_ids_from_params = params[:shopping_list_item].to_unsafe_h.map {|id| id[0].to_i }
 
     if current_user.shopping_lists.length > 0 && current_user.shopping_lists.last.archived != true
+      if current_user.shopping_lists.last.shopping_list_portions.where(checked: true).map(&:id).sort! != params[:shopping_list_item].to_unsafe_h.map {|id| id[0].to_i }.sort!
+        ShoppingListPortion.find(shopping_list_ids_from_params).map{|sl| sl.update_attributes(checked: true)}
+      end
       current_user.shopping_lists.last.shopping_list_portions.each do |shopping_list_portion|
         if shopping_list_portion.checked == true
           Stock.create(
@@ -103,6 +97,14 @@ class ShoppingListsController < ApplicationController
 
     redirect_to edit_cupboard_path(@import_cupboard.id)
 
+  end
+
+  def archive_shopping_list
+    shopping_list_id = params[:shopping_list_id]
+    current_user.shopping_lists.where(id: shopping_list_id).update_all(
+      archived: true
+    )
+    redirect_to recipes_path
   end
 
   def edit
@@ -166,13 +168,13 @@ class ShoppingListsController < ApplicationController
   def send_shopping_list_reminder
     if current_user
       current_user.send_shopping_list_reminder_email
-      redirect_to root_url
+      redirect_to recipes_path
       flash[:info] = "Reminder email will be sent in 24 hours"
     end
   end
 
   def delay_shopping_list_process
-    redirect_to root_url
+    redirect_to recipes_path
   end
 
   def delete

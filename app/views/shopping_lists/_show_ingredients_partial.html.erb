@@ -20,6 +20,7 @@
     <% else %>
       <h2>Archived Shopping List</h2>
     <% end %>
+    <%= link_to "Delete this shopping list", shopping_lists_archive_current_path(shopping_list_id: (params[:id] ? params[:id] : current_user.shopping_lists.last.id )), class: "list_block--item--action", id: "archive_current_shopping_list" %>
   </div>
   <div class="list_block--collection">
     <div class="list_block list_block__full">
