@@ -1,4 +1,4 @@
 <% notifications && notifications.class == Integer ? data_notifications = notifications : 'null' %>
-<%= link_to edit_user_path(current_user), class: "account-btn#{(notifications ? ' notifcations ' : '')}#{(current_section == 'users') || (current_section == 'sessions') ? ' current_section' : ''}", data: {notifications: data_notifications} do %>
+<%= link_to user_path(current_user, anchor: (notifications ? "todos" : '' )), class: "account-btn#{(notifications ? ' notifcations ' : '')}#{(current_section == 'users') || (current_section == 'sessions') ? ' current_section' : ''}", data: {notifications: data_notifications} do %>
 	<%= icomoon('user') %>
 <% end %>
