@@ -69,6 +69,7 @@ input[type=date]{
 	}
 	input:not([type="submit"]):not([type="checkbox"]) {
 		width: 100%;
+		border: 1px solid $black-30;
 	}
 	* + *:not([type="submit"]):not([type="checkbox"]):not(li) {
 		margin-top: em(10, 15);
