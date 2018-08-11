@@ -3,7 +3,7 @@ $bp-mobile: 600px;
 .pretty_form {
 	display: flex;
 	justify-content: center;
-	padding: em(20, 10);
+	padding: em(30, 10) em(20, 10);
 	flex-wrap: wrap;
 }
 
@@ -171,6 +171,30 @@ input[type=date]{
 		margin-top: em(40, 15);
 	}
 }
+
+.pretty_form--highlight {
+	border: 1px solid $warning-red-40;
+	padding: em(10, 10);
+	&:target {
+		animation: pretty_form_highlight 3s 1;
+		-webkit-animation: pretty_form_highlight 3s 1;
+		animation-fill-mode: forwards;
+	}
+}
+
+
+@keyframes pretty_form_highlight {
+0% { background-color: white; }
+20% { background-color: $warning-red-40; }
+100% { background-color: white; }
+}
+
+@-webkit-keyframes pretty_form_highlight {
+0% { background-color: white; }
+20% { background-color: $warning-red-40; }
+100% { background-color: white; }
+}
+
 
 .pretty_form--sibling_row {
 	display: flex;
