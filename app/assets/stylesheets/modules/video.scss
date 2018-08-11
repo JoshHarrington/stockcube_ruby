@@ -1,0 +1,19 @@
+.video_block {
+	max-width: 350px;
+	position: relative;
+	p + & {
+		margin-top: em(25, 10);
+	}
+	img {
+		width: 100%;
+	}
+	video {
+		position: absolute;
+		top: 50px;
+		@media (max-width: 387px) {
+			top: calc(16.2vw - 12px);
+		}
+		width: 73.2%;
+    left: 13.5%;
+	}
+}

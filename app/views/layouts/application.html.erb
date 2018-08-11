@@ -25,7 +25,7 @@
       <% end %>
     <% end %>
 
-    <title><%= yield(:title) %> | Stockcubes</title>
+    <title><%= !yield(:title).to_s.blank? ? (yield(:title).to_s + ' | ') : '' %>Stockcubes</title>
 
     <meta property="og:type"               content="article" />
     <meta property="og:title"              content="<%= yield(:title) %> | Stockcubes" />

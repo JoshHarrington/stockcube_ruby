@@ -26,14 +26,14 @@
 	h2 {
 		margin-right: em(20, 18);
 	}
-	div {
+	div:not([class*="video_block"]) {
 		display: flex;
 		align-items: center;
 		margin-top: em(20, 10);
 		margin-left: auto;
 	}
 	& + & {
-		margin-top: em(20, 10);
+		margin-top: em(30, 10);
 	}
 }
 

@@ -20,14 +20,6 @@
     <% else %>
       <h2>Archived Shopping List</h2>
     <% end %>
-
-    <div>
-      <p>Ingredients</p>
-      <%= link_to current_shopping_list_path, class: "switch--wrap" do %>
-        <span class="switch status_on"></span>
-        <p>Recipes</p>
-      <% end %>
-    </div>
   </div>
   <div class="list_block--collection">
     <div class="list_block list_block__full">
@@ -51,10 +43,37 @@
     </div>
   </div>
   <div class="list_block--collection--sibling list_block--collection--sibling_stack">
+		<h2>Recipes in Shopping List</h2>
+    <ul class="basic_list">
+      <% recipes.each do |recipe| %>
+        <li><%= link_to recipe.title, recipe_path(recipe.id) %> -
+          <% unless current_user.favourites.include?(recipe) %>
+          not currently marked as one of your favourite recipes,
+						<%= link_to "add it now", favourite_recipe_path(recipe, type: 'favourite'), class: 'unfavourite svg-btn', title: 'favourite', method: :put %>?
+					<% else %>
+            one of your favourite recipes :)
+					<% end %></li>
+      <% end %>
+    </ul>
+    <p><%= link_to "Add more recipes", recipes_path %> to your shopping list</p>
+  </div>
+  <div class="list_block--collection--sibling list_block--collection--sibling_stack">
 		<h2>Shopping Mode</h2>
 		<p>
 			Ready to check these ingredients off and add to your cupboards?
-			<%= link_to 'Start shop mode', shopping_lists_current_shop_path %>
 		</p>
+    <%= link_to 'Start shop mode', shopping_lists_current_shop_path, class: "list_block--item--action" %>
+  </div>
+  <div class="list_block--collection--sibling list_block--collection--sibling_stack">
+    <p>Check out what the 'shop mode' process looks like:</p>
+    <div class="video_block">
+      <img src="<%= asset_path('iphone_8_video_bg.png') %>" alt="Phone to for video presentation">
+      <video autoplay poster="<%= asset_path('shopping_list_screenshot.jpg') %>" playsinline loop muted>
+        <source src="<%= asset_path('shopping_list_check.webm') %>" type="video/webm" />
+        <source src="<%= asset_path('shopping_list_check.mp4') %>" type="video/mp4" />
+      </video>
+    </div>
   </div>
 </div>
+
+
