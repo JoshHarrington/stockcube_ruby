@@ -2,8 +2,12 @@ Hi <%= @user.name %>,
 
 Here's a list of the items in your cupboards going out of date in the next week, and the day they will be going out of date:
 
-<% @stock_going_off.each do |stock|%>
-- <%= stock.ingredient.name %> (<%= stock.use_by_date.to_s(:long)%>)
+<% @stock_going_off.each do |cupboard_id, stocks| %>
+	<%= Cupboard.find(cupboard_id).location %>
+	<% stocks.each do |stock| %>
+	- <%= stock.ingredient.name %> (<%= stock.use_by_date.to_s(:long)%>)
+	<% end %>
+
 <% end %>
 
 That's everything!
