@@ -71,12 +71,13 @@ class ShoppingListsController < ApplicationController
   def shopping_list_to_cupboard
     @import_cupboard = Cupboard.create(location: "Import Cupboard (Hidden)", setup: true)
     CupboardUser.create(cupboard_id: @import_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
-    Rails.logger.debug 'shopping_list checked ids ' + params[:shopping_list_item].to_unsafe_h.map {|id| id[0].to_i }.to_s
     shopping_list_ids_from_params = params[:shopping_list_item].to_unsafe_h.map {|id| id[0].to_i }
     currently_checked_shopping_list_portion_ids = current_user.shopping_lists.last.shopping_list_portions.where(checked: true).map(&:id)
 
     if current_user.shopping_lists.length > 0 && current_user.shopping_lists.last.archived != true
       if currently_checked_shopping_list_portion_ids.sort! != shopping_list_ids_from_params.sort!
+        shopping_list_portion_ids_to_uncheck = currently_checked_shopping_list_portion_ids - shopping_list_ids_from_params
+        ShoppingListPortion.find(shopping_list_portion_ids_to_uncheck).map{|sl| sl.update_attributes(checked: false)}
         ShoppingListPortion.find(shopping_list_ids_from_params).map{|sl| sl.update_attributes(checked: true)}
       end
       current_user.shopping_lists.last.shopping_list_portions.each do |shopping_list_portion|

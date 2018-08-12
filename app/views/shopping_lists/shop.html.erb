@@ -15,18 +15,18 @@
       <div class="list_block--content">
         <% @shopping_list_portions.each_with_index do |sl_portion, index| %>
           <% if sl_portion.in_cupboard == true && sl_portion.enough_in_cupboard == true %>
-            <%= check_box_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", "#{sl_portion.portion_amount}", sl_portion.checked, data: {"id" => sl_portion.id} %>
-            <%= label_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode' do %>
+            <%= check_box_tag "shopping_list_item[#{sl_portion.id}]", "#{sl_portion.portion_amount}", sl_portion.checked, data: {"id" => sl_portion.id} %>
+            <%= label_tag "shopping_list_item[#{sl_portion.id}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode' do %>
               <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
             <% end %>
           <% elsif sl_portion.in_cupboard == true && (sl_portion.plenty_in_cupboard == nil || sl_portion.plenty_in_cupboard == false) %>
-            <%= check_box_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", "#{sl_portion.portion_amount}", sl_portion.checked, data: {"id" => sl_portion.id} %>
-            <%= label_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode date-part-warning' do %>
+            <%= check_box_tag "shopping_list_item[#{sl_portion.id}]", "#{sl_portion.portion_amount}", sl_portion.checked, data: {"id" => sl_portion.id} %>
+            <%= label_tag "shopping_list_item[#{sl_portion.id}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode date-part-warning' do %>
               <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
             <% end %>
           <% elsif sl_portion.in_cupboard == false %>
-            <%= check_box_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", "#{sl_portion.portion_amount}", sl_portion.checked, data: {"id" => sl_portion.id} %>
-            <%= label_tag "shopping_list_item[#{sl_portion.ingredient_id}][#{sl_portion.unit_number}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode date-full-warning' do %>
+            <%= check_box_tag "shopping_list_item[#{sl_portion.id}]", "#{sl_portion.portion_amount}", sl_portion.checked, data: {"id" => sl_portion.id} %>
+            <%= label_tag "shopping_list_item[#{sl_portion.id}]", class: 'list_block--item list_block--item_stacked list_block--item__shop_mode date-full-warning' do %>
               <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
             <% end %>
           <% end %>
