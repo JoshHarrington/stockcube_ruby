@@ -234,17 +234,10 @@ class CupboardsController < ApplicationController
 		def correct_user
 			if params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != '' && params[:id] != 'accept_cupboard_invite'
 				@cupboard = Cupboard.find(params[:cupboard_id])
-				puts 'cupboard_id ' + params[:cupboard_id].to_s
 			elsif params.has_key?(:id) && params[:id].to_s != '' && params[:id] != 'accept_cupboard_invite'
 				@cupboard = Cupboard.find(params[:id])
-				puts "cupboard id " + @cupboard.id.to_s
-				puts "id " + params[:id].to_s
-				puts "cupboard users " + @cupboard.users.to_s
 				@user_ids = @cupboard.users.map(&:id)
-				puts 'user ids ' + @user_ids.to_s
-				puts 'current_user id ' + current_user.id.to_s
 				redirect_to(root_url) unless @user_ids.include?(current_user.id)
 			end
-
 		end
 end
