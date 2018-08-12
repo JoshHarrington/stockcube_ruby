@@ -172,7 +172,7 @@ input[type=date]{
 	}
 }
 
-.pretty_form--highlight {
+[class*="pretty_form--highlight"] {
 	border: 1px solid $warning-red-40;
 	padding: em(10, 10);
 	&:target {
@@ -181,7 +181,6 @@ input[type=date]{
 		animation-fill-mode: forwards;
 	}
 }
-
 
 @keyframes pretty_form_highlight {
 0% { background-color: white; }
@@ -192,6 +191,26 @@ input[type=date]{
 @-webkit-keyframes pretty_form_highlight {
 0% { background-color: white; }
 20% { background-color: $warning-red-40; }
+100% { background-color: white; }
+}
+.pretty_form--highlight_green {
+	border-color: $teal-30;
+	&:target {
+		animation: pretty_form_highlight_green 3s 1;
+		-webkit-animation: pretty_form_highlight_green 3s 1;
+	}
+}
+
+
+@keyframes pretty_form_highlight_green {
+0% { background-color: white; }
+20% { background-color: $teal-10; }
+100% { background-color: white; }
+}
+
+@-webkit-keyframes pretty_form_highlight_green {
+0% { background-color: white; }
+20% { background-color: $teal-10; }
 100% { background-color: white; }
 }
 
@@ -323,7 +342,8 @@ input[type=date]{
 }
 
 
-.list_block--collection--wrap form {
+.list_block--collection--wrap form,
+.pretty_form {
 	[type="checkbox"]:not(.checkbox_standard) {
 		position: absolute;
 		cursor: pointer;
@@ -385,14 +405,17 @@ input[type=date]{
 			opacity: 0;
 		}
 	}
+	& [type="checkbox"]:not(.checkbox_standard):checked ~ .list_block--form--divider {
+		display: block;
+	}
+}
+
+.list_block--collection--wrap form {
 	hr {
 		order: 3;
 		display: none;
 		width: calc(100% - 6px);
     margin-left: 3px;
-	}
-	& [type="checkbox"]:not(.checkbox_standard):checked ~ .list_block--form--divider {
-		display: block;
 	}
 	break {
 		flex-basis: 100%;

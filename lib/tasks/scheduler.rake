@@ -5,12 +5,14 @@ task :send_check_email => :environment do
 	week_end = week_start + 7.days
 	stock_going_off_array = []
 	User.where(activated: true).each do |user|
-		user.cupboards.where(setup: false, hidden: false).each do |cupboard|
-			stock_going_off_array.push(cupboard.stocks.where("use_by_date BETWEEN ? AND ?", week_start, week_end).order(use_by_date: :desc).map(&:id))
-		end
-		if stock_going_off_array.length > 0
-			stock_going_off = Stock.find(stock_going_off_array)
-			user.send_checking_email_with_scheduler(stock_going_off)
+		if user.user_setting.notify
+			user.cupboards.where(setup: false, hidden: false).each do |cupboard|
+				stock_going_off_array.push(cupboard.stocks.where("use_by_date BETWEEN ? AND ?", week_start, week_end).order(use_by_date: :desc).map(&:id))
+			end
+			if stock_going_off_array.length > 0
+				stock_going_off = Stock.find(stock_going_off_array)
+				user.send_checking_email_with_scheduler(stock_going_off)
+			end
 		end
 	end
 end

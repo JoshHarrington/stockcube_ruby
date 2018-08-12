@@ -80,6 +80,12 @@ class UsersController < ApplicationController
         standard_use_by_limit: 28
       )
 
+
+      ### setup user with default settings
+      UserSetting.create(
+        user_id: @user.id
+      )
+
       ### setup user with default cupboard
       new_cupboard = Cupboard.create(location: "Fridge (Default cupboard)")
       CupboardUser.create(
@@ -126,6 +132,20 @@ class UsersController < ApplicationController
       redirect_to @user
     else
       render 'edit'
+    end
+  end
+
+  def notifications
+    if params.has_key?(:notifications)
+      if params[:notifications].to_unsafe_h.keys[0].to_s == "true" && current_user.user_setting.notify != true
+        current_user.user_setting.update_attributes(
+          notify: true
+        )
+      elsif params[:notifications].to_unsafe_h.keys[0].to_s == "false" && current_user.user_setting.notify != false
+        current_user.user_setting.update_attributes(
+          notify: false
+        )
+      end
     end
   end
 
