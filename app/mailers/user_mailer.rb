@@ -16,8 +16,23 @@ class UserMailer < ApplicationMailer
     mail to: user.email, subject: "Account activation and joining a cupboard"
   end
 
-  def ingredient_out_of_date_notification(user)
+
+  def user_stock_check
+    week_start = Time.now.beginning_of_day
+    week_end = week_start + 7.days
+    User.where(activated: true).each do |user|
+      user.cupboards.where(setup: false, hidden: false).each do |cupboard|
+        stock_going_off = cupboard.stocks.where("use_by_date BETWEEN ? AND ?", week_start, week_end)
+        if stock_going_off.length > 0
+          ingredient_out_of_date_notification(user, stock_going_off).deliver_now
+        end
+      end
+    end
+  end
+
+  def ingredient_out_of_date_notification(user, stock_going_off)
     @user = user
+    @stock_going_off = stock_going_off
     mail to: user.email, subject: "Ingredients going out of date this week"
   end
 

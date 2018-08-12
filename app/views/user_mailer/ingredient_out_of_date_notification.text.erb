@@ -2,9 +2,9 @@ Hi <%= @user.name %>,
 
 Here's a list of the items in your cupboards going out of date in the next week, and the day they will be going out of date:
 
-- Brocilli (Wednesday, 8 April)
-- Salmon (Thursday, 9 April)
-- New potatoes (Friday, 10 April)
+<% @stock_going_off.each do |stock|%>
+- <%= stock.ingredient.name %> (<%= stock.use_by_date.to_s(:long)%>)
+<% end %>
 
 That's everything!
 
