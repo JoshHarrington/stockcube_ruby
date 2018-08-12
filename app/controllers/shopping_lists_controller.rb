@@ -69,7 +69,7 @@ class ShoppingListsController < ApplicationController
   end
 
   def shopping_list_to_cupboard
-    current_user.cupboards.where(setup: true, hidden: false).map{|c| if c.stocks.length == 0 c.update_attributes(hidden: true) end }
+    current_user.cupboards.where(setup: true, hidden: false).map{|c| (c.stocks.length == 0 ? c.update_attributes(hidden: true) : '') }
     @import_cupboard = Cupboard.create(location: "Import Cupboard (Hidden)", setup: true)
     CupboardUser.create(cupboard_id: @import_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
     shopping_list_ids_from_params = params[:shopping_list_item].to_unsafe_h.map {|id| id[0].to_i }
