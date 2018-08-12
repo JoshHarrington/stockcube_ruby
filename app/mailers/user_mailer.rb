@@ -16,6 +16,11 @@ class UserMailer < ApplicationMailer
     mail to: user.email, subject: "Account activation and joining a cupboard"
   end
 
+  def ingredient_out_of_date_notification(user)
+    @user = user
+    mail to: user.email, subject: "Ingredients going out of date this week"
+  end
+
   # Subject can be set in your I18n file at config/locales/en.yml
   # with the following lookup:
   #
