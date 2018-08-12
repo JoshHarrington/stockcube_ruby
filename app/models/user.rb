@@ -69,9 +69,8 @@ class User < ApplicationRecord
     UserMailer.account_activation_with_cupboard_sharing(self).deliver_now
   end
 
-  def send_checking_email_with_scheduler
-    admin_user = User.where(admin: true).first
-    UserMailer.ingredient_out_of_date_notification(admin_user).deliver_now
+  def send_checking_email_with_scheduler(stock_going_off)
+    UserMailer.ingredient_out_of_date_notification(self, stock_going_off).deliver_now
   end
 
   # Sets the password reset attributes.
