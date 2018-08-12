@@ -4,7 +4,7 @@ Here's a list of the items in your cupboards going out of date in the next week:
 
 <% @stock_going_off.each do |cupboard_id, stocks| %>
 <%= Cupboard.find(cupboard_id).location %>
-<% stocks.order(use_by_date: :desc).each do |stock| %>
+<% stocks.each do |stock| %>
 - <%= stock.ingredient.name %> (<%= stock.use_by_date.to_s(:long)%>)
 <% end %>
 
