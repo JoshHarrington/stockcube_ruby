@@ -255,7 +255,6 @@ input[type=date]{
 .item_form--content_row {
 	display: flex;
 	flex-wrap: wrap;
-	// align-items: baseline;
 	svg {
 		width: em(14, 15);
 		height: em(14, 15);
@@ -275,7 +274,9 @@ input[type=date]{
 		flex-basis: 100%;
 		margin-bottom: em(8, 15);
 	}
-	*:not(.fancy_radio_button__label):not(.icomoon-icon):not(.selectize-input):not(.selectize-input .item) {
+	label:not(.fancy_radio_button__label),
+	h3,
+	p {
 		margin-bottom: em(10);
 	}
 	.field_with_errors {
