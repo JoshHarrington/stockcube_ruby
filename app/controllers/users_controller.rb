@@ -14,6 +14,17 @@ class UsersController < ApplicationController
     redirect_to root_url and return unless @user.activated?
     @users_recipes = @user.recipes
     @all_recipes = Recipe.all
+    @weekdays = {
+      'Sunday' => 0,
+      'Monday' => 1,
+      'Tuesday' => 2,
+      'Wednesday' => 3,
+      'Thursday' => 4,
+      'Friday' => 5,
+      'Saturday' => 6
+    }
+    @weekday_current_id = Time.now.wday
+    @weekday_pick = current_user.user_setting.notify_day
   end
 
   def new
@@ -136,15 +147,24 @@ class UsersController < ApplicationController
   end
 
   def notifications
-    if params.has_key?(:notifications)
-      if params[:notifications].to_unsafe_h.keys[0].to_s == "true" && current_user.user_setting.notify != true
-        current_user.user_setting.update_attributes(
-          notify: true
+    if params.has_key?(:notifications) && params.has_key?(:weekday)
+      user_notification_status = current_user.user_setting.notify
+      param_notification_status = params[:notifications].to_unsafe_h.keys[0].to_s
+      user_weekday_setting = current_user.user_setting.notify_day
+      param_weekday_setting = params[:weekday].to_unsafe_h.keys[0].to_i
+      weekday_range = [*0..6]
+      if weekday_range.include?(param_weekday_setting)
+        if param_notification_status == "true" && user_notification_status != true
+          current_user.user_setting.update_attributes(
+            notify: true,
+            notify_day: param_weekday_setting
+          )
+        elsif param_notification_status == "false" && user_notification_status != false
+          current_user.user_setting.update_attributes(
+            notify: false,
+            notify_day: param_weekday_setting
         )
-      elsif params[:notifications].to_unsafe_h.keys[0].to_s == "false" && current_user.user_setting.notify != false
-        current_user.user_setting.update_attributes(
-          notify: false
-        )
+        end
       end
     end
   end

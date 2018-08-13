@@ -677,6 +677,24 @@ input[type=date]{
   margin-bottom: 0;
 }
 
+.selectize_flex_container {
+	display: flex;
+	align-items: center;
+}
+
+.fit_width.selectize {
+	.selectize-input {
+		padding-right: em(40, 13);
+	}
+	span + select + & {
+		margin-left: em(15, 15);
+	}
+}
+
+select#day_pick + .selectize {
+	min-width: 215px;
+}
+
 .selectize-control input[type="select-one"] {
 	width: 100%;
 	min-width: em(117, 13);
@@ -689,4 +707,10 @@ input[type=date]{
 		width: 100%;
 	}
 	height: em(36, 15);
+}
+
+
+.faded_out {
+	opacity: .4;
+	pointer-events: none;
 }
