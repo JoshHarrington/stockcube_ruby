@@ -45,7 +45,18 @@
         <% end %>
       </ul>
     </div>
-    <% end %>
+  <% end %>
+
+  <div class="pretty_form--sibling pretty_form--highlight_green" id="notifications">
+    <h2>Notifications</h2>
+    <%= check_box_tag "reminder_pick", "reminder_pick_status", current_user.user_setting.notify %>
+    <%= label_tag "reminder_pick", "Get a notification email every week, with all food going out of day that week listed out for you",
+      class: "reminder_pick--label" %>
+
+    <br />
+    <p class="selectize_flex_container <%= current_user.user_setting.notify ? '' : 'faded_out' %>"><span>Pick the day you want to receive the notification:</span><%= select_tag 'day_pick', options_for_select(@weekdays, (@weekday_pick ? @weekday_pick : @weekday_current_id)), class: "selectize fit_width" %></p>
+
+  </div>
 
 
   <div class="fake_form">

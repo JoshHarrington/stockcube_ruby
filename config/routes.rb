@@ -76,6 +76,8 @@ Rails.application.routes.draw do
   get '/quick_add_stock/new', to: 'user_fav_stocks#new'
   get '/quick_add_stock/:id/edit', to: 'user_fav_stocks#edit', as: :quick_add_stock_edit
 
+  post '/users/notifications', to: 'users#notifications'
+
   resources :users
   resources :user_fav_stocks
   resources :account_activations, only: [:edit]

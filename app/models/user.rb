@@ -17,6 +17,7 @@ class User < ApplicationRecord
 
   has_many :shopping_lists
   has_one :user_fav_stock
+  has_one :user_setting
 
   # Favourite recipes of user
   has_many :favourite_recipes # just the 'relationships'
@@ -67,6 +68,10 @@ class User < ApplicationRecord
   # Sends activation email with cupboard add.
   def send_activation_email_with_cupboard_add
     UserMailer.account_activation_with_cupboard_sharing(self).deliver_now
+  end
+
+  def send_checking_email_with_scheduler(stock_going_off)
+    UserMailer.ingredient_out_of_date_notification(self, stock_going_off).deliver_now
   end
 
   # Sets the password reset attributes.
