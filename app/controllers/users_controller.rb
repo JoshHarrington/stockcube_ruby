@@ -166,6 +166,14 @@ class UsersController < ApplicationController
     end
   end
 
+  def oauth_callback
+    if params.has_key?(:email)
+      User.where(email: params[:email])
+    else
+
+    end
+  end
+
   def destroy
     User.find(params[:id]).destroy
     flash[:success] = "User deleted"
