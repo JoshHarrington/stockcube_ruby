@@ -1,8 +1,17 @@
 <% provide(:title, "Log in") %>
 <div class="pretty_form">
   <div class="pretty_form--sibling">
-    <h1>Log in</h1>
+    <h1>Sign into Stockcubes</h1>
     <br />
+  </div>
+  <div class="pretty_form--sibling">
+    <h2 class="h3">Sign in with Google:</h2>
+    <br />
+    <br />
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+  </div>
+  <div class="pretty_form--sibling">
+    <h2 class="h3">Sign in using your Stockcubes account:</h2>
   </div>
   <%= form_for(:session, url: login_path) do |f| %>
     <div class="pretty_form--row">
@@ -31,4 +40,5 @@
   <div class="pretty_form--sibling">
     <p>New user? <%= link_to "Sign up :)", signup_path %></p>
   </div>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
 </div>
