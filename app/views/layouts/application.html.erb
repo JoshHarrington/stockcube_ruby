@@ -3,26 +3,30 @@
   <head>
     <% if Rails.env.production? %>
       <% if domain_check('demo') == true %>
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121786337-2"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'UA-121786337-2');
-        </script>
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-K7P9J4B');</script>
+        <!-- End Google Tag Manager -->
       <% else %>
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121786337-1"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'UA-121786337-1');
-        </script>
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-5M8HKTS');</script>
+        <!-- End Google Tag Manager -->
       <% end %>
+    <% elsif Rails.env.staging? %>
+      <!-- Google Tag Manager -->
+      <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-MJMMCG3');</script>
+      <!-- End Google Tag Manager -->
     <% end %>
 
     <title><%= !yield(:title).to_s.blank? ? (yield(:title).to_s + ' | ') : '' %>Stockcubes</title>
@@ -69,6 +73,24 @@
   </head>
 
   <body class="<%= controller_name %>_controller <%= action_name %>_page">
+    <% if Rails.env.production? %>
+      <% if domain_check('demo') == true %>
+        <!-- Google Tag Manager (noscript) -->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K7P9J4B"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <!-- End Google Tag Manager (noscript) -->
+      <% else %>
+        <!-- Google Tag Manager (noscript) -->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5M8HKTS"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <!-- End Google Tag Manager (noscript) -->
+      <% end %>
+    <% elsif Rails.env.staging? %>
+      <!-- Google Tag Manager (noscript) -->
+      <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MJMMCG3"
+      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+      <!-- End Google Tag Manager (noscript) -->
+    <% end %>
     <div id="outer-wrap">
       <div id="inner-wrap">
         <%= render 'layouts/header' %>
