@@ -189,9 +189,35 @@ footer[role="contentinfo"] {
   color: black;
   align-items: center;
   font-size: em(15, 10);
+  border-radius: em(22, 15);
+  border: 1px solid white;
+  margin-left: auto;
+  background-color: $teal-70;
+  padding-left: em(15, 15);
+  & + & {
+    margin-left: em(15, 15);
+    padding-left: em(10, 15);
+  }
+  &.profile_item__sign_up {
+    background-color: white;
+  }
   p {
     font-size: inherit;
     margin-right: em(10, 15);
+  }
+  &:not(.demo_mode):hover {
+    background-color: $teal-20;
+  }
+  @media (max-width: 500px) {
+    h1 + & {
+      padding-left: 0;
+      p {
+        display: none;
+      }
+    }
+    & + & {
+      margin-left: em(10, 15);
+    }
   }
 }
 
@@ -203,9 +229,6 @@ footer[role="contentinfo"] {
   color: black;
   transition: background-color .2s;
   position: relative;
-  .profile_item:not(.demo_mode) &:hover {
-    background-color: $teal-80;
-  }
   &.current_section {
     background-color: white;
   }
@@ -264,7 +287,7 @@ footer[role="contentinfo"] {
     .block {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: stretch;
       padding: em(20) em(30);
     }
     .svg-btn {
@@ -305,9 +328,13 @@ footer[role="contentinfo"] {
 @media screen and (max-width: 45em) {
   #top .block {
     padding: em(15) em(14);
+    align-items: stretch;
     .account-btn svg {
       width: em(20, 15);
       height: em(20, 15);
+    }
+    h1 {
+      margin-right: em(15, 19);
     }
   }
   #nav {
