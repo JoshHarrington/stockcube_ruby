@@ -1,0 +1,13 @@
+footer {
+	background-color: $teal-30;
+	display: flex;
+	justify-content: center;
+	padding: em(30, 10) em(20, 10);
+	ul {
+		display: flex;
+	}
+	a {
+		padding: em(15, 15);
+		margin: em(10, 15);
+	}
+}
