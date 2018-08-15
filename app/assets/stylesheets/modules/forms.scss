@@ -153,6 +153,16 @@ input[type=date]{
 	}
 }
 
+
+.message.target-message {
+	display: none;
+	&:target {
+		color: $warning-red-strong;
+		display: inline-block;
+		margin-top: em(9, 15);
+	}
+}
+
 .pretty_form--sibling {
 	margin-bottom: em(40, 15);
 	p {
