@@ -78,8 +78,9 @@ Rails.application.routes.draw do
 
   post '/users/notifications', to: 'users#notifications'
   # get '/oauth2callback', to: 'users#oauth_callback'
-  get '/users/new_from_g_sign_in', to: 'users#new_from_g_sign_in'
+  # get '/users/new_from_g_sign_in', to: 'users#new_from_g_sign_in'
   post '/users/new_from_g_sign_in', to: 'users#new_from_g_sign_in'
+  get '/user_error', to: 'users#user_error', as: :user_error
 
   resources :users
   resources :user_fav_stocks

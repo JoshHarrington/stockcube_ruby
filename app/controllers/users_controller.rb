@@ -171,6 +171,7 @@ class UsersController < ApplicationController
       if User.where(email: params[:email]).length > 0
         g_user = User.where(email: params[:email]).first
         log_in g_user
+        UserMailer.sign_in_activity(g_user).deliver_now
         redirect_to root_url
       else
         password_generate = SecureRandom.base64(14)
@@ -258,6 +259,7 @@ class UsersController < ApplicationController
         )
 
         log_in g_user
+        UserMailer.sign_in_activity(g_user).deliver_now
         if params.has_key?(:name) && params[:name].to_s != ''
           redirect_to root_url
         else
@@ -267,6 +269,22 @@ class UsersController < ApplicationController
       end
     else
       flash[:notice] = %Q[That login didn't work. Maybe try it again, or <a href="/signup">sign up</a> for a Stockcubes account]
+    end
+  end
+
+  def user_error
+    if params.has_key?(:u_id) && params[:u_id].to_s != ''
+      ## user id defined
+      hashids = Hashids.new(ENV['USER_ID_SALT'])
+      decoded_user_id = hashids.decode(params[:u_id])
+      if params.has_key?(:error) && params[:error].to_s != ''
+        ## error code defined
+        user = User.find(decoded_user_id).first
+        log_out_account(user)
+        UserMailer.
+      else
+        ## error code not defined
+      end
     end
   end
 

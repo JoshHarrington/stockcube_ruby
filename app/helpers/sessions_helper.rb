@@ -4,7 +4,7 @@ module SessionsHelper
 	def log_in(user)
     session[:user_id] = user.id
 	end
-	
+
   # Remembers a user in a persistent session.
   def remember(user)
     user.remember
@@ -47,6 +47,11 @@ module SessionsHelper
     forget(current_user)
     session.delete(:user_id)
     @current_user = nil
+  end
+
+  def log_out_account(user)
+    forget(user)
+    session.delete(:user_id)
   end
 
   # Redirects to stored location (or to the default).
