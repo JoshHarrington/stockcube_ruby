@@ -259,7 +259,6 @@ class UsersController < ApplicationController
         )
 
         log_in g_user
-        UserMailer.sign_in_activity(g_user).deliver_now
         if params.has_key?(:name) && params[:name].to_s != ''
           redirect_to root_url
         else
@@ -277,14 +276,17 @@ class UsersController < ApplicationController
       ## user id defined
       hashids = Hashids.new(ENV['USER_ID_SALT'])
       decoded_user_id = hashids.decode(params[:u_id])
-      if params.has_key?(:error) && params[:error].to_s != ''
-        ## error code defined
-        user = User.find(decoded_user_id).first
-        log_out_account(user)
-        UserMailer.
-      else
-        ## error code not defined
+      hashid_code = Hashids.new(ENV['USER_ERROR_CODE_SALT'])
+      decoded_code_id = hashid_code.decode(params[:code])
+      code_included = false
+      if decoded_code_id.first.to_i == ENV['USER_ERROR_CODE_DECODED'].to_i
+        code_included = true
       end
+      user = User.find(decoded_user_id).first
+      log_out_account(user)
+      UserMailer.admin_notify_for_sign_in_error(user, code_included).deliver_now
+      redirect_to root_path
+      flash[:notice] = "You have successfully logged out all sessions"
     end
   end
 

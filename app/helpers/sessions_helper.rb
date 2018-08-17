@@ -51,7 +51,7 @@ module SessionsHelper
 
   def log_out_account(user)
     forget(user)
-    session.delete(:user_id)
+    session.delete(user.id)
   end
 
   # Redirects to stored location (or to the default).

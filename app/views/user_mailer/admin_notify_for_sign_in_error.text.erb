@@ -1,3 +1,5 @@
 There was a reported false sign in for the email address:
 
-<%= @user.email %>
+- <%= @user.email %>
+
+Code was <%= @code_included ? 'included at sign in' : 'not included, which could mean a dodgy log out request or bug' %>.
