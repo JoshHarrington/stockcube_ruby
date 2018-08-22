@@ -34,6 +34,7 @@
 	}
 }
 
+
 .feature-banner--title-content {
 	max-width: em(600, 10);
 }
@@ -54,7 +55,14 @@
 	align-items: center;
 	justify-content: center;
 	p {
-		font-size: em(24, 10);
+		&.feature_text--minor {
+			font-size: em(16, 10);
+			line-height: em(23, 16);
+			margin-bottom: em(25, 16);
+		}
+		&:not(.feature_text--minor) {
+			font-size: em(24, 10);
+		}
 	}
 }
 
