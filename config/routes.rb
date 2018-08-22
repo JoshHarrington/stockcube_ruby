@@ -80,8 +80,6 @@ Rails.application.routes.draw do
   # get '/oauth2callback', to: 'users#oauth_callback'
   # get '/users/new_from_g_sign_in', to: 'users#new_from_g_sign_in'
   post '/users/new_from_g_sign_in', to: 'users#new_from_g_sign_in'
-  get '/users/sign_in_problem', to: 'users#user_error'
-  post '/users/sign_in_problem', to: 'users#user_error', as: :user_error
 
   resources :users
   resources :user_fav_stocks

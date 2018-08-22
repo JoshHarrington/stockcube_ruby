@@ -49,11 +49,6 @@ module SessionsHelper
     @current_user = nil
   end
 
-  def log_out_account(user)
-    forget(user)
-    session.delete(user.id)
-  end
-
   # Redirects to stored location (or to the default).
   def redirect_back_or(default)
     redirect_to(session[:forwarding_url] || default)

@@ -2,7 +2,17 @@
 <% provide(:button_text, 'Create my account') %>
 <div class="pretty_form">
   <div class="pretty_form--sibling">
-    <h1>Sign up</h1>
+    <h1>Create a Stockcubes account</h1>
+  </div>
+  <div class="pretty_form--sibling" id="google_sign_in">
+    <h2 class="h3">Sign up with Google:</h2>
+    <br />
+    <br />
+    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+  </div>
+  <div class="pretty_form--sibling">
+    <h2 class="h3">Sign up with your email:</h2>
   </div>
   <%= render 'form' %>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
 </div>

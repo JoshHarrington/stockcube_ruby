@@ -22,21 +22,6 @@ class UserMailer < ApplicationMailer
     mail to: user.email, subject: "Ingredients going out of date this week"
   end
 
-  def sign_in_activity(user)
-    hashids = Hashids.new(ENV['USER_ID_SALT'])
-    @encoded_user_id = hashids.encode(user.id)
-    hashed_code = Hashids.new(ENV['USER_ERROR_CODE_SALT'])
-    @encoded_error_id = hashed_code.encode(ENV['USER_ERROR_CODE_DECODED'])
-    mail to: user.email, subject: "Sign in alert for your Stockcubes account"
-  end
-
-  def admin_notify_for_sign_in_error(user, code_included)
-    admin = User.where(admin: true).first
-    @user = user
-    @code_included = code_included
-    mail to: admin.email, subject: "Stockcubes: Notification for sign in error"
-  end
-
   # Subject can be set in your I18n file at config/locales/en.yml
   # with the following lookup:
   #
