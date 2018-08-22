@@ -1,0 +1,28 @@
+footer {
+	background-color: $teal-20;
+	display: flex;
+	justify-content: center;
+	padding: em(30, 10) em(20, 10);
+	border-top: 2px solid $teal-40;
+	margin-top: em(20, 10);
+	ul {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+	li {
+		display: flex;
+	}
+	a {
+		padding: em(15, 15);
+		margin: em(10, 15) em(10, 15);
+		border: 1px solid $teal-100;
+		color: black;
+		background-color: white;
+		text-decoration: none;
+		border-radius: em(3, 15);
+		&:hover {
+			background-color: $teal-10;
+		}
+	}
+}

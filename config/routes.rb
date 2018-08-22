@@ -77,6 +77,9 @@ Rails.application.routes.draw do
   get '/quick_add_stock/:id/edit', to: 'user_fav_stocks#edit', as: :quick_add_stock_edit
 
   post '/users/notifications', to: 'users#notifications'
+  # get '/oauth2callback', to: 'users#oauth_callback'
+  # get '/users/new_from_g_sign_in', to: 'users#new_from_g_sign_in'
+  post '/users/new_from_g_sign_in', to: 'users#new_from_g_sign_in'
 
   resources :users
   resources :user_fav_stocks

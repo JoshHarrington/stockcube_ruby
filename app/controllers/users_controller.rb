@@ -166,6 +166,110 @@ class UsersController < ApplicationController
     end
   end
 
+  def new_from_g_sign_in
+    if params.has_key?(:email) && params[:email].to_s != '' && params[:email].to_s != 'null'
+      if User.where(email: params[:email]).length > 0
+        g_user = User.where(email: params[:email]).first
+        log_in g_user
+        redirect_to root_url
+      else
+        password_generate = SecureRandom.base64(14)
+        g_user_name = '21st Century Human'
+        if params.has_key?(:name) && params[:name].to_s != ''
+          g_user_name = params[:name].to_s
+        end
+        g_user = User.create(
+          email: params[:email],
+          name: g_user_name,
+          password: password_generate,
+          password_confirmation: password_generate,
+          activated: true,
+          activated_at: Time.zone.now
+        )
+        ### setup user with some fav stock for quick add
+        @tomatoe_id = Ingredient.where(name: "Tomatoes").first.id
+        @egg_id = Ingredient.where(name: "Egg").first.id
+        @bread_id = Ingredient.where(name: "Bread (White)").first.id  ## need to add (to production)
+        @milk_id = Ingredient.where(name: "Milk").first.id
+        @onion_id = Ingredient.where(name: "Onion").first.id
+        @cheese_id = Ingredient.where(name: "Cheese (Cheddar)").first.id
+
+        @each_unit_id = Unit.where(name: "Each").first.id
+        @loaf_unit_id = Unit.where(name: "Loaf").first.id 	## need to add (to production)
+        @pint_unit_id = Unit.where(name: "Pint").first.id
+        @gram_unit_id = Unit.where(name: "Gram").first.id
+
+        UserFavStock.create(
+          ingredient_id: @tomatoe_id,
+          stock_amount: 4,
+          unit_id: @each_unit_id,
+          user_id: g_user.id,
+          standard_use_by_limit: 5
+        )
+        UserFavStock.create(
+          ingredient_id: @egg_id,
+          stock_amount: 6,
+          unit_id: @each_unit_id,
+          user_id: g_user.id,
+          standard_use_by_limit: 9
+        )
+        UserFavStock.create(
+          ingredient_id: @bread_id,
+          stock_amount: 1,
+          unit_id: @loaf_unit_id,
+          user_id: g_user.id,
+          standard_use_by_limit: 4
+        )
+        UserFavStock.create(
+          ingredient_id: @milk_id,
+          stock_amount: 1,
+          unit_id: @pint_unit_id,
+          user_id: g_user.id,
+          standard_use_by_limit: 8
+        )
+        UserFavStock.create(
+          ingredient_id: @onion_id,
+          stock_amount: 3,
+          unit_id: @each_unit_id,
+          user_id: g_user.id,
+          standard_use_by_limit: 14
+        )
+        UserFavStock.create(
+          ingredient_id: @cheese_id,
+          stock_amount: 350,
+          unit_id: @gram_unit_id,
+          user_id: g_user.id,
+          standard_use_by_limit: 28
+        )
+
+
+        ### setup user with default settings
+        UserSetting.create(
+          user_id: g_user.id
+        )
+
+        ### setup user with default cupboard
+        new_cupboard = Cupboard.create(location: "Fridge (Default cupboard)")
+        CupboardUser.create(
+          cupboard_id: new_cupboard.id,
+          user_id: g_user.id,
+          owner: true,
+          accepted: true
+        )
+
+        log_in g_user
+        if params.has_key?(:name) && params[:name].to_s != ''
+          redirect_to root_url
+        else
+          flash[:info] = "Please update your name to finish setting up your account."
+          redirect_to edit_user_path(:id => g_user.id, :anchor => "user_name_fix")
+        end
+      end
+    else
+      flash[:notice] = %Q[That login didn't work. Maybe try it again, or <a href="/signup">sign up</a> for a Stockcubes account]
+    end
+  end
+
   def destroy
     User.find(params[:id]).destroy
     flash[:success] = "User deleted"
