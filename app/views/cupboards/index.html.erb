@@ -1,25 +1,23 @@
 <% provide(:title, 'Your cupboards') %>
+
+
 <div class="list_block--collection--wrap">
-  <% if @user_fav_stocks.length > 0 %>
-    <div class="list_block--collection--sibling list_block--collection--sibling_stack">
-      <h2>"Quick add stock" picks</h2>
-      <p>Use these to create new stock in your cupboards quickly, you can customise them and add your own!</p>
-    </div>
-    <div class="list_block--collection">
-      <div class="list_block list_block-wide">
-        <div class="list_block--content">
-          <%= link_to "Create new \"Quick add stock\" template", quick_add_stock_new_path, class: "list_block--item list_block--item_new" %>
-          <% @user_fav_stocks.each do |fav_stock| %>
-            <div class="list_block--item">
-              <span class="list_block--item--content"><%= fav_stock.unit.name == 'Each' ? '' : fav_stock.stock_amount.to_s + ' ' + fav_stock.unit.name.to_s + ' ' ) + (fav_stock.unit.name == 'Each' ? pluralize(fav_stock.stock_amount, fav_stock.ingredient.name) : fav_stock.ingredient.name.singularize %></span>
-              <%= link_to 'Use', stocks_new_path(ingredient: fav_stock.ingredient_id, stock_amount: fav_stock.stock_amount, unit: fav_stock.unit_id, standard_use_by_limit: fav_stock.standard_use_by_limit), class: "list_block--item--action pretty_form--submit_button"%>
-              <%= link_to 'Edit', quick_add_stock_edit_path(fav_stock.id), class: "list_block--item--action pretty_form--submit_button"%>
-            </div>
-          <% end %>
-        </div>
-      </div>
+  <%= form_tag cupboards_path, class: 'search_box--form',  method: :get do %>
+    <div class="search_box">
+      <% text_field_tag :search, params[:search] || session[:stock_ingredient_names], placeholder: "Search with ingredients to find recipes", class: "no_js_show", data: {prefill: params[:search] || session[:ingredient_pick_names]} %>
+      <%= select_tag "search[]", options_for_select(@ingredient_names), prompt: "Search with ingredients to find recipes", class: "js_show", multiple: true, hidden: true, data: {prefill: params[:search] || session[:ingredient_pick_names]} %>
+      <%= button_tag "Search", name: nil do %>
+        <%= icomoon('search') %>
+      <% end %>
     </div>
   <% end %>
+  <div class="list_block--collection list_block--collection__tight">
+    <% @recipes.each do |recipe| %>
+      <%= render 'recipes/recipe_list_partial', recipe: recipe %>
+    <% end %>
+  </div>
+  <hr>
+
   <div class="list_block--collection--sibling">
     <h2>Your Cupboards</h2>
   </div>
@@ -96,4 +94,24 @@
       <span>Add a new cupboard / storage location</span>
     <% end %>
   </div>
+    <% if @user_fav_stocks.length > 0 %>
+    <div class="list_block--collection--sibling list_block--collection--sibling_stack">
+      <h2>"Quick add stock" picks</h2>
+      <p>Use these to create new stock in your cupboards quickly, you can customise them and add your own!</p>
+    </div>
+    <div class="list_block--collection">
+      <div class="list_block list_block-wide">
+        <div class="list_block--content">
+          <%= link_to "Create new \"Quick add stock\" template", quick_add_stock_new_path, class: "list_block--item list_block--item_new" %>
+          <% @user_fav_stocks.each do |fav_stock| %>
+            <div class="list_block--item">
+              <span class="list_block--item--content"><%= fav_stock.unit.name == 'Each' ? '' : fav_stock.stock_amount.to_s + ' ' + fav_stock.unit.name.to_s + ' ' ) + (fav_stock.unit.name == 'Each' ? pluralize(fav_stock.stock_amount, fav_stock.ingredient.name) : fav_stock.ingredient.name.singularize %></span>
+              <%= link_to 'Use', stocks_new_path(ingredient: fav_stock.ingredient_id, stock_amount: fav_stock.stock_amount, unit: fav_stock.unit_id, standard_use_by_limit: fav_stock.standard_use_by_limit), class: "list_block--item--action pretty_form--submit_button"%>
+              <%= link_to 'Edit', quick_add_stock_edit_path(fav_stock.id), class: "list_block--item--action pretty_form--submit_button"%>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
 </div>

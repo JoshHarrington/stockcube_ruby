@@ -54,7 +54,7 @@ gem 'jquery-ui-rails'
 
 gem 'momentjs-rails'
 
-group :production do
+group :production, :development do
   gem 'searchkick'
 end
 

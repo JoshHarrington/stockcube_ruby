@@ -35,6 +35,10 @@
 	& + & {
 		margin-top: em(30, 10);
 	}
+	@at-root .search_box--form + .list_block--collection,
+	.search_box--form + & {
+		margin-top: em(20, 10);
+	}
 }
 
 .list_block--collection--sibling_stack {

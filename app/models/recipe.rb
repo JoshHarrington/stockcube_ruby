@@ -22,7 +22,7 @@ class Recipe < ApplicationRecord
     "#{id}-#{slug}"
   end
 
-  if Rails.env.production?
+  if Rails.env.production? || Rails.env.development?
 
     searchkick
 

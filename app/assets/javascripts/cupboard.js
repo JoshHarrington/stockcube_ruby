@@ -39,9 +39,52 @@ var cupboard = function() {
 
 }
 
+
+var cupboardSearch = function(turbolinks_load_happened){
+	if (turbolinks_load_happened == true){
+		$('.selectize-control').remove();
+		$('.selectized').removeClass('selectized');
+		var $search_select = $('[name="search[]"]').selectize({
+			delimiter: '" or "',
+			maxItems: 7,
+			options: selectOptions,
+			persist: false,
+			sortField: 'text',
+			plugins: ['remove_button', 'restore_on_backspace'],
+		});
+	} else {
+		$('select[name="search[]"] option').each(function(){
+			var val = $(this).val();
+			var option = {"value": val, text: val};
+			if (val != '') {
+				selectOptions.push(option);
+			}
+		});
+		var $search_select = $('[name="search[]"]').selectize({
+			delimiter: '" or "',
+			maxItems: 7,
+			persist: false,
+			sortField: 'text',
+			plugins: ['remove_button', 'restore_on_backspace'],
+		});
+	}
+	var prefill_plain = $search_select.data('prefill');
+	if(typeof prefill_array === "string") {
+		var prefill_array = $search_select.data('prefill').split("','").map(function(val){
+			return val.replace(/'/g, '');
+		});
+	}
+	$search_select[0].selectize.setValue((prefill_plain || prefill_array));
+}
+
+var selectOptions = [];
+var turbolinks_load_happened = false;
+
 $(document).on("turbolinks:load", function() {
 	if ($('#cupboard-list').length > 0) {
 		cupboard();
+		cupboardSearch(turbolinks_load_happened);
+		turbolinks_load_happened = true;
 	}
 });
 
@@ -51,6 +94,5 @@ var cupboardEdit = function() {
 		e.returnValue = dialogText;
 		return dialogText;
 	};
-	console.log('hello');
 }
 

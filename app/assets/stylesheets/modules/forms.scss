@@ -705,6 +705,10 @@ select#day_pick + .selectize {
 	min-width: 215px;
 }
 
+[hidden] + .selectize-control {
+	display: none;
+}
+
 .selectize-control input[type="select-one"] {
 	width: 100%;
 	min-width: em(117, 13);

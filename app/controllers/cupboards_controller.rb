@@ -18,6 +18,32 @@ class CupboardsController < ApplicationController
 			break if @out_of_date_exist == true
 		end
 		@user_fav_stocks = UserFavStock.where(user_id: current_user.id).order('updated_at desc')
+
+		if params.has_key?(:search) && params[:search].to_s != ''
+			@recipes = Recipe.search(params[:search], operator: 'or', limit: 8, body_options: {min_score: 1}).results
+		elsif session[:stock_ingredient_names] != nil
+			@recipes = Recipe.search(session[:stock_ingredient_names], operator: 'or', limit: 8, body_options: {min_score: 1}).results
+		else
+			stock_picks = Stock.where(cupboard_id: @cupboard_ids).where("use_by_date >= :date", date: Date.current - 2.days).where("use_by_date < :date", date: Date.current + 4.days).uniq { |s| s.ingredient_id }.map{|s| s if s.ingredient.common != true}.compact
+			if stock_picks.length > 2
+				stock_picks_sample = stock_picks.sample(4)
+				@ingredient_pick = stock_picks_sample.map(&:ingredient_id)
+				session[:ingredient_pick] = @ingredient_pick
+				session[:ingredient_pick_names] = stock_picks_sample.map{|s| "'" + s.ingredient.name + "'"}.join(',')
+				session[:stock_ingredient_names] = stock_picks_sample.map{|s| '"' + s.ingredient.name + '"' }.join(' or ')
+				@recipes = Recipe.search(session[:stock_ingredient_names], operator: 'or', limit: 8, body_options: {min_score: 1}).results
+			else
+				ingredient_picks_sample = Ingredient.where(common: false).sample(4)
+				@ingredient_pick = ingredient_picks_sample.map(&:id)
+				session[:ingredient_pick] = @ingredient_pick
+				session[:ingredient_pick_names] = ingredient_picks_sample.map{|i| "'" + i.name + "'"}.join(',')
+				session[:stock_ingredient_names] = ingredient_picks_sample.map{|i| '"' + i.name + '"' }.join(' or ')
+				@recipes = Recipe.search(ingredient_search_fallback, operator: 'or', limit: 8, body_options: {min_score: 1}).results
+			end
+		end
+
+		@ingredient_names = Ingredient.where(common: false).map(&:name)
+
 	end
 	def show
 		@cupboard = Cupboard.find(params[:id])
