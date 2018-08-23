@@ -4,7 +4,7 @@
 <div class="list_block--collection--wrap">
   <%= form_tag cupboards_path, class: 'search_box--form',  method: :get do %>
     <div class="search_box">
-      <% text_field_tag :search, params[:search] || session[:stock_ingredient_names], placeholder: "Search with ingredients to find recipes", class: "no_js_show", data: {prefill: params[:search] || session[:ingredient_pick_names]} %>
+      <% text_field_tag :search, params[:search] || session[:ingredient_pick_names], placeholder: "Search with ingredients to find recipes", class: "no_js_show", data: {prefill: params[:search] || session[:ingredient_pick_names]} %>
       <%= select_tag "search[]", options_for_select(@ingredient_names), prompt: "Search with ingredients to find recipes", class: "js_show", multiple: true, hidden: true, data: {prefill: params[:search] || session[:ingredient_pick_names]} %>
       <%= button_tag "Search", name: nil do %>
         <%= icomoon('search') %>

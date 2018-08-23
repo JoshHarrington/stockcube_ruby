@@ -69,12 +69,13 @@ var cupboardSearch = function(turbolinks_load_happened){
 		});
 	}
 	var prefill_plain = $search_select.data('prefill');
-	if(typeof prefill_array === "string") {
+	if(typeof prefill_plain === "string") {
 		var prefill_array = $search_select.data('prefill').split("','").map(function(val){
 			return val.replace(/'/g, '');
 		});
+		console.log('hi')
 	}
-	$search_select[0].selectize.setValue((prefill_plain || prefill_array));
+	$search_select[0].selectize.setValue((prefill_array || prefill_plain));
 }
 
 var selectOptions = [];
