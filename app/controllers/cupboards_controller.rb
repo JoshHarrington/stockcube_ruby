@@ -4,16 +4,19 @@ class CupboardsController < ApplicationController
 	before_action :logged_in_user, only: [:index, :show, :new, :create, :edit_all, :share, :share_request, :accept_cupboard_invite, :autosave, :autosave_sorting, :edit, :update]
 	before_action :correct_user,   only: [:show, :edit, :update, :share]
 	def index
-		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map(&:cupboard_id)
+		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
 		@cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
 		@user_fav_stocks = UserFavStock.where(user_id: current_user.id).order('updated_at desc')
+
+		@cupboard_stock_next_fortnight = Stock.where(cupboard_id: @cupboard_ids).where("use_by_date >= :date", date: Date.current - 2.days).where("use_by_date < :date", date: Date.current + 14.days).uniq { |s| s.ingredient_id }
+		cupboard_stock_next_fortnight_ingredients = @cupboard_stock_next_fortnight.map{ |s| s.ingredient.name }
 
 		if params.has_key?(:search) && params[:search].to_s != ''
 			@recipes = Recipe.search(params[:search], operator: 'or', limit: 8, body_options: {min_score: 1}).results
 		elsif session[:ingredient_pick_names] != nil
 			@recipes = Recipe.search(session[:ingredient_pick_names], operator: 'or', limit: 8, body_options: {min_score: 1}).results
 		else
-			stock_picks = Stock.where(cupboard_id: @cupboard_ids).where("use_by_date >= :date", date: Date.current - 2.days).where("use_by_date < :date", date: Date.current + 4.days).uniq { |s| s.ingredient_id }.map{|s| s if s.ingredient.common != true}.compact
+			stock_picks = cupboard_stock_next_fortnight.map{|s| s if s.ingredient.searchable == true}.compact
 			if stock_picks.length > 2
 				stock_picks_sample = stock_picks.sample(4)
 				@ingredient_pick = stock_picks_sample.map(&:ingredient_id)

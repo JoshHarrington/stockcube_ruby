@@ -11,6 +11,12 @@
       <% end %>
     </div>
   <% end %>
+  <div class="list_block--collection list_block--collection__bricks">
+    <% @cupboard_stock_next_fortnight.each do |stock| %>
+      <input type="checkbox" name="<%= stock.id %>" id="<%= stock.id %>" class="fancy_radio_button">
+      <label for="<%= stock.id %>" class="fancy_radio_button__label"><%= stock.ingredient.name %></label>
+    <% end %>
+  </div>
   <div class="list_block--collection list_block--collection__tight">
     <% @recipes.each do |recipe| %>
       <%= render 'recipes/recipe_list_partial', recipe: recipe %>

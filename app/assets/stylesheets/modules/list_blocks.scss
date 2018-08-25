@@ -94,6 +94,21 @@
 	}
 }
 
+.list_block--collection__bricks {
+	.list_block {
+		flex-basis: calc(25% - 14px);
+		@media (max-width: 1200px) {
+			flex-basis: calc(33.3% - 14px);
+		}
+		@media (max-width: 700px) {
+			flex-basis: calc(50% - 14px);
+		}
+		@media (max-width: 500px) {
+			flex-basis: calc(100% - 14px);
+		}
+	}
+}
+
 .list_block {
 	display: flex;
 	flex-wrap: wrap;
