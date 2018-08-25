@@ -29,7 +29,7 @@ class Recipe < ApplicationRecord
       title: title,
       cuisine: cuisine,
       description: description,
-      ingredient_names: ingredients.name
+      ingredient_names: ingredients.map(&:name)
     }
   end
 end

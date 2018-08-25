@@ -6,17 +6,6 @@ class CupboardsController < ApplicationController
 	def index
 		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map(&:cupboard_id)
 		@cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
-		@out_of_date_exist = false
-		@cupboards.each do |cupboard|
-			cupboard.stocks.each do |stock|
-				if (stock.use_by_date - Date.current).to_i <= -3
-					@out_of_date_exist = true
-					break if @out_of_date_exist == true
-				end
-				break if @out_of_date_exist == true
-			end
-			break if @out_of_date_exist == true
-		end
 		@user_fav_stocks = UserFavStock.where(user_id: current_user.id).order('updated_at desc')
 
 		if params.has_key?(:search) && params[:search].to_s != ''
@@ -40,7 +29,7 @@ class CupboardsController < ApplicationController
 			end
 		end
 
-		@ingredient_names = Ingredient.where(common: false).map(&:name)
+		@ingredient_names = Ingredient.where(searchable: true).map(&:name)
 
 	end
 	def show
