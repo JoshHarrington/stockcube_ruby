@@ -216,6 +216,35 @@ a.list_block {
 	}
 }
 
+.list_block--content_start {
+	width: 100%;
+	position: relative;
+	font-size: em(13, 10);
+	padding: em(6, 13) em(7, 13);
+	&.orange {
+		background-color: $warning-amber;
+	}
+	&.red {
+		background-color: $warning-red;
+	}
+	.list_block--content_start--text {
+		z-index: 1;
+		position: relative;
+	}
+	*:not(.list_block--content_start--text){
+		z-index: 0;
+	}
+}
+
+.list_block--progress_bar{
+	background: $teal-30;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+
+}
+
 .list_block--content_end {
 	width: 100%;
 }

@@ -18,7 +18,13 @@
   <% end %>
   <div class="list_block--collection list_block--collection__tight">
     <% @recipes.each do |recipe| %>
-      <%= render 'recipes/recipe_list_partial', recipe: recipe %>
+      <%
+        recipe_match_details = @recipe_ingredient_cupboard_match.fetch(recipe.id)
+        common_ingredient_decimal = recipe_match_details[0]
+        common_ingredient_list_length = recipe_match_details[1]
+        number_of_needed_ingredients = recipe_match_details[2]
+      %>
+      <%= render 'recipes/recipe_list_partial', recipe: recipe, common_ingredient_decimal: common_ingredient_decimal, common_ingredient_list_length: common_ingredient_list_length, number_of_needed_ingredients: number_of_needed_ingredients  %>
     <% end %>
   </div>
   <hr>

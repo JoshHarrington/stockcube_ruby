@@ -9,9 +9,9 @@ class CupboardsController < ApplicationController
 		@user_fav_stocks = UserFavStock.where(user_id: current_user.id).order('updated_at desc')
 
 		@cupboard_stock_next_fortnight = Stock.where(cupboard_id: @cupboard_ids).where("use_by_date >= :date", date: Date.current - 2.days).where("use_by_date < :date", date: Date.current + 14.days).uniq { |s| s.ingredient_id }.map{|s| s if s.ingredient.searchable == true}.compact
-		cupboard_stock_next_fortnight_ingredients = @cupboard_stock_next_fortnight.map{ |s| s.ingredient.name }
+		cupboard_stock_next_fortnight_ingredient_ids = @cupboard_stock_next_fortnight.map{ |s| s.ingredient.id }
 
-
+		@recipes = []
 
 		if params.has_key?(:search) && params[:search].to_s != ''
 			session[:stock_search_ids] = params[:search].to_unsafe_h.map {|s| s[0].to_i }
@@ -30,6 +30,18 @@ class CupboardsController < ApplicationController
 				ingredient_picks_sample = Ingredient.where(searchable: true).sample(4)
 				ingredient_pick_names = ingredient_picks_sample.map{|i| "'" + i.name + "'"}.join(',')
 				@recipes = Recipe.search(ingredient_pick_names, operator: 'or', limit: 8, body_options: {min_score: 1}).results
+			end
+		end
+
+		@recipe_ingredient_cupboard_match = {}
+		@recipes.each do |recipe|
+			recipe_ingredient_ids = recipe.ingredients.map(&:id)
+			unless recipe_ingredient_ids == nil || cupboard_stock_next_fortnight_ingredient_ids == nil
+				common_ingredient_list = recipe_ingredient_ids & cupboard_stock_next_fortnight_ingredient_ids
+				common_ingredient_list_length = common_ingredient_list.length.to_f
+				common_ingredient_decimal = common_ingredient_list_length / recipe_ingredient_ids.length.to_f
+				number_of_needed_ingredients = recipe_ingredient_ids.length.to_f - common_ingredient_list_length
+				@recipe_ingredient_cupboard_match.merge!(recipe.id => [common_ingredient_decimal, common_ingredient_list_length, number_of_needed_ingredients])
 			end
 		end
 
