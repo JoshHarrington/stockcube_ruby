@@ -270,6 +270,30 @@ input[type=date]{
 	&:focus {
 		background-color: $teal-20;
 	}
+	.list_block--collection__bricks & {
+		display: flex;
+		align-items: center;
+		svg {
+			width: em(15, 15);
+			height: em(15, 15);
+			margin-left: 10px;
+		}
+	}
+}
+
+.list_block--collection__bricks--fancy_radio_group {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.list_block--collection__bricks--submit_sibling {
+	width: 100%;
+	div + & {
+		margin-top: em(15, 10);
+	}
+	h3 {
+		margin-bottom: em(15, 17);
+	}
 }
 
 .item_form--title {

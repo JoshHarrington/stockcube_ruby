@@ -84,8 +84,8 @@ var turbolinks_load_happened = false;
 $(document).on("turbolinks:load", function() {
 	if ($('#cupboard-list').length > 0) {
 		cupboard();
-		cupboardSearch(turbolinks_load_happened);
-		turbolinks_load_happened = true;
+		// cupboardSearch(turbolinks_load_happened);
+		// turbolinks_load_happened = true;
 	}
 });
 

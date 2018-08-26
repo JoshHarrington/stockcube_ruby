@@ -2,21 +2,20 @@
 
 
 <div class="list_block--collection--wrap">
-  <%= form_tag cupboards_path, class: 'search_box--form',  method: :get do %>
-    <div class="search_box">
-      <% text_field_tag :search, params[:search] || session[:ingredient_pick_names], placeholder: "Search with ingredients to find recipes", class: "no_js_show", data: {prefill: params[:search] || session[:ingredient_pick_names]} %>
-      <%= select_tag "search[]", options_for_select(@ingredient_names), prompt: "Search with ingredients to find recipes", class: "js_show", multiple: true, hidden: true, data: {prefill: params[:search] || session[:ingredient_pick_names]} %>
-      <%= button_tag "Search", name: nil do %>
-        <%= icomoon('search') %>
+  <%= form_tag cupboards_path, class: 'list_block--collection list_block--collection__bricks',  method: :get do %>
+    <div class="list_block--collection__bricks--fancy_radio_group">
+      <% @cupboard_stock_next_fortnight.each do |stock| %>
+        <input type="checkbox" name="search[<%= stock.id %>]" id="<%= stock.id %>" class="fancy_radio_button checkbox_standard not_ordered" value="<%= stock.ingredient.name %>" <%= session[:stock_search_ids].include?(stock.id) ? 'checked' : '' %> >
+        <label for="<%= stock.id %>" class="fancy_radio_button__label"><%= stock.ingredient.name %></label>
+      <% end %>
+    </div>
+    <div class="list_block--collection__bricks--submit_sibling">
+      <h3>Update recipe search</h3>
+      <%= button_tag "Search", class: "list_block--item--action", name: nil do %>
+        Search <%= icomoon('search') %>
       <% end %>
     </div>
   <% end %>
-  <div class="list_block--collection list_block--collection__bricks">
-    <% @cupboard_stock_next_fortnight.each do |stock| %>
-      <input type="checkbox" name="<%= stock.id %>" id="<%= stock.id %>" class="fancy_radio_button">
-      <label for="<%= stock.id %>" class="fancy_radio_button__label"><%= stock.ingredient.name %></label>
-    <% end %>
-  </div>
   <div class="list_block--collection list_block--collection__tight">
     <% @recipes.each do |recipe| %>
       <%= render 'recipes/recipe_list_partial', recipe: recipe %>
