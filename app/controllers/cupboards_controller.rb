@@ -11,7 +11,7 @@ class CupboardsController < ApplicationController
 		@cupboard_stock_next_fortnight = Stock.where(cupboard_id: @cupboard_ids).where("use_by_date >= :date", date: Date.current - 2.days).where("use_by_date < :date", date: Date.current + 14.days).uniq { |s| s.ingredient_id }.map{|s| s if s.ingredient.searchable == true}.compact
 		cupboard_stock_next_fortnight_ingredient_ids = @cupboard_stock_next_fortnight.map{ |s| s.ingredient.id }
 
-		@cupboard_stock_in_date_ids = Stock.where(cupboard_id: @cupboard_ids).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
+		@cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: @cupboard_ids).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
 
 		@recipes = []
 
@@ -38,8 +38,8 @@ class CupboardsController < ApplicationController
 		@recipe_ingredient_cupboard_match = {}
 		@recipes.each do |recipe|
 			recipe_ingredient_ids = recipe.ingredients.map(&:id)
-			unless recipe_ingredient_ids == nil || @cupboard_stock_in_date_ids == nil
-				common_ingredient_list = recipe_ingredient_ids & @cupboard_stock_in_date_ids
+			unless recipe_ingredient_ids == nil || @cupboard_stock_in_date_ingredient_ids == nil
+				common_ingredient_list = recipe_ingredient_ids & @cupboard_stock_in_date_ingredient_ids
 				common_ingredient_list_length = common_ingredient_list.length.to_f
 				common_ingredient_decimal = common_ingredient_list_length / recipe_ingredient_ids.length.to_f
 				number_of_needed_ingredients = recipe_ingredient_ids.length.to_f - common_ingredient_list_length
