@@ -13,25 +13,46 @@ class CupboardsController < ApplicationController
 
 		@cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: @cupboard_ids).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
 
+		@ingredients_not_in_cupboards = []
+
+		if session[:ingredient_search_ids] != nil
+			searched_ingredients_not_in_cupboards_ids = session[:ingredient_search_ids] - @cupboard_stock_in_date_ingredient_ids
+			@searched_ingredients_not_in_cupboards = Ingredient.where(searchable: true).where(id: searched_ingredients_not_in_cupboards_ids)
+			@not_searched_ingredients_not_in_cupboards = Ingredient.where(searchable: true).where.not(id: @cupboard_stock_in_date_ingredient_ids).where.not(id: searched_ingredients_not_in_cupboards_ids)
+			@ingredients_not_in_cupboards = @searched_ingredients_not_in_cupboards + @not_searched_ingredients_not_in_cupboards
+		else
+			@ingredients_not_in_cupboards = Ingredient.where(searchable: true).where.not(id: @cupboard_stock_in_date_ingredient_ids)
+		end
+		@ingredient_groups = @ingredients_not_in_cupboards.each_slice(8).to_a
+		@ingredient_names = Ingredient.where(searchable: true).map(&:name)
+
+
+		@ingredient_first_group_ids_sample = @ingredient_groups[0].sample(4)
+
+
 		@recipes = []
 
+		if (!(params.has_key?(:search)) || params[:search].to_s == '') && (params.has_key?(:utf8) && params[:utf8] == "✓")
+			session[:ingredient_search_ids] = @cupboard_stock_in_date_ingredient_ids
+		end
+
 		if params.has_key?(:search) && params[:search].to_s != ''
-			session[:stock_search_ids] = params[:search].to_unsafe_h.map {|s| s[0].to_i }
-			@recipes = Recipe.search(params[:search], operator: 'or', limit: 8, body_options: {min_score: 1}).results
-		elsif session[:stock_search_ids] != nil
-			ingredient_names_from_ids = Stock.find(session[:stock_search_ids]).map{ |s| s.ingredient.name }
-			@recipes = Recipe.search(ingredient_names_from_ids, operator: 'or', limit: 8, body_options: {min_score: 1}).results
+			session[:ingredient_search_ids] = @cupboard_stock_in_date_ingredient_ids + params[:search].to_unsafe_h.map {|i| i[0].to_i }
+			ingredient_names_from_ids = Ingredient.find(session[:ingredient_search_ids]).map{ |i| i.name }
+			@recipes = Recipe.search(ingredient_names_from_ids, operator: 'or', limit: 12, body_options: {min_score: 1}).results
+		elsif session[:ingredient_search_ids] != nil
+			ingredient_names_from_ids = Ingredient.find(session[:ingredient_search_ids]).map{ |i| i.name }
+			@recipes = Recipe.search(ingredient_names_from_ids, operator: 'or', limit: 12, body_options: {min_score: 1}).results
 		else
 			if @cupboard_stock_next_fortnight.length > 2
-				stock_picks_sample = @cupboard_stock_next_fortnight.sample(4)
-				session[:stock_search_ids] = stock_picks_sample.map(&:id)
-				ingredient_names_from_ids = Stock.find(session[:stock_search_ids]).map{ |s| s.ingredient.name }
-				@recipes = Recipe.search(ingredient_names_from_ids, operator: 'or', limit: 8, body_options: {min_score: 1}).results
+				session[:ingredient_search_ids] = @cupboard_stock_next_fortnight.map(&:id)
+				ingredient_names_from_ids = Ingredient.find(session[:ingredient_search_ids]).map{ |i| i.name }
+				@recipes = Recipe.search(ingredient_names_from_ids, operator: 'or', limit: 12, body_options: {min_score: 1}).results
 			else
 				## only used if not enough stock in cupboards
-				ingredient_picks_sample = Ingredient.where(searchable: true).sample(4)
+				ingredient_picks_sample = Ingredient.where(searchable: true).sample(10)
 				ingredient_pick_names = ingredient_picks_sample.map{|i| "'" + i.name + "'"}.join(',')
-				@recipes = Recipe.search(ingredient_pick_names, operator: 'or', limit: 8, body_options: {min_score: 1}).results
+				@recipes = Recipe.search(ingredient_pick_names, operator: 'or', limit: 12, body_options: {min_score: 1}).results
 			end
 		end
 
@@ -47,7 +68,8 @@ class CupboardsController < ApplicationController
 			end
 		end
 
-		@ingredient_names = Ingredient.where(searchable: true).map(&:name)
+		recipe_ids_sorted = @recipe_ingredient_cupboard_match.sort_by { |id, values | values[0] }.reverse!.map{|r| r[0]}
+		@sorted_recipes = Recipe.find(recipe_ids_sorted)
 
 	end
 	def show

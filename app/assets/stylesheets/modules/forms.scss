@@ -285,13 +285,17 @@ input[type=date]{
 	display: flex;
 	flex-wrap: wrap;
 }
+.list_block--collection__bricks--group_split {
+	display: flex;
+	flex-wrap: wrap;
+}
 
-.list_block--collection__bricks--submit_sibling {
+.list_block--collection__bricks--sibling {
 	width: 100%;
 	div + & {
 		margin-top: em(15, 10);
 	}
-	h3 {
+	h2, h3, p {
 		margin-bottom: em(15, 17);
 	}
 }
@@ -373,8 +377,29 @@ input[type=date]{
 	.fancy_radio_button:checked + & {
 		background-color: $teal-40;
 	}
+	&.hide {
+		display: none;
+	}
 }
 
+.list_block--inline_action {
+	cursor: pointer;
+	background-color: $teal-120;
+	border: 1px solid $teal-70;
+	display: inline-block;
+	font-size: em(15, 10);
+	margin-bottom: em(6, 15);
+	margin-right: em(6, 15);
+	color: white;
+	padding: em(10, 15);
+	border-radius: em(3, 15);
+}
+
+.list_block--inline_action-remove {
+	border-color: $warning-red;
+	background-color: $warning-amber-40;
+	color: black;
+}
 
 .list_block--collection--wrap form,
 .pretty_form {
