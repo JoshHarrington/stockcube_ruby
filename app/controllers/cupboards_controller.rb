@@ -4,8 +4,8 @@ class CupboardsController < ApplicationController
 	before_action :logged_in_user, only: [:index, :show, :new, :create, :edit_all, :share, :share_request, :accept_cupboard_invite, :autosave, :autosave_sorting, :edit, :update]
 	before_action :correct_user,   only: [:show, :edit, :update, :share]
 	def index
-		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
-		@cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
+		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
+		@cupboards = Cupboard.where(id: @cupboard_ids).order(location: :asc)
 		@user_fav_stocks = UserFavStock.where(user_id: current_user.id).order('updated_at desc')
 
 		@cupboard_stock_next_fortnight = Stock.where(cupboard_id: @cupboard_ids).where("use_by_date >= :date", date: Date.current - 2.days).where("use_by_date < :date", date: Date.current + 14.days).uniq { |s| s.ingredient_id }.map{|s| s if s.ingredient.searchable == true}.compact
