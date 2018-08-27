@@ -37,18 +37,6 @@ class RecipesController < ApplicationController
 		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
 		@cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: @cupboard_ids).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
 
-		# @recipe_ingredient_cupboard_match = {}
-		# 	recipe_ingredient_ids = @recipe.ingredients.map(&:id)
-		# 	unless recipe_ingredient_ids == nil || @cupboard_stock_in_date_ids == nil
-		# 		common_ingredient_list = recipe_ingredient_ids & @cupboard_stock_in_date_ids
-		# 		common_ingredient_list_length = common_ingredient_list.length.to_f
-		# 		common_ingredient_decimal = common_ingredient_list_length / recipe_ingredient_ids.length.to_f
-		# 		number_of_needed_ingredients = recipe_ingredient_ids.length.to_f - common_ingredient_list_length
-		# 		@recipe_ingredient_cupboard_match.merge!(@recipe.id => [common_ingredient_decimal, common_ingredient_list_length, number_of_needed_ingredients])
-		# 	end
-		# end
-
-
 	end
 	def favourites
 		@fav_recipes = current_user.favourites.paginate(:page => params[:page], :per_page => 12)
