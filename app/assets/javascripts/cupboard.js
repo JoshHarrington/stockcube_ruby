@@ -78,6 +78,20 @@ var recipeResultsToggleProgressBar = function(){
 	$('#recipe_results').toggleClass('mini_progress');
 }
 
+var recipeSearchFullShow = function(el){
+	el.parent().removeClass('collection_group_collapsed');
+	el.prop('hidden', true);
+}
+var showRecipeSearchFull = function(){
+	$('#reveal_recipe_search').click(function(){
+		recipeSearchFullShow($(this));
+		localStorage.setItem('recipe-full-search-open', 1);
+	});
+	if (localStorage.getItem('recipe-full-search-open') == 1){
+		recipeSearchFullShow($('#reveal_recipe_search'));
+	}
+}
+
 var showIngredientsForSearch = function(){
 	$('#search_with_ingredients').click(function(){
 		ingredientsShow();
@@ -105,6 +119,7 @@ $(document).on("turbolinks:load", function() {
 		moreIngredients();
 		showIngredientsForSearch();
 		hideIngredients();
+		showRecipeSearchFull();
 	}
 });
 

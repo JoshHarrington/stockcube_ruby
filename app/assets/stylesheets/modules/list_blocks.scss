@@ -7,6 +7,42 @@
 	}
 }
 
+.list_block--collection--group {
+	overflow: hidden;
+	max-height: auto;
+	margin-bottom: em(20, 10);
+	border-bottom: 1px solid $teal-20;
+	position: relative;
+	padding-bottom: em(10, 10);
+	&:before {
+		content: " ";
+		opacity: 0;
+		height: 100%;
+		width: 100%;
+		position: absolute;
+		z-index: 2;
+		background: -moz-linear-gradient(top, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.76) 79%, rgba(255,255,255,0.76) 100%); /* FF3.6-15 */
+		background: -webkit-linear-gradient(top, rgba(255,255,255,0.3) 0%,rgba(255,255,255,0.76) 79%,rgba(255,255,255,0.76) 100%); /* Chrome10-25,Safari5.1-6 */
+		background: linear-gradient(to bottom, rgba(255,255,255,0.3) 0%,rgba(255,255,255,0.76) 79%,rgba(255,255,255,0.76) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4dffffff', endColorstr='#c2ffffff',GradientType=0 ); /* IE6-9 */
+	}
+	.list_block--floating_action {
+		display: block;
+		position: absolute;
+		bottom: em(60, 15);
+		left: calc(50% - 100px);
+		width: em(200, 15);
+		z-index: 3;
+		text-align: center;
+	}
+	&.collection_group_collapsed {
+		max-height: em(270, 10);
+		&:before {
+			opacity: 1;
+		}
+	}
+}
+
 .list_block--collection--wrap {
 	margin-bottom: em(20, 10);
 	padding-top: em(20, 10);
