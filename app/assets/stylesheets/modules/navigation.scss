@@ -208,6 +208,9 @@ footer[role="contentinfo"] {
   &:not(.demo_mode):hover {
     background-color: $teal-20;
   }
+  &.demo_mode {
+    margin-left: em(15, 15);
+  }
   @media (max-width: 500px) {
     h1 + & {
       padding-left: 0;
