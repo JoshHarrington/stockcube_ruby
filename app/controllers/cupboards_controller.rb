@@ -45,8 +45,8 @@ class CupboardsController < ApplicationController
 			@recipes = Recipe.search(ingredient_names_from_ids, operator: 'or', limit: 12, body_options: {min_score: 1}).results
 		else
 			if @cupboard_stock_next_fortnight.length > 2
-				session[:ingredient_search_ids] = @cupboard_stock_next_fortnight.map(&:id)
-				ingredient_names_from_ids = Ingredient.find(session[:ingredient_search_ids]).map{ |i| i.name }
+				session[:ingredient_search_ids] = cupboard_stock_next_fortnight_ingredient_ids
+				ingredient_names_from_ids = Ingredient.find(cupboard_stock_next_fortnight_ingredient_ids).map{ |i| i.name }
 				@recipes = Recipe.search(ingredient_names_from_ids, operator: 'or', limit: 12, body_options: {min_score: 1}).results
 			else
 				## only used if not enough stock in cupboards
