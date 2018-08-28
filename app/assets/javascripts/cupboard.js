@@ -64,12 +64,18 @@ var moreIngredients = function(){
 var numBricksShownCount = 0;
 
 var ingredientsShow = function(){
-	$('.list_block--collection__bricks--fancy_radio_group, #searching_with_stock_plus').prop('hidden', false);
+	$('.list_block--collection__bricks-form_group, #searching_with_stock_plus').prop('hidden', false);
 	$('#searching_with_stock, #search_with_ingredients').prop('hidden', true);
+	recipeResultsToggleProgressBar();
 }
 var ingredientsHide = function(){
-	$('.list_block--collection__bricks--fancy_radio_group, #searching_with_stock_plus').prop('hidden', true);
+	$('.list_block--collection__bricks-form_group, #searching_with_stock_plus').prop('hidden', true);
 	$('#searching_with_stock, #search_with_ingredients').prop('hidden', false);
+	recipeResultsToggleProgressBar();
+}
+
+var recipeResultsToggleProgressBar = function(){
+	$('#recipe_results').toggleClass('mini_progress');
 }
 
 var showIngredientsForSearch = function(){

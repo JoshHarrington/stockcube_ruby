@@ -2,6 +2,9 @@
 	display: flex;
 	padding: em(10, 10);
 	flex-wrap: wrap;
+	&.list_block--collection__bricks {
+		padding: em(10, 10) em(17, 10);
+	}
 }
 
 .list_block--collection--wrap {
@@ -234,15 +237,31 @@ a.list_block {
 	*:not(.list_block--content_start--text){
 		z-index: 0;
 	}
+	.mini_progress & {
+		padding: em(2, 13) em(7, 13);
+		transition: padding .2s;
+		.list_block--content_start--text {
+			overflow: hidden;
+			opacity: 0;
+			max-height: 0;
+			transition: opacity .2s, max-height .2s;
+		}
+	}
+	.mini_progress .list_block:hover & {
+		padding: em(6, 13) em(7, 13);
+		.list_block--content_start--text {
+			opacity: 1;
+			max-height: em(13, 13);
+		}
+	}
 }
 
-.list_block--progress_bar{
+.list_block--progress_bar {
 	background: $teal-30;
 	height: 100%;
 	position: absolute;
 	top: 0;
 	left: 0;
-
 }
 
 .list_block--content_end {

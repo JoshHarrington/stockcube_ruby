@@ -2,29 +2,30 @@
 
 
 <div class="list_block--collection--wrap">
-  <%= form_tag cupboards_path, class: 'list_block--collection list_block--collection__bricks',  method: :get do %>
+  <%= form_tag cupboards_path, class: 'list_block--collection list_block--collection__bricks collection_collapsed',  method: :get do %>
     <div class="list_block--collection__bricks--sibling">
       <h2>Recipe search</h2>
       <p id="searching_with_stock">Currently searching with all ingredients in your cupboards.</p>
       <p id="searching_with_stock_plus" hidden>Currently searching with all ingredients in your cupboards, plus the ingredients you pick from this list:</p>
       <span class="list_block--inline_action" id="search_with_ingredients">Search with more ingredients</span>
     </div>
-    <div class="list_block--collection__bricks--fancy_radio_group" hidden>
-      <% @ingredient_groups.each_with_index do |ingredient_group, index| %>
-        <% ingredient_group.each do |ingredient| %>
-          <input type="checkbox" name="search[<%= ingredient.id %>]" id="<%= ingredient.id %>" class="fancy_radio_button checkbox_standard not_ordered" value="<%= ingredient.name %>" <%= session[:ingredient_search_ids].include?(ingredient.id) ? 'checked' : '' %> >
-          <label for="<%= ingredient.id %>" class="fancy_radio_button__label <%= index == 0 ? 'show' : 'hide' %>"><%= ingredient.name %></label>
+    <div class="list_block--collection__bricks-form_group" hidden>
+      <div class="list_block--collection__bricks--fancy_radio_group">
+        <% @ingredient_groups.each_with_index do |ingredient_group, index| %>
+          <% ingredient_group.each do |ingredient| %>
+            <input type="checkbox" name="search[<%= ingredient.id %>]" id="<%= ingredient.id %>" class="fancy_radio_button checkbox_standard not_ordered" value="<%= ingredient.name %>" <%= session[:ingredient_search_ids].include?(ingredient.id) ? 'checked' : '' %> >
+            <label for="<%= ingredient.id %>" class="fancy_radio_button__label <%= index == 0 ? 'show' : 'hide' %>"><%= ingredient.name %></label>
+          <% end %>
+        <% end %><span class="list_block--inline_action" id="show_more_ingredients">Show more ingredients</span> <span class="list_block--inline_action list_block--inline_action-remove" id="hide_ingredients">Hide all ingredients</span>
+      </div>
+      <div class="list_block--collection__bricks--sibling align_right">
+        <%= button_tag "Search", class: "list_block--inline_action list_block--item--action", name: nil do %>
+          Update Search <%= icomoon('search') %>
         <% end %>
-      <% end %><span class="list_block--inline_action" id="show_more_ingredients">Show more ingredients</span> <span class="list_block--inline_action list_block--inline_action-remove" id="hide_ingredients">Hide all ingredients</span>
-    </div>
-    <div class="list_block--collection__bricks--sibling">
-      <h3>Update recipe search</h3>
-      <%= button_tag "Search", class: "list_block--item--action", name: nil do %>
-        Search <%= icomoon('search') %>
-      <% end %>
+      </div>
     </div>
   <% end %>
-  <div class="list_block--collection list_block--collection__tight">
+  <div class="list_block--collection list_block--collection__tight" id="recipe_results">
     <% @sorted_recipes.each do |recipe| %>
       <%
         recipe_match_details = @recipe_ingredient_cupboard_match.fetch(recipe.id)

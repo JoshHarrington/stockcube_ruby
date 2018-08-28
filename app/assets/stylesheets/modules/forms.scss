@@ -298,7 +298,13 @@ input[type=date]{
 	h2, h3, p {
 		margin-bottom: em(15, 17);
 	}
+	&.align_right {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+	}
 }
+
 
 .item_form--title {
 	background-color: $teal-10;
