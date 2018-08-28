@@ -15,7 +15,6 @@
 	position: relative;
 	padding-bottom: em(10, 10);
 	&:before {
-		content: " ";
 		opacity: 0;
 		height: 100%;
 		width: 100%;
@@ -39,6 +38,7 @@
 		max-height: em(270, 10);
 		&:before {
 			opacity: 1;
+			content: " ";
 		}
 	}
 }

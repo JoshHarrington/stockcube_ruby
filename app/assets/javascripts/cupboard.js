@@ -79,16 +79,17 @@ var recipeResultsToggleProgressBar = function(){
 }
 
 var recipeSearchFullShow = function(el){
-	el.parent().removeClass('collection_group_collapsed');
-	el.prop('hidden', true);
+	el.removeClass('collection_group_collapsed');
+	el.find('.list_block--floating_action').prop('hidden', true);
 }
+
 var showRecipeSearchFull = function(){
-	$('#reveal_recipe_search').click(function(){
+	$('.list_block--collection--group.collection_group_collapsed').click(function(){
 		recipeSearchFullShow($(this));
 		localStorage.setItem('recipe-full-search-open', 1);
 	});
 	if (localStorage.getItem('recipe-full-search-open') == 1){
-		recipeSearchFullShow($('#reveal_recipe_search'));
+		recipeSearchFullShow($('.list_block--collection--group.collection_group_collapsed'));
 	}
 }
 
