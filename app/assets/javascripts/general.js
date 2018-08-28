@@ -1,6 +1,9 @@
 $(document).on('turbolinks:load', function() {
   var previousDate;
   $('html').removeClass('no-js');
+  $('.no_js_show').prop('hidden', true);
+  $('.js_show').prop('hidden', false);
+
   if (Modernizr.input.list) {
     $('html').removeClass('input-list-supported');
   } else {

@@ -39,9 +39,88 @@ var cupboard = function() {
 
 }
 
+var moreIngredients = function(){
+	var numBricksShown = localStorage.getItem('num-bricks-shown');
+	if(numBricksShown != null) {
+		$('.list_block--collection__bricks--fancy_radio_group .fancy_radio_button__label.show').last().nextAll('label').slice(0, numBricksShown).removeClass('hide').addClass('show');
+		numBricksShownCount = numBricksShown;
+	} else {
+		localStorage.setItem('num-bricks-shown', 0)
+	}
+
+
+	$('#show_more_ingredients').click(function(){
+		$(this).parent().next('.list_block--collection__bricks--group_split').removeClass('hide');
+		$('.list_block--collection__bricks--fancy_radio_group .fancy_radio_button__label.show').last().nextAll('label').slice(0, 8).removeClass('hide').addClass('show');
+		if($('.list_block--collection__bricks--fancy_radio_group .fancy_radio_button__label.hide').length == 0) {
+			$('.show_more_ingredients').prop('hidden', true);
+		}
+		numBricksShownCount = parseInt(numBricksShownCount) + 8;
+		localStorage.setItem('num-bricks-shown', numBricksShownCount);
+	});
+
+}
+
+var numBricksShownCount = 0;
+
+var ingredientsShow = function(){
+	$('.list_block--collection__bricks-form_group, #searching_with_stock_plus').prop('hidden', false);
+	$('#searching_with_stock, #search_with_ingredients').prop('hidden', true);
+	recipeResultsToggleProgressBar();
+}
+var ingredientsHide = function(){
+	$('.list_block--collection__bricks-form_group, #searching_with_stock_plus').prop('hidden', true);
+	$('#searching_with_stock, #search_with_ingredients').prop('hidden', false);
+	recipeResultsToggleProgressBar();
+}
+
+var recipeResultsToggleProgressBar = function(){
+	$('#recipe_results').toggleClass('mini_progress');
+}
+
+var recipeSearchFullShow = function(el){
+	el.removeClass('collection_group_collapsed');
+	el.find('.list_block--floating_action').prop('hidden', true);
+}
+
+var showRecipeSearchFull = function(){
+	$('.list_block--collection--group.collection_group_collapsed').click(function(){
+		recipeSearchFullShow($(this));
+		localStorage.setItem('recipe-full-search-open', 1);
+	});
+	if (localStorage.getItem('recipe-full-search-open') == 1){
+		recipeSearchFullShow($('.list_block--collection--group.collection_group_collapsed'));
+	}
+}
+
+var showIngredientsForSearch = function(){
+	$('#search_with_ingredients').click(function(){
+		ingredientsShow();
+		localStorage.setItem('ingredient-search-open', 1);
+	});
+	if (localStorage.getItem('ingredient-search-open') == 1){
+		ingredientsShow();
+	}
+}
+
+var hideIngredients = function(){
+	$('#hide_ingredients').click(function(){
+		localStorage.setItem('ingredient-search-open', 0);
+		localStorage.setItem('num-bricks-shown', 0);
+		ingredientsHide();
+		$('.list_block--collection__bricks--fancy_radio_group label:nth-child(16)').nextAll('label').removeClass('show').addClass('hide');
+		$('.list_block--collection__bricks--fancy_radio_group input:checked').prop('checked', false);
+	});
+}
+
+
 $(document).on("turbolinks:load", function() {
 	if ($('#cupboard-list').length > 0) {
 		cupboard();
+		moreIngredients();
+		showIngredientsForSearch();
+		hideIngredients();
+		showRecipeSearchFull();
 	}
 });
 
@@ -51,6 +130,5 @@ var cupboardEdit = function() {
 		e.returnValue = dialogText;
 		return dialogText;
 	};
-	console.log('hello');
 }
 

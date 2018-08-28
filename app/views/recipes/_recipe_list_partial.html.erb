@@ -1,4 +1,18 @@
 <div class="list_block list_block__column">
+	<% if common_ingredient_decimal %>
+	<% percent_in_cupboards = (common_ingredient_decimal * 100).round %>
+		<div class="list_block--content_start <% if common_ingredient_decimal == 0 %>red<% elsif common_ingredient_decimal != 1 %>orange<% else %>green<% end %>">
+			<span class="list_block--progress_bar" style="width: <%= percent_in_cupboards %>%"></span>
+			<div class="list_block--content_start--text">
+				<% if common_ingredient_decimal == 0 %>
+					<%= pluralize(number_of_needed_ingredients.round, 'ingredient') %> needed
+				<% else %>
+					<%= pluralize(common_ingredient_list_length.round, 'ingredient') %> in stock
+				<% end %>
+			</div>
+
+		</div>
+	<% end %>
 	<div class="list_block--content">
 		<div class="list_block--title">
 			<h3><%= link_to recipe.title, recipe_path(recipe) %></h3>

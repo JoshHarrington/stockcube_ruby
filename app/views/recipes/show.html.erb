@@ -65,7 +65,12 @@
         <h2>Ingredients</h2>
         <ul>
           <% @portions.each do |portion| %>
-            <li><%= portion_amount_unit_and_ingredient(portion).html_safe %></li>
+              <%
+                if @cupboard_stock_in_date_ingredient_ids.include?(portion.ingredient.id)
+                  ingredient_in_stock = true
+                end
+              %>
+            <li <%= ingredient_in_stock ? 'class=in_stock' : '' %>><%= portion_amount_unit_and_ingredient(portion).html_safe %></li>
           <% end %>
         </ul>
       <% end %>

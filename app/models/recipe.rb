@@ -22,19 +22,15 @@ class Recipe < ApplicationRecord
     "#{id}-#{slug}"
   end
 
-  if Rails.env.production?
+  searchkick
 
-    searchkick
-
-    def search_data
-      {
-        title: title,
-        cuisine: cuisine,
-        description: description,
-        ingredient_names: ingredients.name
-      }
-    end
+  def search_data
+    {
+      title: title,
+      cuisine: cuisine,
+      description: description,
+      ingredient_names: ingredients.map(&:name)
+    }
   end
-
 end
 

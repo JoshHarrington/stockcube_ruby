@@ -2,6 +2,45 @@
 	display: flex;
 	padding: em(10, 10);
 	flex-wrap: wrap;
+	&.list_block--collection__bricks {
+		padding: em(10, 10) em(17, 10);
+	}
+}
+
+.list_block--collection--group {
+	overflow: hidden;
+	max-height: auto;
+	margin-bottom: em(20, 10);
+	border-bottom: 2px solid $teal-20;
+	position: relative;
+	padding-bottom: em(10, 10);
+	&:before {
+		opacity: 0;
+		height: 100%;
+		width: 100%;
+		position: absolute;
+		z-index: 2;
+		background: -moz-linear-gradient(top, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.76) 79%, rgba(255,255,255,0.76) 100%); /* FF3.6-15 */
+		background: -webkit-linear-gradient(top, rgba(255,255,255,0.3) 0%,rgba(255,255,255,0.76) 79%,rgba(255,255,255,0.76) 100%); /* Chrome10-25,Safari5.1-6 */
+		background: linear-gradient(to bottom, rgba(255,255,255,0.3) 0%,rgba(255,255,255,0.76) 79%,rgba(255,255,255,0.76) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4dffffff', endColorstr='#c2ffffff',GradientType=0 ); /* IE6-9 */
+	}
+	.list_block--floating_action {
+		display: block;
+		position: absolute;
+		bottom: em(60, 15);
+		left: calc(50% - 100px);
+		width: em(200, 15);
+		z-index: 3;
+		text-align: center;
+	}
+	&.collection_group_collapsed {
+		max-height: em(270, 10);
+		&:before {
+			opacity: 1;
+			content: " ";
+		}
+	}
 }
 
 .list_block--collection--wrap {
@@ -34,6 +73,10 @@
 	}
 	& + & {
 		margin-top: em(30, 10);
+	}
+	@at-root .search_box--form + .list_block--collection,
+	.search_box--form + & {
+		margin-top: em(20, 10);
 	}
 }
 
@@ -76,6 +119,21 @@
 
 
 .list_block--collection__tight {
+	.list_block {
+		flex-basis: calc(25% - 14px);
+		@media (max-width: 1200px) {
+			flex-basis: calc(33.3% - 14px);
+		}
+		@media (max-width: 700px) {
+			flex-basis: calc(50% - 14px);
+		}
+		@media (max-width: 500px) {
+			flex-basis: calc(100% - 14px);
+		}
+	}
+}
+
+.list_block--collection__bricks {
 	.list_block {
 		flex-basis: calc(25% - 14px);
 		@media (max-width: 1200px) {
@@ -195,6 +253,51 @@ a.list_block {
 			min-width: em(8, 10);
 		}
 	}
+}
+
+.list_block--content_start {
+	width: 100%;
+	position: relative;
+	font-size: em(13, 10);
+	padding: em(6, 13) em(7, 13);
+	&.orange {
+		background-color: $warning-amber;
+	}
+	&.red {
+		background-color: $warning-red;
+	}
+	.list_block--content_start--text {
+		z-index: 1;
+		position: relative;
+	}
+	*:not(.list_block--content_start--text){
+		z-index: 0;
+	}
+	.mini_progress & {
+		padding: em(2, 13) em(7, 13);
+		transition: padding .2s;
+		.list_block--content_start--text {
+			overflow: hidden;
+			opacity: 0;
+			max-height: 0;
+			transition: opacity .2s, max-height .2s;
+		}
+	}
+	.mini_progress .list_block:hover & {
+		padding: em(6, 13) em(7, 13);
+		.list_block--content_start--text {
+			opacity: 1;
+			max-height: em(13, 13);
+		}
+	}
+}
+
+.list_block--progress_bar {
+	background: $teal-30;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 
 .list_block--content_end {

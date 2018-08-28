@@ -2,19 +2,16 @@
 <div class="main">
   <div class="container">
 
-    <%= form_tag recipes_path, class: 'search_box--form',  method: :get do %>
-      <div class="search_box">
-        <%= text_field_tag :search, params[:search], placeholder: "what do you fancy? Tamales? Lancashire Hot Pot?" %>
-        <%= button_tag "Search", name: nil do %>
-          <%= icomoon('search') %>
-        <% end %>
-      </div>
-    <% end %>
-    <br />
-    <br />
-    <br />
 
     <div class="list_block--collection--wrap">
+    <%= form_tag recipes_path, class: 'search_box--form',  method: :get do %>
+        <div class="search_box">
+          <%= text_field_tag :search, params[:search], placeholder: "what do you fancy? Tamales? Lancashire Hot Pot?" %>
+          <%= button_tag "Search", name: nil do %>
+            <%= icomoon('search') %>
+          <% end %>
+        </div>
+      <% end %>
       <% if @no_results == true %>
       <div class="list_block--collection--sibling list_block--collection--sibling_stack">
         <p>No results found! Maybe try a more generic search?</p>

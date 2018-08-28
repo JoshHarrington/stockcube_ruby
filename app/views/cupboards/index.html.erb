@@ -1,25 +1,45 @@
 <% provide(:title, 'Your cupboards') %>
+
+
 <div class="list_block--collection--wrap">
-  <% if @user_fav_stocks.length > 0 %>
-    <div class="list_block--collection--sibling list_block--collection--sibling_stack">
-      <h2>"Quick add stock" picks</h2>
-      <p>Use these to create new stock in your cupboards quickly, you can customise them and add your own!</p>
-    </div>
-    <div class="list_block--collection">
-      <div class="list_block list_block-wide">
-        <div class="list_block--content">
-          <%= link_to "Create new \"Quick add stock\" template", quick_add_stock_new_path, class: "list_block--item list_block--item_new" %>
-          <% @user_fav_stocks.each do |fav_stock| %>
-            <div class="list_block--item">
-              <span class="list_block--item--content"><%= fav_stock.unit.name == 'Each' ? '' : fav_stock.stock_amount.to_s + ' ' + fav_stock.unit.name.to_s + ' ' ) + (fav_stock.unit.name == 'Each' ? pluralize(fav_stock.stock_amount, fav_stock.ingredient.name) : fav_stock.ingredient.name.singularize %></span>
-              <%= link_to 'Use', stocks_new_path(ingredient: fav_stock.ingredient_id, stock_amount: fav_stock.stock_amount, unit: fav_stock.unit_id, standard_use_by_limit: fav_stock.standard_use_by_limit), class: "list_block--item--action pretty_form--submit_button"%>
-              <%= link_to 'Edit', quick_add_stock_edit_path(fav_stock.id), class: "list_block--item--action pretty_form--submit_button"%>
-            </div>
+  <div class="list_block--collection--group collection_group_collapsed">
+    <%= form_tag cupboards_path, class: 'list_block--collection list_block--collection__bricks',  method: :get do %>
+      <div class="list_block--collection__bricks--sibling">
+        <h2>Recipe search</h2>
+        <p id="searching_with_stock">Currently searching with all ingredients in your cupboards.</p>
+        <p id="searching_with_stock_plus" hidden>Currently searching with all ingredients in your cupboards, plus the ingredients you pick from this list:</p>
+        <span class="list_block--inline_action" id="search_with_ingredients">Search with more ingredients</span>
+      </div>
+      <div class="list_block--collection__bricks-form_group" hidden>
+        <div class="list_block--collection__bricks--fancy_radio_group">
+          <% @ingredient_groups.each_with_index do |ingredient_group, index| %>
+            <% ingredient_group.each do |ingredient| %>
+              <input type="checkbox" name="search[<%= ingredient.id %>]" id="<%= ingredient.id %>" class="fancy_radio_button checkbox_standard not_ordered" value="<%= ingredient.name %>" <%= session[:ingredient_search_ids].include?(ingredient.id) ? 'checked' : '' %> >
+              <label for="<%= ingredient.id %>" class="fancy_radio_button__label <%= index == 0 ? 'show' : 'hide' %>"><%= ingredient.name %></label>
+            <% end %>
+          <% end %><span class="list_block--inline_action" id="show_more_ingredients">Show more ingredients</span> <span class="list_block--inline_action list_block--inline_action-remove" id="hide_ingredients">Hide all ingredients</span>
+        </div>
+        <div class="list_block--collection__bricks--sibling align_right">
+          <%= button_tag "Search", class: "list_block--inline_action list_block--item--action", name: nil do %>
+            Update Search <%= icomoon('search') %>
           <% end %>
         </div>
       </div>
+    <% end %>
+    <div class="list_block--collection list_block--collection__tight" id="recipe_results">
+      <% @sorted_recipes.each do |recipe| %>
+        <%
+          recipe_match_details = @recipe_ingredient_cupboard_match.fetch(recipe.id)
+          common_ingredient_decimal = recipe_match_details[0]
+          common_ingredient_list_length = recipe_match_details[1]
+          number_of_needed_ingredients = recipe_match_details[2]
+        %>
+        <%= render 'recipes/recipe_list_partial', recipe: recipe, common_ingredient_decimal: common_ingredient_decimal, common_ingredient_list_length: common_ingredient_list_length, number_of_needed_ingredients: number_of_needed_ingredients  %>
+      <% end %>
     </div>
-  <% end %>
+    <span id="reveal_recipe_search" class="list_block--inline_action list_block--floating_action">Start searching for recipes with ingredients</span>
+  </div>
+
   <div class="list_block--collection--sibling">
     <h2>Your Cupboards</h2>
   </div>
@@ -96,4 +116,24 @@
       <span>Add a new cupboard / storage location</span>
     <% end %>
   </div>
+    <% if @user_fav_stocks.length > 0 %>
+    <div class="list_block--collection--sibling list_block--collection--sibling_stack">
+      <h2>"Quick add stock" picks</h2>
+      <p>Use these to create new stock in your cupboards quickly, you can customise them and add your own!</p>
+    </div>
+    <div class="list_block--collection">
+      <div class="list_block list_block-wide">
+        <div class="list_block--content">
+          <%= link_to "Create new \"Quick add stock\" template", quick_add_stock_new_path, class: "list_block--item list_block--item_new" %>
+          <% @user_fav_stocks.each do |fav_stock| %>
+            <div class="list_block--item">
+              <span class="list_block--item--content"><%= fav_stock.unit.name == 'Each' ? '' : fav_stock.stock_amount.to_s + ' ' + fav_stock.unit.name.to_s + ' ' ) + (fav_stock.unit.name == 'Each' ? pluralize(fav_stock.stock_amount, fav_stock.ingredient.name) : fav_stock.ingredient.name.singularize %></span>
+              <%= link_to 'Use', stocks_new_path(ingredient: fav_stock.ingredient_id, stock_amount: fav_stock.stock_amount, unit: fav_stock.unit_id, standard_use_by_limit: fav_stock.standard_use_by_limit), class: "list_block--item--action pretty_form--submit_button"%>
+              <%= link_to 'Edit', quick_add_stock_edit_path(fav_stock.id), class: "list_block--item--action pretty_form--submit_button"%>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
 </div>
