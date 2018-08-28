@@ -15,15 +15,19 @@ class CupboardsController < ApplicationController
 
 		@ingredients_not_in_cupboards = []
 
-		if session[:ingredient_search_ids] != nil
-			searched_ingredients_not_in_cupboards_ids = session[:ingredient_search_ids] - @cupboard_stock_in_date_ingredient_ids
-			@searched_ingredients_not_in_cupboards = Ingredient.where(searchable: true).where(id: searched_ingredients_not_in_cupboards_ids)
-			@not_searched_ingredients_not_in_cupboards = Ingredient.where(searchable: true).where.not(id: @cupboard_stock_in_date_ingredient_ids).where.not(id: searched_ingredients_not_in_cupboards_ids)
-			@ingredients_not_in_cupboards = @searched_ingredients_not_in_cupboards + @not_searched_ingredients_not_in_cupboards
+		if @cupboard_stock_next_fortnight.length > 0
+			if session[:ingredient_search_ids] != nil
+				searched_ingredients_not_in_cupboards_ids = session[:ingredient_search_ids] - @cupboard_stock_in_date_ingredient_ids
+				@searched_ingredients_not_in_cupboards = Ingredient.where(searchable: true).where(id: searched_ingredients_not_in_cupboards_ids)
+				@not_searched_ingredients_not_in_cupboards = Ingredient.where(searchable: true).where.not(id: @cupboard_stock_in_date_ingredient_ids).where.not(id: searched_ingredients_not_in_cupboards_ids)
+				@ingredients_not_in_cupboards = @searched_ingredients_not_in_cupboards + @not_searched_ingredients_not_in_cupboards
+			else
+				@ingredients_not_in_cupboards = Ingredient.where(searchable: true).where.not(id: @cupboard_stock_in_date_ingredient_ids)
+			end
+			@ingredient_groups = @ingredients_not_in_cupboards.each_slice(8).to_a
 		else
-			@ingredients_not_in_cupboards = Ingredient.where(searchable: true).where.not(id: @cupboard_stock_in_date_ingredient_ids)
+			@ingredient_groups = Ingredient.where(searchable: true).each_slice(8).to_a
 		end
-		@ingredient_groups = @ingredients_not_in_cupboards.each_slice(8).to_a
 		@ingredient_names = Ingredient.where(searchable: true).map(&:name)
 
 
