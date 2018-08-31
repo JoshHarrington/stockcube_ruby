@@ -2,43 +2,7 @@
 
 
 <div class="list_block--collection--wrap">
-  <div class="list_block--collection--group collection_group_collapsed">
-    <%= form_tag cupboards_path, class: 'list_block--collection list_block--collection__bricks',  method: :get do %>
-      <div class="list_block--collection__bricks--sibling">
-        <h2>Recipe search</h2>
-        <p id="searching_with_stock">Currently searching with all ingredients in your cupboards.</p>
-        <p id="searching_with_stock_plus" hidden>Currently searching with all ingredients in your cupboards, plus the ingredients you pick from this list:</p>
-        <span class="list_block--inline_action" id="search_with_ingredients">Search with more ingredients</span>
-      </div>
-      <div class="list_block--collection__bricks-form_group" hidden>
-        <div class="list_block--collection__bricks--fancy_radio_group">
-          <% @ingredient_groups.each_with_index do |ingredient_group, index| %>
-            <% ingredient_group.each do |ingredient| %>
-              <input type="checkbox" name="search[<%= ingredient.id %>]" id="<%= ingredient.id %>" class="fancy_radio_button checkbox_standard not_ordered" value="<%= ingredient.name %>" <%= session[:ingredient_search_ids].include?(ingredient.id) ? 'checked' : '' %> >
-              <label for="<%= ingredient.id %>" class="fancy_radio_button__label <%= index == 0 ? 'show' : 'hide' %>"><%= ingredient.name %></label>
-            <% end %>
-          <% end %><span class="list_block--inline_action" id="show_more_ingredients">Show more ingredients</span> <span class="list_block--inline_action list_block--inline_action-remove" id="hide_ingredients">Hide all ingredients</span>
-        </div>
-        <div class="list_block--collection__bricks--sibling align_right">
-          <%= button_tag "Search", class: "list_block--inline_action list_block--item--action", name: nil do %>
-            Update Search <%= icomoon('search') %>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-    <div class="list_block--collection list_block--collection__tight" id="recipe_results">
-      <% @sorted_recipes.each do |recipe| %>
-        <%
-          recipe_match_details = @recipe_ingredient_cupboard_match.fetch(recipe.id)
-          common_ingredient_decimal = recipe_match_details[0]
-          common_ingredient_list_length = recipe_match_details[1]
-          number_of_needed_ingredients = recipe_match_details[2]
-        %>
-        <%= render 'recipes/recipe_list_partial', recipe: recipe, common_ingredient_decimal: common_ingredient_decimal, common_ingredient_list_length: common_ingredient_list_length, number_of_needed_ingredients: number_of_needed_ingredients  %>
-      <% end %>
-    </div>
-    <span id="reveal_recipe_search" class="list_block--inline_action list_block--floating_action">Start searching for recipes with ingredients</span>
-  </div>
+  <%# render 'recipe_search_collection_group', sorted_recipes: @sorted_recipes, ingredient_groups: @ingredient_groups, recipe_ingredient_cupboard_match: @recipe_ingredient_cupboard_match %>
 
   <div class="list_block--collection--sibling">
     <h2>Your Cupboards</h2>
@@ -70,10 +34,12 @@
           </div>
           <% if cupboard.stocks.first %>
             <% cupboard_stocks_selection(cupboard).each do |stock| %>
-              <% if params[:show_all] == 'true' || (stock.use_by_date - Date.current).to_i >= -2 %>
-                <%= link_to edit_stock_path(stock.id), class: "list_block--item list_block--item_stacked list_block--item_show#{date_warning_class(stock)} stock_#{stock.id}", :data => { :cupboard_id => "#{cupboard.id}", :stock_id => "#{stock.id}" } do %>
+              <% if (stock.use_by_date - Date.current).to_i >= -4 %>
+                <% out_of_date_sentence = 'out of date' + (stock.use_by_date > Time.zone.now ? ' in ' : ' ') + (distance_of_time_in_words(Time.zone.now, stock.use_by_date)) + (stock.use_by_date <= Time.zone.now ? ' ago': '') %>
+                <%= link_to edit_stock_path(stock.id), class: "list_block--item list_block--item_stacked list_block--item_show#{date_warning_class(stock)} stock_#{stock.id}", :data => { :cupboard_id => "#{cupboard.id}", :stock_id => "#{stock.id}" }, title: "#{stock.ingredient.name} - #{out_of_date_sentence}" do %>
                   <p><%= stock.ingredient.name %></p>
                   <p><%= round_if_whole(stock.amount) %> <%= stock.unit.name %></p>
+                  <span class="h6 list_block--item--lesser_note"><%= distance_of_time_in_words(Time.zone.now, stock.use_by_date) + (stock.use_by_date <= Time.zone.now ? ' ago': '')%></span>
                 <% end %>
                 <%= check_box_tag "stock_id[]", value = "#{stock.id}", checked = false, id: "stock_#{stock.id}", class: "list_block--item_edit--checkbox" %>
                 <%= label_tag "stock_#{stock.id}", class: "list_block--item list_block--item_stacked list_block--item_edit#{date_warning_class(stock)}" do %>

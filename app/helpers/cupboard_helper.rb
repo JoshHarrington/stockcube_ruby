@@ -21,7 +21,7 @@ module CupboardHelper
 	end
 	def date_warning_class(stock)
 		days_from_now = (stock.use_by_date - Date.current).to_i
-		if days_from_now.between?(2, -2)
+		if days_from_now < 2 && days_from_now > -2
 			return ' date-part-warning'
 		elsif days_from_now <= -2
 			return ' date-full-warning'

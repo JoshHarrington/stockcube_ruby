@@ -569,7 +569,7 @@ a.list_block {
 	justify-content: space-between;
 	align-content: flex-start;
 	min-height: em(47, 15);
-	* {
+	*:not(span) {
 		font-size: inherit;
 	}
 	@media (min-width: 1900px), (max-width: 1200px) and (min-width: 900px), (max-width: 700px) and (min-width: 501px)  {
@@ -640,6 +640,10 @@ a.list_block {
 			}
 		}
 	}
+}
+
+.list_block--item--lesser_note {
+	opacity: .67;
 }
 
 .list_block--item--content {
