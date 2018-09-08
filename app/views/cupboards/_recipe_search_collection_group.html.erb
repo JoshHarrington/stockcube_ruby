@@ -10,7 +10,7 @@
         <div class="list_block--collection__bricks--fancy_radio_group">
           <% ingredient_groups.each_with_index do |ingredient_group, index| %>
             <% ingredient_group.each do |ingredient| %>
-              <input type="checkbox" name="search[<%= ingredient.id %>]" id="<%= ingredient.id %>" class="fancy_radio_button checkbox_standard not_ordered" value="<%= ingredient.name %>" <%= session[:ingredient_search_ids].include?(ingredient.id) ? 'checked' : '' %> >
+              <input type="checkbox" name="search[<%= ingredient.id %>]" id="<%= ingredient.id %>" class="fancy_radio_button checkbox_standard not_ordered" value="<%= ingredient.name %>" <%= session[:ingredient_search_ids] ? (session[:ingredient_search_ids].include?(ingredient.id) ? 'checked' : nil) : nil %> >
               <label for="<%= ingredient.id %>" class="fancy_radio_button__label <%= index == 0 ? 'show' : 'hide' %>"><%= ingredient.name %></label>
             <% end %>
           <% end %><span class="list_block--inline_action" id="show_more_ingredients">Show more ingredients</span> <span class="list_block--inline_action list_block--inline_action-remove" id="hide_ingredients">Hide all ingredients</span>
