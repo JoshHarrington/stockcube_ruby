@@ -98,12 +98,23 @@ class UsersController < ApplicationController
       )
 
       ### setup user with default cupboard
-      new_cupboard = Cupboard.create(location: "Fridge (Default cupboard)")
+      new_cupboard = Cupboard.create(location: "Kitchen")
       CupboardUser.create(
         cupboard_id: new_cupboard.id,
         user_id: @user.id,
         owner: true,
         accepted: true
+      )
+
+      water_id = Ingredient.where(name: "Water").map(&:id).first
+      liter_id = Unit.where(name: "Liter").map(&:id).first
+      Stock.create(
+        hidden: true,
+        ingredient_id: water_id,
+        amount: 9223372036854775807,
+        unit_id: liter_id,
+        cupboard_id: new_cupboard[:id],
+        use_by_date: Date.current + 100.years
       )
 
       if params.has_key?(:user) && params[:user][:cupboard_id].to_s != ''
