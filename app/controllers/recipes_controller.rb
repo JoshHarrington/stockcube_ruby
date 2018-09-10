@@ -15,27 +15,23 @@ class RecipesController < ApplicationController
 		### setup session record with recipe ingredient cupboard match
 		###  - should also update on stock changes
 
+
+		@fallback_recipes = current_user.user_recipe_stock_matches.order(ingredient_stock_match_decimal: :desc).map{|user_recipe_stock_match| user_recipe_stock_match.recipe}.paginate(:page => params[:page], :per_page => 12)
+
 		if params.has_key?(:search) && params[:search].to_s != ''
-			recipe_results = Recipe.search(params[:search], {fields: ["title^30", "cuisine^20", "description^1", "ingredient_names^10"]}, operator: 'or').results
+			recipe_results = Recipe.search(params[:search], operator: 'or', body_options: {min_score: 1}).results
 
 			recipes_ids_array = recipe_results.map(&:id)
 
 			@recipes = current_user.user_recipe_stock_matches.where(recipe_id: recipes_ids_array).order(ingredient_stock_match_decimal: :desc).map{|user_recipe_stock_match| user_recipe_stock_match.recipe}.paginate(:page => params[:page], :per_page => 12)
-
-			# picked_recipe_ingredient_cupboard_matches = session[:recipe_ingredient_cupboard_matches].slice(*recipes_ids_array)
-
-			# recipe_ids_sorted = picked_recipe_ingredient_cupboard_matches.sort_by { |id, values | values[0] }.reverse!.map{|r| r[0]}
-			# @recipes = Recipe.find(recipe_ids_sorted).paginate(:page => params[:page], :per_page => 12)
+			@mini_progress_on = true
 
 			if @recipes.empty?
 				@no_results = true
-				@recipes = Recipe.all.sample(12)
+				@recipes = @fallback_recipes
 			end
 		else
-			# recipes = Recipe.all
-
-			@recipes = current_user.user_recipe_stock_matches.order(ingredient_stock_match_decimal: :desc).map{|user_recipe_stock_match| user_recipe_stock_match.recipe}.paginate(:page => params[:page], :per_page => 12)
-			# @recipes = Recipe.find(recipe_ids_sorted).paginate(:page => params[:page], :per_page => 12)
+			@recipes = @fallback_recipes
 		end
 		@fav_recipes = current_user.favourites
 		@fav_recipes_limit = current_user.favourites.first(6)
