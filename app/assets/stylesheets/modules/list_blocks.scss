@@ -193,6 +193,7 @@
     -webkit-animation: list_block_fade 4s 1;
     animation-fill-mode: forwards;
 	}
+	&.list_block-overflow,
 	&.list_block-wide {
 		width: 100%;
 		width: calc(100% - 14px);
@@ -239,10 +240,10 @@ a.list_block {
 	.edit_mode & {
 		padding-bottom: em(20, 10);
 	}
-	.list_block:not(.list_block-wide) & {
+	.list_block:not(.list_block-overflow) & {
 		flex-wrap: wrap;
 	}
-	.list_block-wide & {
+	.list_block-overflow & {
 		width: 100%;
 		overflow-x: auto;
 		padding-bottom: em(12, 10);
@@ -260,12 +261,7 @@ a.list_block {
 	position: relative;
 	font-size: em(13, 10);
 	padding: em(6, 13) em(7, 13);
-	&.orange {
-		background-color: $warning-amber;
-	}
-	&.red {
-		background-color: $warning-red;
-	}
+	background-color: $warning-amber;
 	.list_block--content_start--text {
 		z-index: 1;
 		position: relative;
@@ -302,6 +298,7 @@ a.list_block {
 
 .list_block--content_end {
 	width: 100%;
+	margin-top: auto;
 }
 
 .list_block--info_bar {
@@ -462,10 +459,8 @@ a.list_block {
 }
 
 .list_block__column {
-	align-content: space-between;
-	> * {
-		flex-basis: 100%;
-	}
+	justify-content: flex-start;
+	flex-direction: column;
 }
 
 .list_block__full {
@@ -486,7 +481,7 @@ a.list_block {
 }
 
 .list_block--title {
-	flex-basis: calc(100% - 6px);
+	flex-basis: 100%;
 	flex-shrink: 0;
 	display: flex;
 	justify-content: space-between;
@@ -575,6 +570,14 @@ a.list_block {
 	@media (min-width: 1900px), (max-width: 1200px) and (min-width: 900px), (max-width: 700px) and (min-width: 501px)  {
 		flex-basis: calc(33.3% - 6px);
 	}
+	.list_block-wide & {
+		@media (min-width: 900px) {
+			flex-basis: calc(16.666% - 6px);
+		}
+		@media (max-width: 899px) and (min-width: 700px) {
+			flex-basis: calc(25% - 6px);
+		}
+	}
 	&.date-part-warning {
 		background-color: $warning-amber;
 		border-color: $warning-amber;
@@ -624,7 +627,7 @@ a.list_block {
 	> * + * {
 		margin-top: .4rem;
 	}
-	.list_block-wide & {
+	.list_block-overflow & {
 		min-width: em(160, 15);
 		max-width: em(160, 15);
 		display: flex;
@@ -719,7 +722,7 @@ a.list_block--item {
 	display: flex;
 	align-items: center;
 	border: 1px solid $teal-110;
-	.list_block:not(.list_block-wide) & {
+	.list_block:not(.list_block-overflow) & {
 		order: 2;
 	}
 	&.list_block--item:hover {

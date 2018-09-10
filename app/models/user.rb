@@ -16,7 +16,8 @@ class User < ApplicationRecord
   has_many :cupboards, through: :cupboard_users
 
   has_many :shopping_lists
-  has_one :user_fav_stock
+  has_many :user_fav_stocks
+  has_many :user_recipe_stock_matches
   has_one :user_setting
 
   # Favourite recipes of user

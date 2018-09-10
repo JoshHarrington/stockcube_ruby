@@ -2,17 +2,15 @@
 
 
 <div class="list_block--collection--wrap">
-  <%= render 'recipe_search_collection_group', sorted_recipes: @sorted_recipes, ingredient_groups: @ingredient_groups, recipe_ingredient_cupboard_match: @recipe_ingredient_cupboard_match %>
-
   <div class="list_block--collection--sibling">
     <h2>Your Cupboards</h2>
   </div>
   <div id="cupboard-list" class="list_block--collection">
     <% @cupboards.each do |cupboard| %>
-      <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack <%= cupboard_shared_class(cupboard) %>" id="<%= cupboard.id %>" data-id="<%= cupboard.id %>">
+      <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack <%= cupboard_shared_class(cupboard) %><%= @cupboards.length == 1 ? 'list_block-wide' : nil %>" id="<%= cupboard.id %>" data-id="<%= cupboard.id %>">
         <div class="list_block--content">
           <div class="list_block--title">
-            <% if current_user.cupboard_users.where(cupboard_id: cupboard.id).first.owner == true %>
+            <% if current_user.cupboard_users.where(cupboard_id: cupboard[:id]).first[:owner] == true %>
               <span class="delete_list_block_button list_block--action">
                 <%= icomoon('bin') %>
                 <%= hidden_field_tag "cupboard_id_delete", cupboard.id %>
@@ -22,8 +20,10 @@
               <%= hidden_field_tag "cupboard_id", cupboard.id %>
               <%= text_field_tag "cupboard_location", cupboard.location %>
             </h3>
-            <%= link_to edit_cupboard_path(cupboard), class: "edit_list_block_button list_block--action", title: "pick items to remove" do %>
-              <%= icomoon('edit') %>
+            <% if @cupboards.length > 1 %>
+              <%= link_to edit_cupboard_path(cupboard), class: "edit_list_block_button list_block--action", title: "pick items to remove" do %>
+                <%= icomoon('edit') %>
+              <% end %>
             <% end %>
             <span class="finish_editing_list_block_button list_block--action">
               <%= icomoon('bin') %>
@@ -81,19 +81,22 @@
     <%= link_to cupboards_new_path, class: "list_block" do %>
       <span>Add a new cupboard / storage location</span>
     <% end %>
-  </div>
+    </div>
+    <br />
+    <hr>
+    <br />
     <% if @user_fav_stocks.length > 0 %>
     <div class="list_block--collection--sibling list_block--collection--sibling_stack">
       <h2>"Quick add stock" picks</h2>
       <p>Use these to create new stock in your cupboards quickly, you can customise them and add your own!</p>
     </div>
     <div class="list_block--collection">
-      <div class="list_block list_block-wide">
+      <div class="list_block list_block-overflow">
         <div class="list_block--content">
           <%= link_to "Create new \"Quick add stock\" template", quick_add_stock_new_path, class: "list_block--item list_block--item_new" %>
           <% @user_fav_stocks.each do |fav_stock| %>
             <div class="list_block--item">
-              <span class="list_block--item--content"><%= fav_stock.unit.name == 'Each' ? '' : fav_stock.stock_amount.to_s + ' ' + fav_stock.unit.name.to_s + ' ' ) + (fav_stock.unit.name == 'Each' ? pluralize(fav_stock.stock_amount, fav_stock.ingredient.name) : fav_stock.ingredient.name.singularize %></span>
+              <span class="list_block--item--content"><%= fav_stock.unit.name == 'Each' ? pluralize(fav_stock.stock_amount, fav_stock.ingredient.name) : pluralize(fav_stock.stock_amount, fav_stock.unit.name) + (fav_stock.unit.name.to_s == 'Loaf' || 'Pint' ? ' of ' : ' ') + fav_stock.ingredient.name %></span>
               <%= link_to 'Use', stocks_new_path(ingredient: fav_stock.ingredient_id, stock_amount: fav_stock.stock_amount, unit: fav_stock.unit_id, standard_use_by_limit: fav_stock.standard_use_by_limit), class: "list_block--item--action pretty_form--submit_button"%>
               <%= link_to 'Edit', quick_add_stock_edit_path(fav_stock.id), class: "list_block--item--action pretty_form--submit_button"%>
             </div>

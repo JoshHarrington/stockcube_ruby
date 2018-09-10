@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180813082239) do
+ActiveRecord::Schema.define(version: 20180910165222) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -150,6 +150,17 @@ ActiveRecord::Schema.define(version: 20180813082239) do
     t.integer "unit_id"
     t.integer "user_id"
     t.integer "standard_use_by_limit"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_recipe_stock_matches", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "recipe_id"
+    t.decimal "ingredient_stock_match_decimal"
+    t.integer "num_ingredients_total"
+    t.integer "num_stock_ingredients"
+    t.integer "num_needed_ingredients"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

@@ -6,7 +6,11 @@ class CupboardsController < ApplicationController
 	def index
 		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
 		@cupboards = Cupboard.where(id: @cupboard_ids).order(location: :asc)
-		@user_fav_stocks = UserFavStock.where(user_id: current_user.id).order('updated_at desc')
+
+		### old version needed because model was setup incorrectly (has_one > has_many) - needs checking
+		# @user_fav_stocks = UserFavStock.where(user_id: current_user.id).order('updated_at desc')
+		### new version - needs checking
+		@user_fav_stocks = current_user.user_fav_stocks.order('updated_at desc')
 
 		@cupboard_stock_next_fortnight = Stock.where(cupboard_id: @cupboard_ids).where("use_by_date >= :date", date: Date.current - 2.days).where("use_by_date < :date", date: Date.current + 14.days).uniq { |s| s.ingredient_id }.compact
 		cupboard_stock_next_fortnight_ingredient_ids = @cupboard_stock_next_fortnight.map{ |s| s.ingredient.id }
@@ -65,10 +69,10 @@ class CupboardsController < ApplicationController
 			recipe_ingredient_ids = recipe.ingredients.map(&:id)
 			unless recipe_ingredient_ids == nil || @cupboard_stock_in_date_ingredient_ids == nil
 				common_ingredient_list = recipe_ingredient_ids & @cupboard_stock_in_date_ingredient_ids
-				common_ingredient_list_length = common_ingredient_list.length.to_f
-				common_ingredient_decimal = common_ingredient_list_length / recipe_ingredient_ids.length.to_f
-				number_of_needed_ingredients = recipe_ingredient_ids.length.to_f - common_ingredient_list_length
-				@recipe_ingredient_cupboard_match.merge!(recipe.id => [common_ingredient_decimal, common_ingredient_list_length, number_of_needed_ingredients])
+				num_stock_ingredients = common_ingredient_list.length.to_f
+				ingredient_stock_match_decimal = num_stock_ingredients / recipe_ingredient_ids.length.to_f
+				num_needed_ingredients = recipe_ingredient_ids.length.to_f - num_stock_ingredients
+				@recipe_ingredient_cupboard_match.merge!(recipe.id => [ingredient_stock_match_decimal, num_stock_ingredients, num_needed_ingredients])
 			end
 		end
 

@@ -24,12 +24,12 @@
       <div class="list_block--collection list_block--collection__tight">
         <% @recipes.each do |recipe| %>
           <%
-            recipe_match_details = session[:recipe_ingredient_cupboard_matches].fetch(recipe[:id])
-            common_ingredient_decimal = recipe_match_details[0]
-            common_ingredient_list_length = recipe_match_details[1]
-            number_of_needed_ingredients = recipe_match_details[2]
+            user_recipe_stock_match = UserRecipeStockMatch.where(user_id: current_user[:id], recipe_id: recipe[:id]).first
+            ingredient_stock_match_decimal = user_recipe_stock_match[:ingredient_stock_match_decimal]
+            num_stock_ingredients = user_recipe_stock_match[:num_stock_ingredients]
+            num_needed_ingredients = user_recipe_stock_match[:num_needed_ingredients]
           %>
-          <%= render 'recipe_list_partial', recipe: recipe, common_ingredient_decimal: common_ingredient_decimal, common_ingredient_list_length: common_ingredient_list_length, number_of_needed_ingredients: number_of_needed_ingredients %>
+          <%= render 'recipe_list_partial', recipe: recipe, ingredient_stock_match_decimal: ingredient_stock_match_decimal, num_stock_ingredients: num_stock_ingredients, num_needed_ingredients: num_needed_ingredients %>
         <% end %>
       </div>
       <% if @no_results == nil %>

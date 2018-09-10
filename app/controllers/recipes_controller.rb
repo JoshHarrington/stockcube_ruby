@@ -3,6 +3,8 @@ class RecipesController < ApplicationController
 	include ActionView::Helpers::UrlHelper
 	include ShoppingListsHelper
 
+	require 'will_paginate/array'
+
 	before_action :logged_in_user, only: [:edit, :new, :index]
 	before_action :admin_user,     only: [:create, :new, :edit, :update]
 
@@ -13,97 +15,27 @@ class RecipesController < ApplicationController
 		### setup session record with recipe ingredient cupboard match
 		###  - should also update on stock changes
 
-		if session[:stock_ingredient_ids]
-			unless session[:recipe_ingredient_cupboard_matches]
-				recipes = Recipe.all
-				@recipe_ingredient_cupboard_match = {}
-				recipes.each do |recipe|
-					recipe_ingredient_ids = recipe.ingredients.map(&:id)
-					unless recipe_ingredient_ids == nil || @cupboard_stock_in_date_ingredient_ids == nil
-						common_ingredient_list = recipe_ingredient_ids & @cupboard_stock_in_date_ingredient_ids
-						common_ingredient_list_length = common_ingredient_list.length.to_f
-						common_ingredient_decimal = common_ingredient_list_length / recipe_ingredient_ids.length.to_f
-						number_of_needed_ingredients = recipe_ingredient_ids.length.to_f - common_ingredient_list_length
-						@recipe_ingredient_cupboard_match.merge!(recipe.id => [common_ingredient_decimal, common_ingredient_list_length, number_of_needed_ingredients])
-					end
-				end
-				session[:recipe_ingredient_cupboard_matches] = @recipe_ingredient_cupboard_match
-			end
-		else
-			@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
-			@cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: @cupboard_ids).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
-			session[:stock_ingredient_ids] = @cupboard_stock_in_date_ingredient_ids
-			unless session[:recipe_ingredient_cupboard_matches]
-				recipes = Recipe.all
-				@recipe_ingredient_cupboard_match = {}
-				recipes.each do |recipe|
-					recipe_ingredient_ids = recipe.ingredients.map(&:id)
-					unless recipe_ingredient_ids == nil || @cupboard_stock_in_date_ingredient_ids == nil
-						common_ingredient_list = recipe_ingredient_ids & @cupboard_stock_in_date_ingredient_ids
-						common_ingredient_list_length = common_ingredient_list.length.to_f
-						common_ingredient_decimal = common_ingredient_list_length / recipe_ingredient_ids.length.to_f
-						number_of_needed_ingredients = recipe_ingredient_ids.length.to_f - common_ingredient_list_length
-						@recipe_ingredient_cupboard_match.merge!(recipe.id => [common_ingredient_decimal, common_ingredient_list_length, number_of_needed_ingredients])
-					end
-				end
-				session[:recipe_ingredient_cupboard_matches] = @recipe_ingredient_cupboard_match
-			end
-
-		end
-
-
-		# unless session[:recipe_cupboard_match]
-		# 	@recipe_ingredient_cupboard_match = {}
-		# end
 		if params.has_key?(:search) && params[:search].to_s != ''
 			recipe_results = Recipe.search(params[:search], {fields: ["title^30", "cuisine^20", "description^1", "ingredient_names^10"]}, operator: 'or').results
 
-			unless session[:recipe_ingredient_cupboard_matches]
-				recipes = Recipe.all
-				@recipe_ingredient_cupboard_match = {}
-				recipes.each do |recipe|
-					recipe_ingredient_ids = recipe.ingredients.map(&:id)
-					unless recipe_ingredient_ids == nil || @cupboard_stock_in_date_ingredient_ids == nil
-						common_ingredient_list = recipe_ingredient_ids & @cupboard_stock_in_date_ingredient_ids
-						common_ingredient_list_length = common_ingredient_list.length.to_f
-						common_ingredient_decimal = common_ingredient_list_length / recipe_ingredient_ids.length.to_f
-						number_of_needed_ingredients = recipe_ingredient_ids.length.to_f - common_ingredient_list_length
-						@recipe_ingredient_cupboard_match.merge!(recipe.id => [common_ingredient_decimal, common_ingredient_list_length, number_of_needed_ingredients])
-					end
-				end
-				session[:recipe_ingredient_cupboard_matches] = @recipe_ingredient_cupboard_match
-			end
+			recipes_ids_array = recipe_results.map(&:id)
 
-			recipes_ids_string = recipe_results.map(&:id)
-			picked_recipe_ingredient_cupboard_matches = session[:recipe_ingredient_cupboard_matches].slice(*recipes_ids_string)
+			@recipes = current_user.user_recipe_stock_matches.where(recipe_id: recipes_ids_array).order(ingredient_stock_match_decimal: :desc).map{|user_recipe_stock_match| user_recipe_stock_match.recipe}.paginate(:page => params[:page], :per_page => 12)
 
-			recipe_ids_sorted = picked_recipe_ingredient_cupboard_matches.sort_by { |id, values | values[0] }.reverse!.map{|r| r[0]}
-			@recipes = Recipe.find(recipe_ids_sorted).paginate(:page => params[:page], :per_page => 12)
+			# picked_recipe_ingredient_cupboard_matches = session[:recipe_ingredient_cupboard_matches].slice(*recipes_ids_array)
+
+			# recipe_ids_sorted = picked_recipe_ingredient_cupboard_matches.sort_by { |id, values | values[0] }.reverse!.map{|r| r[0]}
+			# @recipes = Recipe.find(recipe_ids_sorted).paginate(:page => params[:page], :per_page => 12)
 
 			if @recipes.empty?
 				@no_results = true
 				@recipes = Recipe.all.sample(12)
 			end
 		else
-			recipes = Recipe.all
-			unless session[:recipe_ingredient_cupboard_matches]
-				recipes = Recipe.all
-				@recipe_ingredient_cupboard_match = {}
-				recipes.each do |recipe|
-					recipe_ingredient_ids = recipe.ingredients.map(&:id)
-					unless recipe_ingredient_ids == nil || @cupboard_stock_in_date_ingredient_ids == nil
-						common_ingredient_list = recipe_ingredient_ids & @cupboard_stock_in_date_ingredient_ids
-						common_ingredient_list_length = common_ingredient_list.length.to_f
-						common_ingredient_decimal = common_ingredient_list_length / recipe_ingredient_ids.length.to_f
-						number_of_needed_ingredients = recipe_ingredient_ids.length.to_f - common_ingredient_list_length
-						@recipe_ingredient_cupboard_match.merge!(recipe.id => [common_ingredient_decimal, common_ingredient_list_length, number_of_needed_ingredients])
-					end
-				end
-				session[:recipe_ingredient_cupboard_matches] = @recipe_ingredient_cupboard_match
-			end
+			# recipes = Recipe.all
 
-			recipe_ids_sorted = session[:recipe_ingredient_cupboard_matches].sort_by { |id, values | values[0] }.reverse!.map{|r| r[0]}
-			@recipes = Recipe.find(recipe_ids_sorted).paginate(:page => params[:page], :per_page => 12)
+			@recipes = current_user.user_recipe_stock_matches.order(ingredient_stock_match_decimal: :desc).map{|user_recipe_stock_match| user_recipe_stock_match.recipe}.paginate(:page => params[:page], :per_page => 12)
+			# @recipes = Recipe.find(recipe_ids_sorted).paginate(:page => params[:page], :per_page => 12)
 		end
 		@fav_recipes = current_user.favourites
 		@fav_recipes_limit = current_user.favourites.first(6)

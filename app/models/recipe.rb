@@ -9,6 +9,8 @@ class Recipe < ApplicationRecord
   has_many :shopping_list_recipes
   has_many :shopping_lists, through: :shopping_list_recipes
 
+  has_many :user_recipe_stock_matches
+
   accepts_nested_attributes_for :portions,
   :reject_if => :all_blank,
   :allow_destroy => true
