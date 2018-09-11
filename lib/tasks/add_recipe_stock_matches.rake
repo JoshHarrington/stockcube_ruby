@@ -16,9 +16,11 @@ task :find_user_add_recipe_stock_matches => :environment do
 			ingredient_stock_match_decimal = num_stock_ingredients.to_f / num_ingredients_total.to_f
 			num_needed_ingredients = num_ingredients_total - num_stock_ingredients
 
-			UserRecipeStockMatch.find_or_create_by(
+			user_recipe_stock_match = UserRecipeStockMatch.find_or_create_by(
 				recipe_id: recipe[:id],
 				user_id: set_user[:id],
+			)
+			user_recipe_stock_match.update_attributes(
 				ingredient_stock_match_decimal: ingredient_stock_match_decimal,
 				num_ingredients_total: num_ingredients_total,
 				num_stock_ingredients: num_stock_ingredients,
