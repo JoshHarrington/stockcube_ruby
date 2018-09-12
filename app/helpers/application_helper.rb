@@ -17,4 +17,5 @@ module ApplicationHelper
 		end
 	end
 	include ShoppingListsHelper
+	include StockHelper
 end

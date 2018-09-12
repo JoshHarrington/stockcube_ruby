@@ -1,5 +1,6 @@
 class StocksController < ApplicationController
 	helper IntegerHelper
+	include StockHelper
 	before_action :logged_in_user
 	def index
 		@stocks = Stock.all
@@ -87,9 +88,7 @@ class StocksController < ApplicationController
 
     if @stock.save
 			redirect_to cupboards_path
-			# if new_stuff_added == true
-			### 	send_admin_update_notificiation
-			# end
+			recipe_stock_matches_update(current_user[:id])
 		else
 			if params.has_key?(:unit_id) && params[:unit_id].to_i != 0 && params.has_key?(:ingredient_id) && params[:ingredient_id].to_i != 0
 				redirect_to stocks_new_path(unit: params[:unit_id], ingredient: params[:ingredient_id])
@@ -165,6 +164,7 @@ class StocksController < ApplicationController
 
 		if @stock.update(stock_params)
 			redirect_to cupboards_path
+			recipe_stock_matches_update(current_user[:id])
 		else
 			render 'edit'
 		end
