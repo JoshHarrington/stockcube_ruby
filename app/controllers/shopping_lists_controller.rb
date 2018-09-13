@@ -1,6 +1,7 @@
 class ShoppingListsController < ApplicationController
   include ActionView::Helpers::NumberHelper
   include ShoppingListsHelper
+  include StockHelper
   before_action :logged_in_user
   before_action :user_has_shopping_lists, only: [:index, :show, :show_ingredients, :show_current, :show_ingredients_current, :shop, :shopping_list_to_cupboard, :edit]
   before_action :correct_user, only: [:show, :edit]
@@ -138,6 +139,7 @@ class ShoppingListsController < ApplicationController
     # @recipes << @recipe_pick
 
     shopping_list_portions_set(@form_recipe_ids, nil, current_user.id, params[:id])
+    recipe_stock_matches_update(current_user.id)
 
     if @shopping_list.update(shopping_list_params)
       redirect_to shopping_list_path(@shopping_list)
@@ -154,6 +156,7 @@ class ShoppingListsController < ApplicationController
       #   shopping_list.recipes.delete(recipe)
       # end
       shopping_list_portions_set(nil, params[:recipe_id], current_user.id, params[:shopping_list_id])
+      recipe_stock_matches_update(current_user.id)
 		end
   end
 

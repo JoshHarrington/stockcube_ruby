@@ -4,12 +4,12 @@ task :find_user_add_recipe_stock_matches => :environment do
 	# recipe = Recipe.first
 
 	cupboard_ids = CupboardUser.where(user_id: set_user[:id], accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
-	cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: cupboard_ids).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
+	cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: cupboard_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
 
 	Recipe.all.each do |recipe|
 
 		recipe_ingredient_ids = recipe.ingredients.map(&:id)
-		unless recipe_ingredient_ids == nil || cupboard_stock_in_date_ingredient_ids == nil
+		unless recipe_ingredient_ids == nil
 			num_ingredients_total = recipe_ingredient_ids.length.to_i
 			recipe_stock_ingredient_matches = recipe_ingredient_ids & cupboard_stock_in_date_ingredient_ids
 			num_stock_ingredients = recipe_stock_ingredient_matches.length.to_i

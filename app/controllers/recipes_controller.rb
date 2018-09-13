@@ -2,6 +2,7 @@ require 'will_paginate/array'
 class RecipesController < ApplicationController
 	include ActionView::Helpers::UrlHelper
 	include ShoppingListsHelper
+	include StockHelper
 
 	require 'will_paginate/array'
 
@@ -54,7 +55,7 @@ class RecipesController < ApplicationController
 		# end
 
 		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
-		@cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: @cupboard_ids).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
+		@cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: @cupboard_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
 
 	end
 	def favourites
@@ -168,6 +169,7 @@ class RecipesController < ApplicationController
 		recipe_title = @recipe.title
 
 		shopping_list_portions_set(@recipe.id, nil, current_user.id, nil)
+		recipe_stock_matches_update(current_user.id)
 
 		# give notice that the recipe has been added with link to shopping list
 		if current_user.shopping_lists.length > 0 && current_user.shopping_lists.last.archived != true && current_user.shopping_lists.last.recipes.length > 0

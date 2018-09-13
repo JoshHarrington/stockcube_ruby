@@ -93,6 +93,7 @@ module ShoppingListsHelper
 
 		current_user_set = User.find(current_user_id)
 
+		puts 'Shopping list portions set ran at: ' + Time.now.to_s
 
 		if current_shopping_list_id == nil
 			if current_user_set.shopping_lists.length > 0 && current_user_set.shopping_lists.last.archived != true
