@@ -25,7 +25,6 @@ module ShoppingListsHelper
 	end
 
 	def metric_transform_portion_update(shopping_list_portion, portion_unit_obj, portion_obj, ingredient_obj)
-		puts "---- before if metric_ratio"
 		if portion_unit_obj.metric_ratio
 
 			metric_amount = portion_obj.amount.to_f * portion_unit_obj.metric_ratio.to_f
@@ -35,9 +34,7 @@ module ShoppingListsHelper
 				:portion_amount => metric_amount,
 				:recipe_number => portion_obj.recipe_id
 			)
-			puts "---- inside if metric_ratio"
-			puts metric_amount
-			puts metric_amount < 1000
+
 			if portion_unit_obj.unit_type.to_s == "volume" && metric_amount < 1000
 				## add unit number for milliliters
 				shopping_list_portion.update_attributes(
@@ -92,8 +89,6 @@ module ShoppingListsHelper
 	def shopping_list_portions_set_from_recipes(add_recipe_id, recipe_ids_to_delete, current_user_id, current_shopping_list_id)
 
 		current_user_set = User.find(current_user_id)
-
-		puts 'Shopping list portions set started at: ' + Time.now.to_s
 
 		if current_shopping_list_id == nil
 			if current_user_set.shopping_lists.length > 0 && current_user_set.shopping_lists.last.archived != true
@@ -234,8 +229,6 @@ module ShoppingListsHelper
 			)
 		end
 
-		puts 'Shopping list portions set finished at: ' + Time.now.to_s
-
 	end
 
 
@@ -245,7 +238,6 @@ module ShoppingListsHelper
 		current_user_set = User.find(user_id)
 
 		if current_user_set.shopping_lists.length > 0 && current_user_set.shopping_lists.last.archived != true
-			puts 'Stock change -> Shopping list portions update started at: ' + Time.now.to_s
 			current_shopping_list = current_user_set.shopping_lists.last
 			current_shopping_list_id = current_shopping_list.id
 

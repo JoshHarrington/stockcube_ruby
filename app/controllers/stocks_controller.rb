@@ -63,7 +63,7 @@ class StocksController < ApplicationController
 			flash[:danger] = "Make sure you select or add a unit"
 		end
 
-		if params.has_key?(:ingredient_id)&& params[:ingredient_id].present?  && params[:ingredient_id].present?
+		if params.has_key?(:ingredient_id) && params[:ingredient_id].present?
 			if params[:ingredient_id].to_i == 0
 				new_ingredient_from_stock = Ingredient.find_or_create_by(name: params[:ingredient_id], unit_id: (@stock_unit || 8))
 				selected_ingredient_id = new_ingredient_from_stock.id
@@ -91,6 +91,7 @@ class StocksController < ApplicationController
 			redirect_to cupboards_path
 			recipe_stock_matches_update(current_user[:id])
 			shopping_list_portions_update(current_user[:id])
+			flash[:info] = %Q[Recipe stock information updated!]
 		else
 			if params.has_key?(:unit_id) && params[:unit_id].to_i != 0 && params.has_key?(:ingredient_id) && params[:ingredient_id].to_i != 0
 				redirect_to stocks_new_path(unit: params[:unit_id], ingredient: params[:ingredient_id])

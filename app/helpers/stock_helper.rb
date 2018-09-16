@@ -1,7 +1,5 @@
 module StockHelper
 	def recipe_stock_matches_update(user_id)
-
-		puts "recipe_stock_matches_update just started at " + Time.current.to_s
 		active_cupboard_ids = CupboardUser.where(user_id: user_id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
 
 		all_cupboard_ids = CupboardUser.where(user_id: user_id, accepted: true).map(&:cupboard_id)
@@ -11,10 +9,7 @@ module StockHelper
 
 			cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: active_cupboard_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
 
-			recipe_all_length = Recipe.all.length
 			Recipe.all.each_with_index do |recipe, i|
-
-				puts "recipe match updating: " + recipe.title.to_s
 
 				recipe_ingredient_ids = recipe.ingredients.map(&:id)
 				unless recipe_ingredient_ids == nil
