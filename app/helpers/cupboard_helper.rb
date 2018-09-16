@@ -47,7 +47,7 @@ module CupboardHelper
 		end
 	end
 	def cupboard_stocks_selection(cupboard)
-		@stocks = cupboard.stocks.where(hidden: false).order(use_by_date: :desc)
+		@stocks = cupboard.stocks.where(hidden: false, always_available: false).order(use_by_date: :desc)
 		return @stocks
 	end
 end
