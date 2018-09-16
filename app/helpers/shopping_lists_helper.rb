@@ -89,27 +89,27 @@ module ShoppingListsHelper
 	end
 
 
-	def shopping_list_portions_set(add_recipe_id, recipe_ids_to_delete, current_user_id, current_shopping_list_id)
+	def shopping_list_portions_set_from_recipes(add_recipe_id, recipe_ids_to_delete, current_user_id, current_shopping_list_id)
 
 		current_user_set = User.find(current_user_id)
 
-		puts 'Shopping list portions set ran at: ' + Time.now.to_s
+		puts 'Shopping list portions set started at: ' + Time.now.to_s
 
 		if current_shopping_list_id == nil
 			if current_user_set.shopping_lists.length > 0 && current_user_set.shopping_lists.last.archived != true
 				current_shopping_list = current_user_set.shopping_lists.last
 				current_shopping_list_id = current_shopping_list.id
 			else
-				current_shopping_list = ShoppingList.create(user_id: current_user_set.id)
+				current_shopping_list = ShoppingList.create(user_id: current_user_id)
 				current_shopping_list_id = current_shopping_list.id
 			end
 		else
 			current_shopping_list = ShoppingList.find(current_shopping_list_id)
 		end
 
-		if add_recipe_id == nil
+		if add_recipe_id == nil && recipe_ids_to_delete != nil
 			ShoppingListRecipe.where(shopping_list_id: current_shopping_list_id, recipe_id: recipe_ids_to_delete).delete_all
-		else
+		elsif add_recipe_id != nil && recipe_ids_to_delete == nil
 			ShoppingListRecipe.find_or_create_by(shopping_list_id: current_shopping_list_id, recipe_id: add_recipe_id)
 		end
 
@@ -120,8 +120,7 @@ module ShoppingListsHelper
 
 		@user_cupboard_ids = CupboardUser.where(user_id: current_user_id, accepted: true).map(&:cupboard_id)
 
-    @stock = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: @uniq_ingredient_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days)
-    @stock_ingredient_ids = @stock.map(&:ingredient_id)
+    @stock_ingredient_ids = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: @uniq_ingredient_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 4.days).map(&:ingredient_id)
 		@not_in_stock_ingredient_ids = @uniq_ingredient_ids - @stock_ingredient_ids
 
 
@@ -130,6 +129,7 @@ module ShoppingListsHelper
 		## the same shopping list id and ingredient id already exists and update it
 		## otherwise create it
 		## and delete the ones that don't match the incoming shopping list portions
+
 		current_shopping_list.shopping_list_portions.delete_all
 
 		@portions.each do |portion|
@@ -232,8 +232,143 @@ module ShoppingListsHelper
 				unit_name: ingredient_unit_name.downcase,
 				unit_number: ingredient_unit_number
 			)
-    end
+		end
 
+		puts 'Shopping list portions set finished at: ' + Time.now.to_s
+
+	end
+
+
+	def shopping_list_portions_update(user_id)
+
+
+		current_user_set = User.find(user_id)
+
+		if current_user_set.shopping_lists.length > 0 && current_user_set.shopping_lists.last.archived != true
+			puts 'Stock change -> Shopping list portions update started at: ' + Time.now.to_s
+			current_shopping_list = current_user_set.shopping_lists.last
+			current_shopping_list_id = current_shopping_list.id
+
+			@portions = Portion.where(recipe_id: current_shopping_list.recipes)
+			@portion_ids = @portions.map(&:id)
+			@uniq_ingredient_ids = @portions.map(&:ingredient_id).uniq
+
+			@user_cupboard_ids = CupboardUser.where(user_id: user_id, accepted: true).map(&:cupboard_id)
+
+			@stock_ingredient_ids = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: @uniq_ingredient_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 4.days).map(&:ingredient_id)
+			@not_in_stock_ingredient_ids = @uniq_ingredient_ids - @stock_ingredient_ids
+
+
+			## need to find a better way to do this than just deleting and rewriting every time
+			## should be a way to check if the shopping list portion with
+			## the same shopping list id and ingredient id already exists and update it
+			## otherwise create it
+			## and delete the ones that don't match the incoming shopping list portions
+
+			current_shopping_list.shopping_list_portions.delete_all
+
+			@portions.each do |portion|
+				next if portion.ingredient.name.downcase == "water"
+
+				shopping_list_portion = ShoppingListPortion.find_or_create_by(
+					shopping_list_id: current_shopping_list_id,
+					ingredient_id: portion.ingredient_id,
+					unit_number: portion.unit_number
+				)
+
+				set_portion_amount = 0
+
+				### set ingredients unis to default metric names
+				portion_unit = Unit.where(unit_number: portion.unit_number).first
+				default_mass_unit = Unit.where(unit_number: 8).first
+				default_volume_unit = Unit.where(unit_number: 11).first
+				if portion_unit.metric_ratio != nil
+					if portion_unit.unit_type.to_s == "mass"
+						ingredient_unit_number = 8
+						default_mass_unit.short_name ? ingredient_unit_name = default_mass_unit.short_name : ingredient_unit_name = default_mass_unit.name
+					elsif portion_unit.unit_type.to_s == "volume"
+						ingredient_unit_number = 11
+						default_volume_unit.short_name ? ingredient_unit_name = default_volume_unit.short_name : ingredient_unit_name = default_volume_unit.name
+					end
+					set_portion_amount += portion.amount * portion_unit.metric_ratio
+				else
+					set_portion_amount += portion.amount
+					ingredient_unit_number = portion.unit_number
+					portion_unit.short_name ? ingredient_unit_name = portion_unit.short_name : ingredient_unit_name = portion_unit.name
+				end
+
+
+				similar_shopping_list_portion_all = current_shopping_list.shopping_list_portions.where(ingredient_id: portion.ingredient_id)
+				if similar_shopping_list_portion_all.length > 0 && similar_shopping_list_portion_all.first.id != shopping_list_portion.id
+					similar_shopping_list_portion = similar_shopping_list_portion_all.first
+
+					similar_shopping_list_portion_unit = Unit.where(unit_number: similar_shopping_list_portion.unit_number).first
+
+					if similar_shopping_list_portion_unit && similar_shopping_list_portion_unit.metric_ratio != nil && similar_shopping_list_portion.portion_amount
+						set_portion_amount += similar_shopping_list_portion.portion_amount * similar_shopping_list_portion_unit.metric_ratio
+					elsif similar_shopping_list_portion.portion_amount
+						set_portion_amount += similar_shopping_list_portion.portion_amount
+					end
+
+				end
+
+				if @stock_ingredient_ids.include?(portion.ingredient_id)
+					shopping_list_portion.update_attributes(
+						in_cupboard: true
+					)
+					matching_stocks = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: portion.ingredient_id)
+					stock_amount = 0
+
+					matching_stocks.each do |stock|
+						stock_unit = stock.unit
+						if stock_unit.metric_ratio
+							stock_amount += stock.amount * stock_unit.metric_ratio
+						else
+							stock_amount += stock.amount
+						end
+					end
+
+					shopping_list_portion.update_attributes(
+						stock_amount: stock_amount
+					)
+					if stock_amount >= set_portion_amount
+						shopping_list_portion.update_attributes(
+							enough_in_cupboard: true
+						)
+						if stock_amount > (set_portion_amount*1.5)
+							shopping_list_portion.update_attributes(
+								plenty_in_cupboard: true
+							)
+						end
+					end
+					percent_in_cupboard = number_with_precision((stock_amount.to_f / set_portion_amount.to_f) * 100, :precision => 0)
+					shopping_list_portion.update_attributes(
+						percent_in_cupboard: percent_in_cupboard
+					)
+				else
+					shopping_list_portion.update_attributes(
+						in_cupboard: false
+					)
+				end
+
+
+				if set_portion_amount < 20
+					set_portion_amount = set_portion_amount.ceil
+				elsif set_portion_amount < 400
+					set_portion_amount = (set_portion_amount / 10).ceil * 10
+				elsif set_portion_amount < 1000
+					set_portion_amount = (set_portion_amount / 20).ceil * 20
+				else
+					set_portion_amount = (set_portion_amount / 50).ceil * 50
+				end
+
+				shopping_list_portion.update_attributes(
+					portion_amount: set_portion_amount,
+					unit_name: ingredient_unit_name.downcase,
+					unit_number: ingredient_unit_number
+				)
+			end
+		end
 
 	end
 

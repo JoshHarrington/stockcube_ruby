@@ -138,8 +138,7 @@ class ShoppingListsController < ApplicationController
     # @recipes.delete(@recipe_unpick)
     # @recipes << @recipe_pick
 
-    shopping_list_portions_set(@form_recipe_ids, nil, current_user.id, params[:id])
-    recipe_stock_matches_update(current_user.id)
+    shopping_list_portions_set_from_recipes(@form_recipe_ids, nil, current_user.id, params[:id])
 
     if @shopping_list.update(shopping_list_params)
       redirect_to shopping_list_path(@shopping_list)
@@ -155,8 +154,7 @@ class ShoppingListsController < ApplicationController
       # recipes_to_delete.each do |recipe|
       #   shopping_list.recipes.delete(recipe)
       # end
-      shopping_list_portions_set(nil, params[:recipe_id], current_user.id, params[:shopping_list_id])
-      recipe_stock_matches_update(current_user.id)
+      shopping_list_portions_set_from_recipes(nil, params[:recipe_id], current_user.id, params[:shopping_list_id])
 		end
   end
 

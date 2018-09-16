@@ -168,8 +168,7 @@ class RecipesController < ApplicationController
 		@recipe = Recipe.find(params[:id])
 		recipe_title = @recipe.title
 
-		shopping_list_portions_set(@recipe.id, nil, current_user.id, nil)
-		recipe_stock_matches_update(current_user.id)
+		shopping_list_portions_set_from_recipes(@recipe.id, nil, current_user.id, nil)
 
 		# give notice that the recipe has been added with link to shopping list
 		if current_user.shopping_lists.length > 0 && current_user.shopping_lists.last.archived != true && current_user.shopping_lists.last.recipes.length > 0

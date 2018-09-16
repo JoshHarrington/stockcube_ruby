@@ -14,12 +14,10 @@
       <% end %>
       <% if @no_results == true %>
       <div class="list_block--collection--sibling list_block--collection--sibling_stack">
-        <p>No results found! Maybe try a more generic search?</p>
-        <p>Here are some random recipes you might like!</p>
+        <p>No results found! Maybe try something like <%= link_to 'potato', recipes_path(search: 'potato') %> or <%= link_to 'egg', recipes_path(search: 'egg') %></p>
       </div>
-      <% else %>
-        <%= will_paginate(@recipes) %>
       <% end %>
+        <%= will_paginate(@recipes) %>
 
       <div class="list_block--collection list_block--collection__tight <% if defined? @mini_progress_on %>mini_progress<% end %>">
         <% @recipes.each do |recipe| %>

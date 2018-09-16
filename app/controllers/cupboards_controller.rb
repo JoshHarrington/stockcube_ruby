@@ -1,6 +1,7 @@
 class CupboardsController < ApplicationController
 	require 'set'
 	include StockHelper
+	include ShoppingListsHelper
 	before_action :logged_in_user, only: [:index, :show, :new, :create, :edit_all, :share, :share_request, :accept_cupboard_invite, :autosave, :autosave_sorting, :edit, :update]
 	before_action :correct_user,   only: [:show, :edit, :update, :share]
 	def index
@@ -139,6 +140,8 @@ class CupboardsController < ApplicationController
 				)
 			end
 			recipe_stock_matches_update(current_user[:id])
+			shopping_list_portions_update(current_user[:id])
+			flash[:info] = %Q[Recipe stock information updated!]
 		end
 		if params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != '' && current_user.cupboards.where(hidden: false, setup: false).length > 1
 			@cupboard_to_delete = Cupboard.find(params[:cupboard_id_delete].to_i)
@@ -208,6 +211,7 @@ class CupboardsController < ApplicationController
 
 		redirect_to cupboards_path
 		recipe_stock_matches_update(current_user[:id])
+		shopping_list_portions_update(current_user[:id])
   end
 	private
 		def cupboard_params
