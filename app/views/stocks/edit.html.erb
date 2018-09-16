@@ -13,18 +13,22 @@
 			<div class="item_form--content_row">
 				<%= label_tag 'stock_use_by_date', 'Use by date'  %> <%= s.date_field :use_by_date, min: Date.current, value: @stock.use_by_date, validate: true %>
 				<p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%><%= @stock.use_by_date > Time.zone.now ? 'This ingredient goes out of date in ' : 'This went off ' %> <span class="item_form--content_item--highlight"><%= distance_of_time_in_words(Time.zone.now, @stock.use_by_date) %><%= @stock.use_by_date <= Time.zone.now ? ' ago': '' %></span></p>
-			</div>
-
-			<div class="item_form--content_row">
-				<%= label_tag 'cupboard_pick', 'Cupboard pick'  %>
-				<% @cupboards.each do |cupboard| %>
-					<%= radio_button_tag "cupboard_id", cupboard.id, (cupboard.id == @current_cupboard.id ? true : false), class: "fancy_radio_button" %>
-					<%= label_tag "cupboard_id_#{cupboard.id}", cupboard.location, class: "fancy_radio_button__label" %>
-				<% end %>
-				<% if @shared_cupboards %>
-					<p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%>If you can't see one of your cupboards here, then it might be that the sharing settings for that cupboard are different from this one (<%= @current_cupboard.location %>)</p>
+				<% if @cupboards.length == 1 %>
+					<%= hidden_field_tag "cupboard_id", @cupboards.last.id %>
 				<% end %>
 			</div>
+			<% if @cupboards.length > 1 %>
+				<div class="item_form--content_row">
+					<%= label_tag 'cupboard_pick', 'Cupboard pick'  %>
+					<% @cupboards.each do |cupboard| %>
+						<%= radio_button_tag "cupboard_id", cupboard.id, (cupboard.id == @current_cupboard.id ? true : false), class: "fancy_radio_button" %>
+						<%= label_tag "cupboard_id_#{cupboard.id}", cupboard.location, class: "fancy_radio_button__label" %>
+					<% end %>
+					<% if @shared_cupboards %>
+						<p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%>If you can't see one of your cupboards here, then it might be that the sharing settings for that cupboard are different from this one (<%= @current_cupboard.location %>)</p>
+					<% end %>
+				</div>
+			<% end %>
 
 			<div class="item_form--content_row">
 				<%= s.button "Save" %>

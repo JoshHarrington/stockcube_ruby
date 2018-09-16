@@ -164,9 +164,9 @@ input[type=date]{
 }
 
 .pretty_form--sibling {
-	margin-bottom: em(40, 15);
+	margin-bottom: em(40, 10);
 	p {
-		margin-top: em(6, 15);
+		margin-top: em(15, 15);
 	}
 	ul {
 		font-size: em(15, 10);
@@ -227,9 +227,11 @@ input[type=date]{
 
 .pretty_form--sibling_row {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: baseline;
 	> * {
 		margin-right: 1rem;
+		width: 100%;
 	}
 }
 

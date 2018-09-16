@@ -15,14 +15,19 @@
 			</div>
 			<div class="item_form--content_row">
 				<%= label_tag 'stock_use_by_date', 'Use by date'  %> <%= s.date_field :use_by_date, min: Date.current, value: @use_by_limit, validate: true %>
-			</div>
-			<div class="item_form--content_row">
-				<%= label_tag 'cupboard_pick', 'Cupboard pick'  %>
-				<% @cupboards.each_with_index do |cupboard, index| %>
-					<%= radio_button_tag "cupboard_id", cupboard.id, (params.has_key?(:cupboard_id) ? (cupboard.id.to_i == params[:cupboard_id].to_i ? true : false) : (index == 0 ? true : false)), class: "fancy_radio_button" %>
-					<%= label_tag "cupboard_id_#{cupboard.id}", cupboard.location, class: "fancy_radio_button__label" %>
+				<% if @cupboards.length == 1 %>
+					<%= hidden_field_tag "cupboard_id", @cupboards.last.id %>
 				<% end %>
 			</div>
+			<% if @cupboards.length > 1 %>
+				<div class="item_form--content_row">
+					<%= label_tag 'cupboard_pick', 'Cupboard pick'  %>
+					<% @cupboards.each_with_index do |cupboard, index| %>
+						<%= radio_button_tag "cupboard_id", cupboard.id, (params.has_key?(:cupboard_id) ? (cupboard.id.to_i == params[:cupboard_id].to_i ? true : false) : (index == 0 ? true : false)), class: "fancy_radio_button" %>
+						<%= label_tag "cupboard_id_#{cupboard.id}", cupboard.location, class: "fancy_radio_button__label" %>
+					<% end %>
+				</div>
+			<% end %>
 			<div class="item_form--content_row">
 				<%= s.button "Save" %>
 			</div>

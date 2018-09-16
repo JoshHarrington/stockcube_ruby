@@ -68,21 +68,7 @@ module RecipesHelper
 			## figure out pluralization at same time, based on portion amount
 			portion_amount.to_s + ' ' + ingredient.pluralize(portion_amount.to_i)
 		else
-			if portion.ingredient.unit.short_name.present?
-				if portion_unit.include?("m") || portion_unit.include?("g") || portion_unit.include?("g")
-					portion_amount.to_s + portion_unit.to_s.titleize + ' ' + ingredient.to_s
-				else
-					portion_amount.to_s + ' ' + portion_unit.to_s.titleize + ' ' + ingredient.to_s
-				end
-			else
-
-				if portion_unit.to_s.downcase == "tbsp" || portion_unit.to_s.downcase == "tsp" || portion_unit.to_s.downcase == "oz"
-					portion_unit = portion_unit.to_s.titleize
-				else
-					portion_unit = portion_unit.to_s.pluralize(portion_amount.to_i)
-				end
-				portion_amount.to_s + ' ' + portion_unit.to_s + ' ' + ingredient.to_s
-			end
+			pluralize(portion_amount, portion_unit.to_s.titleize) + ' ' + ingredient.to_s
 		end
 	end
 end

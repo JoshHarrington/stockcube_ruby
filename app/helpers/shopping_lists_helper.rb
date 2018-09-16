@@ -113,7 +113,7 @@ module ShoppingListsHelper
 		@portion_ids = @portions.map(&:id)
 		@uniq_ingredient_ids = @portions.map(&:ingredient_id).uniq
 
-		@user_cupboard_ids = CupboardUser.where(user_id: current_user_id, accepted: true).map(&:cupboard_id)
+		@user_cupboard_ids = CupboardUser.where(user_id: current_user_id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
 
     @stock_ingredient_ids = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: @uniq_ingredient_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 4.days).map(&:ingredient_id)
 		@not_in_stock_ingredient_ids = @uniq_ingredient_ids - @stock_ingredient_ids
@@ -245,7 +245,7 @@ module ShoppingListsHelper
 			@portion_ids = @portions.map(&:id)
 			@uniq_ingredient_ids = @portions.map(&:ingredient_id).uniq
 
-			@user_cupboard_ids = CupboardUser.where(user_id: user_id, accepted: true).map(&:cupboard_id)
+			@user_cupboard_ids = CupboardUser.where(user_id: user_id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
 
 			@stock_ingredient_ids = Stock.where(cupboard_id: @user_cupboard_ids, ingredient_id: @uniq_ingredient_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 4.days).map(&:ingredient_id)
 			@not_in_stock_ingredient_ids = @uniq_ingredient_ids - @stock_ingredient_ids

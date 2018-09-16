@@ -1,4 +1,4 @@
-<p><%= sl_portion.ingredient.name %> [<%= sl_portion.portion_amount %> <%= sl_portion.unit_name %>]</p>
+<p><%= sl_portion.ingredient.name %> [<%= round_if_whole(sl_portion.portion_amount) %> <%= sl_portion.unit_name %>]</p>
 <% if sl_portion.in_cupboard == true %>
   <span class="list_block--item--ingredient_note">
     <% if sl_portion.plenty_in_cupboard == true %>

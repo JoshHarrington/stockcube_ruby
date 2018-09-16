@@ -1,7 +1,7 @@
 <div class="list_block--collection--wrap">
 	<% provide(:title, (@cupboard.setup ? 'Importing shop stock' : "Editing '#{@cupboard.location.to_s}''")) %>
 	<%= form_for @cupboard, :html => {id: "edit_cupboard_form", class: "edit_cupboard_form"} do |f| %>
-		<div class="list_block--collection--sibling">
+		<div class="list_block--collection--sibling list_block--collection--sibling-multi_action">
 			<% if @cupboard.setup %>
 				<h2>Importing shop stock</h2>
 			<% else %>
@@ -28,24 +28,29 @@
 					</div>
 					<div class="item_form--content_row">
 						<%= text_field_tag "stock_items[#{stock.id}][amount]", round_if_whole(stock.amount), class: 'bordered' %>
-						<%= select_tag "stock_items[#{stock.id}][unit_id]", options_from_collection_for_select(@units, "id", "name", stock.unit_id) %>
+						<%= select_tag "stock_items[#{stock.id}][unit_id]", options_from_collection_for_select(@units, "id", "name", stock.unit_id), class: "pretty_form--row--pretty_select" %>
 					</div>
 					<div class="item_form--content_row">
 						<%= label_tag "stock_items[#{stock.id}][use_by_date]", 'Use by date'  %> <%= date_field_tag "stock_items[#{stock.id}][use_by_date]", stock.use_by_date, min: Date.current, validate: true %>
-					</div>
-					<div class="item_form--content_row">
-							<h3>Cupboard</h3>
-						<% if @cupboard.setup %>
-						<p>
-							Pick the cupboard you want your new stock to go into
-						</p>
-						<% end %>
-						<break order="false"></break>
-						<% @all_cupboards.each do |cupboard| %>
-							<%= radio_button_tag "stock_items[#{stock.id}][cupboard]", cupboard.id, ((cupboard.id == @cupboard.id || cupboard.id == @all_cupboards.first.id) ? true : false), class: "fancy_radio_button" %>
-							<%= label_tag "stock_items[#{stock.id}][cupboard]_#{cupboard.id}", cupboard.location, class: "fancy_radio_button__label" %>
+						<% if @all_cupboards.length == 1 %>
+							<%= hidden_field_tag "stock_items[#{stock.id}][cupboard]", @all_cupboards.last.id %>
 						<% end %>
 					</div>
+					<% if @all_cupboards.length > 1 %>
+						<div class="item_form--content_row">
+								<h3>Cupboard</h3>
+							<% if @cupboard.setup %>
+							<p>
+								Pick the cupboard you want your new stock to go into
+							</p>
+							<% end %>
+							<break order="false"></break>
+							<% @all_cupboards.each do |cupboard| %>
+								<%= radio_button_tag "stock_items[#{stock.id}][cupboard]", cupboard.id, ((cupboard.id == @cupboard.id || cupboard.id == @all_cupboards.first.id) ? true : false), class: "fancy_radio_button" %>
+								<%= label_tag "stock_items[#{stock.id}][cupboard]_#{cupboard.id}", cupboard.location, class: "fancy_radio_button__label" %>
+							<% end %>
+						</div>
+					<% end %>
 				</div>
 			</div>
 
