@@ -29,3 +29,6 @@
 
 # Ignore all assets compiled locally
 public/assets/**
+
+# Ignore todos
+todos.md
