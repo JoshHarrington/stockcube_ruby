@@ -2,7 +2,7 @@ class Cupboard < ApplicationRecord
 	has_many :stocks
 	has_many :ingredients, through: :stocks
 
-	has_many :cupboard_users
+	has_many :cupboard_users, dependent: :destroy
 	has_many :users, through: :cupboard_users
 
 	accepts_nested_attributes_for :stocks,
