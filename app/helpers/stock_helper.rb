@@ -1,6 +1,6 @@
 module StockHelper
 	def recipe_stock_matches_update(user_id)
-		active_cupboard_ids = CupboardUser.where(user_id: user_id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
+		active_cupboard_ids = CupboardUser.where(user_id: user_id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard == nil && (cu.cupboard.setup == true || cu.cupboard.hidden == true) }.compact
 
 		all_cupboard_ids = CupboardUser.where(user_id: user_id, accepted: true).map(&:cupboard_id)
 		stock_updated_last_hour_num = Stock.where(cupboard_id: all_cupboard_ids).where("updated_at >= :last_hour", last_hour: Time.current - 1.hour).length

@@ -70,7 +70,9 @@ class ShoppingListsController < ApplicationController
   end
 
   def shopping_list_to_cupboard
-    current_user.cupboards.where(setup: true).delete_all
+    setups_cupboard_ids = current_user.cupboards.where(setup: true)
+    CupboardUser.where(cupboard_id: setups_cupboard_ids.map(&:id)).delete_all
+    setups_cupboard_ids.delete_all
 
     @import_cupboard = Cupboard.create(location: "Import Cupboard (Hidden)", setup: true)
     CupboardUser.create(cupboard_id: @import_cupboard.id, user_id: current_user.id, accepted: true, owner: true)

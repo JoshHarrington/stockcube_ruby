@@ -34,12 +34,12 @@
         <% end %>
         <% if shop_mode %>
         <li>
-          <p>Finish moving your <%= link_to "checked shopping list items", shopping_lists_current_shop_path %> to your cupboards (this todo will disappear when complete!)</p>
+          <p>Finish moving your <%= link_to "checked shopping list items", shopping_lists_current_shop_path %> to your cupboards [Started on <%= current_user.shopping_lists.last.updated_at.strftime('%a %d %B') %>]</p>
           <p class="h6 fade_text">(this todo will disappear when complete!)</p>
         </li>
         <% elsif update_cupboard %>
         <li>
-          <p>Finish moving your shopping list items to <%= link_to "your cupboards", edit_cupboard_path(update_cupboard) %></p>
+          <p>Finish moving your shopping list items to <%= link_to "your cupboards", edit_cupboard_path(update_cupboard) %> [Started on <%= update_cupboard.created_at.strftime('%a %d %B') %>]</p>
           <p class="h6 fade_text">(this todo will disappear when complete!)</p>
         </li>
         <% end %>
