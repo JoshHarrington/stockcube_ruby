@@ -83,12 +83,9 @@ class RecipesController < ApplicationController
 		@recipe = Recipe.find(params[:id])
 		@portions = @recipe.portions
 		@units = Unit.all
-		@cuisines = Set[]
-		Recipe.all.each do |recipe|
-			if recipe.cuisine.to_s != ''
-				@cuisines.add(recipe.cuisine)
-			end
-		end
+		@recipe_cuisine = @recipe.cuisine
+		@cuisines = Recipe.all.map(&:cuisine).uniq.compact.sort
+
 		similar_portions_count = 0
 		@portions.each do |portion|
 			if Portion.where(recipe_id: params[:id], ingredient_id: portion.ingredient_id).length > 1

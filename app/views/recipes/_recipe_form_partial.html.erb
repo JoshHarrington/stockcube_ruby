@@ -4,7 +4,7 @@
 		<%= f.text_field :title %>
 		<br />
 		<br />
-		<%= f.select :cuisine, options_for_select(@cuisines) %>
+		<%= f.select :cuisine, options_for_select(@cuisines, (@recipe_cuisine ? @recipe_cuisine : @cuisines.first)) %>
 		<br />
 		<br />
 		<p>Description (Method):</p>
