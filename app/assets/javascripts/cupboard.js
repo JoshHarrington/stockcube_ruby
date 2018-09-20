@@ -8,29 +8,30 @@ var cupboard = function() {
 
 	/// possible issue: does the sortable system ignore classes added whilst sorting is ongoing
 
-	$( '.cupboard.list_block:not(.shared)' ).sortable({
-		connectWith: '.cupboard.list_block:not(.shared)',
+	$( '.cupboard.list_block:not(.shared) .list_block--content' ).sortable({
+		connectWith: '.cupboard.list_block:not(.shared) .list_block--content',
 		placeholder: 'list_block--item_placeholder',
 		items: '.list_block--item_show',
 		cancel: '.empty-card'
 	}).disableSelection();
 
-	$( '.cupboard.list_block' ).on( 'sortstart', function() {
-		$( '.cupboard.list_block' ).addClass('hide_add');
+	$( '.cupboard.list_block .list_block--content' ).on( 'sortstart', function() {
+		$( '.cupboard.list_block .list_block--content' ).addClass('hide_add');
 	});
 
-	$( '.cupboard.list_block' ).on( 'sortstop', function(e, ui) {
-		$( '.cupboard.list_block' ).removeClass('hide_add');
+	$( '.cupboard.list_block .list_block--content' ).on( 'sortstop', function(e, ui) {
+		$( '.cupboard.list_block .list_block--content' ).removeClass('hide_add');
 		var moved_item = ui.item;
-		var new_cupboard_id = moved_item.parent().data('id');
+		var list_block_parent = moved_item.closest('.list_block');
+		var new_cupboard_id = list_block_parent.data('id');
 		var old_cupboard_id = moved_item.data('cupboard-id');
 		var stock_id = moved_item.data('stock-id');
 		var data = "stock_id=" + stock_id + "&cupboard_id=" + new_cupboard_id + "&old_cupboard_id=" + old_cupboard_id;
 		if (new_cupboard_id !== old_cupboard_id) {
-			$('#stock_' + stock_id).appendTo(moved_item.parent());
-			$('label[for="stock_' + stock_id + '"]').appendTo(moved_item.parent());
-			if (moved_item.parent().hasClass('empty')) {
-				moved_item.parent().removeClass('empty all-out-of-date');
+			$('#stock_' + stock_id).appendTo(list_block_parent);
+			$('label[for="stock_' + stock_id + '"]').appendTo(list_block_parent);
+			if (list_block_parent.hasClass('empty')) {
+				list_block_parent.removeClass('empty all-out-of-date');
 			}
 			if ($('.cupboard.list_block[data-id="'+ old_cupboard_id +'"] .list_block--item:not(.list_block--item_new)').length == 0) {
 				$('.cupboard.list_block[data-id="'+ old_cupboard_id +'"]').addClass('empty');
