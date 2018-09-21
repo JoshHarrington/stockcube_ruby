@@ -57,6 +57,22 @@
 	}
 }
 
+form.content_rich--wrapper {
+	.content_rich--title_row {
+		align-items: flex-end;
+		h1 {
+			flex-grow: 1;
+			input {
+				width: 100%;
+			}
+		}
+	}
+	.content_rich--title--action{
+		margin-left: em(15, 15);
+	}
+}
+
+
 .content_rich--row {
 	& + & {
 		margin-top: em(20, 10);
@@ -124,3 +140,52 @@
 	border-radius: em(1, 12);
 	padding: em(5, 12);
 }
+
+
+.portion_list--edit {
+	li {
+		border: 1px solid $teal-30;
+		padding: em(12, 15);
+		position: relative;
+		padding-right: em(40, 15);
+		& + li {
+			margin-top: em(20, 15);
+		}
+	}
+	[name="recipe[portion][id][]"]{
+		display: none;
+		& + label {
+			position: absolute;
+			top: 0;
+			right: 0;
+			text-indent: 150%;
+			overflow: hidden;
+			white-space: nowrap;
+			height: em(60, 15);
+			width: em(60, 15);
+			&::before {
+				content: "\00d7";
+				position: absolute;
+				top: 13px;
+				right: 20px;
+				z-index: 5;
+				font-size: 32px;
+			}
+			&::after {
+				position: absolute;
+				top: em(10, 15);
+				right: em(10, 15);
+				height: em(40, 15);
+				width: em(40, 15);
+				background-color: $warning-red;
+				content: " ";
+			}
+		}
+		&:checked + label {
+			width: 100%;
+			height: 100%;
+			background-color: rgba($warning-red, .3);
+		}
+	}
+}
+

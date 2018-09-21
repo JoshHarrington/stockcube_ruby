@@ -6,13 +6,37 @@
     <div class="content_rich--title_block">
       <div class="content_rich--title_row">
         <h1 class="recipe-title">
-					<%= @recipe.title %>
+					<%= f.text_field :title %>
 				</h1>
 				<%= f.submit "Save Recipe", class: "list_block--collection--action content_rich--title--action" %>
 			</div>
 		</div>
-		<%= render 'recipe_form_partial', f: f %>
-		<div class="content_rich--row portion_list">
+		<div class="content_rich--row">
+			<h3>Cuisine type:</h3>
+			<%= f.select :cuisine, options_for_select(@cuisines, (@recipe_cuisine ? @recipe_cuisine : @cuisines.first)), {}, {class: "pretty_form--row--pretty_select"} %>
+		</div>
+		<div class="content_rich--row">
+			<h3>Yield (Servings):</h3>
+			<%= f.text_field :yield, :value => (@recipe.yield ? @recipe.yield : '') %>
+		</div>
+		<div class="content_rich--row">
+			<h3>Prep time (mins):</h3>
+			<%= f.text_field :prep_time, :value => (@recipe.prep_time ? @recipe.prep_time : '') %>
+		</div>
+		<div class="content_rich--row">
+			<h3>Cook time (mins):</h3>
+			<%= f.text_field :cook_time, :value => (@recipe.cook_time ? @recipe.cook_time : '') %>
+		</div>
+		<div class="content_rich--row">
+			<h3>Description (Method):</h3>
+			<%= f.text_area :description, :value => (@recipe.description ? @recipe.description : ''), rows: 10, style: 'width: 90%; min-height: 300px;'%>
+		</div>
+		<div class="content_rich--row">
+			<h3>Notes (extra info):</h3>
+			<%= f.text_area :note, :value => (@recipe.note ? @recipe.note : ''), rows: 4, style: 'width: 90%; min-height: 200px;'%>
+		</div>
+		<%# render 'recipe_form_partial', f: f %>
+		<div class="content_rich--row portion_list--edit">
 			<h2>Ingredients</h2>
 			<ul>
 				<% @portions.each do |portion| %>
@@ -21,7 +45,7 @@
 						<br />
 						<%= hidden_field_tag "recipe[portion_ids][]", portion.id %>
 						<%= text_field_tag "recipe[portion][amount][]", portion.amount %>
-						<%= select_tag "recipe[portion][ingredient][unit][]", options_from_collection_for_select(@units, "id", "name", portion.ingredient.unit.id), :id => portion.ingredient.id %>
+						<%= select_tag "recipe[portion][ingredient][unit][]", options_from_collection_for_select(@units, "id", "name", portion.ingredient.unit.id),  {class: "pretty_form--row--pretty_select", id: portion.ingredient.id} %>
 						<br />
 						<%= check_box_tag "recipe[portion][id][]", portion.id, nil, {:id => portion.id} %>
 						<%= label_tag "recipe[portion][id][]", "Remove from recipe", {:for => portion.id} %>
