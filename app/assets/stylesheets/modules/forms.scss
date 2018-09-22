@@ -283,6 +283,10 @@ input[type=date]{
 	}
 }
 
+.list_block--collection--action-block {
+	display: inline-block;
+}
+
 .list_block--collection__bricks--fancy_radio_group {
 	display: flex;
 	flex-wrap: wrap;

@@ -6,7 +6,8 @@ class PortionsController < ApplicationController
 	def new
 		@portion = Portion.new
 		@ingredients = Ingredient.all.order('name ASC')
-		@unit_select = Unit.all
+		@unit_select = Unit.all.map{|u| u if u.name != nil }.compact
+		# @unit_select = Unit.all.map{|u| u if u.name != nil }.compact.map{|u| {id: u.id, name: u.name.pluralize} }
 	end
 	def create
 		@portion = Portion.new(portion_params)
