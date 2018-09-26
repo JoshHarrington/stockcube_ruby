@@ -12,27 +12,21 @@ class PortionsController < ApplicationController
 	def create
 		@portion = Portion.new(portion_params)
 		@ingredients = Ingredient.all.order('name ASC')
-		@assoc_recipe = Recipe.where(id: params[:recipe_id]).first
-		@unit_select = Unit.all
+		@assoc_recipe = Recipe.find(params[:portion][:recipe_id])
+		@unit_select = Unit.all.map{|u| u if u.name != nil }.compact
 
 		if params[:ingredient_id].present?
 			@selected_ingredient_id = params[:ingredient_id]
 		end
 
-		@portion_amount = params[:amount]
-		@portion_unit = params[:unit_number]
-
-		@portion.update_attributes(
-			unit_number: @portion_unit,
-			recipe_id: params[:recipe_id],
-			ingredient_id: @selected_ingredient_id
-		)
-
-
 		if @portion.save
-			redirect_to edit_recipe_path(@assoc_recipe)
+			redirect_to edit_recipe_path(params[:portion][:recipe_id], anchor: 'ingredient_' + @portion.id.to_s)
 		else
-			render 'new'
+			if params.has_key?(:recipe_id) && params[:portion][:recipe_id].to_s != ''
+				redirect_to portions_new_path(recipe_id: params[:portion][:recipe_id])
+			else
+				redirect_to recipes_path
+			end
 			flash[:danger] = "Make sure you select an ingredient"
 		end
 	end
@@ -123,6 +117,6 @@ class PortionsController < ApplicationController
 	end
 	private
 		def portion_params
-			params.require(:portion).permit(:amount, ingredients_attributes:[:id, :name, :image, :unit])
+			params.require(:portion).permit(:amount, :unit_number, :ingredient_id, :recipe_id)
 		end
 end

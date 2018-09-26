@@ -81,7 +81,7 @@ class RecipesController < ApplicationController
 	end
 	def edit
 		@recipe = Recipe.find(params[:id])
-		@portions = @recipe.portions
+		@portions = @recipe.portions.order("created_at ASC")
 		@units = Unit.all
 		@recipe_cuisine = @recipe.cuisine
 		@cuisines = Recipe.all.map(&:cuisine).uniq.compact.sort

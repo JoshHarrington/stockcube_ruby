@@ -258,7 +258,7 @@ input[type=date]{
 .item_form button[type="submit"],
 .list_block--collection--action,
 .pretty_form--submit_button {
-	font-size: em(15, 10);
+	font-size: rem(15);
 	background-color: white;
 	-webkit-appearance: none;
 	padding: em(10, 15) em(20, 15);
@@ -782,6 +782,10 @@ select#day_pick + .selectize {
 		width: 100%;
 	}
 	height: em(36, 15);
+}
+
+.field_with_errors.error_with_label [type="date"] {
+	width: 100%;
 }
 
 

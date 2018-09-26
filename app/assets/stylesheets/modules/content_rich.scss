@@ -70,6 +70,20 @@ form.content_rich--wrapper {
 	.content_rich--title--action{
 		margin-left: em(15, 15);
 	}
+	.input_half_width {
+		width: 50%;
+		margin-right: 0;
+	}
+	.field_with_errors.error_with_label {
+		width: 50%;
+		.input_half_width {
+			width: 100%;
+		}
+	}
+	&.portion_form .content_rich--row {
+		display: flex;
+		flex-wrap: wrap;
+	}
 }
 
 
@@ -113,7 +127,7 @@ form.content_rich--wrapper {
 	}
 	[type="text"] {
 		font-size: em(20, 10);
-    min-height: em(42, 20);
+    min-height: em(36, 20);
     width: em(140, 20);
     padding-left: em(8, 20);
     margin-right: em(7, 20);

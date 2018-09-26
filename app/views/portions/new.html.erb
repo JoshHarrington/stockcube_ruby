@@ -6,7 +6,7 @@
 <% end %>
 <% provide(:title, "Add ingredient to \"#{@recipe_title}\"") %>
 
-<%= form_for @portion, :html => {class: 'content_rich--wrapper'}, id: "portion-form", :validate => true do |p| %>
+<%= form_for @portion, :html => {id: "portion_form", class: 'content_rich--wrapper portion_form'}, :validate => true do |p| %>
 	<div class="content_rich">
     <div class="content_rich--title_block">
       <div class="content_rich--title_row">
@@ -15,15 +15,16 @@
 			</div>
 		</div>
 		<div class="content_rich--row">
-			<%= select_tag :ingredient_id, options_from_collection_for_select(@ingredients, "id", "name"), class: "pretty_form--row--pretty_select", prompt: "Pick your ingredient", required: true %>
+			<%= p.select(:ingredient_id, options_from_collection_for_select(@ingredients, "id", "name"), {prompt: "Pick your ingredient"}, {class: "pretty_form--row--pretty_select wide_select", required: true, validate: true }) %>
+			<%= p.hidden_field(:recipe_id, value: params[:recipe_id]) %>
 		</div>
 		<div class="content_rich--row">
-			<%= hidden_field_tag "recipe_id", params[:recipe_id] %>
-			<%= text_field_tag :amount, '', placeholder: '250', validate: true %>
-			<%= select_tag "unit_number", options_from_collection_for_select(@unit_select, "id", "name", 8), class: "pretty_form--row--pretty_select", aria: {label: "Pick the units for the ingredient"} %>
+			<%= p.text_field(:amount, value: '', placeholder: '250', validate: true, class: "input_half_width") %>
+			<%= p.select(:unit_number, options_from_collection_for_select(@unit_select, "id", "name", 8), {}, {class: "pretty_form--row--pretty_select half_select", aria: {label: "Pick the units for the ingredient"}}) %>
 		</div>
 		<div class="content_rich--row">
-			<%= submit_tag "Save ingredient", class: "list_block--collection--action" %>
+			<p>
+			<%= p.button "Save ingredient", class: "list_block--collection--action" %><span>&#8196;&#8196;and return to editing "<%= recipe_title.to_s %>"</span></p>
 		</div>
 	</div>
 <% end %>

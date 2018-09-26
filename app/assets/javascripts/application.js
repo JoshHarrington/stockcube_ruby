@@ -23,6 +23,7 @@
 //= require list_block
 //= require navigation
 //= require stocks
+//= require portions
 //= require recipes
 //= require shopping_list
 //= require cupboard_share

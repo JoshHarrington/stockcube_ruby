@@ -40,7 +40,7 @@
 			<h2>Ingredients</h2>
 			<ul>
 				<% @portions.each do |portion| %>
-					<li>
+					<li id="ingredient_<%=portion.id%>" class="pretty_form--highlight_green">
 						<p><%= portion.ingredient.name %></p>
 						<br />
 						<% portion_unit = portion.unit_number ? Unit.find(portion.unit_number) : nil %>
