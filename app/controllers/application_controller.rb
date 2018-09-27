@@ -9,7 +9,11 @@ class ApplicationController < ActionController::Base
 
   def redirect_if_old
     if request.host == 'stockcub.es'
-      redirect_to "#{request.protocol}getstockcubes.com#{request.fullpath}", :status => :moved_permanently
+      if domain_check('demo') == true
+        redirect_to "demo.getstockcubes.com#{request.fullpath}", :status => :moved_permanently
+      else
+        redirect_to "www.getstockcubes.com#{request.fullpath}", :status => :moved_permanently
+      end
     end
   end
 
