@@ -60,7 +60,7 @@
       <p>Sound good?</p>
       <p>
       <% if current_user && current_user.demo == true %>
-        <% if domain_check('demo') == true %>
+        <% if request.host == 'demo.getstockcubes.com' %>
           <%= link_to 'Sign up today', 'https://www.getstockcubes.com/signup' %> on the main site
         <% else %>
           <%= link_to 'Sign up today', demo_logout_path, method: :delete %>
@@ -73,7 +73,7 @@
         Not yet convinced? Check out the <%= link_to 'demo site', 'https://demo.getstockcubes.com' %>
       </p>
     <% end %>
-    <% if current_user && current_user.demo == false && domain_check('demo') != true %>
+    <% if current_user && current_user.demo == false && request.host != 'demo.getstockcubes.com' %>
     <p>
       Unsure about how things work, check out the <%= link_to 'demo site', 'https://demo.getstockcubes.com' %>
     </p>

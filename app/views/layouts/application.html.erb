@@ -2,7 +2,7 @@
 <html class="no-js">
   <head>
     <% if Rails.env.production? %>
-      <% if domain_check('demo') == true %>
+      <% if request.host == 'demo.getstockcubes.com' %>
         <!-- Google Tag Manager -->
         <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
         new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -76,7 +76,7 @@
 
   <body class="<%= controller_name %>_controller <%= action_name %>_page">
     <% if Rails.env.production? %>
-      <% if domain_check('demo') == true %>
+      <% if request.host == 'demo.getstockcubes.com' %>
         <!-- Google Tag Manager (noscript) -->
         <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K7P9J4B"
         height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>

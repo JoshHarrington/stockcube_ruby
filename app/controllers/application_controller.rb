@@ -4,37 +4,25 @@ class ApplicationController < ActionController::Base
   include ActionController::Helpers
 
   before_action :redirect_if_old
+  before_action :run_demo_domain_check
 
   protected
 
   def redirect_if_old
-    if request.host == 'stockcub.es'
-      redirect_to "https://www.getstockcubes.com"
+    if request.host == 'stockcub.es' || request.host == 'www.stockcub.es'
+      redirect_to 'https://www.getstockcubes.com'
     end
     if request.host == 'demo.stockcub.es'
-      redirect_to "https://demo.getstockcubes.com"
+      redirect_to 'https://demo.getstockcubes.com'
     end
     if request.host == 'getstockcubes.com'
-      redirect_to "https://www.getstockcubes.com"
+      redirect_to 'https://www.getstockcubes.com'
     end
   end
 
-  before_action :run_demo_domain_check
-
-
-  def domain_check(subdomain_string)
-		full_domain = request.host
-		if full_domain.to_s.include? '.'
-			full_domain = full_domain.split('.')
-			subdomain = full_domain[0]
-			if subdomain.to_s == subdomain_string.to_s
-				return true
-			end
-		end
-	end
 
   def run_demo_domain_check
-    if domain_check('demo') == true
+    if request.host == 'demo.getstockcubes.com'
       if logged_in? && current_user && current_user.demo
         log_out
       end
