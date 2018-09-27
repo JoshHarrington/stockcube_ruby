@@ -2,8 +2,20 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   include SessionsHelper
   include ActionController::Helpers
+
+  before_action :redirect_if_old
+
+  protected
+
+  def redirect_if_old
+    if request.host == 'stockcub.es'
+      redirect_to "#{request.protocol}getstockcubes.com#{request.fullpath}", :status => :moved_permanently
+    end
+  end
+
   before_action :run_demo_domain_check
-  
+
+
   def domain_check(subdomain_string)
 		full_domain = request.host
 		if full_domain.to_s.include? '.'
@@ -14,7 +26,7 @@ class ApplicationController < ActionController::Base
 			end
 		end
 	end
-  
+
   def run_demo_domain_check
     if domain_check('demo') == true
       if logged_in? && current_user && current_user.demo
