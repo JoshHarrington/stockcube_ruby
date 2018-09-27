@@ -102,12 +102,15 @@ module ShoppingListsHelper
 			current_shopping_list = ShoppingList.find(current_shopping_list_id)
 		end
 
+		puts current_shopping_list_id
+
 		if add_recipe_id == nil && recipe_ids_to_delete != nil
 			ShoppingListRecipe.where(shopping_list_id: current_shopping_list_id, recipe_id: recipe_ids_to_delete).delete_all
 		elsif add_recipe_id != nil && recipe_ids_to_delete == nil
 			ShoppingListRecipe.find_or_create_by(shopping_list_id: current_shopping_list_id, recipe_id: add_recipe_id)
 		end
 
+		puts 'got past shopping list pick'
 
 		@portions = Portion.where(recipe_id: current_shopping_list.recipes)
 		@portion_ids = @portions.map(&:id)
@@ -127,6 +130,8 @@ module ShoppingListsHelper
 
 		current_shopping_list.shopping_list_portions.delete_all
 
+		puts 'deleted all current shopping list portions'
+
 		@portions.each do |portion|
 			next if portion.ingredient.name.downcase == "water"
 
@@ -135,6 +140,8 @@ module ShoppingListsHelper
 				ingredient_id: portion.ingredient_id,
 				unit_number: portion.unit_number
 			)
+
+			puts 'shopping list portion created: id #' + shopping_list_portion.id.to_s
 
 			set_portion_amount = 0
 
@@ -228,6 +235,7 @@ module ShoppingListsHelper
 				unit_number: ingredient_unit_number
 			)
 		end
+		puts 'run through all shopping list portion additions or updates'
 
 	end
 
