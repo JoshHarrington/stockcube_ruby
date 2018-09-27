@@ -9,15 +9,14 @@ class ApplicationController < ActionController::Base
 
   def redirect_if_old
     if request.host == 'stockcub.es'
-      if domain_check('demo') == true
-        redirect_to "https://demo.getstockcubes.com"
-      else
-        redirect_to "https://www.getstockcubes.com"
-      end
+      redirect_to "https://www.getstockcubes.com"
     end
-    # if !(full_domain.to_s.include?('www')) && request.host == 'getstockcubes.com'
-    #   redirect_to "https://www.getstockcubes.com", :status => :moved_permanently
-    # end
+    if request.host == 'demo.stockcub.es'
+      redirect_to "https://demo.getstockcubes.com"
+    end
+    if request.host == 'getstockcubes.com'
+      redirect_to "https://www.getstockcubes.com"
+    end
   end
 
   before_action :run_demo_domain_check
