@@ -10,13 +10,13 @@ class ApplicationController < ActionController::Base
 
   def redirect_if_old
     if request.host == 'stockcub.es' || request.host == 'www.stockcub.es'
-      redirect_to 'https://www.getstockcubes.com'
+      redirect_to 'https://www.getstockcubes.com', :status => :moved_permanently
     end
     if request.host == 'demo.stockcub.es'
-      redirect_to 'https://demo.getstockcubes.com'
+      redirect_to 'https://demo.getstockcubes.com', :status => :moved_permanently
     end
     if request.host == 'getstockcubes.com'
-      redirect_to 'https://www.getstockcubes.com'
+      redirect_to 'https://www.getstockcubes.com', :status => :moved_permanently
     end
   end
 
