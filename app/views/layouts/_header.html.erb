@@ -51,12 +51,6 @@
         --><li <% if current_section == "ingredients" %>class="current_section"<% end %>><%= link_to "Ingredients", ingredients_path %></li><!--
       --><% end %><!--
       -->
-      <script>
-        console.log('logged in status: ' + <%= logged_in?.to_s %>);
-        console.log('current_user status: ' + <%= (!!current_user).to_s %>);
-        console.log('current_user.shopping_lists.order('updated_at asc').last[:archived] === false status: ' + <%= (current_user.shopping_lists.order('updated_at asc').last[:archived] === false).to_s %>);
-        console.log('current_user.shopping_lists.last.recipes.length != 0 status: ' + <%= (current_user.shopping_lists.last.recipes.length != 0).to_s %>);
-      </script>
       <% if logged_in? && (!!current_user) && (current_user.shopping_lists.order('updated_at asc').last[:archived] === false) && (current_user.shopping_lists.last.recipes.length != 0) %><!--
         --><li<% if request.path_parameters[:controller] == "shopping_lists" %> class="current_section"<% end %>><!--
           --><% if current_user.shopping_lists.last.shopping_list_portions.where(checked: true).length > 0 %><!--
