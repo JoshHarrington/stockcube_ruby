@@ -59,13 +59,13 @@ class ShoppingListsController < ApplicationController
   end
 
   def show_ingredients_current
-    @shopping_list = current_user.shopping_lists.last
+    @shopping_list = current_user.shopping_lists.order('updated_at asc').last
     @shopping_list_portions = @shopping_list.shopping_list_portions
     @recipes = @shopping_list.recipes
   end
 
   def shop
-    @shopping_list = current_user.shopping_lists.last
+    @shopping_list = current_user.shopping_lists.order('updated_at asc').last
     @shopping_list_portions = @shopping_list.shopping_list_portions
   end
 
@@ -77,15 +77,15 @@ class ShoppingListsController < ApplicationController
     @import_cupboard = Cupboard.create(location: "Import Cupboard (Hidden)", setup: true)
     CupboardUser.create(cupboard_id: @import_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
     shopping_list_ids_from_params = params[:shopping_list_item].to_unsafe_h.map {|id| id[0].to_i }
-    currently_checked_shopping_list_portion_ids = current_user.shopping_lists.last.shopping_list_portions.where(checked: true).map(&:id)
+    currently_checked_shopping_list_portion_ids = current_user.shopping_lists.order('updated_at asc').last.shopping_list_portions.where(checked: true).map(&:id)
 
-    if current_user.shopping_lists.length > 0 && current_user.shopping_lists.last.archived != true
+    if current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last.archived != true
       if currently_checked_shopping_list_portion_ids.sort! != shopping_list_ids_from_params.sort!
         shopping_list_portion_ids_to_uncheck = currently_checked_shopping_list_portion_ids - shopping_list_ids_from_params
         ShoppingListPortion.find(shopping_list_portion_ids_to_uncheck).map{|sl| sl.update_attributes(checked: false)}
         ShoppingListPortion.find(shopping_list_ids_from_params).map{|sl| sl.update_attributes(checked: true)}
       end
-      current_user.shopping_lists.last.shopping_list_portions.each do |shopping_list_portion|
+      current_user.shopping_lists.order('updated_at asc').last.shopping_list_portions.each do |shopping_list_portion|
         if shopping_list_portion.checked == true
           Stock.create(
             unit_id: shopping_list_portion.unit_number,
@@ -98,7 +98,7 @@ class ShoppingListsController < ApplicationController
       end
     end
 
-    current_user.shopping_lists.last.update_attributes(
+    current_user.shopping_lists.order('updated_at asc').last.update_attributes(
       archived: true
     )
 
@@ -137,7 +137,7 @@ class ShoppingListsController < ApplicationController
   def autosave_checked_items
     if params.has_key?(:shopping_list_portion_ids) && params[:shopping_list_portion_ids].to_s != ''
       new_to_check_sl_portion_ids = params[:shopping_list_portion_ids].to_unsafe_h.map {|id| id.first.to_i}
-      currently_checked_sl_portion_ids = ShoppingListPortion.where(shopping_list_id: current_user.shopping_lists.last.id, checked: true).map(&:id).map(&:to_i)
+      currently_checked_sl_portion_ids = ShoppingListPortion.where(shopping_list_id: current_user.shopping_lists.order('updated_at asc').last.id, checked: true).map(&:id).map(&:to_i)
       remove_checked_status_sl_portion_ids = currently_checked_sl_portion_ids - new_to_check_sl_portion_ids
       add_checked_status_sl_portion_ids = new_to_check_sl_portion_ids - currently_checked_sl_portion_ids
       if remove_checked_status_sl_portion_ids.length > 0
@@ -182,7 +182,7 @@ class ShoppingListsController < ApplicationController
     end
 
     def user_has_shopping_lists
-			if current_user && current_user.shopping_lists.last && current_user.shopping_lists.last.archived == true && current_user.shopping_lists.last.recipes.length == 0
+			if current_user && current_user.shopping_lists.order('updated_at asc').last && current_user.shopping_lists.order('updated_at asc').last.archived == true && current_user.shopping_lists.order('updated_at asc').last.recipes.length == 0
 				redirect_to root_url
 			end
 		end
