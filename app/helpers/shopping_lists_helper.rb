@@ -91,8 +91,8 @@ module ShoppingListsHelper
 		current_user_set = User.find(current_user_id)
 
 		if current_shopping_list_id == nil
-			if current_user_set.shopping_lists.length > 0 && current_user_set.shopping_lists.last.archived != true
-				current_shopping_list = current_user_set.shopping_lists.last
+			if current_user_set.shopping_lists.length > 0 && current_user_set.shopping_lists.order('updated_at asc').last[:archived] === false
+				current_shopping_list = current_user_set.shopping_lists.order('updated_at asc').last
 				current_shopping_list_id = current_shopping_list.id
 			else
 				current_shopping_list = ShoppingList.create(user_id: current_user_id)

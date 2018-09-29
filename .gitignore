@@ -30,5 +30,6 @@
 # Ignore all assets compiled locally
 public/assets/**
 
-# Ignore todos
+# Ignore notes
 todos.md
+notes.md

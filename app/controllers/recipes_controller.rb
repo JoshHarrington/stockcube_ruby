@@ -171,11 +171,11 @@ class RecipesController < ApplicationController
 		shopping_list_portions_set_from_recipes(@recipe.id, nil, current_user.id, nil)
 
 		# give notice that the recipe has been added with link to shopping list
-		if current_user.shopping_lists.length > 0 && current_user.shopping_lists.last.archived != true && current_user.shopping_lists.last.recipes.length > 0
+		if current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last[:archived] === false && current_user.shopping_lists.order('updated_at asc').last.recipes.length > 0
+			@string = "Added the '#{@recipe.title}' to your #{link_to("current shopping list", current_shopping_list_ingredients_path)}"
+			redirect_to recipes_path, notice: @string
 		end
 
-		@string = "Added the '#{@recipe.title}' to your #{link_to("current shopping list", current_shopping_list_ingredients_path)}"
-		redirect_to recipes_path, notice: @string
 
 	end
 
