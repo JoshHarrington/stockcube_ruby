@@ -9,6 +9,7 @@ var portion_form = function(){
 
 $(document).on("turbolinks:load", function() {
 	if ($('#portion_form').length > 0) {
-		portion_form();
+    portion_form();
+    beforeUnload();
 	}
 });

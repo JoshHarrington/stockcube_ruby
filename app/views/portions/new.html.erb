@@ -4,7 +4,7 @@
     window.location.href="/recipes"
   </script>
 <% end %>
-<% provide(:title, "Add ingredient to \"#{@recipe_title}\"") %>
+<% provide(:title, "Add ingredient to \"#{recipe_title}\"") %>
 
 <%= form_for @portion, :html => {id: "portion_form", class: 'content_rich--wrapper portion_form'}, :validate => true do |p| %>
 	<div class="content_rich">

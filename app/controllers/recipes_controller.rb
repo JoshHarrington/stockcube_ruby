@@ -106,31 +106,24 @@ class RecipesController < ApplicationController
 			@portion_ids.push(portion.id)
 		end
 
-		@delete_portion_check_ids = params[:recipe][:portion][:id]
-		@form_portion_ids = params[:recipe][:portion_ids]
-		@form_portion_amounts = params[:recipe][:portion][:amount]
-		@form_portion_ingredient_units = params[:recipe][:portion][:ingredient][:unit]
+		@delete_portion_check_ids = params[:recipe][:portion_delete_ids]
 
-		# Rails.logger.debug @delete_portion_check_ids
+		## delete portions from :portion_delete_ids
 		if @delete_portion_check_ids
-			@portion_unpick = Portion.find(@delete_portion_check_ids)
-			@portions.delete(@portion_unpick)
+			Portion.find(@delete_portion_check_ids).delete_all
 		end
 
-		if @form_portion_amounts.length == @portions.length
-			@portions.each_with_index do |portion, index|
-				if not portion[:amount].to_f == @form_portion_amounts[index].to_f
-					portion.update_attributes(
-						:amount => @form_portion_amounts[index].to_f
-					)
-				end
-				if @form_portion_ingredient_units.length == @portions.length
-					if not portion.ingredient.unit_id.to_f == @form_portion_ingredient_units[index].to_f
-						portion.ingredient.update_attributes(
-							:unit_id => @form_portion_ingredient_units[index].to_f
-						)
-					end
-				end
+		params[:recipe][:portions].to_unsafe_h.map do |portion_id, values|
+			portion = Portion.find(portion_id)
+			unless portion.amount == values[:amount].to_f
+				portion.update_attributes(
+					amount: values[:amount]
+				)
+			end
+			unless portion.unit_number == values[:unit_number].to_f
+				portion.update_attributes(
+					unit_number: values[:unit_number]
+				)
 			end
 		end
 
@@ -178,7 +171,7 @@ class RecipesController < ApplicationController
 
 	private
 		def recipe_params
-			params.require(:recipe).permit(:user_id, :search, :cuisine, :search_ingredients, :title, :description, :prep_time, :cook_time, :yield, :note, portions_attributes:[:amount, :_destroy])
+			params.require(:recipe).permit(:user_id, :search, :cuisine, :search_ingredients, :title, :description, :prep_time, :cook_time, :yield, :note, portions_attributes:[:amount, :unit_number, :ingredient_id, :recipe_id, :_destroy])
 		end
 
 		def shopping_list_params

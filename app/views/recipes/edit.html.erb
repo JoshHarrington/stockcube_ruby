@@ -1,7 +1,7 @@
 <% provide(:title, "Editing Recipe: #{@recipe.title}") %>
 
 
-<%= form_for @recipe, :html => {class: 'content_rich--wrapper'} do |f| %>
+<%= form_for @recipe, :html => {class: 'content_rich--wrapper', id: 'recipe_edit'} do |f| %>
   <div class="content_rich">
     <div class="content_rich--title_block">
       <div class="content_rich--title_row">
@@ -44,12 +44,11 @@
 						<p><%= portion.ingredient.name %></p>
 						<br />
 						<% portion_unit = portion.unit_number ? Unit.find(portion.unit_number) : nil %>
-						<%= hidden_field_tag "recipe[portion_ids][]", portion.id %>
-						<%= text_field_tag "recipe[portion][amount][]", round_if_whole(portion.amount), aria: {label: (portion.amount != nil && portion.amount.to_s != '' ? "Portion amount for this ingredient is " + ( portion_unit ? " " + pluralize(portion.amount, portion_unit.name) : portion.amount ) : "Portion amount for this ingredient is not set" )} %>
-						<%= select_tag "recipe[portion][unit_number][]", options_from_collection_for_select(@units, "id", "name", portion.unit_number),  {class: "pretty_form--row--pretty_select", id: portion.ingredient.id, aria: {label: "Choose the right units for the ingredient"}} %>
+						<%= text_field_tag "recipe[portions][#{portion.id}][amount]", round_if_whole(portion.amount), aria: {label: (portion.amount != nil && portion.amount.to_s != '' ? "Portion amount for this ingredient is " + ( portion_unit ? " " + pluralize(portion.amount, portion_unit.name) : portion.amount ) : "Portion amount for this ingredient is not set" )} %>
+						<%= select_tag "recipe[portions][#{portion.id}][unit_number]", options_from_collection_for_select(@units, "id", "name", portion.unit_number),  {class: "pretty_form--row--pretty_select", id: portion.ingredient.id, aria: {label: "Choose the right units for the ingredient"}} %>
 						<br />
-						<%= check_box_tag "recipe[portion][id][]", portion.id, nil, {:id => portion.id} %>
-						<%= label_tag "recipe[portion][id][]", "Remove ingredient from recipe", {:for => portion.id, :title => "Remove ingredient"} %>
+						<%= check_box_tag "recipe[portion_delete_ids][]", portion.id, nil, {:id => portion.id} %>
+						<%= label_tag "recipe[portion_delete_ids][]", "Remove ingredient from recipe", {:for => portion.id, :title => "Remove ingredient"} %>
 					</li>
 				<% end %>
 			</ul>
