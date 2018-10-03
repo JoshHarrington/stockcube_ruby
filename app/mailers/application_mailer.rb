@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: 'noreply@stockcub.es'
+  default from: 'noreply@getstockcubes.com'
   layout 'mailer'
 end

@@ -6,14 +6,4 @@ module ApplicationHelper
 	def large_svg(name)
 		return '<svg class="large-svg '.html_safe + name + '"><use xlink:href="'.html_safe + asset_path( name + '.svg') + '#'.html_safe + name + '"></use></svg>'.html_safe
 	end
-	def domain_check(subdomain_string)
-		full_domain = request.host
-		if full_domain.to_s.include? '.'
-			full_domain = full_domain.split('.')
-			subdomain = full_domain[0]
-			if subdomain.to_s == subdomain_string.to_s
-				return true
-			end
-		end
-	end
 end

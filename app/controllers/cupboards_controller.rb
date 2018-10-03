@@ -119,7 +119,7 @@ class CupboardsController < ApplicationController
 			end
 			redirect_to cupboards_path(anchor: decrypted_cupboard_id.first.to_s)
 		else
-			flash[:danger] = %Q[Something went wrong! Email the team for help: <a href="mailto:team@stockcub.es?subject=Something%20went%20wrong%20when%20accepting%20a%20shared%20cupboard%20request" target="_blank">team@stockcub.es</a>]
+			flash[:danger] = %Q[Something went wrong! Email the team for help: <a href="mailto:team@getstockcubes.com?subject=Something%20went%20wrong%20when%20accepting%20a%20shared%20cupboard%20request" target="_blank">team@getstockcubes.com</a>]
 			redirect_to root_path
 		end
 	end

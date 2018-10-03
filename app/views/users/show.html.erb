@@ -2,7 +2,7 @@
 
 <%
   current_user.cupboards.where(setup: true, hidden: false).length > 0 ? update_cupboard = current_user.cupboards.where(setup: true, hidden: false).last : update_cupboard = false
-  current_user.shopping_lists.length > 0 && current_user.shopping_lists.last.archived == false && current_user.shopping_lists.last.recipes.length != 0 && current_user.shopping_lists.last.shopping_list_portions.where(checked: true).length > 0 ? shop_mode = true : shop_mode = false
+  current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last.archived == false && current_user.shopping_lists.order('updated_at asc').last.recipes.length != 0 && current_user.shopping_lists.order('updated_at asc').last.shopping_list_portions.where(checked: true).length > 0 ? shop_mode = true : shop_mode = false
   CupboardUser.where(user_id: current_user.id, accepted: false).length > 0 ? cupboard_invites = CupboardUser.where(user_id: current_user.id, accepted: false) : cupboard_invites = false
 %>
 
@@ -34,7 +34,7 @@
         <% end %>
         <% if shop_mode %>
         <li>
-          <p>Finish moving your <%= link_to "checked shopping list items", shopping_lists_current_shop_path %> to your cupboards [Started on <%= current_user.shopping_lists.last.updated_at.strftime('%a %d %B') %>]</p>
+          <p>Finish moving your <%= link_to "checked shopping list items", shopping_lists_current_shop_path %> to your cupboards [Started on <%= current_user.shopping_lists.order('updated_at asc').last.updated_at.strftime('%a %d %B') %>]</p>
           <p class="h6 fade_text">(this todo will disappear when complete!)</p>
         </li>
         <% elsif update_cupboard %>
