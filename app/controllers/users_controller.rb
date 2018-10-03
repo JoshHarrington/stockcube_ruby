@@ -1,8 +1,10 @@
 class UsersController < ApplicationController
   before_action :logged_in_user, only: [:index, :edit, :update, :show, :destroy]
-  before_action :correct_user,   only: [:edit, :update]
+  before_action :correct_user,   only: [:edit, :update, :show]
   before_action :admin_user,     only: [:destroy, :index]
   before_action :demo_user,      only: [:index, :show, :new, :create, :edit, :update, :destroy]
+
+  include StockHelper
 
   def index
     # @users = User.paginate(page: params[:page])
@@ -11,7 +13,6 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
-    redirect_to root_url and return unless @user.activated?
     @users_recipes = @user.recipes
     @all_recipes = Recipe.all
     @weekdays = {
@@ -117,6 +118,8 @@ class UsersController < ApplicationController
         amount: 9223372036854775807,
         use_by_date: Date.current + 100.years
       )
+
+      recipe_stock_matches_update(@user.id)
 
       if params.has_key?(:user) && params[:user][:cupboard_id].to_s != ''
         @user.send_activation_email_with_cupboard_add
@@ -268,6 +271,20 @@ class UsersController < ApplicationController
           owner: true,
           accepted: true
         )
+
+        water_id = Ingredient.where(name: "Water").map(&:id).first
+        liter_id = Unit.where(name: "Liter").map(&:id).first
+        Stock.create(
+          hidden: false,
+          always_available: true,
+          ingredient_id: water_id,
+          cupboard_id: new_cupboard[:id],
+          unit_id: liter_id,
+          amount: 9223372036854775807,
+          use_by_date: Date.current + 100.years
+        )
+
+        recipe_stock_matches_update(@user.id)
 
         log_in g_user
         if params.has_key?(:name) && params[:name].to_s != ''
