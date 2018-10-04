@@ -2,6 +2,8 @@ class Recipe < ApplicationRecord
   has_many :portions
   has_many :ingredients, through: :portions
 
+  belongs_to :user
+
   # Favourited by users
   has_many :favourite_recipes # just the 'relationships'
   has_many :users, through: :favourite_recipes # the actual users favouriting a recipe

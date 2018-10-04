@@ -101,19 +101,15 @@ class RecipesController < ApplicationController
 		@portions = @recipe.portions
 		@units = Unit.all
 
-		@portion_ids = []
-		@portions.each do |portion|
-			@portion_ids.push(portion.id)
-		end
-
 		@delete_portion_check_ids = params[:recipe][:portion_delete_ids]
 
 		## delete portions from :portion_delete_ids
 		if @delete_portion_check_ids
-			Portion.find(@delete_portion_check_ids).delete_all
+			Portion.find(@delete_portion_check_ids).map{|p| p.delete }
 		end
 
 		params[:recipe][:portions].to_unsafe_h.map do |portion_id, values|
+			next if @delete_portion_check_ids && @delete_portion_check_ids.include?(portion_id)
 			portion = Portion.find(portion_id)
 			unless portion.amount == values[:amount].to_f
 				portion.update_attributes(

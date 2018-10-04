@@ -1,5 +1,6 @@
 <% provide(:title, "Recipe: #{@recipe.title}") %>
 
+
 <div class="content_rich--wrapper">
   <div class="content_rich">
     <div class="content_rich--title_block">
@@ -26,6 +27,7 @@
         <% end %>
       </div>
       <p class="recipe_cuisine"><%= @recipe.cuisine.to_s %> Cuisine</p>
+
       <% if vegetarian?(@recipe) || vegan?(@recipe) || gluten_free?(@recipe) || dairy_free?(@recipe) || kosher?(@recipe) %>
         <div class="recipe_info_tags">
           <% if vegetarian?(@recipe) %><span class="recipe_info_tags--item">Vegetarian &check;</span><% end %>
@@ -36,6 +38,15 @@
         </div>
       <% end %>
     </div>
+    <% if @recipe.user_id != nil && @recipe.user[:admin] === false %>
+      <div class="content_rich--row">
+        <% if @recipe[:public] != true %>
+          <p>Recipe provided by a Stockcubes user</p>
+        <% else %>
+          <p>Recipe provided by: <span class="angel"><%= @recipe.user.name %></span></p>
+        <% end %>
+      </div>
+    <% end %>
     <div class="content_rich--row">
       <p class="recipe-serving"><%= @recipe.yield.to_s + (@recipe.yield.to_s.downcase.include?('serv') ? '' : ' Servings') %> </p>
     </div>
