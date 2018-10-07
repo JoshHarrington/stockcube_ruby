@@ -64,21 +64,22 @@ class RecipesController < ApplicationController
 	end
 	def new
 		@recipe = Recipe.new
-		# 3.times { @recipe.portions.build}
-		@cuisines = Set[]
-		Recipe.all.each do |recipe|
-			if recipe.cuisine.to_s != ''
-				@cuisines.add(recipe.cuisine)
-			end
-		end
+		@units = Unit.all
+		@cuisines = Recipe.all.map(&:cuisine).uniq.compact.sort
   end
   def create
 		@recipe = Recipe.new(recipe_params)
+		@units = Unit.all
+		@cuisines = Recipe.all.map(&:cuisine).uniq.compact.sort
 		if @recipe.save
-			redirect_to portions_new_path(:recipe_id => @recipe.id)
-    else
-      render new_recipe_path
-    end
+			if params.has_key?(:redirect) && params[:redirect].to_s != ''
+				redirect_to portions_new_path(:recipe_id => @recipe.id)
+			else
+				redirect_to recipe_path(@recipe.id)
+			end
+		else
+			render new_recipe_path
+		end
 	end
 	def edit
 		@recipe = Recipe.find(params[:id])
@@ -109,18 +110,20 @@ class RecipesController < ApplicationController
 			Portion.find(@delete_portion_check_ids).map{|p| p.delete }
 		end
 
-		params[:recipe][:portions].to_unsafe_h.map do |portion_id, values|
-			next if @delete_portion_check_ids && @delete_portion_check_ids.include?(portion_id)
-			portion = Portion.find(portion_id)
-			unless portion.amount == values[:amount].to_f
-				portion.update_attributes(
-					amount: values[:amount]
-				)
-			end
-			unless portion.unit_number == values[:unit_number].to_f
-				portion.update_attributes(
-					unit_number: values[:unit_number]
-				)
+		if @portions.length > 0
+			params[:recipe][:portions].to_unsafe_h.map do |portion_id, values|
+				next if @delete_portion_check_ids && @delete_portion_check_ids.include?(portion_id)
+				portion = Portion.find(portion_id)
+				unless portion.amount == values[:amount].to_f
+					portion.update_attributes(
+						amount: values[:amount]
+					)
+				end
+				unless portion.unit_number == values[:unit_number].to_f
+					portion.update_attributes(
+						unit_number: values[:unit_number]
+					)
+				end
 			end
 		end
 

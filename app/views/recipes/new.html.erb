@@ -1,7 +1,6 @@
 <% provide(:title, "New Recipe") %>
-<%= form_for @recipe do |f| %>
+<%= form_for @recipe, :html => {class: 'content_rich--wrapper', id: 'recipe_edit'}, :validate => true do |f| %>
+
 	<%= render 'recipe_form_partial', f: f %>
-	<br />
-	<br />
-	<%= f.submit "Add Ingredient" %>
+
 <% end %>
