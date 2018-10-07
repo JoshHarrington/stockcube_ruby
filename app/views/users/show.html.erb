@@ -13,6 +13,20 @@
     <%= link_to "Edit profile", edit_user_path(@user), class: "list_block--item--action" %>
   </div>
 
+  <div class="fake_form">
+    <div class="pretty_form--row">
+      <h2>Your details</h2>
+      <p class="info">Name:</p>
+      <p><%= @user.name %></p>
+      <p class="info">Email:</p>
+      <p><%= @user.email %></p>
+    <br />
+    <br />
+    <br />
+    <br />
+    </div>
+  </div>
+
   <% if shop_mode || update_cupboard || cupboard_invites %>
     <div class="pretty_form--sibling pretty_form--highlight" id="todos">
       <h2>Todos:</h2>
@@ -59,14 +73,22 @@
   </div>
 
 
+
+
   <div class="fake_form">
     <div class="pretty_form--row">
-      <p class="info">Name:</p>
-      <p><%= @user.name %></p>
-    </div>
-    <div class="pretty_form--row">
-      <p class="info">Email:</p>
-      <p><%= @user.email %></p>
+      <h2>Your Recipes</h2>
+      <p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%> Quick note: if you want to share recipes with the Stockcubes community they have to be your own (not ones you've taken from a cookbook / somewhere online).</p>
+      <br />
+      <br />
+      <% if current_user.recipes.length > 0 %>
+      <% else %>
+      <% end %>
+        <p>You haven't got any recipes published on Stockcubes yet.</p>
+        <%= link_to "Add your first recipe", new_recipe_path, class: "list_block--item--action" %>
+      <br />
+      <br />
+      <br />
     </div>
     <div class="pretty_form--row">
       <%= link_to "Sign out", logout_path, class: "list_block--item--action", method: :delete %>

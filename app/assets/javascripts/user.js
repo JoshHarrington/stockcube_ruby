@@ -2,7 +2,6 @@ var user_function = function() {
 	var $select = $('select.selectize').selectize({
     copyClassesToDropdown: true
 	});
-	var selectize = $select[0].selectize;
 	$('#notifications input[type="checkbox"], #notifications #day_pick').change(function(){
 		var notifications = false;
 		var notification_status = $('#notifications input[type="checkbox"]').prop('checked');
@@ -23,7 +22,7 @@ var user_function = function() {
 			});
 		} else {
 			if($(this).is('#notifications input[type="checkbox"]') && !notification_status ) {
-				selectize.setValue(weekdays[0]);
+				$select[0].selectize.setValue(weekdays[0]);
 			}
 		}
 	});

@@ -394,6 +394,14 @@ input[type=date]{
 	margin-top: em(8, 15);
 	color: $black-60;
 	line-height: em(19, 15);
+	div:not(.item_form--content_row) & svg {
+		width: em(14, 15);
+		height: em(14, 15);
+		margin-right: em(5, 15);
+		align-self: baseline;
+		margin-top: em(2, 15);
+		margin-bottom: em(-2, 15);
+	}
 }
 
 .item_form--content_item--highlight {
