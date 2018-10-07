@@ -15,6 +15,10 @@
 <path fill="#c3ebe9" style="fill: var(--color6, #c3ebe9)" d="M22.001 0.018l9.385 2.482-10.716 2.482-9.333-2.749z"></path>
 <path fill="#aae2de" style="fill: var(--color7, #aae2de)" d="M26.996 3.517l10.647-2.446v11.381l-10.647 2.829z"></path>
 </symbol>
+<symbol id="icon-add-solid" viewBox="0 0 20 20">
+<title>add-solid</title>
+<path d="M11 9v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM10 20c-5.523 0-10-4.477-10-10s4.477-10 10-10v0c5.523 0 10 4.477 10 10s-4.477 10-10 10v0z"></path>
+</symbol>
 <symbol id="icon-checkmark" viewBox="0 0 20 20">
 <title>checkmark</title>
 <path d="M0 11l2-2 5 5 11-11 2 2-13 13z"></path>

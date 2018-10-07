@@ -4,13 +4,15 @@
     window.location.href="/recipes"
   </script>
 <% end %>
-<% provide(:title, "Add ingredient to \"#{recipe_title}\"") %>
+<% params[:recipe_id] ? provide(:title, "Add ingredient to \"#{recipe_title}\"") : '' %>
 
 <%= form_for @portion, :html => {id: "portion_form", class: 'content_rich--wrapper portion_form'}, :validate => true do |p| %>
 	<div class="content_rich">
     <div class="content_rich--title_block">
       <div class="content_rich--title_row">
-        <h1 class="recipe-title">Adding an ingredient to "<%= recipe_title.to_s %>"</h1>
+				<% if params[:recipe_id] %>
+					<h1 class="recipe-title">Adding an ingredient to "<%= recipe_title.to_s %>"</h1>
+				<% end %>
 				<%= link_to "Cancel", recipe_path(params[:recipe_id]), class: "list_block--collection--action"  %>
 			</div>
 		</div>
@@ -22,9 +24,9 @@
 			<%= p.text_field(:amount, value: '', placeholder: '250', validate: true, class: "input_half_width") %>
 			<%= p.select(:unit_number, options_from_collection_for_select(@unit_select, "id", "name", 8), {}, {class: "pretty_form--row--pretty_select half_select", aria: {label: "Pick the units for the ingredient"}}) %>
 		</div>
-		<div class="content_rich--row">
-			<p>
-			<%= p.button "Save ingredient", class: "list_block--collection--action" %><span>&#8196;&#8196;and return to editing "<%= recipe_title.to_s %>"</span></p>
+		<div class="content_rich--row content_rich--row-align_baseline">
+			<%= p.button "Save ingredient", class: "list_block--collection--action" %>
+			<% if params[:recipe_id] %><p>and return to editing "<%= recipe_title.to_s %>"</p><% end %>
 		</div>
 	</div>
 <% end %>

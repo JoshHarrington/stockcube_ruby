@@ -40,7 +40,7 @@
 			<h2>Ingredients</h2>
 			<ul>
 				<% @portions.each do |portion| %>
-					<li id="ingredient_<%=portion.id%>" class="pretty_form--highlight_green">
+					<li id="ingredient_<%=portion.id%>" class="pretty_form--highlight_green ingredient_row">
 						<p><%= portion.ingredient.name %></p>
 						<br />
 						<% portion_unit = portion.unit_number ? Unit.find(portion.unit_number) : nil %>
@@ -48,20 +48,23 @@
 						<%= select_tag "recipe[portions][#{portion.id}][unit_number]", options_from_collection_for_select(@units, "id", "name", portion.unit_number),  {class: "pretty_form--row--pretty_select", id: portion.ingredient.id, aria: {label: "Choose the right units for the ingredient"}} %>
 						<br />
 						<%= check_box_tag "recipe[portion_delete_ids][]", portion.id, nil, {:id => portion.id} %>
-						<%= label_tag "recipe[portion_delete_ids][]", "Remove ingredient from recipe", {:for => portion.id, :title => "Remove ingredient"} %>
+						<%= label_tag "recipe[portion_delete_ids][]", "Remove ingredient from recipe", {:for => portion.id, :title => "Delete this ingredient"} %>
 					</li>
 				<% end %>
 			</ul>
 			<br />
 		</div>
-		<div class="content_rich--row">
-			<%= link_to "Add Ingredient", portions_new_path(:recipe_id => params[:id]), class: "list_block--collection--action list_block--collection--action-block" %>
+		<div class="content_rich--row-flex_end_btns">
+			<%= f.button class: "list_block--collection--action", name: "redirect", value: "add_ingredient" do %>
+				<%= icomoon('add-solid') %>
+				Add ingredient
+			<% end %>
 			<br />
 		</div>
 		<hr>
-		<div class="content_rich--row">
-			<br />
+		<div class="content_rich--row content_rich--row-multi_btns">
 			<%= f.submit "Save Recipe", class: "list_block--collection--action" %>
+			<%= link_to "Cancel changes", recipe_path(@recipe[:id]), class: "list_block--collection--action list_block--collection--cancel_action" %>
 		</div>
 	</div>
 <% end %>
