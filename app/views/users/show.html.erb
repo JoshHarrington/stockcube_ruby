@@ -77,15 +77,40 @@
 
   <div class="fake_form">
     <div class="pretty_form--row">
-      <h2>Your Recipes</h2>
-      <p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%> Quick note: if you want to share recipes with the Stockcubes community they have to be your own (not ones you've taken from a cookbook / somewhere online).</p>
+      <h2 id="all_recipes">Your Recipes</h2>
+      <p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%> Quick note: if you want to share recipes with the Stockcubes community they have to be your own (not ones you've taken from a cookbook or somewhere online).</p>
       <br />
       <br />
       <% if current_user.recipes.length > 0 %>
+        <ul class="user_recipe_list">
+          <% if params.has_key?(:all_recipes) && params[:all_recipes].to_s != '' %>
+            <% current_user.recipes.each do |recipe| %>
+              <li><%= recipe.title %> - <%= link_to "Edit", edit_recipe_path(recipe) %></li>
+            <% end %>
+          <% else %>
+            <% current_user.recipes.limit(10).each do |recipe| %>
+              <li><%= recipe.title %> - <%= link_to "Edit", edit_recipe_path(recipe) %></li>
+            <% end %>
+          <% end %>
+        </ul>
+        <br />
+        <% if current_user.recipes.length > 10 %>
+          <% if params.has_key?(:all_recipes) && params[:all_recipes].to_s != '' %>
+            <p>
+              <%= link_to "See fewer recipes", user_path(current_user[:id]) %>
+            </p>
+          <% else %>
+            <p>
+              <%= link_to "See all recipes", user_path(current_user[:id], all_recipes: "yes", anchor: "all_recipes") %>
+            </p>
+          <% end %>
+        <% end %>
+        <br />
+        <%= link_to "Add your next recipe", new_recipe_path, class: "list_block--item--action" %>
       <% else %>
-      <% end %>
         <p>You haven't got any recipes published on Stockcubes yet.</p>
         <%= link_to "Add your first recipe", new_recipe_path, class: "list_block--item--action" %>
+      <% end %>
       <br />
       <br />
       <br />
