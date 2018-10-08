@@ -86,6 +86,10 @@ class StocksController < ApplicationController
 		)
 
 		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first
+		StockUser.create(
+			stock_id: @stock.id,
+			user_id: current_user[:id]
+		)
 
     if @stock.save
 			redirect_to cupboards_path
@@ -164,6 +168,11 @@ class StocksController < ApplicationController
 				amount: params[:amount]
 			)
 		end
+
+		StockUser.find_or_create_by(
+			stock_id: @stock.id,
+			user_id: current_user[:id]
+		)
 
 		if @stock.update(stock_params)
 			redirect_to cupboards_path

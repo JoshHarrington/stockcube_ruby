@@ -36,6 +36,17 @@
 				</ul>
 			<% end %>
 		</div>
+		<% if current_user && (current_user.admin || (CupboardUser.where(user_id: current_user[:id], cupboard_id: @cupboard.id).length > 0 && CupboardUser.where(user_id: current_user[:id], cupboard_id: @cupboard.id).first.owner)) %>
+			<div class="pretty_form--row">
+				<h3>Communal Status</h3>
+				<h4>Is this a communal cupboard?</h4>
+				<p class="item_form--content_item_note"><%= icomoon('information-outline')%> Communal means multiple people use it and showing their names with their stock would be helpful</p>
+
+				<%= hidden_field_tag "communal", 'false' %>
+				<%= check_box_tag "communal", true, @cupboard.communal, id: "communal_check" %>
+				<%= label_tag "communal_check", "Yep, definitely communal", class: "fancy_checkbox_label" %>
+			</div>
+		<% end %>
 		<div class="pretty_form--row">
 			<%= button_tag "Update sharing settings", class: "pretty_form--submit_button" %>
 		</div>
