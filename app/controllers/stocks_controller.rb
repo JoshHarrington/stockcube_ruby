@@ -4,6 +4,7 @@ class StocksController < ApplicationController
 	include ShoppingListsHelper
 	before_action :logged_in_user
 	before_action :cupboard_id_provided, only: [:new]
+	before_action :correct_user, only: [:edit]
 	def index
 		@stocks = Stock.all
 	end
@@ -196,6 +197,13 @@ class StocksController < ApplicationController
 			unless params.has_key?(:cupboard_id)
 				redirect_to cupboards_path
 				flash[:danger] = "Stock has to be added to a cupboard, else it would disappear into the ether!"
+			end
+		end
+
+		def correct_user
+			stock = Stock.find(params[:id])
+			unless stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])
+				redirect_to cupboards_path
 			end
 		end
 end

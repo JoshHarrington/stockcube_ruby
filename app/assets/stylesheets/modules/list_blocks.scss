@@ -641,6 +641,10 @@ a.list_block {
 	}
 }
 
+.list_block--item-disabled {
+	cursor: not-allowed;
+}
+
 .list_block--item--lesser_note {
 	opacity: .67;
 }
