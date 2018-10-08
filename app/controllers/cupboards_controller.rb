@@ -96,15 +96,17 @@ class CupboardsController < ApplicationController
 		end
 
 		if params.has_key?(:communal) && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
-			cupboard = Cupboard.find(params[:cupboard_id])
-			if params[:communal].to_s == 'false'
-				cupboard.update_attributes(
-					communal: false
-				)
-			elsif params[:communal].to_s == 'true'
-				cupboard.update_attributes(
-					communal: true
-				)
+			if current_user && (current_user.admin || (CupboardUser.where(user_id: current_user[:id], cupboard_id: params[:cupboard_id]).length > 0 && CupboardUser.where(user_id: current_user[:id], cupboard_id: params[:cupboard_id]).first.owner))
+				cupboard = Cupboard.find(params[:cupboard_id])
+				if params[:communal].to_s == 'false'
+					cupboard.update_attributes(
+						communal: false
+					)
+				elsif params[:communal].to_s == 'true'
+					cupboard.update_attributes(
+						communal: true
+					)
+				end
 			end
 		end
 
