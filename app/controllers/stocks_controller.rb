@@ -91,7 +91,6 @@ class StocksController < ApplicationController
 			ingredient_id: selected_ingredient_id,
 		)
 
-		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first
 		StockUser.create(
 			stock_id: @stock.id,
 			user_id: current_user[:id]
