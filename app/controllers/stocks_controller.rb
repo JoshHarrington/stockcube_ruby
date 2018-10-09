@@ -193,7 +193,13 @@ class StocksController < ApplicationController
 		end
 
 		def cupboard_id_provided
-			unless params.has_key?(:cupboard_id)
+			if params.has_key?(:cupboard_id)
+				cupboard_user_length = CupboardUser.where(user_id: current_user[:id], cupboard_id: params[:cupboard_id], accepted: true).length
+				if cupboard_user_length == 0
+					redirect_to cupboards_path
+					flash[:danger] = "Stock has to be added to your cupboards, not someone else's!"
+				end
+			else
 				redirect_to cupboards_path
 				flash[:danger] = "Stock has to be added to a cupboard, else it would disappear into the ether!"
 			end
