@@ -202,7 +202,7 @@ class StocksController < ApplicationController
 
 		def correct_user
 			stock = Stock.find(params[:id])
-			unless stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])
+			unless stock.cupboard.communal == false || stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])
 				redirect_to cupboards_path
 			end
 		end
