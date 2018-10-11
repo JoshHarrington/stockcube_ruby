@@ -224,15 +224,17 @@
 }
 
 a.list_block {
-	margin: em(7, 15);
 	&:not(.list_block__column) {
 		padding: em(12, 15) em(8, 15) em(16, 15);
 	}
+	&:not(.list_block--link_first) {
+		order: 3;
+		max-height: em(100, 10);
+	}
+	margin: em(7, 15);
 	background-color: $teal-10;
-	order: 3;
 	text-decoration: none;
 	color: black;
-	max-height: em(100, 10);
 	&:hover {
 		background-color: $teal-20;
 	}
