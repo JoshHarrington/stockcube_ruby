@@ -297,6 +297,9 @@ a.list_block {
 			max-height: em(13, 13);
 		}
 	}
+	&.list_block--content_start-warn {
+		background-color: $warning-red;
+	}
 }
 
 .list_block--progress_bar {

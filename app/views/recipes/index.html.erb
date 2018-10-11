@@ -1,8 +1,6 @@
 <% provide(:title, 'Recipes') %>
 <div class="main">
   <div class="container">
-
-
     <div class="list_block--collection--wrap">
     <%= form_tag recipes_path, class: 'search_box--form',  method: :get do %>
         <div class="search_box">
@@ -34,19 +32,42 @@
         <%= will_paginate(@recipes) %>
       <% end %>
     </div>
+    <% if current_user.recipes.length > 0 %>
+      <div class="list_block--collection--wrap">
+        <div class="list_block--collection--sibling">
+          <h2>Your recipes</h2>
+        </div>
+        <div class="list_block--collection list_block--collection__tight">
+          <% current_user.recipes.order("updated_at desc").limit(8).each do |recipe| %>
+            <%= render 'recipe_list_partial', recipe: recipe, recipe_edit_mode: true %>
+          <% end %>
+        </div>
+        <% if current_user.recipes.length > 8 %>
+          <div class="list_block--collection--sibling">
+            <%= link_to "See all of your recipes", your_recipes_path, class: "list_block--item--action" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
     <% if @fav_recipes.length > 0 %>
       <div class="list_block--collection--wrap">
         <div class="list_block--collection--sibling">
-          <h2>Your favourite recipes</h2>
+          <h2>Favourited recipes</h2>
         </div>
         <div class="list_block--collection list_block--collection__tight">
           <% @fav_recipes_limit.each do |recipe| %>
-            <%= render 'recipe_list_partial', recipe: recipe %>
+            <%
+              user_recipe_stock_match = UserRecipeStockMatch.where(user_id: current_user[:id], recipe_id: recipe[:id]).first
+              ingredient_stock_match_decimal = user_recipe_stock_match[:ingredient_stock_match_decimal]
+              num_stock_ingredients = user_recipe_stock_match[:num_stock_ingredients]
+              num_needed_ingredients = user_recipe_stock_match[:num_needed_ingredients]
+            %>
+            <%= render 'recipe_list_partial', recipe: recipe, ingredient_stock_match_decimal: ingredient_stock_match_decimal, num_stock_ingredients: num_stock_ingredients, num_needed_ingredients: num_needed_ingredients  %>
           <% end %>
         </div>
         <% if @fav_recipes.length > 6 %>
           <div class="list_block--collection--sibling">
-            <%= link_to "See all of your favourite recipes", favourite_recipes_path %>
+            <%= link_to "See all of your favourited recipes", favourite_recipes_path, class: "list_block--item--action" %>
           </div>
         <% end %>
       </div>

@@ -72,9 +72,6 @@
 
   </div>
 
-
-
-
   <div class="fake_form">
     <div class="pretty_form--row">
       <h2 id="all_recipes">Your Recipes</h2>
@@ -84,27 +81,20 @@
       <% if current_user.recipes.length > 0 %>
         <ul class="user_recipe_list">
           <% if params.has_key?(:all_recipes) && params[:all_recipes].to_s != '' %>
-            <% current_user.recipes.each do |recipe| %>
+            <% current_user.recipes.order("updated_at desc").each do |recipe| %>
               <li><%= recipe.title %> - <%= link_to "Edit", edit_recipe_path(recipe) %></li>
             <% end %>
           <% else %>
-            <% current_user.recipes.limit(10).each do |recipe| %>
+            <% current_user.recipes.order("updated_at desc").limit(6).each do |recipe| %>
               <li><%= recipe.title %> - <%= link_to "Edit", edit_recipe_path(recipe) %></li>
             <% end %>
           <% end %>
         </ul>
         <br />
-        <% if current_user.recipes.length > 10 %>
-          <% if params.has_key?(:all_recipes) && params[:all_recipes].to_s != '' %>
-            <p>
-              <%= link_to "See fewer recipes", user_path(current_user[:id]) %>
-            </p>
-          <% else %>
-            <p>
-              <%= link_to "See all recipes", user_path(current_user[:id], all_recipes: "yes", anchor: "all_recipes") %>
-            </p>
-          <% end %>
-        <% end %>
+        <div>
+          <%= link_to "See all of your recipes", your_recipes_path %>
+          <br />
+        </div>
         <br />
         <%= link_to "Add your next recipe", new_recipe_path, class: "list_block--item--action" %>
       <% else %>

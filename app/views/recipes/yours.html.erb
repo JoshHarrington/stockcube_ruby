@@ -1,0 +1,18 @@
+<% provide(:title, 'Your recipes') %>
+<div class="main">
+  <div class="container">
+    <div class="list_block--collection--wrap">
+      <div class="list_block--collection--sibling">
+        <h2>Your recipes</h2>
+        <%= link_to "Back to all recipes", recipes_path, class: "list_block--item--action" %>
+      </div>
+      <%= will_paginate(@recipes) %>
+      <div class="list_block--collection list_block--collection__tight">
+        <% @recipes.each do |recipe| %>
+          <%= render 'recipe_list_partial', recipe: recipe, recipe_edit_mode: true %>
+        <% end %>
+      </div>
+      <%= will_paginate(@recipes) %>
+    </div>
+	</div>
+</div>
