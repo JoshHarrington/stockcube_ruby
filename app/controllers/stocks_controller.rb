@@ -3,6 +3,8 @@ class StocksController < ApplicationController
 	include StockHelper
 	include ShoppingListsHelper
 	before_action :logged_in_user
+	before_action :cupboard_id_provided, only: [:new]
+	before_action :correct_user, only: [:edit]
 	def index
 		@stocks = Stock.all
 	end
@@ -25,11 +27,13 @@ class StocksController < ApplicationController
 
 	def new
 		@stock = Stock.new
-		@cupboards = current_user.cupboards.where(hidden: false, setup: false)
-		if @cupboards.length == 0
+		user_cupboards = current_user.cupboards.where(hidden: false, setup: false)
+		if user_cupboards.length == 0
 			new_cupboard = Cupboard.create(location: "Fridge (Default cupboard)")
 			CupboardUser.create(cupboard_id: new_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
 		end
+		current_cupboard_user_ids = CupboardUser.where(cupboard_id: params[:cupboard_id]).map(&:user_id)
+		@cupboards = current_user.cupboards.map{ |c| c if c.cupboard_users.map(&:user_id) == current_cupboard_user_ids && c.hidden == false && c.setup == false }.compact
 		@ingredients = Ingredient.all.order('name ASC')
 		if params.has_key?(:standard_use_by_limit) && params[:standard_use_by_limit]
 			@use_by_limit = Date.current + params[:standard_use_by_limit].to_i.days
@@ -41,15 +45,17 @@ class StocksController < ApplicationController
 	end
 	def create
 		@stock = Stock.new(stock_params)
-		@cupboards = current_user.cupboards.where(hidden: false, setup: false)
+		if params.has_key?(:cupboard_id) && params[:cupboard_id].present?
+			selected_cupboard_id = params[:cupboard_id]
+		end
+		current_cupboard_user_ids = CupboardUser.where(cupboard_id: selected_cupboard_id).map(&:user_id)
+		@cupboards = current_user.cupboards.map{ |c| c if c.cupboard_users.map(&:user_id) == current_cupboard_user_ids && c.hidden == false && c.setup == false }.compact
+
 		@ingredients = Ingredient.all.order('name ASC')
 		@two_weeks_from_now = Date.current + 2.weeks
 		@unit_select = Unit.where.not(name: nil)
 		new_stuff_added = false
 
-		if params.has_key?(:cupboard_id) && params[:cupboard_id].present?
-			selected_cupboard_id = params[:cupboard_id]
-		end
 
 		if params.has_key?(:unit_id) && params[:unit_id].present?
 			if params[:unit_id].to_i == 0
@@ -85,7 +91,10 @@ class StocksController < ApplicationController
 			ingredient_id: selected_ingredient_id,
 		)
 
-		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first
+		StockUser.create(
+			stock_id: @stock.id,
+			user_id: current_user[:id]
+		)
 
     if @stock.save
 			redirect_to cupboards_path
@@ -109,18 +118,8 @@ class StocksController < ApplicationController
 		@stock = Stock.find(params[:id])
 		@current_cupboard = @stock.cupboard
 
-
-		@cupboards = []
-		current_user.cupboards.where(hidden: false, setup: false).each do |cupboard|
-			if @current_cupboard.users.map(&:id) == cupboard.users.map(&:id)
-				@cupboards << cupboard
-			end
-		end
-
-		if @cupboards.length != current_user.cupboards.where(hidden: false, setup: false).length
-			@shared_cupboards = true
-		end
-
+		current_cupboard_user_ids = CupboardUser.where(cupboard_id: @current_cupboard.id).map(&:user_id)
+		@cupboards = current_user.cupboards.map{ |c| c if c.cupboard_users.map(&:user_id) == current_cupboard_user_ids && c.hidden == false && c.setup == false }.compact
 
 		@ingredients = Ingredient.all.order('name ASC')
 		@current_ingredient = @stock.ingredient
@@ -165,6 +164,11 @@ class StocksController < ApplicationController
 			)
 		end
 
+		StockUser.find_or_create_by(
+			stock_id: @stock.id,
+			user_id: current_user[:id]
+		)
+
 		if @stock.update(stock_params)
 			redirect_to cupboards_path
 			recipe_stock_matches_update(current_user[:id])
@@ -188,10 +192,23 @@ class StocksController < ApplicationController
 			end
 		end
 
-		def cupboard_id_param_check
-			unless params.has_key?(:cupboard_id)
+		def cupboard_id_provided
+			if params.has_key?(:cupboard_id)
+				cupboard_user_length = CupboardUser.where(user_id: current_user[:id], cupboard_id: params[:cupboard_id], accepted: true).length
+				if cupboard_user_length == 0
+					redirect_to cupboards_path
+					flash[:danger] = "Stock has to be added to your cupboards, not someone else's!"
+				end
+			else
 				redirect_to cupboards_path
-				flash[:danger] = "Add stock by editing a cupboards contents"
+				flash[:danger] = "Stock has to be added to a cupboard, else it would disappear into the ether!"
+			end
+		end
+
+		def correct_user
+			stock = Stock.find(params[:id])
+			unless stock.cupboard.communal == false || stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])
+				redirect_to cupboards_path
 			end
 		end
 end

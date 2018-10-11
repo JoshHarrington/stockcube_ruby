@@ -20,6 +20,10 @@ class User < ApplicationRecord
   has_many :user_recipe_stock_matches
   has_one :user_setting
 
+
+	has_many :stock_users
+	has_many :stock, through: :stock_users
+
   # Favourite recipes of user
   has_many :favourite_recipes # just the 'relationships'
   has_many :favourites, through: :favourite_recipes, source: :recipe # the actual recipes a user favourites

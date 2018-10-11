@@ -95,6 +95,21 @@ class CupboardsController < ApplicationController
 			end
 		end
 
+		if params.has_key?(:communal) && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
+			if current_user && (current_user.admin || (CupboardUser.where(user_id: current_user[:id], cupboard_id: params[:cupboard_id]).length > 0 && CupboardUser.where(user_id: current_user[:id], cupboard_id: params[:cupboard_id]).first.owner))
+				cupboard = Cupboard.find(params[:cupboard_id])
+				if params[:communal].to_s == 'false'
+					cupboard.update_attributes(
+						communal: false
+					)
+				elsif params[:communal].to_s == 'true'
+					cupboard.update_attributes(
+						communal: true
+					)
+				end
+			end
+		end
+
 		redirect_to cupboards_path
 	end
 
@@ -215,7 +230,7 @@ class CupboardsController < ApplicationController
   end
 	private
 		def cupboard_params
-			params.require(:cupboard).permit(:location, stocks_attributes:[:id, :amount, :use_by_date, :_destroy])
+			params.require(:cupboard).permit(:location, :communal, stocks_attributes:[:id, :amount, :use_by_date, :_destroy])
 		end
 
 		# Confirms a logged-in user.
@@ -231,10 +246,12 @@ class CupboardsController < ApplicationController
 		def correct_user
 			if params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != '' && params[:id] != 'accept_cupboard_invite'
 				@cupboard = Cupboard.find(params[:cupboard_id])
+				@user_ids = @cupboard.users.map(&:id)
+				redirect_to(cupboards_path) unless @user_ids.include?(current_user.id)
 			elsif params.has_key?(:id) && params[:id].to_s != '' && params[:id] != 'accept_cupboard_invite'
 				@cupboard = Cupboard.find(params[:id])
 				@user_ids = @cupboard.users.map(&:id)
-				redirect_to(root_url) unless @user_ids.include?(current_user.id)
+				redirect_to(cupboards_path) unless @user_ids.include?(current_user.id)
 			end
 		end
 end

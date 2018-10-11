@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181004170839) do
+ActiveRecord::Schema.define(version: 20181008072011) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 20181004170839) do
     t.datetime "updated_at", null: false
     t.boolean "hidden", default: false
     t.boolean "setup", default: false
+    t.boolean "communal", default: false, null: false
     t.index ["user_id"], name: "index_cupboards_on_user_id"
   end
 
@@ -122,6 +123,15 @@ ActiveRecord::Schema.define(version: 20181004170839) do
     t.datetime "updated_at", null: false
     t.boolean "archived", default: false
     t.index ["user_id"], name: "index_shopping_lists_on_user_id"
+  end
+
+  create_table "stock_users", force: :cascade do |t|
+    t.bigint "stock_id"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stock_id"], name: "index_stock_users_on_stock_id"
+    t.index ["user_id"], name: "index_stock_users_on_user_id"
   end
 
   create_table "stocks", force: :cascade do |t|
