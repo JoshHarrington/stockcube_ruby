@@ -8,6 +8,9 @@
       </div>
       <%= will_paginate(@recipes) %>
       <div class="list_block--collection list_block--collection__tight">
+        <%= link_to new_recipe_path, class: "list_block list_block--link_first" do %>
+          <span>Add a new recipe</span>
+        <% end %>
         <% @recipes.each do |recipe| %>
           <%= render 'recipe_list_partial', recipe: recipe, recipe_edit_mode: true %>
         <% end %>

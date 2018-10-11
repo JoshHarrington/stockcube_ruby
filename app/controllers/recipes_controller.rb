@@ -63,7 +63,7 @@ class RecipesController < ApplicationController
 		@fav_recipes = current_user.favourites.paginate(:page => params[:page], :per_page => 12)
 	end
 	def yours
-		@recipes = current_user.recipes.order("updated_at desc").paginate(:page => params[:page], :per_page => 12)
+		@recipes = current_user.recipes.order("updated_at desc").paginate(:page => params[:page], :per_page => 11)
 	end
 	def new
 		@recipe = Recipe.new
