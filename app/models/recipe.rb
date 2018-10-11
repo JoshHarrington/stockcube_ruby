@@ -19,7 +19,6 @@ class Recipe < ApplicationRecord
   accepts_nested_attributes_for :ingredients
 
   validates :title, presence: true
-  validates :cuisine, presence: true
   validates :description, presence: true
 
   def slug
@@ -31,6 +30,10 @@ class Recipe < ApplicationRecord
   end
 
   searchkick
+
+  def should_index?
+    live
+  end
 
   def search_data
     {

@@ -7,7 +7,7 @@ module StockHelper
 		num_needed_ingredients = num_ingredients_total - num_stock_ingredients
 
 		UserRecipeStockMatch.find_or_create_by(
-			recipe_id: recipe.id,
+			recipe_id: recipe_id,
 			user_id: user_id
 		).update_attributes(
 			ingredient_stock_match_decimal: ingredient_stock_match_decimal,
@@ -32,7 +32,7 @@ module StockHelper
 			end
 		elsif user_id != nil && recipe_id == nil
 			# updating all user stock matches for one user
-			active_cupboard_ids = CupboardUser.where(user_id: user[:id], accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard == nil && (cu.cupboard.setup == true || cu.cupboard.hidden == true) }.compact
+			active_cupboard_ids = CupboardUser.where(user_id: user_id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard == nil && (cu.cupboard.setup == true || cu.cupboard.hidden == true) }.compact
 			cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: active_cupboard_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
 
 			Recipe.where(live: true).each do |recipe|

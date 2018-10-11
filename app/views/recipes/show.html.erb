@@ -27,7 +27,6 @@
         <% end %>
       </div>
       <p class="recipe_cuisine"><%= @recipe.cuisine.to_s %> Cuisine</p>
-
       <% if vegetarian?(@recipe) || vegan?(@recipe) || gluten_free?(@recipe) || dairy_free?(@recipe) || kosher?(@recipe) %>
         <div class="recipe_info_tags">
           <% if vegetarian?(@recipe) %><span class="recipe_info_tags--item">Vegetarian &check;</span><% end %>
@@ -36,6 +35,9 @@
           <% if dairy_free?(@recipe) %><span class="recipe_info_tags--item">Dairy free &check;</span><% end %>
           <% if kosher?(@recipe) %><span class="recipe_info_tags--item">Kosher &check;</span><% end %>
         </div>
+      <% end %>
+      <% if @recipe[:user_id] == current_user[:id] %>
+        <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe is <%= @recipe.live ? "<strong>live</strong> on Stockcubes".html_safe : "in <strong>draft</strong> mode - only you can see it and you need to publish it to start using it".html_safe %><% if @recipe.live %>, and <%= @recipe.public ? "<strong>available</strong> for all Stockcubes users to see and use".html_safe : "<strong>private</strong> so only you can see and use it".html_safe %><% end %></p>
       <% end %>
     </div>
     <% if @recipe.user_id != nil && @recipe.user[:admin] === false %>

@@ -8,6 +8,26 @@
 			</div>
 		</div>
 		<div class="content_rich--row">
+			<h3>Ready to publish? This recipe is currently <strong><%= @recipe.live ? "live" : "in draft mode" %></strong></h3>
+			<div class="item_form--content_row" id="recipe_live_status_row">
+				<%= radio_button_tag "recipe[live]", true, @recipe.live, id: "live_radio_1", class: "fancy_radio_button" %>
+				<%= label_tag "live_radio_1", "Published", class: "fancy_radio_button__label" %>
+				<%= radio_button_tag "recipe[live]", false, !@recipe.live, id: "live_radio_2", class: "fancy_radio_button" %>
+				<%= label_tag "live_radio_2", "Draft mode", class: "fancy_radio_button__label" %>
+			</div>
+		</div>
+		<div class="content_rich--row <% if !@recipe.live %>faded_out<% end %>" id="recipe_public_status_row">
+			<h3>For public use? Recipe is currently <strong><%= @recipe.public ? "public" : "private to you" %></strong></h3>
+
+			<div class="item_form--content_row">
+				<%= radio_button_tag "recipe[public]", true, @recipe.public, id: "public_radio_1", class: "fancy_radio_button" %>
+				<%= label_tag "public_radio_1", "Public to all Stockcubes users", class: "fancy_radio_button__label" %>
+				<%= radio_button_tag "recipe[public]", false, !@recipe.public, id: "public_radio_2", class: "fancy_radio_button" %>
+				<%= label_tag "public_radio_2", "Private to you", class: "fancy_radio_button__label" %>
+			</div>
+
+		</div>
+		<div class="content_rich--row">
 			<h3>Description (Method):</h3>
 			<%= f.text_area :description, :value => (@recipe.description ? @recipe.description : ''), rows: 10, style: 'min-height: 300px;'%>
 		</div>

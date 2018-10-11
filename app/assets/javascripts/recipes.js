@@ -2,8 +2,20 @@ $(document).on("turbolinks:load", function() {
 	if ($('#recipe_edit').length > 0) {
 		// beforeUnload();
 		confirmDeleteIngredient();
+		togglePublicRowFade();
 	}
 });
+
+var togglePublicRowFade = function() {
+	$('#recipe_live_status_row input[type="radio"]').click(function(e){
+		if (e.target == $('#live_radio_1')[0]) {
+			$('#recipe_public_status_row').removeClass('faded_out');
+		} else {
+			$('#recipe_public_status_row').addClass('faded_out');
+
+		}
+	})
+}
 
 var confirmDeleteIngredient = function(){
 	$('.ingredient_row label').click(function (e) {
