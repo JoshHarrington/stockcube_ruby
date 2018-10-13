@@ -88,6 +88,11 @@ form.content_rich--wrapper {
 
 
 .content_rich--row {
+	&.content_rich--row-with_children {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+	}
 	& + & {
 		margin-top: em(24, 10);
 	}
@@ -128,7 +133,7 @@ form.content_rich--wrapper {
 	[type="text"] {
 		font-size: em(20, 10);
     min-height: em(36, 20);
-    width: em(140, 20);
+    min-width: em(140, 20);
     padding-left: em(8, 20);
     margin-right: em(7, 20);
     margin-bottom: em(7, 20);
@@ -138,6 +143,22 @@ form.content_rich--wrapper {
 	}
 	h3 {
 		margin-bottom: em(13, 17);
+	}
+}
+
+.content_rich--row--half {
+	display: flex;
+	flex-basis: 48%;
+	min-width: em(300, 15);
+	flex-wrap: wrap;
+	> * {
+		width: 100%;
+	}
+	@media (max-width: 650px) {
+		flex-basis: 100%;
+	}
+	& + & {
+		margin-top: em(24, 10);
 	}
 }
 

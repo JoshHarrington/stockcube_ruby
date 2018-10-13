@@ -74,20 +74,14 @@
 
   <div class="fake_form">
     <div class="pretty_form--row">
-      <h2 id="all_recipes">Your Recipes</h2>
+      <h2 id="all_recipes"><%= link_to "Your recipes", your_recipes_path %></h2>
       <p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%> Quick note: if you want to share recipes with the Stockcubes community they have to be your own (not ones you've taken from a cookbook or somewhere online).</p>
       <br />
       <br />
       <% if current_user.recipes.length > 0 %>
         <ul class="user_recipe_list">
-          <% if params.has_key?(:all_recipes) && params[:all_recipes].to_s != '' %>
-            <% current_user.recipes.order("updated_at desc").each do |recipe| %>
-              <li><%= recipe.title %> - <%= link_to "Edit", edit_recipe_path(recipe) %></li>
-            <% end %>
-          <% else %>
-            <% current_user.recipes.order("updated_at desc").limit(6).each do |recipe| %>
-              <li><%= recipe.title %> - <%= link_to "Edit", edit_recipe_path(recipe) %></li>
-            <% end %>
+          <% current_user.recipes.order("updated_at desc").limit(6).each do |recipe| %>
+            <li><%= link_to recipe.title, recipe_path(recipe) %></li>
           <% end %>
         </ul>
         <br />

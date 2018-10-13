@@ -209,6 +209,19 @@
 		width: calc(100% - 14px);
 		flex-basis: calc(100% - 14px);
 	}
+	&.link_block-medium_bold span {
+		font-size: em(20, 15);
+	}
+	&.link_block-large_bold {
+		min-height: em(120, 15);
+		span {
+			font-size: em(26, 15);
+		}
+	}
+	&.link_block-centered {
+		align-items: center;
+		justify-content: center;
+	}
 }
 
 @keyframes list_block_fade {

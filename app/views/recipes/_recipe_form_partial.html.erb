@@ -37,21 +37,25 @@
 			<h3>Notes (extra info):</h3>
 			<%= f.text_area :note, :value => (@recipe.note ? @recipe.note : ''), rows: 4, style: 'min-height: 200px;'%>
 		</div>
-		<div class="content_rich--row">
-			<h3>Cuisine type:</h3>
-			<%= f.select :cuisine, options_for_select(@cuisines, (@recipe_cuisine ? @recipe_cuisine : '')), {include_blank: 'Select a cuisine'}, {class: "pretty_form--row--pretty_select"} %>
+		<div class="content_rich--row content_rich--row-with_children">
+			<div class="content_rich--row--half">
+				<h3>Cuisine type:</h3>
+				<%= f.select :cuisine, options_for_select(@cuisines, (@recipe_cuisine ? @recipe_cuisine : '')), {include_blank: 'Select a cuisine'}, {class: "pretty_form--row--pretty_select"} %>
+			</div>
+			<div class="content_rich--row--half">
+				<h3>Yield (Servings):</h3>
+				<%= f.text_field :yield, :value => (@recipe.yield ? @recipe.yield : '') %>
+			</div>
 		</div>
-		<div class="content_rich--row">
-			<h3>Yield (Servings):</h3>
-			<%= f.text_field :yield, :value => (@recipe.yield ? @recipe.yield : '') %>
-		</div>
-		<div class="content_rich--row">
-			<h3>Prep time (mins):</h3>
-			<%= f.text_field :prep_time, :value => (@recipe.prep_time ? @recipe.prep_time : '') %>
-		</div>
-		<div class="content_rich--row">
-			<h3>Cook time (mins):</h3>
-			<%= f.text_field :cook_time, :value => (@recipe.cook_time ? @recipe.cook_time : '') %>
+		<div class="content_rich--row content_rich--row-with_children">
+			<div class="content_rich--row--half">
+				<h3>Prep time (mins):</h3>
+				<%= f.text_field :prep_time, :value => (@recipe.prep_time ? @recipe.prep_time : '') %>
+			</div>
+			<div class="content_rich--row--half">
+				<h3>Cook time (mins):</h3>
+				<%= f.text_field :cook_time, :value => (@recipe.cook_time ? @recipe.cook_time : '') %>
+			</div>
 		</div>
 		<%# render 'recipe_form_partial', f: f %>
 		<div class="content_rich--row portion_list--edit">
