@@ -7,7 +7,6 @@ class RecipesController < ApplicationController
 	require 'will_paginate/array'
 
 	before_action :logged_in_user, only: [:edit, :new, :index]
-	before_action :admin_user,     only: [:create, :new, :update]
 	before_action :correct_user_or_admin, 	 only: [:edit]
 
 	def index

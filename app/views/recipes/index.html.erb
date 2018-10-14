@@ -32,11 +32,16 @@
         <%= will_paginate(@recipes) %>
       <% end %>
     </div>
-    <% if current_user.recipes.length > 0 %>
-      <div class="list_block--collection--wrap">
-        <div class="list_block--collection--sibling">
+    <div class="list_block--collection--wrap">
+      <div class="list_block--collection--sibling list_block--collection--sibling_stack">
+        <% if current_user.recipes.length > 0 %>
           <h2><%= link_to "Your recipes", your_recipes_path %></h2>
-        </div>
+        <% else %>
+          <h2>Your recipes</h2>
+          <p>Add your first recipe!</p>
+        <% end %>
+      </div>
+      <% if current_user.recipes.length > 0 %>
         <div class="list_block--collection list_block--collection__tight">
           <%= link_to new_recipe_path, class: "list_block list_block--link_first link_block-medium_bold link_block-centered" do %>
             <span>Add a new recipe</span>
@@ -50,8 +55,14 @@
             <%= link_to "See all of your recipes", your_recipes_path, class: "list_block--item--action" %>
           </div>
         <% end %>
-      </div>
-    <% end %>
+      <% else %>
+        <div class="list_block--collection list_block--collection__tight">
+          <%= link_to new_recipe_path, class: "list_block list_block-wide list_block--link_first link_block-large_bold link_block-centered" do %>
+            <span>Add a new recipe</span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
     <% if @fav_recipes.length > 0 %>
       <div class="list_block--collection--wrap">
         <div class="list_block--collection--sibling">
