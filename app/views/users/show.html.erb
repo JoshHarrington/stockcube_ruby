@@ -74,7 +74,7 @@
 
   <div class="fake_form">
     <div class="pretty_form--row">
-      <h2 id="all_recipes"><%= link_to "Your recipes", your_recipes_path %></h2>
+      <h2><% if current_user.recipes.length > 0 %><%= link_to "Your recipes", your_recipes_path %><% else %>Your recipes<% end %></h2>
       <p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%> Quick note: if you want to share recipes with the Stockcubes community they have to be your own (not ones you've taken from a cookbook or somewhere online).</p>
       <br />
       <br />
