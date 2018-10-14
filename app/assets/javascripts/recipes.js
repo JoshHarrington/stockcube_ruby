@@ -51,8 +51,6 @@ var confirmFunc = function($this, ingredientRow, deleteStateClass){
 }
 
 
-
-
 // var beforeUnload = function() {
 // 	window.onbeforeunload = function(e) {
 // 		var dialogText = 'Unsaved changes';
