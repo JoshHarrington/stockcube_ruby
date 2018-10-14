@@ -44,22 +44,28 @@
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: flex-end;
-	align-items: stretch;
+	align-items: flex-start;
+	margin-top: em(10, 10);
 	h1 {
 		display: flex;
 		margin-right: auto;
 		align-items: center;
-		margin-top: em(10, 15);
+		margin-top: em(4, 15);
 		margin-bottom: em(10, 15);
 	}
 	& > .list_block--collection--action {
     margin: em(4, 15) 0 em(4, 15) em(12, 15);
 	}
+	.field_with_errors {
+		flex-grow: 1;
+		label {
+			font-size: em(15, 19);
+		}
+	}
 }
 
 form.content_rich--wrapper {
 	.content_rich--title_row {
-		align-items: center;
 		h1 {
 			flex-grow: 1;
 			input {
@@ -74,9 +80,17 @@ form.content_rich--wrapper {
 		width: 50%;
 		margin-right: 0;
 	}
-	.field_with_errors.error_with_label {
+	.content_rich--row:not(.content_rich--row-full_width) .field_with_errors.error_with_label {
 		width: 50%;
 		.input_half_width {
+			width: 100%;
+		}
+	}
+	.content_rich--row .content_rich--row--half .field_with_errors.error_with_label {
+		width: 100%;
+		display: flex;
+		flex-wrap: wrap;
+		> * {
 			width: 100%;
 		}
 	}
@@ -151,14 +165,15 @@ form.content_rich--wrapper {
 	flex-basis: 48%;
 	min-width: em(300, 15);
 	flex-wrap: wrap;
+	align-content: flex-start;
+	&:first-child {
+		margin-bottom: em(24, 10);
+	}
 	> * {
 		width: 100%;
 	}
 	@media (max-width: 650px) {
 		flex-basis: 100%;
-	}
-	& + & {
-		margin-top: em(24, 10);
 	}
 }
 

@@ -20,6 +20,7 @@ class Recipe < ApplicationRecord
 
   validates :title, presence: true
   validates :description, presence: true
+  validates :cook_time, presence: true
 
   def slug
     title.downcase.gsub(/[\ \,\/]/, ',' => '', ' ' => '_', '/' => '_')

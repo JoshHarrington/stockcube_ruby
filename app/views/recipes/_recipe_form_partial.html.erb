@@ -28,9 +28,13 @@
 				</div>
 			</div>
 
+		<% else %>
+			<div class="content_rich--row">
+				<p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%>You'll only be able to make this recipe live and use it (in a shopping list for example) after you've added some ingredients.</p>
+			</div>
 		<% end %>
-		<div class="content_rich--row">
-			<h3>Description (Method):</h3>
+		<div class="content_rich--row content_rich--row-full_width">
+			<h3>Description (Method)*:</h3>
 			<%= f.text_area :description, :value => (@recipe.description ? @recipe.description : ''), rows: 10, style: 'min-height: 300px;'%>
 		</div>
 		<div class="content_rich--row">
@@ -53,7 +57,7 @@
 				<%= f.text_field :prep_time, :value => (@recipe.prep_time ? @recipe.prep_time : '') %>
 			</div>
 			<div class="content_rich--row--half">
-				<h3>Cook time (mins):</h3>
+				<h3>Cook time (mins)*:</h3>
 				<%= f.text_field :cook_time, :value => (@recipe.cook_time ? @recipe.cook_time : '') %>
 			</div>
 		</div>
@@ -90,7 +94,8 @@
 			<%= f.submit "Save Recipe", class: "list_block--collection--action" %>
 			<%= f.hidden_field :user_id, value: current_user[:id] %>
 			<% if @recipe[:id] %>
-				<%= link_to "Cancel changes", recipe_path(@recipe[:id]), class: "list_block--collection--action list_block--collection--cancel_action" %>
+				<%#= link_to "Cancel changes", recipe_path(@recipe[:id]), class: "list_block--collection--action list_block--collection--cancel_action" %>
+				<%= link_to "Delete Recipe", @recipe, method: :delete, data: { confirm: "Definitely want to delete this recipe?" }, class: "list_block--collection--action list_block--collection--cancel_action" %>
 			<% end %>
 		</div>
 	</div>

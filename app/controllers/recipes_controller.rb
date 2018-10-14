@@ -68,12 +68,12 @@ class RecipesController < ApplicationController
 	def new
 		@recipe = Recipe.new
 		@units = Unit.all
-		@cuisines = Recipe.all.map(&:cuisine).uniq.compact.sort
+		@cuisines = Recipe.all.map{|r| r[:cuisine] if !(r[:cuisine].nil? || r[:cuisine].empty? )}.compact.uniq.compact.sort
   end
   def create
 		@recipe = Recipe.new(recipe_params)
 		@units = Unit.all
-		@cuisines = Recipe.all.map(&:cuisine).uniq.compact.sort
+		@cuisines = Recipe.all.map{|r| r[:cuisine] if !(r[:cuisine].nil? || r[:cuisine].empty? )}.compact.uniq.compact.sort
 		if @recipe.save
 			if params.has_key?(:redirect) && params[:redirect].to_s != ''
 				redirect_to portions_new_path(:recipe_id => @recipe.id)
@@ -88,8 +88,8 @@ class RecipesController < ApplicationController
 		@recipe = Recipe.find(params[:id])
 		@portions = @recipe.portions.order("created_at ASC")
 		@units = Unit.all
-		@recipe_cuisine = @recipe.cuisine
-		@cuisines = Recipe.all.map(&:cuisine).uniq.compact.sort
+		@recipe_cuisine = @recipe.cuisine.to_s != '' ? @recipe.cuisine : nil
+		@cuisines = Recipe.all.map{|r| r[:cuisine] if !(r[:cuisine].nil? || r[:cuisine].empty? )}.compact.uniq.compact.sort
 
 		similar_portions_count = 0
 		@portions.each do |portion|
@@ -142,6 +142,20 @@ class RecipesController < ApplicationController
 			end
 		end
 	end
+
+	def destroy
+		@recipe = Recipe.find(params[:id]).destroy
+		flash[:info] = %Q[Recipe "#{@recipe.title}" deleted]
+		if current_user.recipes.length > 0
+			redirect_to your_recipes_path
+		else
+			redirect_to recipes_path
+		end
+	end
+
+
+
+
 	# Add and remove favourite recipes
   # for current_user
   def favourite
