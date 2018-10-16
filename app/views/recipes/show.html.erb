@@ -86,6 +86,11 @@
             <li <%= ingredient_in_stock ? 'class=in_stock' : '' %>><%= portion_amount_unit_and_ingredient(portion).html_safe %></li>
           <% end %>
         </ul>
+      <% else %>
+      <div class="pretty_form--highlight" id="ingredients">
+        <h2>No ingredients added</h2>
+        <p>Make sure you <%=link_to "add some ingredients", edit_recipe_path(@recipe, anchor: "add_ingredients")%>, if you want to start using this recipe to build a shopping list of put it live on the Stockcubes site.</p>
+      </div>
       <% end %>
     </div>
   </div>
