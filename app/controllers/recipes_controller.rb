@@ -178,16 +178,21 @@ class RecipesController < ApplicationController
 	end
 	def add_to_shopping_list
 		@recipe = Recipe.find(params[:id])
-		recipe_title = @recipe.title
 
-		shopping_list_portions_set_from_recipes(@recipe.id, nil, current_user.id, nil)
+		if @recipe.portions.length > 0
+			recipe_title = @recipe.title
 
-		# give notice that the recipe has been added with link to shopping list
-		if current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last[:archived] === false && current_user.shopping_lists.order('updated_at asc').last.recipes.length > 0
-			@string = "Added the '#{@recipe.title}' to your #{link_to("current shopping list", current_shopping_list_ingredients_path)}"
+			shopping_list_portions_set_from_recipes(@recipe.id, nil, current_user.id, nil)
+
+			# give notice that the recipe has been added with link to shopping list
+			if current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last[:archived] === false && current_user.shopping_lists.order('updated_at asc').last.recipes.length > 0
+				@string = "Added the '#{@recipe.title}' to your #{link_to("current shopping list", current_shopping_list_ingredients_path)}"
+				redirect_back fallback_location: recipes_path, notice: @string
+			end
+		else
+			@string = %Q[That recipe's not ready to be used to build a shopping list, you need to #{link_to("add some ingredients", edit_recipe_path(@recipe))}]
 			redirect_back fallback_location: recipes_path, notice: @string
 		end
-
 
 	end
 
