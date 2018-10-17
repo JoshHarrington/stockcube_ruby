@@ -143,7 +143,9 @@ class RecipesController < ApplicationController
 	end
 
 	def destroy
-		@recipe = Recipe.find(params[:id]).destroy
+		@recipe = Recipe.find(params[:id])
+		@recipe.portions.destroy_all
+		@recipe.destroy
 		flash[:info] = %Q[Recipe "#{@recipe.title}" deleted]
 		if current_user.recipes.length > 0
 			redirect_to your_recipes_path
