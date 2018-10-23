@@ -17,6 +17,12 @@
 				Recipe has no ingredients!
 			</div>
 		</div>
+	<% elsif !(recipe.live) %>
+		<div class="list_block--content_start list_block--content_start-warn">
+			<div class="list_block--content_start--text">
+				Recipe still in draft mode!
+			</div>
+		</div>
 	<% end %>
 	<div class="list_block--content">
 		<div class="list_block--title">
@@ -38,7 +44,7 @@
 							<% end %>
 						<% end %>
 					<% end %>
-					<% unless (current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last.archived == false && recipe.shopping_lists.include?(current_user.shopping_lists.order('updated_at asc').last)) || recipe.portions.length == 0 %>
+					<% unless (current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last.archived == false && recipe.shopping_lists.include?(current_user.shopping_lists.order('updated_at asc').last)) || recipe.portions.length == 0 || !(recipe.live) %>
 						<%= link_to add_to_shopping_list_recipe_path(recipe), class: 'svg-btn', title: 'Add this recipe to your shopping list', method: :put do %>
 							<%= icomoon('list-add') %>
 						<% end %>
@@ -70,7 +76,7 @@
 			</div>
 		<% end %>
 	</div>
-	<% if recipe.cuisine %>
+	<% if recipe.cuisine && recipe.cuisine.to_s != '' %>
 		<div class="list_block--content_end">
 			<div class="list_block--tag_bar">
 				<p><%= recipe.cuisine %></p>

@@ -26,7 +26,9 @@
           <%= link_to 'Add this recipe to your shopping list', add_to_shopping_list_recipe_path(@recipe), class: 'list_block--collection--action', title: 'add to shopping list', method: :put %>
         <% end %>
       </div>
-      <p class="recipe_cuisine"><%= @recipe.cuisine.to_s %> Cuisine</p>
+      <% if @recipe.cuisine && @recipe.cuisine.to_s != '' %>
+        <p class="recipe_cuisine"><%= @recipe.cuisine.to_s %> Cuisine</p>
+      <% end %>
       <% if vegetarian?(@recipe) || vegan?(@recipe) || gluten_free?(@recipe) || dairy_free?(@recipe) || kosher?(@recipe) %>
         <div class="recipe_info_tags">
           <% if vegetarian?(@recipe) %><span class="recipe_info_tags--item">Vegetarian &check;</span><% end %>
@@ -49,10 +51,17 @@
         <% end %>
       </div>
     <% end %>
-    <div class="content_rich--row">
-      <p class="recipe-serving"><%= @recipe.yield.to_s + (@recipe.yield.to_s.downcase.include?('serv') ? '' : ' Servings') %> </p>
-    </div>
-    <% if @recipe.prep_time %>
+    <% if @recipe.yield && @recipe.yield.to_s != '' %>
+      <div class="content_rich--row">
+        <p class="recipe-serving"><%= @recipe.yield.to_s + (@recipe.yield.to_s.downcase.include?('serv') ? '' : ' Servings') %> </p>
+      </div>
+    <% end %>
+
+    <% if current_user && current_user == @recipe.user %>
+      <div class="content_rich--row">
+        <p class="recipe-prep_time">Prep Time: <%= ((@recipe.prep_time && @recipe.prep_time.to_s == '') || !@recipe.prep_time) ? 'Not set!' : @recipe.prep_time.to_s %></p>
+      </div>
+    <% elsif (!current_user || (current_user && current_user != @recipe.user)) && @recipe.prep_time && @recipe.prep_time.to_s != '' %>
       <div class="content_rich--row">
         <p class="recipe-prep_time">Prep Time: <%= @recipe.prep_time.to_s %></p>
       </div>

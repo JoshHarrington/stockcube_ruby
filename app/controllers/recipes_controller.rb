@@ -135,7 +135,6 @@ class RecipesController < ApplicationController
 			if @recipe.update(recipe_params)
 				redirect_to recipe_path(@recipe)
 				recipe_stock_matches_update(nil, @recipe[:id])
-				flash[:info] = %Q[Recipe stock information updated!]
 			else
 				render 'edit'
 			end
