@@ -18,7 +18,7 @@
         <%= will_paginate(@recipes) %>
 
       <div class="list_block--collection list_block--collection__tight <% if defined? @mini_progress_on %>mini_progress<% end %>">
-        <% @recipes.each do |recipe| %>
+      <% @recipes.each do |recipe| %>
           <%
             user_recipe_stock_match = UserRecipeStockMatch.where(user_id: current_user[:id], recipe_id: recipe[:id]).first
             ingredient_stock_match_decimal = user_recipe_stock_match[:ingredient_stock_match_decimal]

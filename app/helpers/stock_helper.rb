@@ -30,14 +30,14 @@ module StockHelper
 
 				user_stock_update(user[:id], recipe_id, cupboard_stock_in_date_ingredient_ids, recipe_ingredient_ids)
 			end
-		elsif user_id != nil && recipe_id == nil
+		elsif user_id != nil && (!recipe_id || recipe_id == nil)
 			# updating all user stock matches for one user
 			active_cupboard_ids = CupboardUser.where(user_id: user_id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard == nil && (cu.cupboard.setup == true || cu.cupboard.hidden == true) }.compact
 			cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: active_cupboard_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
 
-			Recipe.where(live: true).each do |recipe|
+			Recipe.where(live: true, public: true).each do |recipe|
 				user = User.find(user_id)
-				next if recipe[:public] == false || user[:admin] != true || recipe[:user_id] != user_id
+				next if user[:admin] != true || recipe[:user_id] != user_id
 				recipe_ingredient_ids = recipe.ingredients.map(&:id)
 				user_stock_update(user_id, recipe[:id], cupboard_stock_in_date_ingredient_ids, recipe_ingredient_ids)
 			end

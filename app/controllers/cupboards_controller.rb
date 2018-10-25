@@ -154,7 +154,7 @@ class CupboardsController < ApplicationController
 					hidden: true
 				)
 			end
-			recipe_stock_matches_update(current_user[:id])
+			recipe_stock_matches_update(current_user[:id], nil)
 			shopping_list_portions_update(current_user[:id])
 			flash[:info] = %Q[Recipe stock information updated!]
 		end
@@ -225,7 +225,7 @@ class CupboardsController < ApplicationController
 		end
 
 		redirect_to cupboards_path
-		recipe_stock_matches_update(current_user[:id])
+		recipe_stock_matches_update(current_user[:id], nil)
 		shopping_list_portions_update(current_user[:id])
   end
 	private

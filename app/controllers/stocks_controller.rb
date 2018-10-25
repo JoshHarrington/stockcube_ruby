@@ -98,7 +98,7 @@ class StocksController < ApplicationController
 
     if @stock.save
 			redirect_to cupboards_path
-			recipe_stock_matches_update(current_user[:id])
+			recipe_stock_matches_update(current_user[:id], nil)
 			shopping_list_portions_update(current_user[:id])
 			flash[:info] = %Q[Recipe stock information updated!]
 		else
@@ -171,7 +171,7 @@ class StocksController < ApplicationController
 
 		if @stock.update(stock_params)
 			redirect_to cupboards_path
-			recipe_stock_matches_update(current_user[:id])
+			recipe_stock_matches_update(current_user[:id], nil)
 			shopping_list_portions_update(current_user[:id])
 			flash[:info] = %Q[Recipe stock information updated!]
 		else
