@@ -119,7 +119,7 @@ class UsersController < ApplicationController
         use_by_date: Date.current + 100.years
       )
 
-      recipe_stock_matches_update(@user.id, nil)
+      # recipe_stock_matches_update(@user.id, nil)
 
       if params.has_key?(:user) && params[:user][:cupboard_id].to_s != ''
         @user.send_activation_email_with_cupboard_add
