@@ -37,7 +37,6 @@ module StockHelper
 
 			Recipe.where(live: true, public: true).each do |recipe|
 				user = User.find(user_id)
-				next if user[:admin] != true || recipe[:user_id] != user_id
 				recipe_ingredient_ids = recipe.ingredients.map(&:id)
 				user_stock_update(user_id, recipe[:id], cupboard_stock_in_date_ingredient_ids, recipe_ingredient_ids)
 			end
