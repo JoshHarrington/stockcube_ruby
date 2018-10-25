@@ -2,9 +2,9 @@
 
 Welcome to this rudamentary prototype for the StockCube App
 
-* Ruby version - 2.5.0
+* Ruby version - >=2.5.0
 
-I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby environments and using [Homebrew](https://brew.sh/) to manage your packages (if you're on a Mac).
+I recommend using [Homebrew](https://brew.sh/) to manage your packages and Ruby environment (if you're on a Mac).
 
 If you're using Homebrew on Mac then you use it to install PostgresQL (the database type) with the command `brew install postgres` - there are many guides out there to explain this process in more detail eg [this one](https://gist.github.com/sgnl/609557ebacd3378f3b72)
 
