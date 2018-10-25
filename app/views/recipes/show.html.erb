@@ -22,8 +22,8 @@
             <%= icomoon('edit') %>
           <% end  %>
         <% end %>
-        <% unless current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last.archived == false && @recipe.shopping_lists.include?(current_user.shopping_lists.order('updated_at asc').last) %>
-          <%= link_to 'Add this recipe to your shopping list', add_to_shopping_list_recipe_path(@recipe), class: 'list_block--collection--action', title: 'add to shopping list', method: :put %>
+        <% unless (current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last.archived == false && @recipe.shopping_lists.include?(current_user.shopping_lists.order('updated_at asc').last)) || @recipe.portions.length == 0 || !(@recipe.live) %>
+          <%= link_to 'Add to shopping list', add_to_shopping_list_recipe_path(@recipe), class: 'list_block--collection--action', title: 'add to shopping list', method: :put %>
         <% end %>
       </div>
       <% if @recipe.cuisine && @recipe.cuisine.to_s != '' %>
