@@ -87,7 +87,7 @@ GEM
       i18n (~> 0.5)
     faraday (0.15.1)
       multipart-post (>= 1.2, < 3)
-    ffi (1.9.23)
+    ffi (1.9.25)
     fraction (0.3.2)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
@@ -182,7 +182,7 @@ GEM
     regexp_parser (0.5.0)
     ruby_dep (1.5.0)
     ruby_http_client (3.3.0)
-    rubyzip (1.2.1)
+    rubyzip (1.2.2)
     sass (3.5.6)
       sass-listen (~> 4.0.0)
     sass-listen (4.0.0)
@@ -259,6 +259,7 @@ DEPENDENCIES
   coffee-rails (~> 4.2)
   dotenv-rails
   faker (= 1.7.3)
+  ffi (>= 1.9.24)
   fraction (~> 0.3.2)
   hashid-rails (~> 1.2, >= 1.2.1)
   jbuilder (~> 2.5)
@@ -272,6 +273,7 @@ DEPENDENCIES
   puma (~> 3.7)
   rails (~> 5.1.4)
   rails-controller-testing
+  rubyzip (>= 1.2.2)
   sass-rails (~> 5.0)
   searchkick
   seed_dump (~> 3.2, >= 3.2.4)
