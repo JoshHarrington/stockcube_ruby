@@ -44,11 +44,7 @@
     </div>
     <% if @recipe.user_id != nil && @recipe.user[:admin] === false %>
       <div class="content_rich--row">
-        <% if @recipe[:public] != true %>
-          <p>Recipe provided by a Stockcubes user</p>
-        <% else %>
-          <p>Recipe provided by: <span class="angel"><%= @recipe.user.name %></span></p>
-        <% end %>
+        <p>Recipe provided by a Stockcubes user</p>
       </div>
     <% end %>
     <% if @recipe.yield && @recipe.yield.to_s != '' %>
