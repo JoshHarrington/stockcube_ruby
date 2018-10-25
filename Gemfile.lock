@@ -127,7 +127,7 @@ GEM
     multi_json (1.13.1)
     multipart-post (2.0.0)
     multiprocessing (0.0.2)
-    mustermann (1.0.2)
+    mustermann (1.0.3)
     nio4r (2.3.1)
     nokogiri (1.8.2)
       mini_portile2 (~> 2.3.0)
@@ -144,7 +144,7 @@ GEM
     public_suffix (3.0.2)
     puma (3.11.4)
     rack (2.0.5)
-    rack-protection (2.0.1)
+    rack-protection (2.0.4)
       rack
     rack-test (1.0.0)
       rack (>= 1.0, < 3)
@@ -207,10 +207,10 @@ GEM
     sendgrid-ruby (5.2.0)
       ruby_http_client (~> 3.2)
       sinatra (>= 1.4.7, < 3)
-    sinatra (2.0.1)
+    sinatra (2.0.4)
       mustermann (~> 1.0)
       rack (~> 2.0)
-      rack-protection (= 2.0.1)
+      rack-protection (= 2.0.4)
       tilt (~> 2.0)
     slop (4.6.2)
     spring (2.0.2)
@@ -277,6 +277,7 @@ DEPENDENCIES
   seed_dump (~> 3.2, >= 3.2.4)
   selenium-webdriver
   sendgrid-ruby
+  sinatra (>= 2.0.2)
   spring
   spring-watcher-listen (~> 2.0.0)
   sprockets (>= 3.7.2)
