@@ -14,7 +14,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 3. Run `bundle install` to install Gems
 4. Run `rake db:create` to create the databases
 5. Run `rake db:migrate` to migrate the databases
-. Run `rake db:seed` to seed the databases with data (make sure you have the .env file setup first with a personal email, 6password and Rails environment variable)
+. Run `rake db:seed` to seed the databases with data (make sure you have the .env file setup first with a personal email, password and Rails environment variable)
 7. Run `rails server` (or `rails s`) to run server
 8. See app at [http://localhost:3000](http://localhost:3000)
 
