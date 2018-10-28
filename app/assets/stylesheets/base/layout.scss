@@ -11,3 +11,14 @@ body {
 [hidden] {
 	display: none !important;
 }
+
+#inner-wrap {
+	display: flex;
+	flex-direction: column;
+	main {
+		margin-bottom: 2rem;
+	}
+	footer {
+		margin-top: auto;
+	}
+}
