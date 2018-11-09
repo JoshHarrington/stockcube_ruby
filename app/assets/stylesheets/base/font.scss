@@ -16,6 +16,14 @@ div.list_block--item {
 	font-size: 1.5em;
 }
 
+input {
+	&::placeholder,
+	&::-webkit-input-placeholder,
+	&::-ms-input-placeholder {
+		color: $black-40;
+	}
+}
+
 p>a,
 .alert>a,
 .debug_dump>a,

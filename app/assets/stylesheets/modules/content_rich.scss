@@ -144,7 +144,7 @@ form.content_rich--wrapper {
 		width: 100%;
 		max-width: 100%;
 	}
-	[type="text"] {
+	[type="text"], [type="number"] {
 		font-size: em(20, 10);
     min-height: em(36, 20);
     min-width: em(140, 20);
