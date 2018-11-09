@@ -31,12 +31,12 @@
 		<% else %>
 			<div class="content_rich--row">
 				<p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%>Quick note: if you want to share recipes with the Stockcubes community they have to be your own (not ones you've taken from a cookbook or somewhere online). <br />
-				<br />Also, you'll only be able to make this recipe live and use it (in a shopping list for example) after you've added some ingredients.</p>
+				<br />Also, you'll only be able to make this recipe live and use it (in a shopping list for example) after you've added some ingredients, a description and a cook time.</p>
 			</div>
 		<% end %>
-		<div class="content_rich--row content_rich--row-full_width">
+		<div class="content_rich--row content_rich--row-full_width" id="recipe_description">
 			<h3>Description (Method)*:</h3>
-			<%= f.text_area :description, :value => (@recipe.description ? @recipe.description : ''), rows: 10, :required => true, style: 'min-height: 300px;', :placeholder => "The steps to follow to make this meal"%>
+			<%= f.text_area :description, :value => (@recipe.description ? @recipe.description : ''), rows: 10, style: 'min-height: 300px;', :placeholder => "The steps to follow to make this meal"%>
 		</div>
 		<div class="content_rich--row">
 			<h3>Notes (extra info):</h3>
@@ -57,9 +57,9 @@
 				<h3>Prep time (mins):</h3>
 				<%= f.text_field :prep_time, :value => (@recipe.prep_time ? @recipe.prep_time : ''), :placeholder => "15" %>
 			</div>
-			<div class="content_rich--row--half">
+			<div class="content_rich--row--half" id="recipe_cook_time">
 				<h3>Cook time (mins)*:</h3>
-				<%= f.text_field :cook_time, :value => (@recipe.cook_time ? @recipe.cook_time : ''), :required => true, :placeholder => "30" %>
+				<%= f.text_field :cook_time, :value => (@recipe.cook_time ? @recipe.cook_time : ''), :placeholder => "30" %>
 			</div>
 		</div>
 		<%# render 'recipe_form_partial', f: f %>

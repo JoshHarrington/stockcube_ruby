@@ -38,8 +38,27 @@
           <% if kosher?(@recipe) %><span class="recipe_info_tags--item">Kosher &check;</span><% end %>
         </div>
       <% end %>
-      <% if @recipe[:user_id] == current_user[:id] %>
+      <% if @recipe[:user_id] == current_user[:id] && @recipe.portions.length > 0 && @recipe.description.to_s != '' && @recipe.cook_time.to_s != '' %>
         <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe is <%= @recipe.live ? "<strong>live</strong> on Stockcubes".html_safe : "in <strong>draft</strong> mode - only you can see it and you need to publish it to start using it".html_safe %><% if @recipe.live %>, and <%= @recipe.public ? "<strong>available</strong> for all Stockcubes users to see and use".html_safe : "<strong>private</strong> so only you can see and use it".html_safe %><% end %></p>
+      <% elsif @recipe[:user_id] == current_user[:id] && (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '') %>
+        <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe cannot be made live until you've
+          <% if @recipe.portions.length == 0 %>
+            <%= link_to 'added some ingredients', portions_new_path(:recipe_id => params[:id]) %><!--
+            --><% if @recipe.description.to_s == '' && @recipe.cook_time.to_s == '' %>,
+            <% elsif @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' %>
+              and
+            <% end %>
+          <% end %>
+          <% if @recipe.description.to_s == '' %>
+            <%= link_to 'added a description', edit_recipe_path(@recipe, anchor: 'recipe_description') %>
+            <% if @recipe.cook_time.to_s == '' %>
+              and
+            <% end %>
+          <% end %>
+          <% if @recipe.cook_time.to_s == '' %>
+            <%= link_to 'added a cook time', edit_recipe_path(@recipe, anchor: 'recipe_cook_time') %>
+          <% end %>
+        </p>
       <% end %>
     </div>
     <% if @recipe.user_id != nil && @recipe.user[:admin] === false %>
@@ -92,10 +111,10 @@
           <% end %>
         </ul>
       <% else %>
-      <div class="pretty_form--highlight" id="ingredients">
-        <h2>No ingredients added</h2>
-        <p>Make sure you <%=link_to "add some ingredients", edit_recipe_path(@recipe, anchor: "add_ingredients")%>, if you want to start using this recipe to build a shopping list of put it live on the Stockcubes site.</p>
-      </div>
+        <div class="pretty_form--highlight" id="ingredients">
+          <h2>No ingredients added</h2>
+          <p>Make sure you <%=link_to "add some ingredients", portions_new_path(:recipe_id => params[:id])%>, if you want to start using this recipe to build a shopping list of put it live on the Stockcubes site.</p>
+        </div>
       <% end %>
     </div>
   </div>

@@ -19,8 +19,6 @@ class Recipe < ApplicationRecord
   accepts_nested_attributes_for :ingredients
 
   validates :title, presence: true
-  validates :description, presence: true
-  validates :cook_time, presence: true
 
   def slug
     title.downcase.gsub(/[\ \,\/]/, ',' => '', ' ' => '_', '/' => '_')
