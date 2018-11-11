@@ -90,10 +90,10 @@
           <br />
         </div>
         <br />
-        <%= link_to "Add your next recipe", new_recipe_path, class: "list_block--item--action" %>
+        <%= link_to "Add your next recipe", new_recipe_path(:anchor => 'recipe_title_container'), class: "list_block--item--action" %>
       <% else %>
         <p>You haven't got any recipes published on Stockcubes yet.</p>
-        <%= link_to "Add your first recipe", new_recipe_path, class: "list_block--item--action" %>
+        <%= link_to "Add your first recipe", new_recipe_path(:anchor => 'recipe_title_container'), class: "list_block--item--action" %>
       <% end %>
       <br />
       <br />

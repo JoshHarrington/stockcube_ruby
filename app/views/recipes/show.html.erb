@@ -1,6 +1,5 @@
 <% provide(:title, "Recipe: #{@recipe.title}") %>
 
-
 <div class="content_rich--wrapper">
   <div class="content_rich">
     <div class="content_rich--title_block">
@@ -39,7 +38,11 @@
         </div>
       <% end %>
       <% if @recipe[:user_id] == current_user[:id] && @recipe.portions.length > 0 && @recipe.description.to_s != '' && @recipe.cook_time.to_s != '' %>
-        <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe is <%= @recipe.live ? "<strong>live</strong> on Stockcubes".html_safe : "in <strong>draft</strong> mode - only you can see it and you need to publish it to start using it".html_safe %><% if @recipe.live %>, and <%= @recipe.public ? "<strong>available</strong> for all Stockcubes users to see and use".html_safe : "<strong>private</strong> so only you can see and use it".html_safe %><% end %></p>
+        <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe is <%= @recipe.live ? "<strong>live</strong>".html_safe + (@recipe.public ? " and <strong>public</strong> ".html_safe : " and <strong>private</strong> to you ".html_safe)  + "on Stockcubes" : "in <strong>draft</strong> mode ".html_safe %> - <% if @recipe.live %><%= link_to 'put it back to draft', publish_update_recipe_path(@recipe, type: 'make_draft') %><% else %><%= link_to 'publish it now', publish_update_recipe_path(@recipe, type: 'make_live') %><% end %>.</p>
+        <% if @recipe.live %>
+          <p class="recipe_cuisine item_form--content_item_note"><% if @recipe.public %> <%= link_to 'Make the recipe <strong>private</strong>'.html_safe , publish_update_recipe_path(@recipe, type:"make_private") %>, so only you can see and use it<% else %><%= link_to 'Make the recipe <strong>public</strong>'.html_safe , publish_update_recipe_path(@recipe, type: "make_public") %> for all Stockcubes users<% end %>.</p>
+        <% end %>
+
       <% elsif @recipe[:user_id] == current_user[:id] && (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '') %>
         <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe cannot be made live until you've
           <% if @recipe.portions.length == 0 %>
@@ -83,7 +86,7 @@
     <% end %>
     <% if @recipe.cook_time %>
       <div class="content_rich--row">
-        <p class="recipe-cook_time">Cook Time: <%= @recipe.cook_time.to_s %></p>
+        <p class="recipe-cook_time">Cook Time: <%= @recipe.cook_time.to_i %> mins</p>
       </div>
     <% end %>
     <div class="content_rich--row">

@@ -3,7 +3,7 @@ $(document).on("turbolinks:load", function() {
 		// beforeUnload();
 		confirmDeleteIngredient();
 		togglePublicRowFade();
-		hashCheck();
+		hashFocus();
 	}
 });
 
@@ -51,7 +51,7 @@ var confirmFunc = function($this, ingredientRow, deleteStateClass){
 	}
 }
 
-var hashCheck = function() {
+var hashFocus = function() {
 	if(window.location.hash) {
 		hash = window.location.hash;
 		targetElString = hash + ' input, ' + hash + ' textarea';

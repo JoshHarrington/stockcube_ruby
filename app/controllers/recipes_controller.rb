@@ -7,7 +7,7 @@ class RecipesController < ApplicationController
 	require 'will_paginate/array'
 
 	before_action :logged_in_user, only: [:edit, :new, :index]
-	before_action :correct_user_or_admin, 	 only: [:edit]
+	before_action :correct_user_or_admin, 	 only: [:edit, :publish_update]
 
 	def index
 
@@ -80,7 +80,7 @@ class RecipesController < ApplicationController
 				redirect_to recipe_path(@recipe.id)
 			end
 		else
-			render new_recipe_path
+			render new_recipe_path(:anchor => 'recipe_title_container')
 		end
 	end
 	def edit
@@ -138,6 +138,33 @@ class RecipesController < ApplicationController
 			else
 				render 'edit'
 			end
+		end
+	end
+
+	def publish_update
+		type = params[:type]
+		@recipe = Recipe.where(id: params[:id]).first
+		if type == 'make_live'
+			@recipe.update_attributes(live: true)
+			@string = "#{@recipe.title} is now live!"
+			redirect_back fallback_location: root_path, notice: @string
+		elsif type == 'make_draft'
+			@recipe.update_attributes(live: false)
+			@string = "#{@recipe.title} is now in draft mode"
+			redirect_back fallback_location: root_path, notice: @string
+			if @recipe.public
+				@recipe.update_attributes(public: false)
+			end
+		elsif type == 'make_public' && @recipe.live
+			@recipe.update_attributes(public: true)
+			@string = "#{@recipe.title} is live and public"
+			redirect_back fallback_location: root_path, notice: @string
+		elsif type == 'make_private' && @recipe.live
+			@recipe.update_attributes(public: false)
+			@string = "#{@recipe.title} is live and private"
+			redirect_back fallback_location: root_path, notice: @string
+		else
+			redirect_back fallback_location: root_path
 		end
 	end
 

@@ -43,7 +43,7 @@
       </div>
       <% if current_user.recipes.length > 0 %>
         <div class="list_block--collection list_block--collection__tight">
-          <%= link_to new_recipe_path, class: "list_block list_block--link_first link_block-medium_bold link_block-centered" do %>
+          <%= link_to new_recipe_path(:anchor => 'recipe_title_container'), class: "list_block list_block--link_first link_block-medium_bold link_block-centered" do %>
             <span>Add a new recipe</span>
           <% end %>
           <% current_user.recipes.order("updated_at desc").limit(8).each do |recipe| %>
@@ -57,7 +57,7 @@
         <% end %>
       <% else %>
         <div class="list_block--collection list_block--collection__tight">
-          <%= link_to new_recipe_path, class: "list_block list_block-wide list_block--link_first link_block-large_bold link_block-centered" do %>
+          <%= link_to new_recipe_path(:anchor => 'recipe_title_container'), class: "list_block list_block-wide list_block--link_first link_block-large_bold link_block-centered" do %>
             <span>Add a new recipe</span>
           <% end %>
         </div>
