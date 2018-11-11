@@ -21,7 +21,7 @@
 			<%= p.hidden_field(:recipe_id, value: params[:recipe_id]) %>
 		</div>
 		<div class="content_rich--row">
-			<%= p.text_field(:amount, value: '', placeholder: '250', validate: true, class: "input_half_width") %>
+			<%= p.number_field(:amount, value: '', placeholder: '250', validate: true, class: "input_half_width", min: "0") %>
 			<%= p.select(:unit_number, options_from_collection_for_select(@unit_select, "id", "name", 8), {}, {class: "pretty_form--row--pretty_select half_select", aria: {label: "Pick the units for the ingredient"}}) %>
 		</div>
 		<div class="content_rich--row content_rich--row-align_baseline">

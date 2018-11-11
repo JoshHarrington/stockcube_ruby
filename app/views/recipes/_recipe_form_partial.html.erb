@@ -24,7 +24,7 @@
 				<%= label_tag "live_radio_2", "Draft mode", class: "fancy_radio_button__label" %>
 			</div>
 		</div>
-		<div class="content_rich--row <% if !@recipe.live %>faded_out<% end %>" id="recipe_public_status_row" data-hover-title="<% if !@recipe.live %>You can only change the public settings on this recipe after it's been published<% end %>">
+		<div class="content_rich--row <% if !@recipe.live %>faded_out<% end %>" id="recipe_public_status_row" data-hover-title="You can only change the public settings on this recipe after it's been published">
 			<h3>For public use? Recipe is currently <strong><%= @recipe.public ? "public" : "private to you" %></strong></h3>
 			<div class="item_form--content_row">
 				<%= radio_button_tag "recipe[public]", true, @recipe.public, id: "public_radio_1", class: "fancy_radio_button", disabled: (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' ? true : false) %>
@@ -53,17 +53,17 @@
 			</div>
 			<div class="content_rich--row--half">
 				<h3>Yield (Servings):</h3>
-				<%= f.number_field :yield, :value => (@recipe.yield ? @recipe.yield : ''), :placeholder => "4" %>
+				<%= f.number_field :yield, :value => (@recipe.yield ? @recipe.yield : ''), :placeholder => "4", min: "0" %>
 			</div>
 		</div>
 		<div class="content_rich--row content_rich--row-with_children">
 			<div class="content_rich--row--half">
 				<h3>Prep time (mins):</h3>
-				<%= f.number_field :prep_time, :value => (@recipe.prep_time ? @recipe.prep_time : ''), :placeholder => "15" %>
+				<%= f.number_field :prep_time, :value => (@recipe.prep_time ? @recipe.prep_time : ''), :placeholder => "15", min: "0" %>
 			</div>
 			<div class="content_rich--row--half" id="recipe_cook_time_container">
 				<h3>Cook time (mins)*:</h3>
-				<%= f.number_field :cook_time, :value => (@recipe.cook_time ? @recipe.cook_time : ''), :placeholder => "30" %>
+				<%= f.number_field :cook_time, :value => (@recipe.cook_time ? @recipe.cook_time : ''), :placeholder => "30", min: "0" %>
 			</div>
 		</div>
 		<%# render 'recipe_form_partial', f: f %>
