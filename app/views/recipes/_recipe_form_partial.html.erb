@@ -13,23 +13,23 @@
 				<p><strong>NB.</strong> You'll only be able to make this recipe live and use it (in a shopping list for example) after you've added some ingredients, a description and a cook time.</p>
 			</div>
 		<% end %>
-		<div class="content_rich--row <% if @recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' %>faded_out<% end %>">
+		<div class="content_rich--row <% if @recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' %>faded_out<% end %>" data-hover-title="<% if @recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' %>You can only publish after you've added the description, ingredients and cook time :)<% end %>">
 			<% unless @recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' %>
 				<h3>Ready to publish? This recipe is currently <strong><%= @recipe.live ? "live" : "in draft mode" %></strong></h3>
 			<% end %>
 			<div class="item_form--content_row" id="recipe_live_status_row">
-				<%= radio_button_tag "recipe[live]", true, @recipe.live, id: "live_radio_1", class: "fancy_radio_button" %>
+				<%= radio_button_tag "recipe[live]", true, @recipe.live, id: "live_radio_1", class: "fancy_radio_button", disabled: (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' ? true : false) %>
 				<%= label_tag "live_radio_1", "Published", class: "fancy_radio_button__label" %>
-				<%= radio_button_tag "recipe[live]", false, !@recipe.live, id: "live_radio_2", class: "fancy_radio_button" %>
+				<%= radio_button_tag "recipe[live]", false, !@recipe.live, id: "live_radio_2", class: "fancy_radio_button", disabled: (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' ? true : false) %>
 				<%= label_tag "live_radio_2", "Draft mode", class: "fancy_radio_button__label" %>
 			</div>
 		</div>
-		<div class="content_rich--row <% if !@recipe.live %>faded_out<% end %>" id="recipe_public_status_row">
+		<div class="content_rich--row <% if !@recipe.live %>faded_out<% end %>" id="recipe_public_status_row" data-hover-title="<% if !@recipe.live %>You can only change the public settings on this recipe after it's been published<% end %>">
 			<h3>For public use? Recipe is currently <strong><%= @recipe.public ? "public" : "private to you" %></strong></h3>
 			<div class="item_form--content_row">
-				<%= radio_button_tag "recipe[public]", true, @recipe.public, id: "public_radio_1", class: "fancy_radio_button" %>
+				<%= radio_button_tag "recipe[public]", true, @recipe.public, id: "public_radio_1", class: "fancy_radio_button", disabled: (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' ? true : false) %>
 				<%= label_tag "public_radio_1", "Public to all Stockcubes users", class: "fancy_radio_button__label" %>
-				<%= radio_button_tag "recipe[public]", false, !@recipe.public, id: "public_radio_2", class: "fancy_radio_button" %>
+				<%= radio_button_tag "recipe[public]", false, !@recipe.public, id: "public_radio_2", class: "fancy_radio_button", disabled: (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' ? true : false) %>
 				<%= label_tag "public_radio_2", "Private to you", class: "fancy_radio_button__label" %>
 			</div>
 		</div>
@@ -38,7 +38,7 @@
 			<p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%>Quick note: if you want to share recipes with the Stockcubes community they have to be your own (not ones you've taken from a cookbook or somewhere online). </p>
 		</div>
 
-		<div class="content_rich--row content_rich--row-full_width" id="recipe_description">
+		<div class="content_rich--row content_rich--row-full_width" id="recipe_description_container">
 			<h3>Description (Method)*:</h3>
 			<%= f.text_area :description, :value => (@recipe.description ? @recipe.description : ''), rows: 10, style: 'min-height: 300px;', :placeholder => "The steps to follow to make this meal"%>
 		</div>
@@ -61,7 +61,7 @@
 				<h3>Prep time (mins):</h3>
 				<%= f.number_field :prep_time, :value => (@recipe.prep_time ? @recipe.prep_time : ''), :placeholder => "15" %>
 			</div>
-			<div class="content_rich--row--half" id="recipe_cook_time">
+			<div class="content_rich--row--half" id="recipe_cook_time_container">
 				<h3>Cook time (mins)*:</h3>
 				<%= f.number_field :cook_time, :value => (@recipe.cook_time ? @recipe.cook_time : ''), :placeholder => "30" %>
 			</div>

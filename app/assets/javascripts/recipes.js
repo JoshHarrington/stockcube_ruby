@@ -3,6 +3,7 @@ $(document).on("turbolinks:load", function() {
 		// beforeUnload();
 		confirmDeleteIngredient();
 		togglePublicRowFade();
+		hashCheck();
 	}
 });
 
@@ -47,6 +48,14 @@ var confirmFunc = function($this, ingredientRow, deleteStateClass){
 			ingredientRow.className = ingredientRow.className.replace(deleteStateClass, '');
 		}
 		$this.siblings('input[type="checkbox"]').prop('checked', false);
+	}
+}
+
+var hashCheck = function() {
+	if(window.location.hash) {
+		hash = window.location.hash;
+		targetElString = hash + ' input, ' + hash + ' textarea';
+		document.querySelectorAll(targetElString)[0].focus();
 	}
 }
 

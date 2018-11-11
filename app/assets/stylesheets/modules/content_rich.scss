@@ -144,6 +144,10 @@ form.content_rich--wrapper {
 		width: 100%;
 		max-width: 100%;
 	}
+	input,
+	textarea {
+		border: 1px solid $black-30;
+	}
 	[type="text"], [type="number"] {
 		font-size: em(20, 10);
     min-height: em(36, 20);

@@ -826,6 +826,36 @@ select#day_pick + .selectize {
 
 
 .faded_out {
-	opacity: .4;
-	pointer-events: none;
+	position: relative;
+	&::before {
+		content: " ";
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		z-index: 2;
+		background-color: rgba(255, 255, 255, 0.6);
+		pointer-events: none;
+	}
+	&::after {
+		content: attr(data-hover-title);
+		z-index: 3;
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		top: 0;
+		left: 0;
+		display: flex;
+		align-items: center;
+		font-size: em(16, 10);
+		line-height: em(22, 16);
+		opacity: 0;
+		background-color: white;
+		justify-content: center;
+		transition: opacity .2s;
+	}
+	&:hover::after {
+		opacity: .8;
+	}
 }
