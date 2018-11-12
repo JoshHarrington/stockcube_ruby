@@ -5,6 +5,7 @@ $(document).on("turbolinks:load", function() {
 		togglePublicRowFade();
 		hashFocus();
 		makePublishableOnChange();
+		submitClicked();
 	}
 });
 
@@ -76,6 +77,22 @@ var makePublishableOnChange = function() {
 			publishBtns.prop('disabled', true);
 		}
 	})
+}
+
+
+var submitClicked = function(){
+	$('input[type="submit"]').click(function(){
+		if($('#recipe_title').val() == ''){
+			scrollAndFocusTitle();
+		}
+	});
+}
+
+var scrollAndFocusTitle = function(){
+	document.querySelector('#recipe_title_container').scrollIntoView({
+		behavior: 'smooth'
+	});
+	document.querySelector('#recipe_title').focus();
 }
 
 
