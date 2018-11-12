@@ -44,7 +44,7 @@
         <% end %>
 
       <% elsif @recipe[:user_id] == current_user[:id] && (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '') %>
-        <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe cannot be made live until you've
+        <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe is in draft mode, it can be made live when you've
           <% if @recipe.portions.length == 0 %>
             <%= link_to 'added some ingredients', portions_new_path(:recipe_id => params[:id]) %><!--
             --><% if @recipe.description.to_s == '' && @recipe.cook_time.to_s == '' %>,

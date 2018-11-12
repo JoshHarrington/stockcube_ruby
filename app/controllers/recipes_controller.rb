@@ -131,13 +131,13 @@ class RecipesController < ApplicationController
 
 		if params.has_key?(:redirect) && params[:redirect].to_s != ''
 			@recipe.update(recipe_params)
-			if @recipe.description.to_s == '' || @recipe.cook_time.to_s == ''
+			if @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' || @recipe.portions.length == 0
 				@recipe.update_attributes(live: false)
 			end
 			redirect_to portions_new_path(:recipe_id => params[:id])
 		else
 			if @recipe.update(recipe_params)
-				if @recipe.description.to_s == '' || @recipe.cook_time.to_s == ''
+				if @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' || @recipe.portions.length == 0
 					@recipe.update_attributes(live: false)
 				end
 				redirect_to recipe_path(@recipe)
