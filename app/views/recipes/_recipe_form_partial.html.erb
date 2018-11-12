@@ -13,7 +13,7 @@
 				<p><strong>NB.</strong> You'll only be able to make this recipe live and use it (in a shopping list for example) after you've added some ingredients, a description and a cook time.</p>
 			</div>
 		<% end %>
-		<div class="content_rich--row <% if @recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' %>faded_out<% end %>" data-hover-title="<% if @recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' %>You can only publish after you've added the description, ingredients and cook time :)<% end %>">
+		<div id="publish_options" class="content_rich--row <% if @recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' %>faded_out<% end %>" data-hover-title="You can only publish after you've added the description, ingredients and cook time :)">
 			<% unless @recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' %>
 				<h3>Ready to publish? This recipe is currently <strong><%= @recipe.live ? "live" : "in draft mode" %></strong></h3>
 			<% end %>
@@ -67,10 +67,10 @@
 			</div>
 		</div>
 		<%# render 'recipe_form_partial', f: f %>
-		<div class="content_rich--row portion_list--edit" id="add_ingredients">
+		<div class="content_rich--row portion_list--edit" id="recipe_ingredients_list">
 			<h2>Ingredients</h2>
-			<ul>
-				<% if @portions %>
+			<% if @portions %>
+				<ul>
 					<% @portions.each do |portion| %>
 						<li id="ingredient_<%=portion.id%>" class="pretty_form--highlight_green ingredient_row">
 							<p><%= portion.ingredient.name %></p>
@@ -83,8 +83,8 @@
 							<%= label_tag "recipe[portion_delete_ids][]", "Remove ingredient from recipe", {:for => portion.id, :title => "Delete this ingredient"} %>
 						</li>
 					<% end %>
-				<% end %>
-			</ul>
+				</ul>
+			<% end %>
 			<br />
 		</div>
 		<div class="<% if @recipe.portions.length > 0 %>content_rich--row-flex_end_btns<% end %>">
