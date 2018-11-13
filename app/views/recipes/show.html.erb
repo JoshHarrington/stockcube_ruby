@@ -25,7 +25,9 @@
           <%= link_to 'Add to shopping list', add_to_shopping_list_recipe_path(@recipe), class: 'list_block--collection--action', title: 'add to shopping list', method: :put %>
         <% end %>
       </div>
-      <% if @recipe.cuisine && @recipe.cuisine.to_s != '' %>
+      <% if current_user && current_user == @recipe.user %>
+        <p class="recipe_cuisine"><%= (@recipe.cuisine.to_s == '' || !@recipe.cuisine) ? 'Cuisines type not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe : (@recipe.cuisine.to_s +  ' Cuisine') %></p>
+      <% elsif @recipe.cuisine && @recipe.cuisine.to_s != '' %>
         <p class="recipe_cuisine"><%= @recipe.cuisine.to_s %> Cuisine</p>
       <% end %>
       <% if vegetarian?(@recipe) || vegan?(@recipe) || gluten_free?(@recipe) || dairy_free?(@recipe) || kosher?(@recipe) %>
@@ -38,10 +40,7 @@
         </div>
       <% end %>
       <% if @recipe[:user_id] == current_user[:id] && @recipe.portions.length > 0 && @recipe.description.to_s != '' && @recipe.cook_time.to_s != '' %>
-        <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe is <%= @recipe.live ? "<strong>live</strong>".html_safe + (@recipe.public ? " and <strong>public</strong> ".html_safe : " and <strong>private</strong> to you ".html_safe)  + "on Stockcubes" : "in <strong>draft</strong> mode ".html_safe %> - <% if @recipe.live %><%= link_to 'put it back to draft', publish_update_recipe_path(@recipe, type: 'make_draft') %><% else %><%= link_to 'publish it now', publish_update_recipe_path(@recipe, type: 'make_live') %><% end %>.</p>
-        <% if @recipe.live %>
-          <p class="recipe_cuisine item_form--content_item_note"><% if @recipe.public %> <%= link_to 'Make the recipe <strong>private</strong>'.html_safe , publish_update_recipe_path(@recipe, type:"make_private") %>, so only you can see and use it<% else %><%= link_to 'Make the recipe <strong>public</strong>'.html_safe , publish_update_recipe_path(@recipe, type: "make_public") %> for all Stockcubes users<% end %>.</p>
-        <% end %>
+        <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe is <%= @recipe.live ? "<strong>live</strong>".html_safe + (@recipe.public ? " and <strong>public</strong> ".html_safe : " and <strong>private</strong> to you ".html_safe)  + "on Stockcubes" : "in <strong>draft</strong> mode ".html_safe %> - <% if @recipe.live %> you can <% if @recipe.public %><%= link_to 'make the recipe <strong>private</strong>'.html_safe , publish_update_recipe_path(@recipe, type:"make_private") %> (then only you will be able to see and use it)<% else %><%= link_to 'make the recipe <strong>public</strong>'.html_safe , publish_update_recipe_path(@recipe, type: "make_public") %> (so all Stockcubes users can see and use it)<% end %>, and if you want to take it offline you can <%= link_to 'put it back to draft', publish_update_recipe_path(@recipe, type: 'make_draft') %><% else %><%= link_to 'publish it now', publish_update_recipe_path(@recipe, type: 'make_live') %><% end %>.</p>
 
       <% elsif @recipe[:user_id] == current_user[:id] && (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '') %>
         <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe is in draft mode, it can be made live when you've
@@ -69,32 +68,52 @@
         <p>Recipe provided by a Stockcubes user</p>
       </div>
     <% end %>
-    <% if @recipe.yield && @recipe.yield.to_s != '' %>
-      <div class="content_rich--row">
-        <p class="recipe-serving"><%= @recipe.yield.to_s + (@recipe.yield.to_s.downcase.include?('serv') ? '' : ' Servings') %> </p>
-      </div>
-    <% end %>
-
     <% if current_user && current_user == @recipe.user %>
       <div class="content_rich--row">
-        <p class="recipe-prep_time">Prep Time: <%= ((@recipe.prep_time && @recipe.prep_time.to_s == '') || !@recipe.prep_time) ? 'Not set!' : @recipe.prep_time.to_s %></p>
+        <p class="recipe-serving">Yield: <%= (@recipe.yield.to_s == '' || !@recipe.yield) ? 'Not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe : (@recipe.yield.to_i.to_s +  ' Servings') %></p>
       </div>
-    <% elsif (!current_user || (current_user && current_user != @recipe.user)) && @recipe.prep_time && @recipe.prep_time.to_s != '' %>
       <div class="content_rich--row">
-        <p class="recipe-prep_time">Prep Time: <%= @recipe.prep_time.to_s %></p>
+        <p class="recipe-prep_time">Prep Time: <%= (@recipe.prep_time.to_s == '' || !@recipe.prep_time) ? 'Not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe : (@recipe.prep_time.to_i.to_s +  ' mins') %></p>
+      </div>
+      <div class="content_rich--row">
+        <p class="recipe-cook_time">Cook Time: <%= (@recipe.cook_time.to_s == '' || !@recipe.cook_time) ? 'Not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe : (@recipe.cook_time.to_i.to_s +  ' mins') %></p>
+      </div>
+      <div class="content_rich--row">
+        <div class="recipe_description">
+          <h2>Method</h2>
+          <% if @recipe.description.to_s == '' %>
+            <p>Not yet set <span class="item_form--content_item_note">(Only you can see this)</span></p>
+          <% else %>
+            <%= simple_format(@recipe.description) %>
+          <% end %>
+        </div>
       </div>
     <% end %>
-    <% if @recipe.cook_time %>
-      <div class="content_rich--row">
-        <p class="recipe-cook_time">Cook Time: <%= @recipe.cook_time.to_i %> mins</p>
-      </div>
+    <% if !current_user || current_user != @recipe.user %>
+      <% if @recipe.yield.to_s != '' %>
+        <div class="content_rich--row">
+          <p class="recipe-serving">Yield: <%= @recipe.yield.to_i %> Servings</p>
+        </div>
+      <% end %>
+      <% if @recipe.prep_time.to_s != '' %>
+        <div class="content_rich--row">
+          <p class="recipe-prep_time">Prep Time: <%= @recipe.prep_time.to_i %> mins</p>
+        </div>
+      <% end %>
+      <% if @recipe.cook_time.to_s != '' %>
+        <div class="content_rich--row">
+          <p class="recipe-cook_time">Cook Time: <%= @recipe.cook_time.to_i %> mins</p>
+        </div>
+      <% end %>
+      <% if @recipe.description.to_s != '' %>
+        <div class="content_rich--row">
+          <div class="recipe_description">
+            <h2>Method</h2>
+            <%= simple_format(@recipe.description) %>
+          </div>
+        </div>
+      <% end %>
     <% end %>
-    <div class="content_rich--row">
-      <div class="recipe_description">
-        <h2>Method</h2>
-        <%= simple_format(@recipe.description) %>
-      </div>
-    </div>
     <% if @recipe.note %>
       <div class="content_rich--row">
         <p class="recipe-notes"><%= @recipe.note.to_s %></p>
