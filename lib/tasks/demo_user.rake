@@ -1,3 +1,6 @@
+require "#{Rails.root}/app/task_helpers/shopping_lists_helper"
+include TaskShoppingListsHelper
+
 namespace :demo_user do
   desc "Find demo user, if it doesn't exist create it, add cupboards and stock"
 	task :find_or_create_demo_user => :environment do
@@ -64,10 +67,64 @@ namespace :demo_user do
 		new_shopping_list.recipes << recipe_shopping_list_picks
 
 		recipe_shopping_list_picks.each do |recipe|
-			recipe.portions.each do |portion|
-				shopping_list_portion = ShoppingListPortion.create(shopping_list_id: new_shopping_list.id, recipe_number: recipe.id, portion_amount: portion.amount, ingredient_id: portion.ingredient_id, unit_number: portion.unit_number)
-			end
+			TaskShoppingListsHelper.shopping_list_portions_set_from_recipes(recipe[:id], nil, demo_user[:id], nil)
 		end
+
+		### setup user with some fav stock for quick add
+		@tomatoe_id = Ingredient.where(name: "Tomatoes").first.id
+		@egg_id = Ingredient.where(name: "Egg").first.id
+		@bread_id = Ingredient.where(name: "Bread (White)").first.id  ## need to add (to production)
+		@milk_id = Ingredient.where(name: "Milk").first.id
+		@onion_id = Ingredient.where(name: "Onion").first.id
+		@cheese_id = Ingredient.where(name: "Cheese (Cheddar)").first.id
+
+		@each_unit_id = Unit.where(name: "Each").first.id
+		@loaf_unit_id = Unit.where(name: "Loaf").first.id 	## need to add (to production)
+		@pint_unit_id = Unit.where(name: "Pint").first.id
+		@gram_unit_id = Unit.where(name: "Gram").first.id
+
+		UserFavStock.create(
+			ingredient_id: @tomatoe_id,
+			stock_amount: 4,
+			unit_id: @each_unit_id,
+			user_id: demo_user.id,
+			standard_use_by_limit: 5
+		)
+		UserFavStock.create(
+			ingredient_id: @egg_id,
+			stock_amount: 6,
+			unit_id: @each_unit_id,
+			user_id: demo_user.id,
+			standard_use_by_limit: 9
+		)
+		UserFavStock.create(
+			ingredient_id: @bread_id,
+			stock_amount: 1,
+			unit_id: @loaf_unit_id,
+			user_id: demo_user.id,
+			standard_use_by_limit: 4
+		)
+		UserFavStock.create(
+			ingredient_id: @milk_id,
+			stock_amount: 1,
+			unit_id: @pint_unit_id,
+			user_id: demo_user.id,
+			standard_use_by_limit: 8
+		)
+		UserFavStock.create(
+			ingredient_id: @onion_id,
+			stock_amount: 3,
+			unit_id: @each_unit_id,
+			user_id: demo_user.id,
+			standard_use_by_limit: 14
+		)
+		UserFavStock.create(
+			ingredient_id: @cheese_id,
+			stock_amount: 350,
+			unit_id: @gram_unit_id,
+			user_id: demo_user.id,
+			standard_use_by_limit: 28
+		)
 
 
 

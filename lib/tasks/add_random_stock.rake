@@ -8,12 +8,12 @@ task :find_user_add_random_stock => :environment do
 	c4 = Cupboard.create(location: "Cupboard by the Oven")
 
 	[c1, c2, c3, c4].each do |cupboard|
-			CupboardUser.create(
+		CupboardUser.create(
 			cupboard_id: cupboard.id,
 			user_id: set_user.id,
 			owner: true,
 			accepted: true
-			)
+		)
 	end
 
 	ingredient_picks = Ingredient.where(searchable: true).sample(15)
