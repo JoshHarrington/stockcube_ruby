@@ -602,9 +602,9 @@ a.list_block {
 		@media (max-width: 899px) and (min-width: 700px) {
 			flex-basis: calc(25% - 6px);
 		}
-		@media (min-width: 1300px) {
-			max-width: em(180, 15);
-		}
+		// @media (min-width: 1300px) {
+		// 	max-width: em(180, 15);
+		// }
 	}
 	&.date-part-warning {
 		background-color: $warning-amber;
