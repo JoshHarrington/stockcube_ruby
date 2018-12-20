@@ -28,4 +28,6 @@
 @import "modules/footer.scss";
 @import "modules/angel.scss";
 
-@import "selectize.scss";
+@import "vendor/selectize.scss";
+@import "bootstrap_tour_fixes.scss";
+@import "vendor/bootstrap-tour-standalone.min.scss";

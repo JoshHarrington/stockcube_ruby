@@ -6,8 +6,8 @@
     <h2>Your Cupboards</h2>
   </div>
   <div id="cupboard-list" class="list_block--collection">
-    <% @cupboards.each do |cupboard| %>
-      <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack <%= cupboard_shared_class(cupboard) %><%= @cupboards.length == 1 ? 'list_block-wide' : nil %>" id="<%= cupboard.id %>" data-id="<%= cupboard.id %>">
+    <% @cupboards.each_with_index do |cupboard, index| %>
+      <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack <%= cupboard_shared_class(cupboard) %><%= @cupboards.length == 1 ? 'list_block-wide' : nil %>" id="<%= cupboard.id %>" data-index="<%= index + 1 %>" data-id="<%= cupboard.id %>">
         <div class="list_block--content">
           <div class="list_block--title">
             <% if current_user.cupboard_users.where(cupboard_id: cupboard[:id]).first[:owner] == true && @cupboards.length > 1 %>

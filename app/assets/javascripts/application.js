@@ -30,4 +30,8 @@
 //= require vendor/selectize.min.js
 //= require user
 //= require g_sign_in
+//= require popper
+//= require bootstrap
+//= require vendor/bootstrap-tour-standalone.min.js
+//= require tour
 

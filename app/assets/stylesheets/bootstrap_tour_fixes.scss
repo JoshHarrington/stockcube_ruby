@@ -1,0 +1,9 @@
+.tour-backdrop ~ .tour-backdrop {
+	display: none;
+}
+
+footer ~ .tour-tour-element,
+footer ~ .tour-step-background {
+	background-color: white;
+	border-radius: 0;
+}
