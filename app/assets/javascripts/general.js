@@ -1,4 +1,4 @@
-$(document).on('turbolinks:load', function() {
+$(document).ready(function() {
   var previousDate;
   $('html').removeClass('no-js');
   $('.no_js_show').prop('hidden', true);

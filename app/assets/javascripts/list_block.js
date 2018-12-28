@@ -101,7 +101,7 @@ var listBlockEdit = function(page) {
 
 }
 
-$(document).on("turbolinks:load", function() {
+$(document).ready(function() {
 	if (($('#cupboard-list').length > 0) || ($('#shopping_list_recipe--list').length > 0)) {
 		var page = '';
 		if ($('#cupboard-list').length > 0) {

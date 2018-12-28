@@ -67,11 +67,11 @@
     <meta name="msapplication-square310x310logo" content="<%= asset_path('mstile-310x310.png')%>" />
 
     <% if Rails.env.development? %>
-      <%= javascript_include_tag 'vendor/tota11y.min.js', 'data-turbolinks-track': 'reload' %>
+      <%= javascript_include_tag 'vendor/tota11y.min.js' %>
     <% end %>
-    <%= javascript_include_tag 'in_head/modernizr-custom', 'data-turbolinks-track': 'reload' %>
-    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload', :defer => "defer" %>
+    <%= javascript_include_tag 'in_head/modernizr-custom' %>
+    <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%= javascript_include_tag 'application', :defer => "defer" %>
   </head>
 
   <body class="<%= controller_name %>_controller <%= action_name %>_page">
@@ -101,7 +101,7 @@
             <%= content_tag(:div, message.html_safe, class: "alert alert-#{message_type}") %>
           <% end %>
           <%= yield %>
-          <%= debug(params) if Rails.env.development? %>
+          <%# debug(params) if Rails.env.development? %>
         </main>
         <%= render 'layouts/footer' %>
       </div><%#-- inner-wrap --%>

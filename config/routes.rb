@@ -9,15 +9,15 @@ Rails.application.routes.draw do
   get '/shopping_lists/current' => 'shopping_lists#show_ingredients_current', as: :current_shopping_list_ingredients
   get '/shopping_lists/current/shop' => 'shopping_lists#shop'
   get '/shopping_lists/archive_current' => 'shopping_lists#archive_shopping_list'
-  get '/shopping_lists/:id' => 'shopping_lists#show_ingredients', as: :shopping_list_ingredients
-  get '/shopping_lists/:id/edit' => 'shopping_lists#edit', as: :edit_shopping_list
-  patch '/shopping_lists/:id' => 'shopping_lists#update'
   post '/shopping_lists' => 'shopping_lists#create'
   post '/shopping_lists/autosave' => 'shopping_lists#autosave'
   post '/shopping_lists/autosave_checked_items' => 'shopping_lists#autosave_checked_items'
   post '/shopping_lists/reminder_email' => 'shopping_lists#send_shopping_list_reminder', as: :shopping_list_delay__with_notification
   post '/shopping_lists/no_reminder_email' => 'shopping_lists#delay_shopping_list_process', as: :shopping_list_delay
   post '/shopping_lists/shopping_list_to_cupboard' => 'shopping_lists#shopping_list_to_cupboard'
+  get '/shopping_lists/:id' => 'shopping_lists#show_ingredients', as: :shopping_list_ingredients
+  get '/shopping_lists/:id/edit' => 'shopping_lists#edit', as: :edit_shopping_list
+  patch '/shopping_lists/:id' => 'shopping_lists#update'
   delete '/shopping_lists/:id/delete' => 'shopping_lists#delete', as: :delete_shopping_list
 
 
@@ -78,9 +78,9 @@ Rails.application.routes.draw do
   get '/quick_add_stock/new', to: 'user_fav_stocks#new'
   get '/quick_add_stock/:id/edit', to: 'user_fav_stocks#edit', as: :quick_add_stock_edit
 
+  get '/profile', to: 'users#show', as: :user_profile
+  get '/profile/edit', to: 'users#edit', as: :user_profile_edit
   post '/users/notifications', to: 'users#notifications'
-  # get '/oauth2callback', to: 'users#oauth_callback'
-  # get '/users/new_from_g_sign_in', to: 'users#new_from_g_sign_in'
   post '/users/new_from_g_sign_in', to: 'users#new_from_g_sign_in'
 
   resources :users

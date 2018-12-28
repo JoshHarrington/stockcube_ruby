@@ -1,12 +1,81 @@
 .content_rich--wrapper {
 	display: flex;
 	justify-content: center;
-	padding: em(20, 10);
 }
 
 .content_rich {
 	max-width: em(800, 10);
 	width: 100%;
+	padding: em(20, 10);
+	background-color: white;
+	margin-bottom: em(30, 10);
+	@media (min-width: 961px) {
+		box-shadow: 0px 0px 7px -2px rgb(173, 173, 173);
+		margin-top: em(-150, 10);
+	}
+}
+
+.content_rich--header {
+	background-size: cover;
+	min-height: em(300, 10);
+	height: 31vw;
+	width: 100%;
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	@media (max-width: 960px) {
+		min-height: 31vw;
+		height: 31vw;
+	}
+}
+
+.content_rich--header_attribution {
+	opacity: .4;
+	transition: opacity .2s;
+	background-color: rgba(0, 0, 0, 0.8);
+	padding: em(9, 10) em(12, 10);
+	min-height: 37px;
+	display: flex;
+	align-items: center;
+	.item_form--content_item_note {
+		color: $teal-10;
+		margin-top: 0;
+		svg.icomoon-icon.icon-information-outline {
+			margin-right: 0;
+			margin-top: 0;
+		}
+	}
+	@at-root a#{&} {
+		color: $teal-20;
+		font-size: em(12, 10);
+	}
+	&:hover, &:focus {
+		opacity: 1;
+	}
+	@at-root button#{&} {
+		border: none;
+		position: relative;
+		&::before {
+			content: attr(data-title);
+			line-height: 150%;
+			display: none;
+			position: absolute;
+			top: 100%;
+			width: em(200, 12);
+			font-size: em(12, 11);
+			text-align: left;
+			padding: em(7, 12) em(7, 12);
+			background-color: rgba(0, 0, 0, 0.9);
+			color: white;
+			left: 0;
+			z-index: 2;
+		}
+		&:hover, &:focus {
+			&::before {
+				display: block;
+			}
+		}
+	}
 }
 
 .content_rich--title_block {
@@ -45,6 +114,9 @@
 	flex-wrap: wrap;
 	justify-content: flex-end;
 	align-items: flex-start;
+	.content_rich--header_attribution + .content_rich--title_block & {
+		margin-top: 0;
+	}
 	margin-top: em(10, 10);
 	h1 {
 		display: flex;

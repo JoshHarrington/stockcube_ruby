@@ -1,4 +1,4 @@
-$(document).on("turbolinks:load", function() {
+$(document).ready(function() {
 	if ($('#recipe_edit').length > 0) {
 		// beforeUnload();
 		confirmDeleteIngredient();

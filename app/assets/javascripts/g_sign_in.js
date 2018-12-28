@@ -7,4 +7,5 @@ function onSignIn(googleUser) {
     data: dataString,
     dataType: "script"
   });
+  window.location.replace('/users/profile');
 }

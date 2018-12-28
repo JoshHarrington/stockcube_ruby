@@ -20,7 +20,7 @@ var shoppingList = function() {
 	});
 }
 
-$(document).on("turbolinks:load", function() {
+$(document).ready(function() {
 	if ($('#shopping_list_shop_mode_form').length > 0) {
 		shoppingList();
 	}
@@ -33,7 +33,7 @@ var shoppingListShow = function() {
 	});
 }
 
-$(document).on("turbolinks:load", function() {
+$(document).ready(function() {
 	if ($('#shopping_list_show').length > 0) {
 		shoppingListShow();
 	}

@@ -28,7 +28,7 @@ var user_function = function() {
 	});
 }
 
-$(document).on("turbolinks:load", function() {
+$(document).ready(function() {
 	if ($('#notifications').length > 0) {
 		user_function();
 	}

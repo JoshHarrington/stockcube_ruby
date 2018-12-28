@@ -20,7 +20,7 @@ var cupboard_share = function() {
 
 };
 
-$(document).on("turbolinks:load", function() {
+$(document).ready(function() {
 	if ($('#cupboard_share').length > 0) {
 		cupboard_share();
 	}

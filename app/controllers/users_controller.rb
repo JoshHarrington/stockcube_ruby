@@ -1,6 +1,5 @@
 class UsersController < ApplicationController
   before_action :logged_in_user, only: [:index, :edit, :update, :show, :destroy]
-  before_action :correct_user,   only: [:edit, :update, :show]
   before_action :admin_user,     only: [:destroy, :index]
   before_action :demo_user,      only: [:index, :show, :new, :create, :edit, :update, :destroy]
 
@@ -13,20 +12,27 @@ class UsersController < ApplicationController
   end
 
   def show
-    @user = User.find(params[:id])
-    @users_recipes = @user.recipes
-    @all_recipes = Recipe.all
-    @weekdays = {
-      'Sunday' => 0,
-      'Monday' => 1,
-      'Tuesday' => 2,
-      'Wednesday' => 3,
-      'Thursday' => 4,
-      'Friday' => 5,
-      'Saturday' => 6
-    }
-    @weekday_current_id = Time.now.wday
-    @weekday_pick = current_user.user_setting.notify_day
+    if current_user && logged_in?
+      if params[:id]
+        redirect_to user_profile_path
+      end
+      @user = current_user
+      @users_recipes = @user.recipes
+      @all_recipes = Recipe.all
+      @weekdays = {
+        'Sunday' => 0,
+        'Monday' => 1,
+        'Tuesday' => 2,
+        'Wednesday' => 3,
+        'Thursday' => 4,
+        'Friday' => 5,
+        'Saturday' => 6
+      }
+      @weekday_current_id = Time.now.wday
+      @weekday_pick = current_user.user_setting.notify_day
+    else
+      redirect_to login_path
+    end
   end
 
   def new
@@ -68,7 +74,14 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @user = User.find(params[:id])
+    if current_user && logged_in?
+      if params[:id]
+        redirect_to user_profile_edit_path
+      end
+      @user = current_user
+    else
+      redirect_to login_path
+    end
   end
 
   def update
@@ -128,7 +141,7 @@ class UsersController < ApplicationController
           redirect_to root_url
         else
           flash[:info] = "Please update your name to finish setting up your account."
-          redirect_to edit_user_path(:id => g_user.id, :anchor => "user_name_fix")
+          redirect_to user_profile_edit_path(:anchor => "user_name_fix")
         end
       end
     else
@@ -158,12 +171,6 @@ class UsersController < ApplicationController
         flash[:danger] = "Please log in."
         redirect_to login_url
       end
-    end
-
-    # Confirms the correct user.
-    def correct_user
-      @user = User.find(params[:id])
-      redirect_to(root_url) unless current_user?(@user)
     end
 
     # Confirms an admin user.

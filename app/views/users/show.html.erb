@@ -10,12 +10,11 @@
 <div class="pretty_form">
   <div class="pretty_form--sibling content_rich--title_row">
     <h1>Your profile</h1>
-    <%= link_to "Edit profile", edit_user_path(@user), class: "list_block--item--action" %>
+    <%= link_to "Edit profile", user_profile_edit_path, class: "list_block--item--action" %>
   </div>
 
   <div class="fake_form">
     <div class="pretty_form--row">
-      <h2>Your details</h2>
       <p class="info">Name:</p>
       <p><%= @user.name %></p>
       <p class="info">Email:</p>
