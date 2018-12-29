@@ -1,0 +1,17 @@
+Notification for <%= @admin.name %>
+
+Issue from <%= @user ? 'a signed in user' : 'a signed out user' %>.
+
+<% if @user %>
+User details
+
+Email: <%= @user[:user_email] %>
+ID: <%= @user[:user_id] %>
+<% end %>
+
+Issue details:
+<%= @issue_details %>
+
+Issue seen on '<%= @current_path %>'
+
+Reported on <%= Time.current.in_time_zone.to_s(:short) %>

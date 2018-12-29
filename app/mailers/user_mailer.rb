@@ -36,4 +36,12 @@ class UserMailer < ApplicationMailer
     @user = user
     mail to: user.email, subject: "Shopping List Reminder"
   end
+
+  def admin_feedback_notification(user, issue_details, current_path)
+    @user = user
+    @issue_details = issue_details
+    @current_path = current_path
+    @admin = User.where(admin: true).first
+    mail to: @admin, subject: "User feedback from site footer form"
+  end
 end

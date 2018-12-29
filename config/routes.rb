@@ -83,6 +83,8 @@ Rails.application.routes.draw do
   post '/users/notifications', to: 'users#notifications'
   post '/users/new_from_g_sign_in', to: 'users#new_from_g_sign_in'
 
+  post '/feedback/submit' => 'feedback#submit'
+
   resources :users
   resources :user_fav_stocks
   resources :account_activations, only: [:edit]
