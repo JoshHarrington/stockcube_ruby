@@ -2,7 +2,7 @@
   require 'uri'
   background_image_url = 'https://source.unsplash.com/1600x1000/weekly?food'
   if @recipe.title
-    background_image_url = 'https://source.unsplash.com/1600x1000/weekly?' + URI::encode(@recipe.title).to_s.downcase + ',food'
+    background_image_url = 'https://source.unsplash.com/1200x800/weekly?' + URI::encode(@recipe.title).to_s.downcase + ',food'
   end
 %>
 
