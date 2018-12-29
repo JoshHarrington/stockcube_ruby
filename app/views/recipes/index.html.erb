@@ -4,7 +4,12 @@
     <div class="list_block--collection--wrap">
     <%= form_tag recipes_path, class: 'search_box--form',  method: :get do %>
         <div class="search_box">
-          <%= text_field_tag :search, params[:search], placeholder: "what do you fancy? Tamales? Lancashire Hot Pot?" %>
+          <%= text_field_tag :search, params[:search], placeholder: "what do you fancy? Tamales? Lancashire Hot Pot?", list: "recipe_search_autocomplete_list" %>
+          <datalist id="recipe_search_autocomplete_list">
+            <% @recipe_search_autocomplete_list.each do |item| %>
+              <option value="<%= item %>">
+            <% end %>
+          </datalist>
           <%= button_tag "Search", name: nil do %>
             <%= icomoon('search') %>
           <% end %>

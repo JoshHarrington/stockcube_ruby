@@ -16,8 +16,8 @@ class RecipesController < ApplicationController
 		### setup session record with recipe ingredient cupboard match
 		###  - should also update on stock changes
 
-
-		@fallback_recipes = current_user.user_recipe_stock_matches.order(ingredient_stock_match_decimal: :desc).map{|user_recipe_stock_match| user_recipe_stock_match.recipe if user_recipe_stock_match.recipe && user_recipe_stock_match.recipe.portions.length != 0 && (user_recipe_stock_match.recipe[:public] || user_recipe_stock_match.recipe[:user_id] == current_user[:id]) }.compact.paginate(:page => params[:page], :per_page => 12)
+		@fallback_recipes_unformatted = current_user.user_recipe_stock_matches.order(ingredient_stock_match_decimal: :desc).map{|user_recipe_stock_match| user_recipe_stock_match.recipe if user_recipe_stock_match.recipe && user_recipe_stock_match.recipe.portions.length != 0 && (user_recipe_stock_match.recipe[:public] || user_recipe_stock_match.recipe[:user_id] == current_user[:id]) }.compact
+		@fallback_recipes = @fallback_recipes_unformatted.paginate(:page => params[:page], :per_page => 12)
 
 		if params.has_key?(:search) && params[:search].to_s != ''
 			recipe_results = Recipe.search(params[:search], operator: 'or', body_options: {min_score: 1}).results
@@ -36,6 +36,13 @@ class RecipesController < ApplicationController
 		end
 		@fav_recipes = current_user.favourites
 		@fav_recipes_limit = current_user.favourites.first(6)
+
+
+		recipe_titles = @fallback_recipes_unformatted.map(&:title)
+		ingredients = Ingredient.all.map(&:name).uniq
+
+		@recipe_search_autocomplete_list = (recipe_titles + ingredients).sort_by(&:downcase)
+
 	end
 
 
