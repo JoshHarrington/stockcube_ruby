@@ -60,10 +60,13 @@ gem 'pgsync'
 gem 'pry'
 
 gem 'hashid-rails', '~> 1.2', '>= 1.2.1'
-gem "sprockets", ">= 3.7.2"
-gem "sinatra", ">= 2.0.2"
-gem "ffi", ">= 1.9.24"
-gem "rubyzip", ">= 1.2.2"
+gem 'sprockets', '>= 3.7.2'
+gem 'sinatra', '>= 2.0.2'
+gem 'ffi', '>= 1.9.24'
+gem 'rubyzip', '>= 1.2.2'
+
+gem 'omniauth'
+gem 'omniauth-google-oauth2'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

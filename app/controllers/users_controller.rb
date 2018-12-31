@@ -7,7 +7,6 @@ class UsersController < ApplicationController
   include UsersHelper
 
   def index
-    # @users = User.paginate(page: params[:page])
     @users = User.where(activated: true).paginate(page: params[:page])
   end
 
@@ -73,6 +72,41 @@ class UsersController < ApplicationController
     end
   end
 
+  def google_auth
+    user_info = request.env['omniauth.auth']
+    if user_info.has_key?("info") && user_info["info"].has_key?("email") && user_info["info"].has_key?("name")
+      if User.where(email: user_info["info"]["email"]).length > 0
+        g_user = User.where(email: user_info["info"]["email"]).first
+        log_in g_user
+      else
+        password_generate = SecureRandom.base64(14)
+        g_user_name = '21st Century Human'
+        if user_info["info"].has_key?("name")
+          g_user_name = user_info["info"].has_key?("name").to_s
+        end
+        g_user = User.create(
+          email: params[:email],
+          name: g_user_name,
+          password: password_generate,
+          password_confirmation: password_generate,
+          activated: true,
+          activated_at: Time.zone.now
+        )
+      end
+      new_user(g_user)
+
+      log_in g_user
+      unless user_info["info"].has_key?("name")
+        flash[:info] = "Please update your name to finish setting up your account."
+        redirect_to user_profile_edit_path(:anchor => "user_name_fix")
+      end
+      redirect_to user_profile_path
+    else
+      flash[:notice] = %Q[That login didn't work. Maybe try it again, or <a href="/signup">sign up</a> for a Stockcubes account]
+      redirect_to root_path
+    end
+  end
+
   def edit
     if current_user && logged_in?
       if params[:id]
@@ -111,41 +145,6 @@ class UsersController < ApplicationController
           )
         end
       end
-    end
-  end
-
-  def new_from_g_sign_in
-    if params.has_key?(:email) && params[:email].to_s != '' && params[:email].to_s != 'null'
-      if User.where(email: params[:email]).length > 0
-        g_user = User.where(email: params[:email]).first
-        log_in g_user
-        redirect_to root_url
-      else
-        password_generate = SecureRandom.base64(14)
-        g_user_name = '21st Century Human'
-        if params.has_key?(:name) && params[:name].to_s != ''
-          g_user_name = params[:name].to_s
-        end
-        g_user = User.create(
-          email: params[:email],
-          name: g_user_name,
-          password: password_generate,
-          password_confirmation: password_generate,
-          activated: true,
-          activated_at: Time.zone.now
-        )
-        new_user(g_user)
-
-        log_in g_user
-        if params.has_key?(:name) && params[:name].to_s != ''
-          redirect_to root_url
-        else
-          flash[:info] = "Please update your name to finish setting up your account."
-          redirect_to user_profile_edit_path(:anchor => "user_name_fix")
-        end
-      end
-    else
-      flash[:notice] = %Q[That login didn't work. Maybe try it again, or <a href="/signup">sign up</a> for a Stockcubes account]
     end
   end
 

@@ -81,7 +81,8 @@ Rails.application.routes.draw do
   get '/profile', to: 'users#show', as: :user_profile
   get '/profile/edit', to: 'users#edit', as: :user_profile_edit
   post '/users/notifications', to: 'users#notifications'
-  post '/users/new_from_g_sign_in', to: 'users#new_from_g_sign_in'
+  get '/google_login', to: redirect("/auth/google_oauth2")
+  get '/auth/google_oauth2/callback', to: 'users#google_auth'
 
   post '/feedback/submit' => 'feedback#submit'
 

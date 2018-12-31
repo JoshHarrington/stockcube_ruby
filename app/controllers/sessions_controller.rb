@@ -1,3 +1,6 @@
+require 'omniauth'
+require 'omniauth-google-oauth2'
+
 class SessionsController < ApplicationController
   before_action :demo_restrict,      only: [:new, :create, :destroy]
 
