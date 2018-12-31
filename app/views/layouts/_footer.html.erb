@@ -1,14 +1,16 @@
 <footer>
-	<input type="checkbox" class="feedback_form_button hidden_checkbox" id="feedback_form_button" value="" />
-	<label for="feedback_form_button" class="feedback_form_label">Something wrong with this page?</label>
-	<div class="footer_feedback_form--wrapper">
-		<%= form_tag({controller: "feedback", action: "submit" }, id: "footer-feedback-form",  method: :post) do %>
-			<%= label_tag "issue_details", "Let us know the details and we'll get it sorted" %>
-			<%= text_area_tag "issue_details", nil,  cols: 60, rows: 5, placeholder: "There was a weird problem when I clicked a button...." %>
-			<%= hidden_field_tag "current_path", request.path %>
-			<%= button_tag "Submit", class: "list_block--collection--action" %>
-		<% end %>
-	</div>
+	<% if current_user %>
+		<input type="checkbox" class="feedback_form_button hidden_checkbox" id="feedback_form_button" value="" />
+		<label for="feedback_form_button" class="feedback_form_label">Something wrong with this page?</label>
+		<div class="footer_feedback_form--wrapper">
+			<%= form_tag({controller: "feedback", action: "submit" }, id: "footer-feedback-form",  method: :post) do %>
+				<%= label_tag "issue_details", "Let us know the details and we'll get it sorted" %>
+				<%= text_area_tag "issue_details", nil,  cols: 60, rows: 5, placeholder: "There was a weird problem when I clicked a button...." %>
+				<%= hidden_field_tag "current_path", request.path %>
+				<%= button_tag "Submit", class: "list_block--collection--action" %>
+			<% end %>
+		</div>
+	<% end %>
 	<div class="footer_inner">
 		<ul>
 			<li>

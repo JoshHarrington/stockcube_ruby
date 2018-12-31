@@ -6,25 +6,23 @@ class FeedbackController < ApplicationController
 				user_name: current_user.name,
 				user_email: current_user.email
 			}
-		else
-			user = false
-		end
 
-		if params.has_key?(:issue_details)
-			issue_details = params[:issue_details]
-		else
-			issue_details = false
-		end
+			if params.has_key?(:issue_details)
+				issue_details = params[:issue_details]
+			else
+				issue_details = false
+			end
 
-		if params.has_key?(:current_path)
-			current_path = params[:current_path]
-		else
-			current_path = false
-		end
+			if params.has_key?(:current_path)
+				current_path = params[:current_path]
+			else
+				current_path = false
+			end
 
-		# UserMailer.admin_feedback_notification(user, issue_details, current_path).deliver_now
-		UserMailer.test_email.deliver_now
-		@string = "Thank you for the feedback!"
-		redirect_back fallback_location: root_path, notice: @string
+			current_user.feedback_email(user, issue_details, current_path)
+
+			@string = "Thank you for the feedback!"
+			redirect_back fallback_location: root_path, notice: @string
+		end
 	end
 end

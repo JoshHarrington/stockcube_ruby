@@ -5,8 +5,9 @@ Issue from <%= @user ? 'a signed in user' : 'a signed out user' %>.
 <% if @user %>
 User details
 
-Email: <%= @user[:user_email] %>
 ID: <%= @user[:user_id] %>
+Name: <%= @user[:user_name] %>
+Email: <%= @user[:user_email] %>
 <% end %>
 
 Issue details:

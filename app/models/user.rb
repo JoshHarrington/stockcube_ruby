@@ -79,6 +79,10 @@ class User < ApplicationRecord
     UserMailer.ingredient_out_of_date_notification(self, stock_going_off).deliver_now
   end
 
+  def feedback_email(user, issue_details, current_path)
+    UserMailer.admin_feedback_notification(user, issue_details, current_path).deliver_now
+  end
+
   # Sets the password reset attributes.
   def create_reset_digest
     self.reset_token = User.new_token

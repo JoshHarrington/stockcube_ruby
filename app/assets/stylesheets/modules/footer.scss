@@ -46,12 +46,15 @@
 }
 
 .footer_inner {
+	border-top: 2px solid $teal-40;
+	.footer_feedback_form--wrapper + & {
+		border-top-width: 1px;
+	}
 	background-color: $teal-20;
 	width: 100%;
 	display: flex;
 	justify-content: center;
 	padding: em(30, 10) em(20, 10);
-	border-top: 1px solid $teal-40;
 	ul {
 		display: flex;
 		flex-wrap: wrap;
