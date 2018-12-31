@@ -1,9 +1,10 @@
 class FeedbackController < ApplicationController
 	def submit
-		if params.has_key?(:user_id) && params.has_key?(:user_email)
+		if current_user && logged_in?
 			user = {
-				user_id: params[:user_id],
-				user_email: params[:user_email]
+				user_id: current_user.id,
+				user_name: current_user.name,
+				user_email: current_user.email
 			}
 		else
 			user = false
