@@ -44,4 +44,9 @@ class UserMailer < ApplicationMailer
     @admin = User.where(admin: true).first
     mail to: @admin, subject: "User feedback from site footer form"
   end
+
+  def test_email
+    @admin = User.where(admin: true).first
+    mail to: @admin, subject: "Test email for logged out user on staging"
+  end
 end

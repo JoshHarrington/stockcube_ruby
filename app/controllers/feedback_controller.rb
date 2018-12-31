@@ -22,7 +22,8 @@ class FeedbackController < ApplicationController
 			current_path = false
 		end
 
-		UserMailer.admin_feedback_notification(user, issue_details, current_path).deliver_now
+		# UserMailer.admin_feedback_notification(user, issue_details, current_path).deliver_now
+		UserMailer.test_email.deliver_now
 		@string = "Thank you for the feedback!"
 		redirect_back fallback_location: root_path, notice: @string
 	end
