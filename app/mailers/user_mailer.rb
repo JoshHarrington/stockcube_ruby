@@ -42,7 +42,7 @@ class UserMailer < ApplicationMailer
     @issue_details = issue_details
     @current_path = current_path
     @admin = User.where(admin: true).first
-    mail to: @admin, subject: "User feedback from site footer form"
+    mail to: @admin.email, subject: "User feedback from site footer form"
   end
 
 end
