@@ -19,6 +19,13 @@ class FeedbackController < ApplicationController
 				current_path = false
 			end
 
+			Rails.logger.debug 'user'
+			Rails.logger.debug user
+			Rails.logger.debug 'issue_details'
+			Rails.logger.debug issue_details
+			Rails.logger.debug 'current_path'
+			Rails.logger.debug current_path
+
 			current_user.feedback_email(user, issue_details, current_path)
 
 			@string = "Thank you for the feedback!"

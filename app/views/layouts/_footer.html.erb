@@ -1,5 +1,5 @@
 <footer>
-	<% if current_user %>
+	<% if current_user && logged_in? %>
 		<input type="checkbox" class="feedback_form_button hidden_checkbox" id="feedback_form_button" value="" />
 		<label for="feedback_form_button" class="feedback_form_label">Something wrong with this page?</label>
 		<div class="footer_feedback_form--wrapper">
