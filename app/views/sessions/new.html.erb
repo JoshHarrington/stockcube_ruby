@@ -7,7 +7,7 @@
   <%= form_for(:session, url: login_path) do |f| %>
     <div class="pretty_form--row">
       <%= f.label :email %>
-      <%= f.email_field :email, class: 'form-control' %>
+      <%= f.email_field :email, class: 'form-control', value: (params.has_key?(:email) && params[:email].to_s != '' ? params[:email] : '') %>
     </div>
 
     <div class="pretty_form--row">
