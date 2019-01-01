@@ -8,8 +8,14 @@
   <%= render 'form' %>
   <div class="pretty_form--sibling">
     <br />
+    <hr />
+    <br />
+    <h2>Or - sign up with your Google account:</h2>
+    <br />
+    <p>
       <%= link_to google_login_path, title: "Sign up with Google" do %>
         <img src="<%= asset_url('btn_google_signin_dark_normal_web.png')%>" alt="Sign up with Google" />
       <% end %>
-    </div>
+    </p>
+  </div>
 </div>
