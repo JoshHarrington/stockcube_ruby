@@ -28,8 +28,21 @@ var user_function = function() {
 	});
 }
 
+var pass_user_email = function() {
+	$('#forgotten_password_link').click(function(e){
+		if ($('#session_email').val() != '') {
+			var user_email = $('#session_email').val()
+			e.preventDefault();
+			window.location.replace('/password_resets/new?email=' + encodeURIComponent(user_email));
+		}
+	});
+}
+
 $(document).ready(function() {
 	if ($('#notifications').length > 0) {
 		user_function();
+	}
+	if ($('#forgotten_password_link').length > 0) {
+		pass_user_email();
 	}
 });
