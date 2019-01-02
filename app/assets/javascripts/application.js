@@ -28,3 +28,4 @@
 //= require cupboard_share
 //= require vendor/selectize.min.js
 //= require user
+//= require feedback
