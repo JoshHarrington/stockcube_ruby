@@ -2,7 +2,7 @@
 <div class="pretty_form">
   <div class="pretty_form--sibling">
     <br />
-    <h1>Sign into Stockcubes</h1>
+    <h1>Log into Stockcubes</h1>
   </div>
   <%= form_for(:session, url: login_path) do |f| %>
     <div class="pretty_form--row">
@@ -28,8 +28,8 @@
     </div>
 
     <div class="pretty_form--sibling">
-      <%= link_to google_login_path, title: "Sign in with Google" do %>
-        <img src="<%= asset_url('btn_google_signin_dark_normal_web.png')%>" alt="Sign in with Google" />
+      <%= link_to google_login_path, title: "Log in with Google" do %>
+        <img src="<%= asset_url('btn_google_signin_dark_normal_web.png')%>" alt="Log in with Google" />
       <% end %>
     </div>
   <% end %>

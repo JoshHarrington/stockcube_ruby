@@ -212,14 +212,8 @@ footer[role="contentinfo"] {
     margin-left: em(15, 15);
   }
   @media (max-width: 500px) {
-    h1 + & {
-      padding-left: 0;
-      p {
-        display: none;
-      }
-    }
-    & + & {
-      margin-left: em(10, 15);
+    &.profile_item__sign_up {
+      display: none;
     }
   }
 }

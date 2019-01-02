@@ -23,10 +23,10 @@
       <%= link_to "Stockcubes", root_path, id: "logo" %></h1>
       <% if not logged_in? && current_user %>
           <%= link_to login_path, class: "profile_item" do %>
-            <p>Sign in</p>
+            <p>Log in</p>
             <%= render './layouts/account_nav_item_fake_partial', current_section: current_section %>
           <% end %>
-          <%= link_to signup_path, class: "profile_item" do %>
+          <%= link_to signup_path, class: "profile_item profile_item__sign_up" do %>
             <p>Sign up</p>
           <% end %>
       <% elsif current_user.demo == true %>
@@ -63,7 +63,7 @@
       </ul>
       <% if not logged_in? && current_user %>
         <%= link_to login_path, class: "profile_item" do %>
-          <p>Sign in</p>
+          <p>Log in</p>
           <%= render './layouts/account_nav_item_fake_partial', current_section: current_section %>
         <% end %>
         <%= link_to signup_path, class: "profile_item profile_item__sign_up" do %>

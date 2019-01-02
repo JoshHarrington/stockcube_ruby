@@ -40,7 +40,7 @@ class UsersController < ApplicationController
 
   def create
     if User.where(email: user_params[:email]).length > 0
-      flash[:info] = "A user with that email already exists, please sign in"
+      flash[:info] = "A user with that email already exists, please log in"
       redirect_to login_path(email: user_params[:email]), fallback: root_path
     else
       @user = User.new(user_params)
