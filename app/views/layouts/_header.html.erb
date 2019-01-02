@@ -19,8 +19,12 @@
         <% end %>
       <% end %>
 
-      <h1><%= icomoon('logo') %>
-      <%= link_to "Stockcubes", root_path, id: "logo" %></h1>
+      <h1>
+        <%= link_to root_path, id: "logo" do %>
+          <%= icomoon('logo') %>
+          <span>Stockcubes</span>
+        <% end %>
+      </h1>
       <% if not logged_in? && current_user %>
           <%= link_to login_path, class: "profile_item" do %>
             <p>Log in</p>
@@ -41,7 +45,12 @@
 
   <nav id="nav" role="navigation">
     <div class="block">
-    <h1><%= icomoon('logo') %><%= link_to "Stockcubes", root_path, id: "logo" %></h1>
+    <h1>
+      <%= link_to root_path, id: "logo" do %>
+        <%= icomoon('logo') %>
+        <span>Stockcubes</span>
+      <% end %>
+    </h1>
       <h2 class="block-title">Sections</h2>
       <ul>
       <% if logged_in? && current_user %>
