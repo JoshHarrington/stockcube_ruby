@@ -6,7 +6,7 @@ class CupboardsController < ApplicationController
 	before_action :correct_user,   only: [:show, :edit, :update, :share]
 	def index
 		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
-		@cupboards = Cupboard.where(id: @cupboard_ids).order(location: :asc)
+		@cupboards = Cupboard.where(id: @cupboard_ids).order(created_at: :desc)
 		@user_fav_stocks = current_user.user_fav_stocks.order('updated_at desc')
 	end
 	def show

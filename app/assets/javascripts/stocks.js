@@ -46,6 +46,6 @@ var stock_form = function(){
 
 $(document).ready(function() {
 	if ($('#stock_form').length > 0) {
-		stock_form();
+    stock_form();
 	}
 });

@@ -21,11 +21,11 @@
 //= require cupboard
 //= require list_block
 //= require navigation
+//= require vendor/selectize.min.js
 //= require stocks
 //= require portions
 //= require recipes
 //= require shopping_list
 //= require cupboard_share
-//= require vendor/selectize.min.js
 //= require user
 //= require feedback
