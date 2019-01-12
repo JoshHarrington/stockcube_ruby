@@ -36,7 +36,7 @@ module CupboardHelper
 		end
 	end
 	def cupboard_empty_class(cupboard)
-		if cupboard.stocks.where(hidden: false).length == 0 || cupboard.stocks.empty?
+		if cupboard.stocks.where(hidden: false).length == 0 || cupboard.stocks.empty? || (cupboard.stocks.length == 1 && cupboard.stocks.first.ingredient.name.downcase.to_s == "water")
 			return 'empty'
 		else
 			stocks = cupboard.stocks.where(hidden: false).order(use_by_date: :desc)

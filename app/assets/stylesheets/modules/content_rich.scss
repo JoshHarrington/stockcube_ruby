@@ -9,13 +9,18 @@
 	padding: em(20, 10);
 	background-color: white;
 	margin-bottom: em(30, 10);
-	margin-top: 31vw;
+	margin-top: em(20, 10);
+	.recipes_controller.show_page & {
+		margin-top: 31vw;
+	}
 	transition: margin-top .5s;
 	position: relative;
 	z-index: 2;
 	@media (min-width: 961px) {
 		box-shadow: 0px 0px 7px -2px rgb(173, 173, 173);
-		margin-top: 28vw;
+		.recipes_controller.show_page & {
+			margin-top: 28vw;
+		}
 	}
 
 	form.content_rich--wrapper & {

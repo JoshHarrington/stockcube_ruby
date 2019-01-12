@@ -5,6 +5,7 @@ class UsersController < ApplicationController
 
   include StockHelper
   include UsersHelper
+  include ApplicationHelper
 
   def index
     @users = User.where(activated: true).paginate(page: params[:page])
@@ -85,7 +86,7 @@ class UsersController < ApplicationController
         log_in g_user
       else
         password_generate = SecureRandom.base64(14)
-        g_user_name = '21st Century Human'
+        g_user_name = random_name
         if user_info["info"].has_key?("name")
           g_user_name = user_info["info"].has_key?("name").to_s
         end
@@ -97,8 +98,8 @@ class UsersController < ApplicationController
           activated: true,
           activated_at: Time.zone.now
         )
+        new_user(g_user)
       end
-      new_user(g_user)
 
       log_in g_user
       unless user_info["info"].has_key?("name")

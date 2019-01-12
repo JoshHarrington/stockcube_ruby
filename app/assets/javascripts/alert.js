@@ -6,5 +6,5 @@ function clearNotice(){
 };
 
 $(document).ready(function() {
-	setTimeout(function() {clearNotice();}, 5000);
+	setTimeout(function() {clearNotice();}, 6000);
 });

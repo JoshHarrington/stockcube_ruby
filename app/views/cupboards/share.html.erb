@@ -9,7 +9,10 @@
 				<h2 class="h3">Currently shared with:</h2>
 				<ul class="pretty_form--flex_list">
 					<% @cupboard.cupboard_users.each do |cupboard_user| %>
-						<% unless cupboard_user.user == current_user %>
+						<% unless cupboard_user[:user_id] == current_user.id %>
+							<% Rails.logger.debug cupboard_user[:user_id] %>
+							<% Rails.logger.debug current_user.id %>
+							<% Rails.logger.debug cupboard_user.id %>
 							<li><p class="people_marker people_marker__wide<%= cupboard_user.accepted == false ? ' not_accepted' : '' %>"><%= cupboard_user.user.name %><%= cupboard_user.accepted == false ? ' (Waiting for invite to be accepted)' : '' %></p></li>
 						<% end %>
 					<% end %>
