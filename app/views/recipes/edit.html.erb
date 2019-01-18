@@ -1,27 +1,6 @@
-<%= form_for @recipe do |f| %>
-	<%= f.submit "Save Recipe" %>
-  <br />
+<% provide(:title, "Editing Recipe: #{@recipe.title}") %>
+
+
+<%= form_for @recipe, :html => {class: 'content_rich--wrapper', id: 'recipe_edit'}, :validate => true do |f| %>
 	<%= render 'recipe_form_partial', f: f %>
-	<br />
-	<br />
-	<br />
-	<% for portion in @portions %>
-		<p><%= portion.ingredient.name %></p>
-		<br />
-		<%= hidden_field_tag "recipe[portion_ids][]", portion.id %>
-		<%= text_field_tag "recipe[portion][amount][]", portion.amount %>
-		<%= select_tag "recipe[portion][ingredient][unit][]", options_from_collection_for_select(@units, "id", "name", portion.ingredient.unit.id), :id => portion.ingredient.id %>
-		<br />
-		<%= check_box_tag "recipe[portion][id][]", portion.id, nil, {:id => portion.id} %>
-		<%= label_tag "recipe[portion][id][]", "Remove from recipe", {:for => portion.id} %>
-		<br />
-		<br />
-	<% end %>
-	<%= link_to "Add Ingredient", portions_new_path(:recipe_id => params[:id]) %>
-	<br />
-	<br />
-	<br />
-	<br />
-	<br />
-	<%= f.submit "Save Recipe" %>
 <% end %>

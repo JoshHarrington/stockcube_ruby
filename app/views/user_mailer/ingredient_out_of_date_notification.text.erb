@@ -1,0 +1,18 @@
+Hi <%= @user.name %>,
+
+Here's a list of the items in your cupboards going out of date in the next week:
+
+<% @stock_going_off.each do |cupboard_id, stocks| %>
+<%= Cupboard.find(cupboard_id).location %>
+<% stocks.each do |stock| %>
+- <%= stock.ingredient.name %> (<%= stock.use_by_date.to_s(:long)%>)
+<% end %>
+
+<% end %>
+
+If you don't want to get these notifications, you can always update your settings here: <%= user_url(@user.id, anchor: "notifications") %>.
+
+Thanks,
+
+Stockcubes Team (team@getstockcubes.com)
+

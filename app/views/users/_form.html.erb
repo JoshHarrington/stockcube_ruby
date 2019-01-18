@@ -1,17 +1,36 @@
 <%= form_for(@user) do |f| %>
   <%= render 'shared/error_messages', object: @user %>
 
-  <%= f.label :name %>
-  <%= f.text_field :name, class: 'form-control' %>
+  <div class="pretty_form--row">
+    <%= f.label :name %>
+    <%= f.text_field :name, class: 'form-control' %>
+    <%= f.label :name, 'make sure your name is correct', class: 'message target-message', id: 'user_name_fix' %>
+  </div>
 
-  <%= f.label :email %>
-  <%= f.email_field :email, class: 'form-control' %>
 
-  <%= f.label :password %>
-  <%= f.password_field :password, class: 'form-control' %>
+  <div class="pretty_form--row">
+    <%= f.label :email %>
+    <% if params.has_key?(:email) && params[:email].to_s != '' %>
+      <%= f.email_field :email, class: 'form-control', value: params[:email] %>
+    <% else %>
+      <%= f.email_field :email, class: 'form-control' %>
+    <% end %>
+    <% if params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != '' %>
+      <%= f.hidden_field :cupboard_id, value: params[:cupboard_id]  %>
+    <% end %>
+  </div>
 
-  <%= f.label :password_confirmation %>
-  <%= f.password_field :password_confirmation, class: 'form-control' %>
+  <div class="pretty_form--row">
+    <%= f.label :password %>
+    <%= f.password_field :password, class: 'form-control' %>
+  </div>
 
-  <%= f.submit yield(:button_text), class: "btn btn-primary" %>
+  <div class="pretty_form--row">
+    <%= f.label :password_confirmation %>
+    <%= f.password_field :password_confirmation, class: 'form-control' %>
+  </div>
+
+  <div class="pretty_form--actions">
+    <%= button_tag yield(:button_text), class: "pretty_form--submit_button" %>
+  </div>
 <% end %>

@@ -2,9 +2,9 @@
 
 Welcome to this rudamentary prototype for the StockCube App
 
-* Ruby version - 2.5.0
+* Ruby version - >=2.5.0
 
-I recommend using [Rbenv](https://github.com/rbenv/rbenv) to manage your Ruby environments and using [Homebrew](https://brew.sh/) to manage your packages (if you're on a Mac).
+I recommend using [Homebrew](https://brew.sh/) to manage your packages and Ruby environment (if you're on a Mac).
 
 If you're using Homebrew on Mac then you use it to install PostgresQL (the database type) with the command `brew install postgres` - there are many guides out there to explain this process in more detail eg [this one](https://gist.github.com/sgnl/609557ebacd3378f3b72)
 
@@ -14,7 +14,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 3. Run `bundle install` to install Gems
 4. Run `rake db:create` to create the databases
 5. Run `rake db:migrate` to migrate the databases
-. Run `rake db:seed` to seed the databases with data (make sure you have the .env file setup first with a personal email, 6password and Rails environment variable)
+. Run `rake db:seed` to seed the databases with data (make sure you have the .env file setup first with a personal email, password and Rails environment variable)
 7. Run `rails server` (or `rails s`) to run server
 8. See app at [http://localhost:3000](http://localhost:3000)
 

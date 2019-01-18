@@ -1,31 +1,46 @@
 <% provide(:title, "Log in") %>
 <div class="pretty_form">
   <div class="pretty_form--sibling">
-    <h1>Log in</h1>
     <br />
+    <h1>Log into Stockcubes</h1>
   </div>
   <%= form_for(:session, url: login_path) do |f| %>
+    <div class="pretty_form--row">
+      <%= f.label :email %>
+      <%= f.email_field :email, class: 'form-control', value: (params.has_key?(:email) && params[:email].to_s != '' ? params[:email] : '') %>
+    </div>
 
-    <%= f.label :email %>
-    <%= f.email_field :email, class: 'form-control' %>
+    <div class="pretty_form--row">
+      <%= f.label :password %>
+      <%= f.password_field :password, class: 'form-control' %>
+      <%= link_to "(forgot password)", new_password_reset_path, id: "forgotten_password_link" %>
+    </div>
 
-    <%= f.label :password %>
-    <%= f.password_field :password, class: 'form-control' %>
-    <div></div>
-    <%= link_to "(forgot password)", new_password_reset_path %>
+    <div class="pretty_form--row">
+      <%= f.check_box :remember_me, class: 'hidden_checkbox' %>
+      <%= f.label :remember_me, class: 'fancy_checkbox_label' do %>
+        <span>Remember me on this computer</span>
+      <% end %>
+    </div>
 
-    <%= f.label :remember_me, class: "checkbox inline" do %>
-      <span>Remember me on this computer</span>
-    <% end %>
-    <%= f.check_box :remember_me %>
+    <div class="pretty_form--sibling">
+      <%= button_tag "Log in", class: "pretty_form--submit_button" %>
+    </div>
 
-
-    <%= f.submit "Log in", class: "btn btn-primary" %>
+    <div class="pretty_form--sibling">
+      <%= link_to google_login_path, title: "Log in with Google" do %>
+        <img src="<%= asset_url('btn_google_signin_dark_normal_web.png')%>" alt="Log in with Google" />
+      <% end %>
+    </div>
   <% end %>
+
   <div class="pretty_form--sibling">
+    <hr>
+    <h3>New user?</h3>
+    <p>You can sign up for a Stockcubes account for free today!</p>
     <br />
     <br />
     <br />
-    <p>New user? <%= link_to "Sign up :)", signup_path %></p>
+    <%= link_to "Sign up", signup_path, class: "pretty_form--submit_button" %>
   </div>
 </div>

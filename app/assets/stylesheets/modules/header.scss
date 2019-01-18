@@ -5,3 +5,12 @@ header {
 		display: flex;
 	}
 }
+
+
+.site_notice {
+	background-color: $warning-amber-40;
+	padding: em(12, 9);
+	font-family: monospace;
+	text-align: center;
+}
+

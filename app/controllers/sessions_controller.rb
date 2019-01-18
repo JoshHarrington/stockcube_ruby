@@ -1,4 +1,8 @@
+require 'omniauth'
+require 'omniauth-google-oauth2'
+
 class SessionsController < ApplicationController
+  before_action :demo_restrict,      only: [:new, :create, :destroy]
 
   def new
   end
@@ -9,7 +13,11 @@ class SessionsController < ApplicationController
       if user.activated?
         log_in user
         params[:session][:remember_me] == '1' ? remember(user) : forget(user)
-        redirect_back_or user
+        if user.cupboards.length > 0
+          redirect_to cupboards_path
+        else
+          redirect_back_or recipes_path
+        end
       else
         message  = "Account not activated. "
         message += "Check your email for the activation link."
@@ -22,8 +30,21 @@ class SessionsController < ApplicationController
     end
   end
 
+  def demo_logout
+    log_out if logged_in?
+    redirect_to signup_path
+  end
+
   def destroy
     log_out if logged_in?
     redirect_to root_url
   end
+
+  private
+
+    def demo_restrict
+      if current_user && current_user.demo == true
+        redirect_to(root_url)
+      end
+    end
 end

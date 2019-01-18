@@ -1,21 +1,46 @@
-<%= form_for @stock, id: "stock-form", :validate => true do |s| %>
-	<div class="field">
-		<%= s.label :stock %><br>
-		<%= select_tag :ingredient_id, options_from_collection_for_select(@ingredients, "id", "name"), prompt: "Pick your ingredient", required: true %>
-		Amount <%= s.text_field(:amount, value: '', placeholder: '250', validate: true) %><br>
-		Units <%= select_tag "unit_number", options_from_collection_for_select(@unit_select, "unit_number", "name", 8) %>
-		<br>
-		Use by Date <%= s.date_field :use_by_date, min: Date.current, placeholder: @two_weeks_from_now, value: @two_weeks_from_now, validate: true %><br>
-		<% if params['cupboard_id'].present? %>
-			<%= s.hidden_field "cupboards[]", value: params['cupboard_id'] %>
-			<%= select_tag :cupboard_id, options_from_collection_for_select(@cupboards, "id", "location", params['cupboard_id']) %>
-		<% else %>
-			<%= select_tag :cupboard_id, options_from_collection_for_select(@cupboards, "id", "location", @cupboards.first.id) %>
-		<% end %>
+<% provide(:title, "Adding stock to cupboards") %>
 
-	</div>
-	<div class="actions">
-		<%= s.submit "Save" %>
-	</div>
-<% end %>
+<div class="item_form--wrapper">
 
+	<%= form_for @stock, :html => {id: "stock_form", class: "item_form"}, :validate => true do |s| %>
+		<div class="item_form--title">
+			<h1>Adding stock to cupboards</h1>
+		</div>
+		<div class="item_form--contents">
+			<div class="item_form--content_row">
+				<%= s.label :ingredient_id, "Ingredient" %>
+				<%= s.select :ingredient_id, options_from_collection_for_select(@ingredients, "id", "name", (params.has_key?(:ingredient) ? params[:ingredient] : '')), {prompt: "Pick your ingredient"}, {class: "pretty_form--row--pretty_select wide_select", required: true} %>
+			</div>
+			<div class="item_form--content_row">
+				<%= s.label :amount, 'Amount of stock' %>
+				<%= s.text_field(:amount, value: (params.has_key?(:stock_amount) ? params[:stock_amount] : ''), placeholder: '250', class: "item_form--content_row--half_width_input", validate: true) %>
+				<%= s.select :unit_id, options_from_collection_for_select(@unit_select, "id", "name", (params.has_key?(:unit) ? params[:unit] : 8)), {}, {class: "pretty_form--row--pretty_select half_select"} %>
+			</div>
+			<div class="item_form--content_row">
+				<%= label_tag 'stock_use_by_date', 'Use by date'  %> <%= s.date_field(:use_by_date, min: Date.current, value: @use_by_limit, validate: true) %>
+				<% if @cupboards.length == 1 %>
+					<%= s.hidden_field "cupboard_id", @cupboards.last.id %>
+				<% end %>
+			</div>
+			<% if @cupboards.length > 1 %>
+				<div class="item_form--content_row">
+					<%= label_tag 'cupboard_pick', 'Cupboard pick'  %>
+					<% if @cupboard_found %>
+						<% @cupboards.each_with_index do |cupboard, index| %>
+							<%= s.radio_button "cupboard_id", cupboard.id , {class: "fancy_radio_button", id: "cupboard_id_#{cupboard.id}", checked: (params.has_key?(:cupboard_id) ? (cupboard.id.to_i == params[:cupboard_id].to_i ? true : false) : (index == 0 ? true : false))} %>
+							<%= s.label "cupboard_id", cupboard.location, {class: "fancy_radio_button__label", for: "cupboard_id_#{cupboard.id}"} %>
+						<% end %>
+					<% else %>
+						<% @cupboards.each_with_index do |cupboard, index| %>
+							<%= s.radio_button "cupboard_id", cupboard.id, {class: "fancy_radio_button", id: "cupboard_id_#{cupboard.id}", checked: (index == 0 ? true : false)} %>
+							<%= s.label "cupboard_id", cupboard.location, {class: "fancy_radio_button__label", for: "cupboard_id_#{cupboard.id}"} %>
+						<% end %>
+					<% end %>
+				</div>
+			<% end %>
+			<div class="item_form--content_row">
+				<%= s.button "Save" %>
+			</div>
+		</div>
+	<% end %>
+</div>

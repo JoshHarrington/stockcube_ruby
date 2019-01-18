@@ -1,21 +1,36 @@
-<h1><%= @current_ingredient.name %></h1>
-<%= form_for @stock, id: "stock-form", :validate => true do |s| %>
-	<div class="field">
-		<%= s.label :stock %><br>
+<% provide(:title, "Editing your stock of #{@current_ingredient.name}") %>
 
-		Amount <%= s.text_field(:amount, validate: true) %><br>
-		Use by Date <%= s.date_field :use_by_date, min: Date.current, value: @stock.use_by_date, validate: true %>
+<div class="item_form--wrapper">
+	<%= form_for @stock, :html => {id: "stock_form", class: "item_form"}, :validate => true do |s| %>
+		<div class="item_form--title">
+			<h1><%= @current_ingredient.name %></h1>
+		</div>
+		<div class="item_form--contents">
+			<div class="item_form--content_row">
+				<%= s.label :amount, 'Amount of stock' %>
+				<%= s.text_field(:amount, value: round_if_whole(@stock.amount) , placeholder: '250', class: "item_form--content_row--half_width_input", validate: true) %>
+				<%= s.select :unit_id, options_from_collection_for_select(@unit_select, "id", "name", (@preselect_unit ? @preselect_unit : 8)), {}, {class: "pretty_form--row--pretty_select half_select"} %>
+			</div>
+			<div class="item_form--content_row">
+				<%= s.label :use_by_date, 'Use by date'  %> <%= s.date_field(:use_by_date, min: Date.current, value: @stock.use_by_date, validate: true) %>
+				<% if @cupboards.length == 1 %>
+					<%= s.hidden_field "cupboard_id", @cupboards.last.id %>
+				<% end %>
+			</div>
+			<% if @cupboards.length > 1 %>
+				<div class="item_form--content_row">
+					<%= label_tag 'cupboard_pick', 'Cupboard pick'  %>
+					<% @cupboards.each_with_index do |cupboard, index| %>
+						<%= s.radio_button "cupboard_id", cupboard.id , {class: "fancy_radio_button", id: "cupboard_id_#{cupboard.id}", checked: (cupboard.id == @current_cupboard.id ? true : false) } %>
+						<%= s.label "cupboard_id", cupboard.location, {class: "fancy_radio_button__label", for: "cupboard_id_#{cupboard.id}"} %>
+					<% end %>
+				</div>
+			<% end %>
 
-		<br>
-		<br>
-
-		Units <%= select_tag "unit_number", options_from_collection_for_select(@units_select, "unit_number", "name", @preselect_unit) %>
-
-		<%= select_tag :cupboard_id, options_from_collection_for_select(@cupboards, "id", "location", @current_cupboard) %>
-
-	</div>
-	<div class="actions">
-		<%= s.submit "Save" %>
-	</div>
-<% end %>
+			<div class="item_form--content_row">
+				<%= s.button "Save" %>
+			</div>
+		</div>
+	<% end %>
+</div>
 

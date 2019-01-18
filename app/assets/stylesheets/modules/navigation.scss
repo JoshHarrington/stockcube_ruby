@@ -1,7 +1,6 @@
 .block {
   position: relative;
   margin: 0 auto;
-  // padding: 1.5em 1.25em;
 	width: 100%;
 	header & {
 		display: flex;
@@ -175,6 +174,8 @@ footer[role="contentinfo"] {
   display: flex;
   align-items: center;
   a {
+    display: flex;
+    align-items: center;
     color: black;
   }
 }
@@ -190,9 +191,32 @@ footer[role="contentinfo"] {
   color: black;
   align-items: center;
   font-size: em(15, 10);
+  border-radius: em(22, 15);
+  border: 1px solid white;
+  margin-left: auto;
+  background-color: $teal-70;
+  padding-left: em(15, 15);
+  & + & {
+    margin-left: em(15, 15);
+    padding-left: em(10, 15);
+  }
+  &.profile_item__sign_up {
+    background-color: white;
+  }
   p {
     font-size: inherit;
     margin-right: em(10, 15);
+  }
+  &:not(.demo_mode):hover {
+    background-color: $teal-20;
+  }
+  &.demo_mode {
+    margin-left: em(15, 15);
+  }
+  @media (max-width: 500px) {
+    &.profile_item__sign_up {
+      display: none;
+    }
   }
 }
 
@@ -203,15 +227,45 @@ footer[role="contentinfo"] {
   background-color: $teal-110;
   color: black;
   transition: background-color .2s;
-  &:hover {
-    background-color: $teal-80;
-  }
+  position: relative;
   &.current_section {
     background-color: white;
   }
   svg {
     width: em(30, 15);
     height: em(30, 15);
+  }
+  &.notifcations {
+    &::before {
+      content: " ";
+      background: $warning-red-strong;
+      color: white;
+      width: 13px;
+      height: 13px;
+      font-size: 10px;
+      position: absolute;
+      display: flex;
+      align-items: center;
+      border-radius: 50%;
+      justify-content: center;
+      top: -1px;
+      right: -2px;
+      padding-bottom: 2px;
+      overflow: hidden;
+    }
+    &[data-notifications]:not([data-notifications="null"])::before {
+        content: attr(data-notifications);
+        width: 15px;
+        height: 15px;
+        top: -2px;
+        right: -3px;
+    }
+  }
+}
+
+@media screen and (min-width: 45.0625em) {
+  .signed_in_btn {
+    margin-left: calc(20px + 3vw);
   }
 }
 
@@ -238,7 +292,7 @@ footer[role="contentinfo"] {
     .block {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: stretch;
       padding: em(20) em(30);
     }
     .svg-btn {
@@ -279,15 +333,22 @@ footer[role="contentinfo"] {
 @media screen and (max-width: 45em) {
   #top .block {
     padding: em(15) em(14);
+    align-items: stretch;
     .account-btn svg {
       width: em(20, 15);
       height: em(20, 15);
+    }
+    h1 {
+      margin-right: em(15, 19);
     }
   }
   #nav {
     position: absolute;
     top: 0;
-    padding-top: 5.25em;
+    padding-top: em(53, 10);
+    .site_notice ~ & {
+      padding-top: em(92, 10);
+    }
     h1 {
       display: none;
     }
@@ -321,7 +382,7 @@ footer[role="contentinfo"] {
       }
     }
     .no-js & >.block>ul {
-      background-color: $teal-110;
+      background-color: $teal-40;
     }
     .current_section + li {
       border-top: none;
@@ -352,7 +413,8 @@ footer[role="contentinfo"] {
     .nav-quick-link {
       display: none;
     }
-    .account-btn {
+    .account-btn,
+    .profile_item {
       display: none;
     }
   }
@@ -360,10 +422,9 @@ footer[role="contentinfo"] {
     #nav {
       height: 100%;
       width: 70%;
-      background: $teal-110;
-      -webkit-box-shadow: inset -1.5em 0 1.5em -0.75em rgba(0, 0, 0, 0.25);
-      -moz-box-shadow: inset -1.5em 0 1.5em -0.75em rgba(0, 0, 0, 0.25);
-      box-shadow: inset -1.5em 0 1.5em -0.75em rgba(0, 0, 0, 0.25);
+      background: $teal-40;
+      border-right: 2px solid $teal-110;
+      left: -70%;
       .block {
         background: transparent;
       }
@@ -376,7 +437,6 @@ footer[role="contentinfo"] {
           opacity: 1;
         }
       }
-      left: -70%;
     }
     #inner-wrap {
       left: 0;
@@ -402,11 +462,11 @@ footer[role="contentinfo"] {
       }
       #inner-wrap {
         left: 0 !important;
-        -webkit-transform: translate3d(0, 0, 0);
-        -moz-transform: translate3d(0, 0, 0);
-        -ms-transform: translate3d(0, 0, 0);
-        -o-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
+        -webkit-transform: none;
+        -moz-transform: none;
+        -ms-transform: none;
+        -o-transform: none;
+        transform: none;
         -webkit-transition: -webkit-transform 500ms ease;
         -moz-transition: -moz-transform 500ms ease;
         -o-transition: -o-transform 500ms ease;

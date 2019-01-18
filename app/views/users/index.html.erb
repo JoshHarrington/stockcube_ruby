@@ -1,10 +1,41 @@
 <% provide(:title, 'All users') %>
-<h1>All users</h1>
 
-<%= will_paginate %>
 
-<ul class="users">
-  <%= render @users %>
-</ul>
+<div class="content_rich--wrapper">
+  <div class="content_rich">
+    <div class="content_rich--title_block">
+      <div class="content_rich--title_row">
+        <h1>All users</h1>
+      </div>
+    </div>
 
-<%= will_paginate %>
+    <% @users.order("created_at ASC").each do |user| %>
+      <div class="content_rich--row">
+        <h2><%= user.name %> (id: <%= user.id %>)	<% if current_user.admin? && !current_user?(user) %>
+          | <%= link_to "delete", user, method: :delete,
+                        data: { confirm: "You sure?" } %>
+          <% end %></h2>
+        <p>Email: <%= user.email %></p>
+        <br />
+        <p>Account created on <%= user.created_at.to_s(:long) %></p>
+        <br />
+        <% if user.recipes.length > 0 %>
+          <h3>User Recipes:</h3>
+          <ul class="basic_list">
+            <% user.recipes.limit(10).each do |recipe| %>
+              <li><p><%= link_to recipe.title, recipe_path(recipe) %></p></li>
+            <% end %>
+          </ul>
+          <br />
+          <% if user.recipes.length > 10 %>
+            <p>Plus <%= user.recipes.length - 10 %> more recipes</p>
+          <% end %>
+        <% else %>
+          <p>Recipes: User hasn't added any recipes yet</p>
+        <% end %>
+        <br />
+        <br />
+      </div>
+    <% end %>
+  </div>
+</div>

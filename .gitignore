@@ -29,3 +29,7 @@
 
 # Ignore all assets compiled locally
 public/assets/**
+
+# Ignore notes
+todos.md
+notes.md

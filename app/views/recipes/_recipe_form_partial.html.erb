@@ -1,29 +1,105 @@
-	<div class="field">
-		<h2>Recipe title</h2>
-		<br />
-		<%= f.text_field :title %>
-		<br />
-		<br />
-		<%= f.select :cuisine, options_for_select(@cuisines) %>
-		<br />
-		<br />
-		<p>Description (Method):</p>
-		<%= f.text_area :description, rows: 10, style: 'width: 90%; min-height: 300px;'%>
-		<br />
-		<br />
-		<p>Prep time:</p>
-		<%= f.text_field :prep_time %>
-		<br />
-		<br />
-		<p>Cook time:</p>
-		<%= f.text_field :cook_time %>
-		<br />
-		<br />
-		<p>Yield (Number of servings):</p>
-		<%= f.text_field :yield %>
-		<br />
-		<br />
-		<p>Extra notes:</p>
-		<%= f.text_area :note, rows: 5, style: 'width: 90%; min-height: 150px;' %>
-		<br />
+<div class="content_rich">
+    <div class="content_rich--title_block">
+      <div class="content_rich--title_row" id="recipe_title_container">
+        <h1 class="recipe-title">
+					<%= f.text_field :title, :placeholder => "Fancy recipe title", :required => true %>
+				</h1>
+				<%= f.submit "Save Recipe", class: "list_block--collection--action content_rich--title--action" %>
+			</div>
+		</div>
+		<% if @recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' %>
+			<div class="content_rich--row">
+				<h2>Publishing on Stockcubes</h2>
+				<p><strong>NB.</strong> You'll only be able to make this recipe live and use it (in a shopping list for example) after you've added some ingredients, a description and a cook time.</p>
+			</div>
+		<% end %>
+		<div id="publish_options" class="content_rich--row <% if @recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' %>faded_out<% end %>" data-hover-title="You can only publish after you've added the description, ingredients and cook time :)">
+			<% unless @recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' %>
+				<h3>Ready to publish? This recipe is currently <strong><%= @recipe.live ? "live" : "in draft mode" %></strong></h3>
+			<% end %>
+			<div class="item_form--content_row" id="recipe_live_status_row">
+				<%= radio_button_tag "recipe[live]", true, @recipe.live, id: "live_radio_1", class: "fancy_radio_button", disabled: (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' ? true : false) %>
+				<%= label_tag "live_radio_1", "Published", class: "fancy_radio_button__label" %>
+				<%= radio_button_tag "recipe[live]", false, !@recipe.live, id: "live_radio_2", class: "fancy_radio_button", disabled: (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' ? true : false) %>
+				<%= label_tag "live_radio_2", "Draft mode", class: "fancy_radio_button__label" %>
+			</div>
+		</div>
+		<div class="content_rich--row <% if !@recipe.live %>faded_out<% end %>" id="recipe_public_status_row" data-hover-title="You can only change the public settings on this recipe after it's been published">
+			<h3>For public use? Recipe is currently <strong><%= @recipe.public ? "public" : "private to you" %></strong></h3>
+			<div class="item_form--content_row">
+				<%= radio_button_tag "recipe[public]", true, @recipe.public, id: "public_radio_1", class: "fancy_radio_button", disabled: (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' ? true : false) %>
+				<%= label_tag "public_radio_1", "Public to all Stockcubes users", class: "fancy_radio_button__label" %>
+				<%= radio_button_tag "recipe[public]", false, !@recipe.public, id: "public_radio_2", class: "fancy_radio_button", disabled: (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' ? true : false) %>
+				<%= label_tag "public_radio_2", "Private to you", class: "fancy_radio_button__label" %>
+			</div>
+		</div>
+
+		<div class="content_rich--row">
+			<p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%>Quick note: if you want to share recipes with the Stockcubes community they have to be your own (not ones you've taken from a cookbook or somewhere online). </p>
+		</div>
+
+		<div class="content_rich--row content_rich--row-full_width" id="recipe_description_container">
+			<h3>Description (Method)*:</h3>
+			<%= f.text_area :description, :value => (@recipe.description ? @recipe.description : ''), rows: 10, style: 'min-height: 300px;', :placeholder => "The steps to follow to make this meal"%>
+		</div>
+		<div class="content_rich--row">
+			<h3>Notes (extra info):</h3>
+			<%= f.text_area :note, :value => (@recipe.note ? @recipe.note : ''), rows: 4, style: 'min-height: 200px;', :placeholder => "Anything the people using the recipe need to know that can't be covered in the Method (above)"%>
+		</div>
+		<div class="content_rich--row content_rich--row-with_children">
+			<div class="content_rich--row--half">
+				<h3>Cuisine type:</h3>
+				<%= f.select :cuisine, options_for_select(@cuisines, (@recipe_cuisine ? @recipe_cuisine : '')), {include_blank: 'Select a cuisine'}, {class: "pretty_form--row--pretty_select"} %>
+			</div>
+			<div class="content_rich--row--half">
+				<h3>Yield (Servings):</h3>
+				<%= f.number_field :yield, :value => (@recipe.yield ? @recipe.yield : ''), :placeholder => "4", min: "0" %>
+			</div>
+		</div>
+		<div class="content_rich--row content_rich--row-with_children">
+			<div class="content_rich--row--half">
+				<h3>Prep time (mins):</h3>
+				<%= f.number_field :prep_time, :value => (@recipe.prep_time ? @recipe.prep_time : ''), :placeholder => "15", min: "0" %>
+			</div>
+			<div class="content_rich--row--half" id="recipe_cook_time_container">
+				<h3>Cook time (mins)*:</h3>
+				<%= f.number_field :cook_time, :value => (@recipe.cook_time ? @recipe.cook_time : ''), :placeholder => "30", min: "0" %>
+			</div>
+		</div>
+		<%# render 'recipe_form_partial', f: f %>
+		<div class="content_rich--row portion_list--edit" id="recipe_ingredients_list">
+			<h2>Ingredients</h2>
+			<% if @portions %>
+				<ul>
+					<% @portions.each do |portion| %>
+						<li id="ingredient_<%=portion.id%>" class="pretty_form--highlight_green ingredient_row">
+							<p><%= portion.ingredient.name %></p>
+							<br />
+							<% portion_unit = portion.unit_number ? Unit.find(portion.unit_number) : nil %>
+							<%= number_field_tag "recipe[portions][#{portion.id}][amount]", round_if_whole(portion.amount), aria: {label: (portion.amount != nil && portion.amount.to_s != '' ? "Portion amount for this ingredient is " + ( portion_unit ? " " + pluralize(portion.amount, portion_unit.name) : portion.amount ) : "Portion amount for this ingredient is not set" )} %>
+							<%= select_tag "recipe[portions][#{portion.id}][unit_number]", options_from_collection_for_select(@units, "id", "name", portion.unit_number),  {class: "pretty_form--row--pretty_select", id: portion.ingredient.id, aria: {label: "Choose the right units for the ingredient"}} %>
+							<br />
+							<%= check_box_tag "recipe[portion_delete_ids][]", portion.id, nil, {:id => portion.id} %>
+							<%= label_tag "recipe[portion_delete_ids][]", "Remove ingredient from recipe", {:for => portion.id, :title => "Delete this ingredient"} %>
+						</li>
+					<% end %>
+				</ul>
+			<% end %>
+			<br />
+		</div>
+		<div class="<% if @recipe.portions.length > 0 %>content_rich--row-flex_end_btns<% end %>">
+			<%= f.button class: "list_block--collection--action", name: "redirect", value: "add_ingredient" do %>
+				<%= icomoon('add-solid') %>
+				Add ingredient
+			<% end %>
+			<br />
+		</div>
+		<hr>
+		<div class="content_rich--row content_rich--row-multi_btns">
+			<%= f.submit "Save Recipe", class: "list_block--collection--action" %>
+			<%= f.hidden_field :user_id, value: current_user[:id] %>
+			<% if @recipe[:id] %>
+				<%= link_to "Delete Recipe", @recipe, method: :delete, data: { confirm: "Definitely want to delete this recipe?" }, class: "list_block--collection--action list_block--collection--cancel_action" %>
+			<% end %>
+		</div>
 	</div>

@@ -1,165 +1,129 @@
 class StocksController < ApplicationController
+	helper IntegerHelper
+	include StockHelper
+	include ShoppingListsHelper
 	before_action :logged_in_user
-	# before_action :cupboard_id_param_check, only: [:create, :new, :edit, :update]
+	before_action :correct_user, only: [:edit]
 	def index
 		@stocks = Stock.all
 	end
 	def show
 		@stock = Stock.find(params[:id])
 	end
+	def picks
+		@tomatoe_id = Ingredient.where(name: "Tomatoes").first.id
+		@egg_id = Ingredient.where(name: "Egg").first.id
+		@bread_id = Ingredient.where(name: "Bread (White)").first.id  ## need to add (to production)
+		@milk_id = Ingredient.where(name: "Milk").first.id
+		@onion_id = Ingredient.where(name: "Onion").first.id
+		@cheese_id = Ingredient.where(name: "Cheese (Cheddar)").first.id
+
+		@each_unit_id = Unit.where(name: "Each").first.id
+		@loaf_unit_id = Unit.where(name: "Loaf").first.id 	## need to add (to production)
+		@pint_unit_id = Unit.where(name: "Pint").first.id
+		@gram_unit_id = Unit.where(name: "Gram").first.id
+	end
+
 	def new
 		@stock = Stock.new
-		@cupboards = current_user.cupboards
-		@ingredients = Ingredient.all.order('name ASC')
-		@units = Unit.all
-		@two_weeks_from_now = Date.current + 2.weeks
-		@unit_select = []
-
-		@units.each do |unit|
-			if unit.unit_number == 5
-				@unit_select << unit
-			elsif unit.unit_number == 8
-				@unit_select << unit
-			elsif unit.unit_number == 11
-				@unit_select << unit
-			elsif unit.unit_number == 22
-				@unit_select << unit
-			elsif unit.unit_number == 25
-				@unit_select << unit
-			end
+		@cupboards = current_user.cupboards.where(hidden: false, setup: false).order(created_at: :desc)
+		if @cupboards.length == 0
+			new_cupboard = Cupboard.create(location: "Kitchen")
+			CupboardUser.create(cupboard_id: new_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
 		end
+		if params.has_key?(:cupboard_id) && params[:cupboard_id].present?
+			@cupboard_found = @cupboards.map(&:id).include?(params[:cupboard_id].to_i)
+		else
+			@cupboard_found = false
+		end
+		@ingredients = Ingredient.all.sort_by{|i| i.name.downcase}
+		if params.has_key?(:standard_use_by_limit) && params[:standard_use_by_limit]
+			@use_by_limit = Date.current + params[:standard_use_by_limit].to_i.days
+		else
+			@use_by_limit = Date.current + 2.weeks
+		end
+		@unit_select = Unit.where.not(name: nil)
+
 	end
 	def create
+		Rails.logger.debug stock_params
 		@stock = Stock.new(stock_params)
-		@cupboards = current_user.cupboards
-		@ingredients = Ingredient.all.order('name ASC')
-		@units = Unit.all
-		@two_weeks_from_now = Date.current + 2.weeks
-		@unit_select = []
 
-		@units.each do |unit|
-			if unit.unit_number == 5
-				@unit_select << unit
-			elsif unit.unit_number == 8
-				@unit_select << unit
-			elsif unit.unit_number == 11
-				@unit_select << unit
-			elsif unit.unit_number == 22
-				@unit_select << unit
-			elsif unit.unit_number == 25
-				@unit_select << unit
-			end
+		@cupboards = current_user.cupboards.where(hidden: false, setup: false)
+		@cupboard_found = @cupboards.map(&:id).include?(params[:stock][:cupboard_id].to_i)
+		unless @cupboard_found
+			@stock.update_attributes(
+				cupboard_id: @cupboards.first
+			)
 		end
 
-		if params.has_key?(:ingredient_id) && params[:ingredient_id].present?
-			@selected_ingredient_id = params[:ingredient_id]
-		end
-
-		if params.has_key?(:cupboard_id) && params[:cupboard_id].present?
-			@selected_cupboard_id = params[:cupboard_id]
-		elsif params.has_key?(:cupboards) && params[:cupboards].present?
-			@selected_cupboard_id = params[:cupboards]
-			if @selected_cupboard_id.length > 1
-				@selected_cupboard_id = @selected_cupboard_id.join
-			end
-		else
-			## falls back to adding stock to the first of the users cupboards if not selected
-			@selected_cupboard_id = @cupboards.first
-		end
-
-		@stock_amount = params[:amount]
-		@stock_use_by_date = params[:stock][:use_by_date]
-		@stock_unit = params[:unit_number]
-
-
-		@stock.update_attributes(
-			unit_number: @stock_unit,
-			cupboard_id: @selected_cupboard_id,
-			ingredient_id: @selected_ingredient_id
-		)
-
-		@cupboard_for_stock = @cupboards.where(id: @selected_cupboard_id).first
 
     if @stock.save
-      redirect_to cupboards_path
-    else
-			render 'new'
-			flash[:danger] = "Make sure you select an ingredient"
+			redirect_to cupboards_path(anchor: @stock.cupboard_id)
+			recipe_stock_matches_update(current_user[:id], nil)
+			shopping_list_portions_update(current_user[:id])
+			flash[:info] = %Q[Recipe stock information updated!]
+			StockUser.find_or_create_by(
+				stock_id: @stock.id,
+				user_id: current_user[:id]
+			)
+		else
+			unit_id = 8
+			if params.has_key?(:stock) && params[:stock].has_key?(:unit_id) && params[:stock][:unit_id].to_i != 0
+				unit_id = params[:unit_id]
+			end
+			ingredient_id = false
+			if params.has_key?(:stock) && params[:stock].has_key?(:ingredient_id) && params[:stock][:ingredient_id].to_i != 0
+				ingredient_id = params[:stock][:ingredient_id]
+			end
+			cupboard_id = @cupboards.first
+			if params.has_key?(:stock) && params[:stock].has_key?(:cupboard_id) && params[:stock][:cupboard_id].to_i != 0
+				cupboard_id = params[:stock][:cupboard_id]
+			end
+			amount = false
+			if params.has_key?(:stock) && params[:stock].has_key?(:amount) && params[:stock][:amount].to_i != 0
+				amount = params[:stock][:amount]
+			end
+
+			flash[:danger] = %Q[Make sure you pick an ingredient, and set a stock amount]
+			redirect_to stocks_new_path(cupboard_id: (cupboard_id || false), ingredient: (ingredient_id || false), stock_amount: (amount || false), unit: (unit_id || false))
+
     end
 	end
 	def edit
 		@stock = Stock.find(params[:id])
-		@cupboards = current_user.cupboards
 		@current_cupboard = @stock.cupboard
-		@ingredients = Ingredient.all.order('name ASC')
+
+		@cupboards = current_user.cupboards.where(hidden: false, setup: false).order(created_at: :desc)
+
+		@ingredients = Ingredient.all.sort_by{|i| i.name.downcase}
 		@current_ingredient = @stock.ingredient
-		@current_ingredient_unit = @stock.ingredient.unit
-		@current_ingredient_unit_number = @current_ingredient_unit.unit_number
-		@current_unit_number = @stock.unit_number
-		@current_unit = Unit.where(unit_number: @current_unit_number).first
 
-		if @current_ingredient_unit.unit_type == "volume"
-			@units_select = Unit.where(:unit_type => "volume")
-		elsif @current_ingredient_unit.unit_type == "mass"
-			@units_select = Unit.where(unit_type: "mass")
-		else
-			@units_select = Unit.where(unit_type: "other")
-		end
+		@unit_select = Unit.where.not(name: nil)
 
-		if @current_unit.unit_type == @current_ingredient_unit.unit_type
-			@preselect_unit = @current_unit
-		else
-			@preselect_unit = @unit_select.first
-		end
+		@preselect_unit = @stock.unit_id
 	end
 	def update
 		@stock = Stock.find(params[:id])
-		@cupboards = current_user.cupboards
-		@current_cupboard = @stock.cupboard
-		@ingredients = Ingredient.all.order('name ASC')
-		@current_ingredient = @stock.ingredient
-		@current_ingredient_unit = @stock.ingredient.unit
-		@current_ingredient_unit_number = @current_ingredient_unit.unit_number
-		@current_unit_number = @stock.unit_number
-		@current_unit = Unit.where(unit_number: @current_unit_number).first
 
-
-		if not params[:cupboard_id] == @current_cupboard.id
-			@stock.update_attributes(
-				cupboard_id: params[:cupboard_id]
-			)
-			@current_cupboard = Cupboard.where(id: params[:cupboard_id]).first
-		end
-
-		if @current_ingredient_unit.unit_type == "volume"
-			@units_select = Unit.where(:unit_type => "volume")
-		elsif @current_ingredient_unit.unit_type == "mass"
-			@units_select = Unit.where(unit_type: "mass")
-		else
-			@units_select = Unit.where(unit_type: "other")
-		end
-
-		if @current_unit.unit_type == @current_ingredient_unit.unit_type
-			@preselect_unit = @current_unit
-		else
-			@preselect_unit = @units_select.first
-		end
-
-		if not params[:unit_number] == @current_unit_number
-			@stock.update_attributes(
-				unit_number: params[:unit_number]
-			)
-		end
+		StockUser.find_or_create_by(
+			stock_id: @stock.id,
+			user_id: current_user[:id]
+		)
 
 		if @stock.update(stock_params)
-			redirect_to cupboards_path
+			redirect_to cupboards_path(anchor: @stock.cupboard_id)
+			recipe_stock_matches_update(current_user[:id], nil)
+			shopping_list_portions_update(current_user[:id])
+			flash[:info] = %Q[Recipe stock information updated!]
 		else
-			render 'edit'
+			flash[:danger] = %Q[Looks like there was a problem, make sure you pick an ingredient, and set a stock amount]
+			redirect_to edit_stock_path(@stock), fallback: cupboards_path
 		end
 	end
 	private
 		def stock_params
-			params.require(:stock).permit(:amount, :use_by_date, :unit_number, ingredient_attributes: [:id, :name, :image, :unit, :_destroy])
+			params.require(:stock).permit(:amount, :use_by_date, :unit_id, :ingredient_id, :cupboard_id)
 		end
 
 		# Confirms a logged-in user.
@@ -171,10 +135,10 @@ class StocksController < ApplicationController
 			end
 		end
 
-		def cupboard_id_param_check
-			unless params.has_key?(:cupboard_id)
+		def correct_user
+			stock = Stock.find(params[:id])
+			unless stock.cupboard.communal == false || stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])
 				redirect_to cupboards_path
-				flash[:danger] = "Add stock by editing a cupboards contents"
 			end
 		end
 end

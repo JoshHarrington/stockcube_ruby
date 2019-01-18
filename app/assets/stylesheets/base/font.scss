@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Lato:400,700');
 
-:root {
+:root, .selectize-control {
 	font-family: 'Lato', sans-serif;
 }
 
@@ -11,8 +11,17 @@ input,
 textarea,
 .alert,
 .debug_dump,
-.pagination>* {
+.pagination>*,
+div.list_block--item {
 	font-size: 1.5em;
+}
+
+input {
+	&::placeholder,
+	&::-webkit-input-placeholder,
+	&::-ms-input-placeholder {
+		color: $black-40;
+	}
 }
 
 p>a,
@@ -39,28 +48,35 @@ ol {
 	margin: 0;
 }
 
-h1 {
-	font-size: 1.9em;
+h1, .h1 {
+	font-size: 1.9rem;
 }
 
-h2 {
-	font-size: 1.8em;
+h2, .h2 {
+	font-size: 1.8rem;
 }
 
-h3 {
-	font-size: 1.7em;
+h3, .h3 {
+	font-size: 1.7rem;
 }
 
-h4 {
-	font-size: 1.6em;
+h4, .h4 {
+	font-size: 1.6rem;
+	line-height: 2rem;
 }
 
-h5 {
-	font-size: 1.4em;
+h5, .h5 {
+	font-size: 1.4rem;
+	line-height: 1.9rem;
 }
 
-h6 {
-	font-size: 1.3em;
+h6, .h6 {
+	font-size: 1.3rem;
+	line-height: 1.7rem;
+}
+
+p {
+	line-height: em(20, 15);
 }
 
 sup {
@@ -71,4 +87,12 @@ sup {
 sub {
 	vertical-align: sub;
 	font-size: smaller;
+}
+
+.fade_text {
+	color: $black-80;
+}
+
+strong {
+	font-weight: 700;
 }

@@ -11,12 +11,48 @@
 	padding: 0;
 	width: em(890, 10);
 	max-width: 100%;
-	input[name="search"] {
-		font-size: em(20, 10);
+	input[name="search"],
+	.selectize-control {
+		font-size: em(16, 10);
 		border: none;
-		min-height: em(50, 20);
-		padding-left: em(13, 20);
+		min-height: em(50, 16);
+		padding-left: em(13, 16);
 		flex-grow: 1;
+	}
+	.selectize-control {
+		display: flex;
+		align-items: center;
+	}
+	.selectize-control.multi .selectize-input.has-items {
+		padding: 0;
+	}
+	.selectize-input {
+		border: none;
+		box-shadow: none;
+		background: none;
+		&.focus {
+			border: none;
+			box-shadow: none;
+		}
+		&.dropdown-active::before {
+			background: none;
+		}
+	}
+	.selectize-dropdown {
+		top: em(52, 16) !important;
+	}
+	.selectize-dropdown, .selectize-input, .selectize-input input {
+		font-size: inherit;
+	}
+	.selectize-control.multi .selectize-input > div {
+		margin: em(2, 16) em(4, 16) em(2, 16) 0;
+		padding: em(4, 16) em(6, 16);
+		.remove {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding-top: 0;
+		}
 	}
 	button {
 		width: em(50, 11);
@@ -24,5 +60,6 @@
 		padding: em(12, 11);
 		background: none;
 		border: none;
+		margin-left: auto;
 	}
 }

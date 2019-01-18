@@ -1,35 +1,86 @@
-<div class="list_block list_block__column">
+<div class="list_block list_block__column" style="background-image: url('https://source.unsplash.com/500x300/weekly?food,<%= require 'uri'; if recipe.title; URI::encode(recipe.title).to_s.downcase; end %>')">
+	<% if defined?(ingredient_stock_match_decimal) && !(ingredient_stock_match_decimal.nan?) %>
+		<% percent_in_cupboards = (ingredient_stock_match_decimal.to_f * 100).round %>
+		<div class="list_block--content_start">
+			<span class="list_block--progress_bar" style="width: <%= percent_in_cupboards %>%"></span>
+			<div class="list_block--content_start--text">
+				<% if ingredient_stock_match_decimal == 0 %>
+					<%= pluralize(num_needed_ingredients, 'ingredient') %> needed
+				<% else %>
+					<%= pluralize(num_stock_ingredients, 'ingredient') %> in stock<% if num_needed_ingredients != 0 %>, <%= num_needed_ingredients.to_s %> needed<% end %>
+				<% end %>
+			</div>
+		</div>
+	<% elsif recipe.portions.length == 0 %>
+		<div class="list_block--content_start list_block--content_start-warn">
+			<div class="list_block--content_start--text">
+				Recipe has no ingredients!
+			</div>
+		</div>
+	<% elsif !(recipe.live) %>
+		<div class="list_block--content_start list_block--content_start-warn">
+			<div class="list_block--content_start--text">
+				Recipe still in draft mode!
+			</div>
+		</div>
+	<% end %>
 	<div class="list_block--content">
 		<div class="list_block--title">
 			<h3><%= link_to recipe.title, recipe_path(recipe) %></h3>
-			<div class="list-block--action_row">
+			<div class="list_block--action_row">
 				<% if current_user %>
-					<% unless current_user.favourites.include?(recipe) %>
-						<%= link_to favourite_recipe_path(recipe, type: 'favourite'), class: 'unfavourite svg-btn', title: 'favourite', method: :put do %>
-							<%= icomoon('heart') %>
-						<% end %>
+					<% if defined?(recipe_edit_mode) %>
+							<%= link_to edit_recipe_path(recipe), class: 'svg-btn', title: 'Edit this recipe' do %>
+								<%= icomoon('edit') %>
+							<% end %>
 					<% else %>
-						<%= link_to favourite_recipe_path(recipe, type: 'unfavourite'), class: 'svg-btn', title: 'unfavourite',  method: :put do %>
-							<%= icomoon('heart') %>
+						<% unless current_user.favourites.include?(recipe) %>
+							<%= link_to favourite_recipe_path(recipe, type: 'favourite'), class: 'unfavourite svg-btn', title: 'Favourite this recipe', method: :put do %>
+								<%= icomoon('heart') %>
+							<% end %>
+						<% else %>
+							<%= link_to favourite_recipe_path(recipe, type: 'unfavourite'), class: 'svg-btn', title: 'Unfavourite this recipe',  method: :put do %>
+								<%= icomoon('heart') %>
+							<% end %>
 						<% end %>
 					<% end %>
-					<% unless recipe.shopping_lists.include?(current_user.shopping_lists.order('created_at DESC').first) %>
-						<%= link_to add_to_shopping_list_recipe_path(recipe), class: 'svg-btn', title: 'add to shopping list', method: :put do %>
+					<% unless (current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last.archived == false && recipe.shopping_lists.include?(current_user.shopping_lists.order('updated_at asc').last)) || recipe.portions.length == 0 || !(recipe.live) %>
+						<%= link_to add_to_shopping_list_recipe_path(recipe), class: 'svg-btn', title: 'Add this recipe to your shopping list', method: :put do %>
 							<%= icomoon('list-add') %>
 						<% end %>
 					<% end %>
 				<% end %>
 			</div>
 		</div>
-		<p><% if vegan?(recipe) %>Vegan &check;<% end %></p>
-		<p><% if vegetarian?(recipe) %>Vegetarian &check;<% end %></p>
-		<p><% if gluten_free?(recipe) %>Gluten Free &check;<% end %></p>
-		<p><% if dairy_free?(recipe) %>Dairy Free &check;<% end %></p>
-		<p><% if kosher?(recipe) %>kosher &check;<% end %></p>
+		<% if recipe.portions.length == 0 %>
+			<div class="list_block--info_rows">
+				<br />
+				<p>Not live - only you can see / edit this recipe</p>
+				<p>Add ingredients to make this recipe live</p>
+			</div>
+		<% elsif recipe[:live] == false %>
+			<div class="list_block--info_rows">
+				<br />
+				<p>Not live - not yet published on the site</p>
+				<p>Edit the recipe to make it live</p>
+				<br />
+			</div>
+		<% end %>
+		<% if recipe.portions.length != 0 %>
+			<div class="list_block--info_rows">
+				<% if vegan?(recipe) %><p>Vegan &check;</p><% end %>
+				<% if vegetarian?(recipe) %><p>Vegetarian &check;</p><% end %>
+				<% if gluten_free?(recipe) %><p>Gluten Free &check;</p><% end %>
+				<% if dairy_free?(recipe) %><p>Dairy Free &check;</p><% end %>
+				<% if kosher?(recipe) %><p>Kosher &check;</p><% end %>
+			</div>
+		<% end %>
 	</div>
-	<% if recipe.cuisine %>
-		<div class="list_block--tag_bar list_block--content">
-			<p><%= recipe.cuisine %></p>
+	<% if recipe.cuisine && recipe.cuisine.to_s != '' %>
+		<div class="list_block--content_end">
+			<div class="list_block--tag_bar">
+				<p><%= recipe.cuisine %></p>
+			</div>
 		</div>
 	<% end %>
 </div>

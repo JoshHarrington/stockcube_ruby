@@ -1,0 +1,80 @@
+<% if params[:id].to_i == current_user.shopping_lists.order('updated_at asc').last.id.to_i || current == true %>
+  <% provide(:title, 'Current Shopping List Ingredients') %>
+<% else %>
+  <% provide(:title, 'Archived Shopping List Ingredients') %>
+<% end %>
+
+<div class="list_block--collection--wrap">
+  <div class="list_block--collection--sibling list_block--collection--sibling_stack">
+    <h3>Ingredients Key</h3>
+    <ul class="list_block--collection--sibling--key_list">
+      <li class="list_block--sibling--key--positive">This colour means you have enough of this ingredient in your cupboards</li>
+      <li class="list_block--sibling--key--part_warning">This colour means you probably don't have enough of this ingredient in your cupboards, but check the percentage, you might be able to get away with it!</li>
+      <li class="list_block--sibling--key--full_warning">This colour means you don't have this ingredient in your cupboards, so you'll need to get some of this</li>
+    </ul>
+  </div>
+  <div class="list_block--collection--sibling">
+    <%# will need to switch .last >> .last_updated when old shopping lists can be rehydrated after use %>
+    <% if params[:id].to_i == current_user.shopping_lists.order('updated_at asc').last.id.to_i || current == true %>
+      <h2>Current Shopping List</h2>
+    <% else %>
+      <h2>Archived Shopping List</h2>
+    <% end %>
+    <%= link_to "Delete this shopping list", shopping_lists_archive_current_path(shopping_list_id: (params[:id] ? params[:id] : current_user.shopping_lists.order('updated_at asc').last.id )), class: "list_block--item--action", id: "archive_current_shopping_list" %>
+  </div>
+  <div class="list_block--collection">
+    <div class="list_block list_block-wide">
+      <div class="list_block--content">
+        <% @shopping_list_portions.each do |sl_portion| %>
+          <% if sl_portion.in_cupboard == true && sl_portion.enough_in_cupboard == true %>
+            <div class="list_block--item list_block--item_stacked">
+              <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
+            </div>
+          <% elsif sl_portion.in_cupboard == true && (sl_portion.plenty_in_cupboard == nil || sl_portion.plenty_in_cupboard == false) %>
+            <div class="list_block--item list_block--item_stacked date-part-warning">
+              <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
+            </div>
+          <% elsif sl_portion.in_cupboard == nil || sl_portion.in_cupboard == false  %>
+            <div class="list_block--item list_block--item_stacked date-full-warning">
+              <%= render 'shopping_list_item_partial', sl_portion: sl_portion %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="list_block--collection--sibling list_block--collection--sibling_stack">
+		<h2>Recipes in Shopping List</h2>
+    <ul class="basic_list">
+      <% recipes.each do |recipe| %>
+        <li><%= link_to recipe.title, recipe_path(recipe.id) %> -
+          <% unless current_user.favourites.include?(recipe) %>
+          not currently marked as one of your favourite recipes,
+						<%= link_to "add it now", favourite_recipe_path(recipe, type: 'favourite'), class: 'unfavourite svg-btn', title: 'favourite', method: :put %>?
+					<% else %>
+            one of your favourite recipes :)
+					<% end %></li>
+      <% end %>
+    </ul>
+    <p><%= link_to "Add more recipes", recipes_path %> to your shopping list</p>
+  </div>
+  <div class="list_block--collection--sibling list_block--collection--sibling_stack">
+		<h2>Shopping Mode</h2>
+		<p>
+			Ready to check these ingredients off and add to your cupboards?
+		</p>
+    <%= link_to 'Start shop mode', shopping_lists_current_shop_path, class: "list_block--item--action" %>
+  </div>
+  <div class="list_block--collection--sibling list_block--collection--sibling_stack">
+    <p>Check out what the 'shop mode' process looks like:</p>
+    <div class="video_block">
+      <img src="<%= asset_path('iphone_8_video_bg.png') %>" alt="Phone to for video presentation">
+      <video autoplay poster="<%= asset_path('shopping_list_screenshot.jpg') %>" playsinline loop muted>
+        <source src="<%= asset_path('shopping_list_check.webm') %>" type="video/webm" />
+        <source src="<%= asset_path('shopping_list_check.mp4') %>" type="video/mp4" />
+      </video>
+    </div>
+  </div>
+</div>
+
+

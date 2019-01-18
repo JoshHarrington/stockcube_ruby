@@ -1,67 +1,155 @@
+<%
+  require 'uri'
+  background_image_url = 'https://source.unsplash.com/1600x1000/weekly?food'
+  if @recipe.title
+    background_image_url = 'https://source.unsplash.com/1200x800/weekly?' + URI::encode(@recipe.title).to_s.downcase + ',food'
+  end
+%>
+
 <% provide(:title, "Recipe: #{@recipe.title}") %>
-<div class="main recipe-show">
-  <div class="container">
-    <div class="recipe">
 
-      <!-- Display the recipe's info here -->
-      <div class="info">
-        <h3 class="recipe-title"><%= @recipe.title %></h3>
-        <p class="recipe-cuisine"><%= @recipe.cuisine.to_s %></p>
-        <p class="recipe-serving"><%= @recipe.yield.to_s %></p>
-        <% if @recipe.prep_time %>
-          <p class="recipe-prep_time">Prep Time: <%= @recipe.prep_time.to_s %></p>
+<div class="content_rich--header" style="background-image: url('<%= background_image_url %>')">
+  <button class="content_rich--header_attribution content_rich--header_info" data-title="This image was sourced from Unsplash.com automatically, so might seem a little strange or out of place!"><p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%></p></button>
+  <%= link_to 'Image Link', background_image_url, class: "content_rich--header_attribution", target: "_blank" %>
+</div>
+<div class="content_rich--wrapper">
+  <div class="content_rich">
+    <div class="content_rich--title_block">
+      <div class="content_rich--title_row">
+        <h1 class="recipe-title">
+        <% if current_user %>
+          <% current_user.favourites.include?(@recipe) ? fav_status = "unfavourite" : fav_status = "favourite" %>
+          <%= link_to favourite_recipe_path(@recipe, type: fav_status), title: fav_status, class: "heart_stat_#{fav_status}", method: :put do %>
+            <%= icomoon('heart') %>
+            <span class="content_rich--title_text">
+              <%= @recipe.title %>
+            </span>
+          <% end %>
         <% end %>
-        <% if @recipe.cook_time %>
-          <p class="recipe-cook_time">Cook Time: <%= @recipe.cook_time.to_s %></p>
+        </h1>
+        <% if current_user && current_user.activated && ((@recipe[:user_id] && @recipe[:user_id] == current_user[:id]) || current_user.admin)  %>
+          <%= link_to edit_recipe_path(@recipe), class: "list_block--collection--action" do %>
+            <span>Edit recipe</span>
+            <%= icomoon('edit') %>
+          <% end  %>
         <% end %>
-        <% if @recipe.description.to_s.include?('\n') %>
-          <p class="recipe-description"><%= recipe_description.html_safe %></p>
-        <% else %>
-          <p class="recipe-description"><%= @recipe.description.to_s %></p>
+        <% unless (current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last.archived == false && @recipe.shopping_lists.include?(current_user.shopping_lists.order('updated_at asc').last)) || @recipe.portions.length == 0 || !(@recipe.live) %>
+          <%= link_to 'Add to shopping list', add_to_shopping_list_recipe_path(@recipe), class: 'list_block--collection--action', title: 'add to shopping list', method: :put %>
         <% end %>
-        <p class="recipe-notes"><%= @recipe.note.to_s %></p>
-        <% if current_user && current_user.admin %>
-        <br />
-        <br />
-        <br />
-        <br />
-          <%= link_to "Edit recipe", edit_recipe_path(@recipe) %>
-        <br />
-        <br />
-        <br />
-        <br />
-        <% end %>
-
       </div>
+      <% if current_user && current_user == @recipe.user %>
+        <p class="recipe_cuisine"><%= (@recipe.cuisine.to_s == '' || !@recipe.cuisine) ? 'Cuisines type not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe : (@recipe.cuisine.to_s +  ' Cuisine') %></p>
+      <% elsif @recipe.cuisine && @recipe.cuisine.to_s != '' %>
+        <p class="recipe_cuisine"><%= @recipe.cuisine.to_s %> Cuisine</p>
+      <% end %>
+      <% if vegetarian?(@recipe) || vegan?(@recipe) || gluten_free?(@recipe) || dairy_free?(@recipe) || kosher?(@recipe) %>
+        <div class="recipe_info_tags">
+          <% if vegetarian?(@recipe) %><span class="recipe_info_tags--item">Vegetarian &check;</span><% end %>
+          <% if vegan?(@recipe) %><span class="recipe_info_tags--item">Vegan &check;</span><% end %>
+          <% if gluten_free?(@recipe) %><span class="recipe_info_tags--item">Gluten free &check;</span><% end %>
+          <% if dairy_free?(@recipe) %><span class="recipe_info_tags--item">Dairy free &check;</span><% end %>
+          <% if kosher?(@recipe) %><span class="recipe_info_tags--item">Kosher &check;</span><% end %>
+        </div>
+      <% end %>
+      <% if @recipe[:user_id] == current_user[:id] && @recipe.portions.length > 0 && @recipe.description.to_s != '' && @recipe.cook_time.to_s != '' %>
+        <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe is <%= @recipe.live ? "<strong>live</strong>".html_safe + (@recipe.public ? " and <strong>public</strong> ".html_safe : " and <strong>private</strong> to you ".html_safe)  + "on Stockcubes" : "in <strong>draft</strong> mode ".html_safe %> - <% if @recipe.live %> you can <% if @recipe.public %><%= link_to 'make the recipe <strong>private</strong>'.html_safe , publish_update_recipe_path(@recipe, type:"make_private") %> (then only you will be able to see and use it)<% else %><%= link_to 'make the recipe <strong>public</strong>'.html_safe , publish_update_recipe_path(@recipe, type: "make_public") %> (so all Stockcubes users can see and use it)<% end %>, and if you want to take it offline you can <%= link_to 'put it back to draft', publish_update_recipe_path(@recipe, type: 'make_draft') %><% else %><%= link_to 'publish it now', publish_update_recipe_path(@recipe, type: 'make_live') %><% end %>.</p>
+
+      <% elsif @recipe[:user_id] == current_user[:id] && (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '') %>
+        <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe is in draft mode, it can be made live when you've
+          <% if @recipe.portions.length == 0 %>
+            <%= link_to 'added some ingredients', portions_new_path(:recipe_id => params[:id]) %><!--
+            --><% if @recipe.description.to_s == '' && @recipe.cook_time.to_s == '' %>,
+            <% elsif @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' %>
+              and
+            <% end %>
+          <% end %>
+          <% if @recipe.description.to_s == '' %>
+            <%= link_to 'added a description', edit_recipe_path(@recipe, anchor: 'recipe_description_container') %>
+            <% if @recipe.cook_time.to_s == '' %>
+              and
+            <% end %>
+          <% end %>
+          <% if @recipe.cook_time.to_s == '' %>
+            <%= link_to 'added a cook time', edit_recipe_path(@recipe, anchor: 'recipe_cook_time_container') %>
+          <% end %>
+        </p>
+      <% end %>
     </div>
-
-    <% if current_user %>
-      <% if not current_user.favourites.include?(@recipe) %>
-        <%= link_to "favourite", favourite_recipe_path(@recipe, type: "favourite"), method: :put %>
-      <% else %>
-        <%= link_to "unfavourite", favourite_recipe_path(@recipe, type: "unfavourite"), method: :put %>
-      <% end %>
-    <% end %>
-    <br />
-    <br />
-    <p><% if vegetarian?(@recipe) %>Vegetarian &check;<% end %></p>
-    <br />
-    <br />
-
-    <% if @portions.exists? %>
-      <% @portions.each do |portion| %>
-      <div class="portion-block">
-
-        <p><%= portion_amount_unit_and_ingredient(portion).html_safe %></p>
-        <br />
+    <% if @recipe.user_id != nil && @recipe.user[:admin] === false %>
+      <div class="content_rich--row">
+        <p>Recipe provided by a Stockcubes user</p>
       </div>
+    <% end %>
+    <% if current_user && current_user == @recipe.user %>
+      <div class="content_rich--row">
+        <p class="recipe-serving">Yield: <%= (@recipe.yield.to_s == '' || !@recipe.yield) ? 'Not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe : (@recipe.yield.to_i.to_s +  ' Servings') %></p>
+      </div>
+      <div class="content_rich--row">
+        <p class="recipe-prep_time">Prep Time: <%= (@recipe.prep_time.to_s == '' || !@recipe.prep_time) ? 'Not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe : (@recipe.prep_time.to_i.to_s +  ' mins') %></p>
+      </div>
+      <div class="content_rich--row">
+        <p class="recipe-cook_time">Cook Time: <%= (@recipe.cook_time.to_s == '' || !@recipe.cook_time) ? 'Not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe : (@recipe.cook_time.to_i.to_s +  ' mins') %></p>
+      </div>
+      <div class="content_rich--row">
+        <div class="recipe_description">
+          <h2>Method</h2>
+          <% if @recipe.description.to_s == '' %>
+            <p>Not yet set <span class="item_form--content_item_note">(Only you can see this)</span></p>
+          <% else %>
+            <%= simple_format(@recipe.description) %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+    <% if !current_user || current_user != @recipe.user %>
+      <% if @recipe.yield.to_s != '' %>
+        <div class="content_rich--row">
+          <p class="recipe-serving">Yield: <%= @recipe.yield.to_i %> Servings</p>
+        </div>
+      <% end %>
+      <% if @recipe.prep_time.to_s != '' %>
+        <div class="content_rich--row">
+          <p class="recipe-prep_time">Prep Time: <%= @recipe.prep_time.to_i %> mins</p>
+        </div>
+      <% end %>
+      <% if @recipe.cook_time.to_s != '' %>
+        <div class="content_rich--row">
+          <p class="recipe-cook_time">Cook Time: <%= @recipe.cook_time.to_i %> mins</p>
+        </div>
+      <% end %>
+      <% if @recipe.description.to_s != '' %>
+        <div class="content_rich--row">
+          <div class="recipe_description">
+            <h2>Method</h2>
+            <%= simple_format(@recipe.description) %>
+          </div>
+        </div>
       <% end %>
     <% end %>
-
-
-
-
-
-
+    <% if @recipe.note %>
+      <div class="content_rich--row">
+        <p class="recipe-notes"><%= @recipe.note.to_s %></p>
+      </div>
+    <% end %>
+    <div class="content_rich--row portion_list stock_check">
+      <% if @portions.exists? %>
+        <h2>Ingredients</h2>
+        <ul>
+          <% @portions.each do |portion| %>
+              <%
+                if @cupboard_stock_in_date_ingredient_ids.include?(portion.ingredient.id)
+                  ingredient_in_stock = true
+                end
+              %>
+            <li <%= ingredient_in_stock ? 'class=in_stock' : '' %>><%= portion_amount_unit_and_ingredient(portion).html_safe %></li>
+          <% end %>
+        </ul>
+      <% else %>
+        <div class="pretty_form--highlight" id="ingredients">
+          <h2>No ingredients added</h2>
+          <p>Make sure you <%=link_to "add some ingredients", portions_new_path(:recipe_id => params[:id])%>, if you want to start using this recipe to build a shopping list of put it live on the Stockcubes site.</p>
+        </div>
+      <% end %>
+    </div>
   </div>
 </div>

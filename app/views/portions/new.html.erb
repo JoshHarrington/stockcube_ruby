@@ -1,15 +1,33 @@
-<%= form_for @portion, id: "portion-form", :validate => true do |p| %>
-	<div class="field">
-		<%= p.label :portion %><br/>
-		<%= select_tag :ingredient_id, options_from_collection_for_select(@ingredients, "id", "name"), prompt: "Pick your ingredient", required: true %>
+<% params[:recipe_id] ? recipe_title = Recipe.find(params[:recipe_id]).title : redirect = true %>
+<% if redirect %>
+ <script type="text/javascript">
+    window.location.href="/recipes"
+  </script>
+<% end %>
+<% params[:recipe_id] ? provide(:title, "Add ingredient to \"#{recipe_title}\"") : '' %>
 
-		<%= hidden_field_tag "recipe_id", params[:recipe_id] %>
-		Amount <%= p.text_field(:amount, value: '', placeholder: '250', validate: true) %><br/>
-		Units <%= select_tag "unit_number", options_from_collection_for_select(@unit_select, "unit_number", "name", 8) %>
-		<br/>
-	</div>
-	<div class="actions">
-		<%= p.submit "Save" %>
+<%= form_for @portion, :html => {id: "portion_form", class: 'content_rich--wrapper portion_form'}, :validate => true do |p| %>
+	<div class="content_rich">
+    <div class="content_rich--title_block">
+      <div class="content_rich--title_row">
+				<% if params[:recipe_id] %>
+					<h1 class="recipe-title">Adding an ingredient to "<%= recipe_title.to_s %>"</h1>
+				<% end %>
+				<%= link_to "Cancel", recipe_path(params[:recipe_id]), class: "list_block--collection--action"  %>
+			</div>
+		</div>
+		<div class="content_rich--row">
+			<%= p.select(:ingredient_id, options_from_collection_for_select(@ingredients, "id", "name"), {prompt: "Pick your ingredient"}, {class: "pretty_form--row--pretty_select wide_select", required: true, validate: true }) %>
+			<%= p.hidden_field(:recipe_id, value: params[:recipe_id]) %>
+		</div>
+		<div class="content_rich--row">
+			<%= p.number_field(:amount, value: '', placeholder: '250', validate: true, class: "input_half_width", min: "0") %>
+			<%= p.select(:unit_number, options_from_collection_for_select(@unit_select, "id", "name", 8), {}, {class: "pretty_form--row--pretty_select half_select", aria: {label: "Pick the units for the ingredient"}}) %>
+		</div>
+		<div class="content_rich--row content_rich--row-align_baseline">
+			<%= p.button "Save ingredient", class: "list_block--collection--action" %>
+			<% if params[:recipe_id] %><p>and return to editing "<%= recipe_title.to_s %>"</p><% end %>
+		</div>
 	</div>
 <% end %>
 

@@ -1,0 +1,18 @@
+<h1>Hi <%= @user.name %>,</h1>
+
+<p>Here's a list of the items in your cupboards going out of date in the next week:</p>
+
+<% @stock_going_off.each do |cupboard_id, stocks| %>
+<h3><%= Cupboard.find(cupboard_id).location %></h3>
+<ul>
+<% stocks.each do |stock| %>
+<li><%= stock.ingredient.name %> (<%= stock.use_by_date.to_s(:long)%>)</li>
+<% end %>
+</ul>
+<% end %>
+
+<p>If you don't want to get these notifications, you can always <%= link_to "update your settings", user_url(@user.id, anchor: "notifications") %>.</p>
+
+<p>Thanks,</p>
+<p><%= link_to "Stockcubes Team", "mailto:team@getstockcubes.com" %></p>
+

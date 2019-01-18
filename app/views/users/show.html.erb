@@ -1,14 +1,105 @@
 <% provide(:title, 'Profile') %>
 
+<%
+  current_user.cupboards.where(setup: true, hidden: false).length > 0 ? update_cupboard = current_user.cupboards.where(setup: true, hidden: false).last : update_cupboard = false
+  current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last.archived == false && current_user.shopping_lists.order('updated_at asc').last.recipes.length != 0 && current_user.shopping_lists.order('updated_at asc').last.shopping_list_portions.where(checked: true).length > 0 ? shop_mode = true : shop_mode = false
+  CupboardUser.where(user_id: current_user.id, accepted: false).length > 0 ? cupboard_invites = CupboardUser.where(user_id: current_user.id, accepted: false) : cupboard_invites = false
+%>
+
+
 <div class="pretty_form">
-  <div class="pretty_form--sibling">
+  <div class="pretty_form--sibling content_rich--title_row">
     <h1>Your profile</h1>
-    <p>(<%= link_to "update profile", edit_user_path(@user) %>)</p>
+    <%= link_to "Edit profile", user_profile_edit_path, class: "list_block--item--action" %>
   </div>
+
   <div class="fake_form">
-    <p class="info">Name:</p>
-    <p><%= @user.name %></p>
-    <p class="info">Email:</p>
-    <p><%= @user.email %></p>
+    <div class="pretty_form--row">
+      <p class="info">Name:</p>
+      <p><%= @user.name %></p>
+      <p class="info">Email:</p>
+      <p><%= @user.email %></p>
+    <br />
+    <br />
+    <br />
+    <br />
+    </div>
+  </div>
+
+  <% if shop_mode || update_cupboard || cupboard_invites %>
+    <div class="pretty_form--sibling pretty_form--highlight" id="todos">
+      <h2>Todos:</h2>
+      <ul>
+        <% if cupboard_invites %>
+          <% cupboard_invites.each do |cupboard_invite| %>
+            <%
+              cupboard_id = cupboard_invite.cupboard_id
+              cupboard = Cupboard.find(cupboard_id)
+              cupboard_name = cupboard.location
+              cupboard_owner = CupboardUser.where(cupboard_id: cupboard_id, owner: true).first.user.name
+              hashids = Hashids.new(ENV['CUPBOARD_ID_SALT'])
+              encrypted_cupboard_id = hashids.encode(cupboard_id)
+            %>
+            <li>
+              <p>Add <%= cupboard_owner %>'s cupboard (<%= cupboard_name.to_s %>)? <%= link_to "Yes!", accept_cupboard_invite_path(cupboard_id: encrypted_cupboard_id), method: :post %></p>
+            </li>
+          <% end %>
+        <% end %>
+        <% if shop_mode %>
+        <li>
+          <p>Finish moving your <%= link_to "checked shopping list items", shopping_lists_current_shop_path %> to your cupboards [Started on <%= current_user.shopping_lists.order('updated_at asc').last.updated_at.strftime('%a %d %B') %>]</p>
+          <p class="h6 fade_text">(this todo will disappear when complete!)</p>
+        </li>
+        <% elsif update_cupboard %>
+        <li>
+          <p>Finish moving your shopping list items to <%= link_to "your cupboards", edit_cupboard_path(update_cupboard) %> [Started on <%= update_cupboard.created_at.strftime('%a %d %B') %>]</p>
+          <p class="h6 fade_text">(this todo will disappear when complete!)</p>
+        </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="pretty_form--sibling pretty_form--highlight_green" id="notifications">
+    <h2>Notifications</h2>
+    <%= check_box_tag "reminder_pick", "reminder_pick_status", current_user.user_setting.notify %>
+    <%= label_tag "reminder_pick", "Get a notification email every week, with all food going out of date that week listed out for you",
+      class: "reminder_pick--label" %>
+
+    <br />
+    <p class="selectize_flex_container <%= current_user.user_setting.notify ? '' : 'faded_out' %>"><span>Pick the day you want to receive the notification:</span><%= select_tag 'day_pick', options_for_select(@weekdays, (@weekday_pick ? @weekday_pick : @weekday_current_id)), class: "selectize fit_width" %></p>
+
+  </div>
+
+  <div class="fake_form">
+    <div class="pretty_form--row">
+      <h2><% if current_user.recipes.length > 0 %><%= link_to "Your recipes", your_recipes_path %><% else %>Your recipes<% end %></h2>
+      <p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%> Quick note: if you want to share recipes with the Stockcubes community they have to be your own (not ones you've taken from a cookbook or somewhere online).</p>
+      <br />
+      <br />
+      <% if current_user.recipes.length > 0 %>
+        <ul class="user_recipe_list">
+          <% current_user.recipes.order("updated_at desc").limit(6).each do |recipe| %>
+            <li><%= link_to recipe.title, recipe_path(recipe) %></li>
+          <% end %>
+        </ul>
+        <br />
+        <div>
+          <%= link_to "See all of your recipes", your_recipes_path %>
+          <br />
+        </div>
+        <br />
+        <%= link_to "Add your next recipe", new_recipe_path(:anchor => 'recipe_title_container'), class: "list_block--item--action" %>
+      <% else %>
+        <p>You haven't got any recipes published on Stockcubes yet.</p>
+        <%= link_to "Add your first recipe", new_recipe_path(:anchor => 'recipe_title_container'), class: "list_block--item--action" %>
+      <% end %>
+      <br />
+      <br />
+      <br />
+    </div>
+    <div class="pretty_form--row">
+      <%= link_to "Log out", logout_path, class: "list_block--item--action", method: :delete %>
+    </div>
   </div>
 </div>

@@ -2,7 +2,20 @@
 <% provide(:button_text, 'Create my account') %>
 <div class="pretty_form">
   <div class="pretty_form--sibling">
-    <h1>Sign up</h1>
+    <br />
+    <h1>Create your Stockcubes account</h1>
   </div>
   <%= render 'form' %>
+  <div class="pretty_form--sibling">
+    <br />
+    <hr />
+    <br />
+    <h2>Or - sign up with your Google account:</h2>
+    <br />
+    <p>
+      <%= link_to google_login_path, title: "Sign up with Google" do %>
+        <img src="<%= asset_url('btn_google_signin_dark_normal_web.png')%>" alt="Sign up with Google" />
+      <% end %>
+    </p>
+  </div>
 </div>

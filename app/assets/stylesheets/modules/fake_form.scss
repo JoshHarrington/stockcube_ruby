@@ -1,0 +1,11 @@
+.user_recipe_list {
+	font-size: em(15, 10);
+	padding-left: em(20, 15);
+	list-style: circle;
+	a {
+		font-size: inherit;
+	}
+	li + li {
+		margin-top: em(15, 15);
+	}
+}

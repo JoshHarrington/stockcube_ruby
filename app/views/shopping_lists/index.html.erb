@@ -1,8 +1,8 @@
 <% provide(:title, 'Your Shopping Lists') %>
 <div class="main">
   <div class="container">
-		<div class="list-block--collection--wrap">
-		  <div class="list-block--collection--sibling">
+		<div class="list_block--collection--wrap">
+		  <div class="list_block--collection--sibling">
 				<h2>Current Shopping List</h2>
 			</div>
 			<div class="list_block--collection">
@@ -10,8 +10,8 @@
 			</div>
 		</div>
 		<% if @shopping_lists.length > 1 %>
-			<div class="list-block--collection--wrap">
-				<div class="list-block--collection--sibling">
+			<div class="list_block--collection--wrap">
+				<div class="list_block--collection--sibling">
 					<h2>Older Shopping Lists</h2>
 				</div>
 				<%= will_paginate(@shopping_lists) %>

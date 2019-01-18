@@ -10,10 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180527155445) do
+ActiveRecord::Schema.define(version: 20181008072011) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "cupboard_users", force: :cascade do |t|
+    t.bigint "cupboard_id"
+    t.bigint "user_id"
+    t.boolean "owner", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "accepted", default: false, null: false
+    t.index ["cupboard_id"], name: "index_cupboard_users_on_cupboard_id"
+    t.index ["user_id"], name: "index_cupboard_users_on_user_id"
+  end
 
   create_table "cupboards", force: :cascade do |t|
     t.bigint "user_id"
@@ -21,6 +32,8 @@ ActiveRecord::Schema.define(version: 20180527155445) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "hidden", default: false
+    t.boolean "setup", default: false
+    t.boolean "communal", default: false, null: false
     t.index ["user_id"], name: "index_cupboards_on_user_id"
   end
 
@@ -45,7 +58,6 @@ ActiveRecord::Schema.define(version: 20180527155445) do
     t.bigint "unit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "hidden", default: false
     t.index ["unit_id"], name: "index_ingredients_on_unit_id"
   end
 
@@ -71,6 +83,9 @@ ActiveRecord::Schema.define(version: 20180527155445) do
     t.string "cook_time"
     t.string "yield"
     t.string "note"
+    t.integer "user_id"
+    t.boolean "public", default: true, null: false
+    t.boolean "show_users_name", default: true, null: false
   end
 
   create_table "shopping_list_portions", force: :cascade do |t|
@@ -78,9 +93,16 @@ ActiveRecord::Schema.define(version: 20180527155445) do
     t.bigint "shopping_list_id"
     t.integer "unit_number"
     t.integer "recipe_number"
-    t.decimal "amount"
+    t.decimal "portion_amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "stock_amount"
+    t.boolean "in_cupboard", default: false
+    t.decimal "percent_in_cupboard"
+    t.boolean "enough_in_cupboard", default: false
+    t.boolean "plenty_in_cupboard", default: false
+    t.boolean "checked", default: false
+    t.string "unit_name"
     t.index ["ingredient_id"], name: "index_shopping_list_portions_on_ingredient_id"
     t.index ["shopping_list_id"], name: "index_shopping_list_portions_on_shopping_list_id"
   end
@@ -99,18 +121,29 @@ ActiveRecord::Schema.define(version: 20180527155445) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "archived", default: false
     t.index ["user_id"], name: "index_shopping_lists_on_user_id"
+  end
+
+  create_table "stock_users", force: :cascade do |t|
+    t.bigint "stock_id"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stock_id"], name: "index_stock_users_on_stock_id"
+    t.index ["user_id"], name: "index_stock_users_on_user_id"
   end
 
   create_table "stocks", force: :cascade do |t|
     t.bigint "cupboard_id"
     t.bigint "ingredient_id"
     t.date "use_by_date"
-    t.integer "unit_number"
+    t.integer "unit_id"
     t.decimal "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "hidden", default: false
+    t.boolean "always_available", default: false, null: false
     t.index ["cupboard_id"], name: "index_stocks_on_cupboard_id"
     t.index ["ingredient_id"], name: "index_stocks_on_ingredient_id"
   end
@@ -123,6 +156,35 @@ ActiveRecord::Schema.define(version: 20180527155445) do
     t.decimal "metric_ratio"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "user_fav_stocks", force: :cascade do |t|
+    t.integer "ingredient_id"
+    t.integer "stock_amount"
+    t.integer "unit_id"
+    t.integer "user_id"
+    t.integer "standard_use_by_limit"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_recipe_stock_matches", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "recipe_id"
+    t.decimal "ingredient_stock_match_decimal"
+    t.integer "num_ingredients_total"
+    t.integer "num_stock_ingredients"
+    t.integer "num_needed_ingredients"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_settings", force: :cascade do |t|
+    t.integer "user_id"
+    t.boolean "notify", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "notify_day", default: 0
   end
 
   create_table "users", force: :cascade do |t|
@@ -138,6 +200,7 @@ ActiveRecord::Schema.define(version: 20180527155445) do
     t.datetime "activated_at"
     t.string "reset_digest"
     t.datetime "reset_sent_at"
+    t.boolean "demo", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

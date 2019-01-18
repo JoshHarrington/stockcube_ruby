@@ -11,3 +11,15 @@ $browser-context: 14;
 
   @return $pixels / $context * 1em;
 }
+
+@function rem($pixels, $context: 10) {
+  @if (unitless($pixels)) {
+    $pixels: $pixels * 1px;
+  }
+
+  @if (unitless($context)) {
+    $context: $context * 1px;
+  }
+
+  @return $pixels / $context * 1rem;
+}

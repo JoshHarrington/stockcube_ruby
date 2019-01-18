@@ -1,0 +1,23 @@
+.angel {
+	position: relative;
+	cursor: default;
+	&::before {
+		content: " ";
+		width: em(17, 15);
+		height: em(5, 15);
+		border: 2px solid gold;
+		border-radius: 50%;
+		position: absolute;
+		top: em(-15, 15);
+		opacity: 0;
+		left: em(-3, 15);
+		transform: rotate(-11deg);
+		transition: opacity .2s, top .2s;
+	}
+	&:hover {
+		&::before {
+			top: em(2, 15);
+			opacity: .7;
+		}
+	}
+}
