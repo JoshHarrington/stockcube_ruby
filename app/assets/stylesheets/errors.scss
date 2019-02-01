@@ -1,25 +1,49 @@
 body.errors_controller.not_found_page {
 	background-color: $black-80;
 	color: white;
-	a {
+}
+
+body.errors_controller {
+	main a {
 		color: $teal-40;
+	}
+	.feedback_form_label {
+		color: black;
+		background-color: white;
 	}
 }
 
-.page_404 {
+.error_page {
 	display: flex;
 	justify-content: center;
 }
 
-.page_404--content {
+.error_page--content {
 	max-width: em(800, 10);
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
 	* {
 		flex-basis: 100%;
+		text-align: center;
+	}
+	h1 {
+		text-align: center;
+    padding: em(45, 30) 0;
+    font-size: em(30, 10);
 	}
 	.error_text {
-		padding-left: em(200, 10);
+		margin-top: em(50, 10);
+		margin-bottom: em(50, 10);
+		span {
+			font-style: italic;
+		}
+		p:last-child {
+			margin-top: em(15, 15);
+		}
+	}
+	.large-svg {
+    height: 27em;
+		padding: em(10, 10) calc(3em + 5vw) em(10, 10) em(30, 10);
 	}
 }

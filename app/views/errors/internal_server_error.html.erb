@@ -1,2 +1,16 @@
-<h1>Errors#internal_server_error</h1>
-<p>Find me in app/views/errors/internal_server_error.html.erb</p>
+<% provide(:title, '500') %>
+<div class="error_page">
+	<div class="error_page--content">
+		<h1>500 - soup in the server</h1>
+
+		<%= large_svg('soup_splash', '0 0 1397 758') %>
+		<div class="error_text">
+			<p>There seems to have been a minor <span>soup</span> incident.<br />
+			Engineers <span>with mops</span> are on their way!<br />
+			If you weren't excepting to have soup related drama today <br />
+			you can <a href="mailto:team@getstockcubes.com">get in touch with the team</a>.</p>
+
+			<p>You could always <%= link_to 'go home', root_path %> where it's less tomatoey</a></p>
+		</div>
+	</div>
+</div>
