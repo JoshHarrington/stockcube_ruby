@@ -22,7 +22,7 @@ gem 'uglifier', '>= 1.3.0'
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
-gem 'turbolinks', '~> 5'
+# gem 'turbolinks', '~> 5'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
@@ -60,10 +60,13 @@ gem 'pgsync'
 gem 'pry'
 
 gem 'hashid-rails', '~> 1.2', '>= 1.2.1'
-gem "sprockets", ">= 3.7.2"
-gem "sinatra", ">= 2.0.2"
-gem "ffi", ">= 1.9.24"
-gem "rubyzip", ">= 1.2.2"
+gem 'sprockets', '>= 3.7.2'
+gem 'sinatra', '>= 2.0.2'
+gem 'ffi', '>= 1.9.24'
+gem 'rubyzip', '>= 1.2.2'
+
+gem 'omniauth'
+gem 'omniauth-google-oauth2'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

@@ -10,7 +10,6 @@
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require turbolinks
 //= require jquery
 //= require jquery_ujs
 //= require jquery-ui
@@ -22,12 +21,11 @@
 //= require cupboard
 //= require list_block
 //= require navigation
+//= require vendor/selectize.min.js
 //= require stocks
 //= require portions
 //= require recipes
 //= require shopping_list
 //= require cupboard_share
-//= require vendor/selectize.min.js
 //= require user
-//= require g_sign_in
-
+//= require feedback

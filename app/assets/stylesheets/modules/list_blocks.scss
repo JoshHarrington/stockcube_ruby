@@ -222,6 +222,14 @@
 		align-items: center;
 		justify-content: center;
 	}
+
+	.recipes_controller & {
+		background-image: url('https://source.unsplash.com/collection/140489/350x250');
+		background-size: cover;
+		background-color: rgba(255, 255, 255, 0.5);
+		background-blend-mode: screen;
+
+	}
 }
 
 @keyframes list_block_fade {

@@ -21,8 +21,17 @@ body {
 	flex-direction: column;
 	main {
 		margin-bottom: 2rem;
+		position: relative;
+		z-index: 1;
 	}
 	footer {
 		margin-top: auto;
+		position: relative;
+		z-index: 2;
 	}
+}
+
+
+.large-svg {
+	width: 100%;
 }

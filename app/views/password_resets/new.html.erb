@@ -6,11 +6,11 @@
   <%= form_for(:password_reset, url: password_resets_path) do |f| %>
     <div class="pretty_form--row">
       <%= f.label :email %>
-      <%= f.email_field :email, class: 'form-control' %>
+      <%= f.email_field :email, class: 'form-control', value: (params.has_key?(:email) && params[:email].to_s != '' ? params[:email] : '') %>
     </div>
 
-    <div class="pretty_form--actions">
-      <%= f.submit "Submit", class: "btn btn-primary" %>
+    <div class="pretty_form--sibling">
+      <%= f.button "Submit", class: "pretty_form--submit_button" %>
     </div>
   <% end %>
 </div>

@@ -1,14 +1,3 @@
-$(document).on("turbolinks:load", function() {
-	if ($('#recipe_edit').length > 0) {
-		// beforeUnload();
-		confirmDeleteIngredient();
-		togglePublicRowFade();
-		hashFocus();
-		makePublishableOnChange();
-		submitClicked();
-	}
-});
-
 var togglePublicRowFade = function() {
 	var publicStatusRow = $('#recipe_public_status_row');
 	var publicStatusBtns = $('#recipe_public_status_row input');
@@ -104,3 +93,13 @@ var scrollAndFocusTitle = function(){
 // 	};
 // }
 
+$(document).ready(function() {
+	if ($('#recipe_edit').length > 0) {
+		// beforeUnload();
+		confirmDeleteIngredient();
+		togglePublicRowFade();
+		hashFocus();
+		makePublishableOnChange();
+		submitClicked();
+	}
+});

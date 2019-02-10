@@ -1,4 +1,4 @@
-<div class="list_block list_block__column">
+<div class="list_block list_block__column" style="background-image: url('https://source.unsplash.com/500x300/weekly?food,<%= require 'uri'; if recipe.title; URI::encode(recipe.title).to_s.downcase; end %>')">
 	<% if defined?(ingredient_stock_match_decimal) && !(ingredient_stock_match_decimal.nan?) %>
 		<% percent_in_cupboards = (ingredient_stock_match_decimal.to_f * 100).round %>
 		<div class="list_block--content_start">

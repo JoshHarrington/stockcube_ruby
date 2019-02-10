@@ -43,13 +43,6 @@
           <div class="list_block--form_action--container">
             <%= button_tag "Yes", name: nil, class: 'list_block--form_action' %>
           </div>
-          <vr class="list_block--form_actions--vertical_divider"></vr>
-          <div class="list_block--form_action--container">
-            <%= check_box_tag "reminder_pick", "reminder_pick_status", true %>
-            <span class="form_action--reminder_pick--with_notification"><%= link_to "Do it later", shopping_list_delay_path, title: 'add to shopping list', class: 'list_block--form_action' %><span class="reminder_text"> (with reminder)</span></span>
-            <span class="form_action--reminder_pick--no_notification"><%= link_to "Do it later", shopping_list_delay__with_notification_path, title: 'add to shopping list', class: 'list_block--form_action' %><span class="reminder_text"> (no reminder)</span></span>
-            <%= label_tag "reminder_pick", "Send an email reminder in 24 hours", class: "reminder_pick--label" %>
-          </div>
         </div>
       </div>
     <% end %>

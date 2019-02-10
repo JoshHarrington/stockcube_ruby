@@ -1,0 +1,65 @@
+body.errors_controller.not_found_page {
+	background-color: $black-80;
+	color: white;
+}
+
+body.errors_controller {
+	main a {
+		color: $teal-40;
+	}
+	.feedback_form_label {
+		color: black;
+		background-color: white;
+	}
+}
+
+.error_page {
+	display: flex;
+	justify-content: center;
+}
+
+.error_page--content {
+	max-width: em(800, 10);
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	* {
+		flex-basis: 100%;
+		text-align: center;
+	}
+	h1 {
+		text-align: center;
+    padding: em(45, 30) 0;
+    font-size: em(30, 10);
+	}
+	.error_text {
+		margin-top: em(50, 10);
+		margin-bottom: em(50, 10);
+		span {
+			font-style: italic;
+		}
+		p:last-child {
+			margin-top: em(15, 15);
+		}
+	}
+	.large-svg {
+    height: 27em;
+		padding: em(10, 10) calc(3em + 5vw) em(10, 10) em(30, 10);
+	}
+}
+
+.errors_controller.internal_server_error_page {
+	iframe {
+		width: 100%;
+		min-height: 70vh;
+		border-bottom: 2px solid $teal-120;
+	}
+	.error_page--content {
+		h1 {
+			padding: em(30, 30) 0;
+		}
+		.error_text {
+			margin-top: em(20, 10);
+		}
+	}
+}

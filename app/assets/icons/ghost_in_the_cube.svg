@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg viewBox="0 0 1079 654" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="ghost_in_the_cube">
+    <title>Error page - Ghosts in the cube Imagery</title>
+    <defs>
+        <polygon id="path-1" points="0.542413012 12.8785667 54.9609891 0.280139355 54.9609891 391.080353 0.542413012 405.862264"></polygon>
+    </defs>
+    <g id="Logo-applications" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="404" transform="translate(-973.000000, -451.000000)">
+            <g id="Group-3" transform="translate(973.000000, 451.000000)">
+                <g id="Logo-Main---door-slightly-open---dark-inside">
+                    <g id="Group-2">
+                        <g id="Group">
+                            <g id="Logo-main-base">
+                                <g id="Group-6">
+                                    <polygon id="Rectangle-10" fill="#41A39B" points="371.662983 74.6647427 719 0.305933817 719 360.073834 371.662983 449.758826"></polygon>
+                                    <polygon id="Rectangle-9" fill="#60BDB7" points="371.721894 449.585845 718.964253 360.035668 1027 460.815168 675.466653 556.155611"></polygon>
+                                    <polygon id="Rectangle-6" fill="#98DCD8" points="371.35072 73.4019074 676.417992 162.894387 676.417992 555.929818 371.35072 448.992743"></polygon>
+                                    <polygon id="Rectangle-8" fill="#8FD9D5" points="0.630398548 539.595426 371.367787 448.720438 676.39824 555.929818 288.531235 653.517276"></polygon>
+                                    <polygon id="Rectangle-5" fill="#4CB0A8" points="719.190433 0.371198925 1027 81.5786128 1027 460.946841 719.190433 360.081341"></polygon>
+                                    <polygon id="Rectangle-7" fill="#C3EBE9" points="719.994917 0.577481532 1027.11624 81.737558 676.429684 162.897635 371 73"></polygon>
+                                </g>
+                            </g>
+                            <g id="Group-6-Copy" transform="translate(731.000000, 69.000000)" fill="#AAE2DE">
+                                <polygon id="Rectangle-4" points="0 81.2456641 348 0 348 378.04628 0 472"></polygon>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+                <g id="Group-Copy" transform="translate(676.000000, 150.000000)">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <use id="Mask" fill-opacity="0.670000017" fill="#494949" xlink:href="#path-1"></use>
+                    <g id="Group-2-Copy" mask="url(#mask-2)">
+                        <g transform="translate(11.489036, 222.418688) rotate(3.000000) translate(-11.489036, -222.418688) translate(-1.010964, 200.418688)">
+                            <path d="M0.453406807,0.755124698 C7.25589817,-1.08778864 12.0398273,0.788649806 15.140218,2.68689704 C20.3422707,5.5973457 21.9593007,15.6382969 21.9593007,29.1144516 C21.9593007,34.2031294 22.9591169,36.7474682 24.9587493,36.7474682 C25.311111,39.6374525 23.4060775,40.6348038 19.2436487,39.7395219 C17.2385003,42.9947711 10.0232794,44.9155802 8.60332216,39.7395219 C6.76695591,41.8669973 4.72056101,43.0877765 2.70088966,43.6396523 L0.453406807,0.755124698 Z" id="Combined-Shape" fill="#FFFFFF"></path>
+                            <ellipse id="Oval-4" fill="#161616" transform="translate(3.500000, 11.000000) rotate(4.000000) translate(-3.500000, -11.000000) " cx="3.5" cy="11" rx="2.5" ry="3"></ellipse>
+                            <ellipse id="Oval-4" fill="#161616" transform="translate(11.500000, 12.000000) rotate(4.000000) translate(-11.500000, -12.000000) " cx="11.5" cy="12" rx="2.5" ry="3"></ellipse>
+                        </g>
+                    </g>
+                    <g mask="url(#mask-2)">
+                        <g transform="translate(26.000000, 117.000000)">
+                            <path d="M28.9609891,4.20256423 L28.9609891,46.0852279 C26.3455397,47.0847227 22.9337071,46.8679409 21.0996606,44.3037641 C16.4244838,49.3851915 6.86603289,46.5234577 6.86603289,41.9886041 C3.85885534,43.7422453 1.57017771,43.4512534 0,41.1156284 C2.90897423,37.4651458 4.36346134,34.1532992 4.36346134,31.1800887 C4.36346134,26.720273 4.3510036,6.16956888 12.9071733,1.47147423 C17.9586976,-1.30225984 24.6650665,0.32444981 27.2573136,2.42086838 C27.8691897,2.91570871 28.4362001,3.51398775 28.9609891,4.20256423 Z" id="Combined-Shape" fill="#FFFFFF"></path>
+                            <ellipse id="Oval-4-Copy" fill="#161616" cx="16" cy="10" rx="2" ry="3"></ellipse>
+                            <ellipse id="Oval-4-Copy-2" fill="#161616" cx="23" cy="11" rx="2" ry="3"></ellipse>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

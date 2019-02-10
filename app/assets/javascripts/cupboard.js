@@ -49,7 +49,7 @@ var cupboard = function() {
 }
 
 
-$(document).on("turbolinks:load", function() {
+$(document).ready(function() {
 	if ($('#cupboard-list').length > 0) {
 		cupboard();
 	}

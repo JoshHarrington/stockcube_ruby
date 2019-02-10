@@ -1,28 +1,19 @@
 <% provide(:title, "Log in") %>
 <div class="pretty_form">
   <div class="pretty_form--sibling">
-    <h1>Sign into Stockcubes</h1>
     <br />
-  </div>
-  <div class="pretty_form--sibling" id="google_sign_in">
-    <h2 class="h3">Sign in with Google:</h2>
-    <br />
-    <br />
-    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
-  </div>
-  <div class="pretty_form--sibling">
-    <h2 class="h3">Sign in using your Stockcubes account:</h2>
+    <h1>Log into Stockcubes</h1>
   </div>
   <%= form_for(:session, url: login_path) do |f| %>
     <div class="pretty_form--row">
       <%= f.label :email %>
-      <%= f.email_field :email, class: 'form-control' %>
+      <%= f.email_field :email, class: 'form-control', value: (params.has_key?(:email) && params[:email].to_s != '' ? params[:email] : '') %>
     </div>
 
     <div class="pretty_form--row">
       <%= f.label :password %>
       <%= f.password_field :password, class: 'form-control' %>
-      <%= link_to "(forgot password)", new_password_reset_path %>
+      <%= link_to "(forgot password)", new_password_reset_path, id: "forgotten_password_link" %>
     </div>
 
     <div class="pretty_form--row">
@@ -35,6 +26,12 @@
     <div class="pretty_form--sibling">
       <%= button_tag "Log in", class: "pretty_form--submit_button" %>
     </div>
+
+    <div class="pretty_form--sibling">
+      <%= link_to google_login_path, title: "Log in with Google" do %>
+        <img src="<%= asset_url('btn_google_signin_dark_normal_web.png')%>" alt="Log in with Google" />
+      <% end %>
+    </div>
   <% end %>
 
   <div class="pretty_form--sibling">
@@ -46,5 +43,4 @@
     <br />
     <%= link_to "Sign up", signup_path, class: "pretty_form--submit_button" %>
   </div>
-  <script src="https://apis.google.com/js/platform.js" async defer></script>
 </div>

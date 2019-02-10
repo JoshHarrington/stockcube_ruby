@@ -5,6 +5,6 @@ function clearNotice(){
 	$(".alert").css("pointer-events","none");
 };
 
-$(document).on('turbolinks:load', function(){
-	setTimeout(function() {clearNotice();}, 5000);
+$(document).ready(function() {
+	setTimeout(function() {clearNotice();}, 6000);
 });

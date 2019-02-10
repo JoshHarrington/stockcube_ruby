@@ -6,7 +6,7 @@ class CupboardsController < ApplicationController
 	before_action :correct_user,   only: [:show, :edit, :update, :share]
 	def index
 		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
-		@cupboards = Cupboard.where(id: @cupboard_ids).order(location: :asc)
+		@cupboards = Cupboard.where(id: @cupboard_ids).order(created_at: :desc)
 		@user_fav_stocks = current_user.user_fav_stocks.order('updated_at desc')
 	end
 	def show
@@ -39,20 +39,25 @@ class CupboardsController < ApplicationController
 		@cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
 	end
 	def share
-		@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false, setup: false)
-		@cupboard = Cupboard.find(params[:cupboard_id])
-		@cupboard_name = @cupboard.location
-		if @cupboard.users.length > 0
-			@current_cupboard_user_ids = @cupboard.users.map(&:id)
-		end
-		@all_cupboard_user_ids = Set[]
-		@cupboards.each do |cupboard|
-			cupboard.cupboard_users.each do |cupboard_user|
-				@all_cupboard_user_ids << cupboard_user.user_id
+		if params.has_key?(:cupboard_id) && params[:cupboard_id].to_i != 0
+			@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false, setup: false)
+			if @cupboards.map(&:id).include?(params[:cupboard_id].to_i)
+				@cupboard = Cupboard.find(params[:cupboard_id])
+				@cupboard_name = @cupboard.location
+				@current_cupboard_user_ids = []
+				if @cupboard.users.length > 0
+					@current_cupboard_user_ids = @cupboard.users.map(&:id)
+				end
+				@other_cupboard_user_ids = @cupboards.map{ |c| c.users.map(&:id).flatten.uniq.compact - @current_cupboard_user_ids }.flatten.uniq.compact
+				@other_cupboard_users = User.where(id: @other_cupboard_user_ids)
+			else
+				redirect_to cupboards_path
+				flash[:info] = %Q[Looks like there's an issue with the cupboard you're trying to share from, <br/> if in doubt contact <a href="mailto:support@getstockcubes.com">support@getstockcubes.com</a>]
 			end
+		else
+			redirect_to cupboards_path
+			flash[:info] = %Q[Looks like there's an issue with the cupboard you're trying to share from, <br/> if in doubt contact <a href="mailto:support@getstockcubes.com">support@getstockcubes.com</a>]
 		end
-		@other_cupboard_user_ids = @all_cupboard_user_ids.to_a - @current_cupboard_user_ids
-		@other_cupboard_users = User.find(@other_cupboard_user_ids)
 	end
 	def share_request
 		if params.has_key?(:cupboard_user_emails) && params[:cupboard_user_emails].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
