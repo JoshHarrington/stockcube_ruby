@@ -47,3 +47,19 @@ body.errors_controller {
 		padding: em(10, 10) calc(3em + 5vw) em(10, 10) em(30, 10);
 	}
 }
+
+.errors_controller.internal_server_error_page {
+	iframe {
+		width: 100%;
+		min-height: 70vh;
+		border-bottom: 2px solid $teal-120;
+	}
+	.error_page--content {
+		h1 {
+			padding: em(30, 30) 0;
+		}
+		.error_text {
+			margin-top: em(20, 10);
+		}
+	}
+}
