@@ -14,7 +14,7 @@
 			<div class="item_form--content_row">
 				<%= s.label :use_by_date, 'Use by date'  %> <%= s.date_field(:use_by_date, min: Date.current, value: @stock.use_by_date, validate: true) %>
 				<% if @cupboards.length == 1 %>
-					<%= s.hidden_field "cupboard_id", @cupboards.last.id %>
+					<%= s.hidden_field "cupboard_id", value: @cupboards.last.id.to_s %>
 				<% end %>
 			</div>
 			<% if @cupboards.length > 1 %>
