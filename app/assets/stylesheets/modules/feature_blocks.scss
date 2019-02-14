@@ -5,14 +5,18 @@
 }
 
 .feature_row {
-	width: 75%;
 	max-width: em(1500, 10);
 	margin-top: em(30, 10);
+	width: 90%;
 	h2 {
-		font-size: em(23, 10);
 		position: relative;
-		padding: em(7, 23) 0 em(12, 23) 0;
-		margin-bottom: em(12, 23);
+		padding: em(5, 18) 0 em(10, 18) 0;
+		margin-bottom: em(10, 18);
+		@media (min-width: 700px) {
+			font-size: em(23, 10);
+			padding: em(7, 23) 0 em(12, 23) 0;
+			margin-bottom: em(12, 23);
+		}
 		&::before {
 			content: " ";
 			position: absolute;
@@ -20,13 +24,20 @@
 			width: em(100, 23);
 			max-width: 100%;
 			border: 2px solid $teal-20;
-			border-width: 0 0 3px 3px;
+			border-width: 0 0 2px 2px;
 			top: 0;
-			left: em(-11, 23);
+			left: em(-10, 18);
+			@media (min-width: 700px) {
+				left: em(-11, 23);
+				border-width: 0 0 3px 3px;
+			}
 		}
 	}
 	p + p {
 		margin-top: em(8, 15);
+	}
+	@media (min-width: 700px) {
+		width: 75%;
 	}
 	@media (max-width: 1199px) {
 		.browser {
@@ -40,6 +51,7 @@
 		}
 		.feature_row--content {
 			width: 40%;
+			padding-right: em(15, 10);
 		}
 	}
 }
