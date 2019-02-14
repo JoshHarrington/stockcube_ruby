@@ -38,10 +38,8 @@
 		}
 	}
 	p {
-		font-size: em(14, 10);
 		@media (min-width: 1200px) {
 			font-size: em(16, 10);
-
 		}
 	}
 	p + p {

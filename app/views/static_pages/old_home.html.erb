@@ -1,0 +1,85 @@
+<% provide(:title, 'Home') %>
+  <section class="feature-banner--title">
+    <div class="feature-banner--title-content">
+      <h1>Stockcubes</h1>
+      <p class="def-breakdown">/stɒk|kjuːb/</p>
+      <p class="def-typ">noun</p>
+      <ol>
+        <li><p>a system to help you keep aware of the food you've got</p></li>
+        <li><p>something to help you make efficient meal decisions and reduce your food waste</p></li>
+      </ol>
+    </div>
+  </section>
+  <article class="feature-banner--collection">
+    <section class="feature-banner">
+      <% if logged_in? && current_user %>
+        <p class="feature_text--minor">Stockcubes is a platform to help you keep track of what you have in your cupboards. We're just getting started, if you're keen to find out what's going on behind the scenes you can <a href="mailto:beta@getstockcubes.com?subject=Beta%20Club" target="_blank">email us</a> to become part of our Beta Love Club - you'll find out about new features first and be able to give feedback to help guide the direction of the service :)</p>
+      <% else %>
+        <p class="feature_text--minor">Stockcubes is a platform to help you keep track of what you have in your cupboards. We're just getting started, if you're keen to see what we're working on you can sign up or <a href="mailto:beta@getstockcubes.com?subject=Beta%20Club" target="_blank">email us</a> to become part of our Beta Love Club to find out about new features first and give feedback to help guide the direction of the service :)</p>
+        <%= link_to "Sign up for free today!", signup_path, class: "pretty_form--submit_button" %>
+      <% end %>
+    </section>
+  </article>
+  <hr>
+  <article class="feature-banner--collection">
+    <section class="feature-banner">
+      <div class="feature-banner--img">
+        <%= large_svg('stock_in_cube', '0 0 950 504') %>
+      </div>
+      <div class="feature-banner--content">
+        <p>See what's in your cupboards</p>
+        <p>wherever you are</p>
+      </div>
+    </section>
+
+    <section class="feature-banner">
+      <div class="feature-banner--img">
+        <%= large_svg('stock_addition', '0 0 502 112') %>
+      </div>
+      <div class="feature-banner--content">
+        <p>Get recipe suggestions</p>
+        <p>based on your ingredients</p>
+      </div>
+    </section>
+
+    <section class="feature-banner">
+      <div class="feature-banner--img">
+        <%= large_svg('recipes_to_list', '0 0 1315 437') %>
+      </div>
+      <div class="feature-banner--content">
+        <p>Build shopping lists</p>
+        <p>with your favourite recipes</p>
+      </div>
+    </section>
+  </article>
+
+  <hr>
+  <article class="feature-banner--sibling">
+    <section>
+    <% if current_user && current_user.demo == true %>
+      <p>Sound good?</p>
+      <p>
+      <% if current_user && current_user.demo == true %>
+        <% if request.host == 'demo.getstockcubes.com' %>
+          <%= link_to 'Sign up today', 'https://www.getstockcubes.com/signup' %> on the main site
+        <% else %>
+          <%= link_to 'Sign up today', demo_logout_path, method: :delete %>
+        <% end %>
+      <% end %>
+      </p>
+    <% end %>
+    <% unless logged_in? && current_user %>
+      <p>
+        Not yet convinced? Check out the <%= link_to 'demo site', 'https://demo.getstockcubes.com' %>
+      </p>
+    <% end %>
+    <% if current_user && current_user.demo == false && request.host != 'demo.getstockcubes.com' %>
+    <p>
+      Unsure about how things work, check out the <%= link_to 'demo site', 'https://demo.getstockcubes.com' %>
+    </p>
+    <p>Alternatively you can contact us by <%= link_to 'email', 'mailto:help@getstockcubes.com', target: '_blank' %> or on twitter
+    <%= link_to '@stock_cubes',  'https://twitter.com/stock_cubes' %>
+    </p>
+    <% end %>
+    </section>
+  </article>
