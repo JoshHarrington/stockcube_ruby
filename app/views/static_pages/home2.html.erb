@@ -1,62 +1,84 @@
 <% provide(:title, 'Home') %>
 
 
-<main class="features">
-  <div class="feature_row">
-    <div class="feature_row--content">
-      <h2>What is Stockcubes?</h2>
-      <p>An online record for your food, helping you throw less away</p>
+<main>
+  <section class="feature-banner--title">
+    <div class="feature-banner--title-content">
+      <span class="feature-banner--title-tagline">Say hello to</span>
+      <h1><span>Stockcubes</span><%= icomoon('logo', '0 0 38 20') %></h1>
     </div>
-    <div class="browser">
-      <div class="browser--top_bar">
-        <span class="browser--top_bar--button"></span>
-        <span class="browser--top_bar--button"></span>
-        <span class="browser--top_bar--button"></span>
+  </section>
+
+  <section class="features">
+    <div class="feature_row">
+      <div class="feature_row--content">
+        <h2>What is Stockcubes?</h2>
+        <p>An online record for your food, helping you throw less away</p>
       </div>
-      <div class="browser--content browser--content-fixed_ratio_overlay">
-        <img src="<%= asset_path('cupboard_stock.png') %>" alt="">
+      <div class="browser">
+        <div class="browser--top_bar">
+          <span class="browser--top_bar--button"></span>
+          <span class="browser--top_bar--button"></span>
+          <span class="browser--top_bar--button"></span>
+        </div>
+        <div class="browser--content browser--content-fixed_ratio_overlay">
+          <img src="<%= asset_path('cupboard_stock.png') %>" alt="">
+        </div>
       </div>
     </div>
-  </div>
 
 
-  <div class="feature_row">
-    <div class="feature_row--content">
-      <h2>How does it work?</h2>
-      <p>You put in details about your food and it helps you build meals with the food you have.</p>
-      <p>It can tell you when your food's going out of date</p>
-    </div>
-    <div class="browser">
-      <div class="browser--top_bar">
-        <span class="browser--top_bar--button"></span>
-        <span class="browser--top_bar--button"></span>
-        <span class="browser--top_bar--button"></span>
+    <div class="feature_row">
+      <div class="feature_row--content">
+        <h2>How does it work?</h2>
+        <p>You put in details about your food and it helps you build meals with the food you have.</p>
+        <p>It can tell you when your food's going out of date</p>
       </div>
-      <div class="browser--content">
-        <video autoplay poster="<%= asset_path('cupboard_add_stock_poster.jpg') %>" playsinline loop muted>
-          <source src="<%= asset_path('cupboard_add_stock.mp4') %>">
-          <source src="<%= asset_path('cupboard_add_stock.webm') %>">
-        </video>
-      </div>
-    </div>
-  </div>
-  <div class="feature_row">
-    <div class="feature_row--content">
-      <h2>Why would you want it?</h2>
-      <p>You'll want Stockcubes if you want to save money and reduce the amount of food that you throw away</p>
-    </div>
-    <div class="browser">
-      <div class="browser--top_bar">
-        <span class="browser--top_bar--button"></span>
-        <span class="browser--top_bar--button"></span>
-        <span class="browser--top_bar--button"></span>
-      </div>
-      <div class="browser--content">
-        <video autoplay poster="<%= asset_path('recipe_shopping_list_add_poster.png') %>" playsinline loop muted>
-          <source src="<%= asset_path('recipe_shopping_list_add.mp4') %>">
-          <source src="<%= asset_path('recipe_shopping_list_add.webm') %>">
-        </video>
+      <div class="browser">
+        <div class="browser--top_bar">
+          <span class="browser--top_bar--button"></span>
+          <span class="browser--top_bar--button"></span>
+          <span class="browser--top_bar--button"></span>
+        </div>
+        <div class="browser--content">
+          <video autoplay poster="<%= asset_path('cupboard_add_stock_poster.jpg') %>" playsinline loop muted>
+            <source src="<%= asset_path('cupboard_add_stock.mp4') %>">
+            <source src="<%= asset_path('cupboard_add_stock.webm') %>">
+          </video>
+        </div>
       </div>
     </div>
-  </div>
+    <div class="feature_row">
+      <div class="feature_row--content">
+        <h2>Why would you want it?</h2>
+        <p>You'll want Stockcubes if you want to save money and reduce the amount of food that you throw away</p>
+      </div>
+      <div class="browser">
+        <div class="browser--top_bar">
+          <span class="browser--top_bar--button"></span>
+          <span class="browser--top_bar--button"></span>
+          <span class="browser--top_bar--button"></span>
+        </div>
+        <div class="browser--content">
+          <video autoplay poster="<%= asset_path('recipe_shopping_list_add_poster.png') %>" playsinline loop muted>
+            <source src="<%= asset_path('recipe_shopping_list_add.mp4') %>">
+            <source src="<%= asset_path('recipe_shopping_list_add.webm') %>">
+          </video>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="feature-banner--sibling">
+    <h2>Sound like your sort of thing?</h2>
+    <ul>
+      <li>No sign up fee</li>
+      <li>Free to use</li>
+      <li>... and quick to get started ;)</li>
+      <li>A full library of recipes</li>
+      <li>You can add you own too</li>
+      <li>Build shopping lists with recipes</li>
+    </ul>
+    <%= link_to "Get involved!", signup_path, class: "list_block--collection--action" %>
+  </section>
 </main>

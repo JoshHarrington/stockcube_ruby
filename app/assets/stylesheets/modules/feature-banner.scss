@@ -5,11 +5,29 @@
 	align-items: center;
 	margin-bottom: em(40, 10);
 	width: 100%;
-	background-color: $teal-20;
-	padding: em(20, 10);
+	background-color: $teal-2;
+	padding: em(50, 10) em(20, 10) em(40, 10);
+	.feature-banner--title-content {
+    display: block;
+    font-size: em(21, 10);
+    margin-bottom: em(-8, 21);
+	}
+	.feature-banner--title-tagline {
+		font-size: em(21, 21);
+    display: block;
+    margin-bottom: em(-8, 21);
+	}
 	h1 {
-		font-size: em(30, 10);
-		margin-bottom: em(4, 10);
+		font-size: em(30, 21);
+		display: flex;
+		align-items: center;
+		span {
+			margin-top: em(-15, 30);
+			margin-right: em(-34, 30);
+		}
+	}
+	.icon-logo {
+		width: em(158, 30);
 	}
 	p {
 		font-size: em(16, 10);
@@ -97,15 +115,29 @@
 	flex-wrap: wrap;
 	flex-direction: column;
 	align-items: center;
-	padding: em(20, 10);
-	section {
-		max-width: em(600, 10);
+	padding: em(40, 10) em(20, 10);
+	background-color: $teal-2;
+	h2 {
+		@media (min-width: 700px) {
+			font-size: em(23, 10);
+		}
+		margin-bottom: em(20, 23);
 	}
 	p {
-		font-size: em(18, 10);
+		font-size: em(16, 10);
 		line-height: em(22, 18);
 		+ p {
 			margin-top: em(10, 18);
 		}
+		&:last-of-type {
+			margin-bottom: em(30, 18);
+		}
+	}
+	ul {
+		list-style-type: disc;
+    font-size: em(16, 10);
+    line-height: em(25, 16);
+    text-align: left;
+    margin-bottom: em(22, 16);
 	}
 }
