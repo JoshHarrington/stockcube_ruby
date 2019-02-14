@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   match "/500", :to => "errors#internal_server_error", :via => :all
   root 'static_pages#home'
   # get '/about' => 'static_pages#about'
+  get '/home2' => 'static_pages#home2'
 
   # get '/elements' => 'static_pages#elements'
 

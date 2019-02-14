@@ -1,0 +1,45 @@
+.features {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.feature_row {
+	width: 75%;
+	max-width: em(1500, 10);
+	margin-top: em(30, 10);
+	h2 {
+		font-size: em(23, 10);
+		position: relative;
+		padding: em(7, 23) 0 em(12, 23) 0;
+		margin-bottom: em(12, 23);
+		&::before {
+			content: " ";
+			position: absolute;
+			height: 100%;
+			width: em(100, 23);
+			max-width: 100%;
+			border: 2px solid $teal-20;
+			border-width: 0 0 3px 3px;
+			top: 0;
+			left: em(-11, 23);
+		}
+	}
+	p + p {
+		margin-top: em(8, 15);
+	}
+	@media (max-width: 1199px) {
+		.browser {
+			margin-top: em(20, 10);
+		}
+	}
+	@media (min-width: 1200px) {
+		display: flex;
+		.browser {
+			width: 60%;
+		}
+		.feature_row--content {
+			width: 40%;
+		}
+	}
+}
