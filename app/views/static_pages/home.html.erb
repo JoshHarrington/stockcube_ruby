@@ -4,7 +4,11 @@
 <main>
   <section class="feature-banner--title">
     <div class="feature-banner--title-content">
-      <span class="feature-banner--title-tagline">Say hello to</span>
+      <% if logged_in? && current_user %>
+        <span class="feature-banner--title-tagline">Hello there</span>
+      <% else %>
+        <span class="feature-banner--title-tagline">Say hello to</span>
+      <% end %>
       <h1><span>Stockcubes</span><%= icomoon('logo', '0 0 38 20') %></h1>
     </div>
   </section>
@@ -70,15 +74,29 @@
   </section>
 
   <section class="feature-banner--sibling">
-    <h2>Sound like your sort of thing?</h2>
-    <ul>
-      <li>No sign up fee</li>
-      <li>Free to use</li>
-      <li>... and quick to get started ;)</li>
-      <li>A full library of recipes</li>
-      <li>You can add you own too</li>
-      <li>Build shopping lists with recipes</li>
-    </ul>
-    <%= link_to "Get involved!", signup_path, class: "list_block--collection--action" %>
+    <% if logged_in? && current_user %>
+      <h2>Want to get more involved?</h2>
+      <ul>
+        <li><p>Check out the <%= link_to 'roadmap', 'https://trello.com/b/5mJZ882b/stockcubes-roadmap-work-in-progress', target: "_blank" %></p></li>
+        <li><p>Chat to the <%= link_to 'team', 'mailto:team@getstockcubes.com?subject=Getting%20involved%20with%20Stockcubes', target: "_blank" %></p></li>
+        <li><p><%= link_to 'Send feedback', 'mailto:team@getstockcubes.com?subject=Feedback', target: "_blank" %> about features and bugs</p></li>
+        <li><p>Add your <%= link_to 'own recipes', new_recipe_path %></p></li>
+        <li><p><%= link_to 'Tell your friends', 'https://twitter.com/intent/tweet?text=Everyone%20needs%20to%20check%20out%20Stockcubes%2C%20it%27s%20the%20best%20way%20to%20keep%20track%20of%20all%20the%20food%20in%20your%20kitchen%21&url=https://www.getstockcubes.com/', target: '_blank' %> about Stockcubes</p></li>
+      </ul>
+
+      <%= link_to "Start adding stock!", cupboards_path, class: "list_block--collection--action" %>
+    <% else %>
+      <h2>Sound like your sort of thing?</h2>
+      <ul>
+        <li><p>No sign up fee</p></li>
+        <li><p>Free to use</p></li>
+        <li><p>... and quick to get started ;)</p></li>
+        <li><p>A full library of recipes</p></li>
+        <li><p>You can add you own too</p></li>
+        <li><p>Build shopping lists with recipes</p></li>
+      </ul>
+
+      <%= link_to "Get involved!", signup_path, class: "list_block--collection--action" %>
+    <% end %>
   </section>
 </main>

@@ -125,19 +125,14 @@
 	}
 	p {
 		font-size: em(16, 10);
-		line-height: em(22, 18);
+		line-height: em(25, 16);
 		+ p {
 			margin-top: em(10, 18);
-		}
-		&:last-of-type {
-			margin-bottom: em(30, 18);
 		}
 	}
 	ul {
 		list-style-type: disc;
-    font-size: em(16, 10);
-    line-height: em(25, 16);
     text-align: left;
-    margin-bottom: em(22, 16);
+    margin-bottom: em(22, 10);
 	}
 }
