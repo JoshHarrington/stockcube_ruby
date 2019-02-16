@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   root 'static_pages#home'
   # get '/about' => 'static_pages#about'
 
+  get '/dashboard' => 'static_pages#dashboard'
+
   get '/logo', to: 'static_pages#logo'
 
   # get '/elements' => 'static_pages#elements'

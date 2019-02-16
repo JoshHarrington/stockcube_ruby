@@ -1,13 +1,15 @@
 <div class="list_block list_block__column" style="background-image: url('https://source.unsplash.com/500x300/weekly?food,<%= require 'uri'; if recipe.title; URI::encode(recipe.title).to_s.downcase; end %>')">
 	<% if defined?(ingredient_stock_match_decimal) && !(ingredient_stock_match_decimal.nan?) %>
-		<% percent_in_cupboards = (ingredient_stock_match_decimal.to_f * 100).round %>
+		<% percent_in_cupboards = ((defined?(waste_saving_rating)) && waste_saving_rating.to_f != 0.to_f) ? (waste_saving_rating.to_f * 100).round : (ingredient_stock_match_decimal.to_f * 100).round %>
 		<div class="list_block--content_start">
 			<span class="list_block--progress_bar" style="width: <%= percent_in_cupboards %>%"></span>
 			<div class="list_block--content_start--text">
-				<% if ingredient_stock_match_decimal == 0 %>
+				<% if ingredient_stock_match_decimal == 0 && (!(defined?(waste_saving_rating)) || waste_saving_rating.to_f == 0.to_f) %>
 					<%= pluralize(num_needed_ingredients, 'ingredient') %> needed
-				<% else %>
+				<% elsif (!(defined?(waste_saving_rating)) || waste_saving_rating.to_f == 0.to_f) %>
 					<%= pluralize(num_stock_ingredients, 'ingredient') %> in stock<% if num_needed_ingredients != 0 %>, <%= num_needed_ingredients.to_s %> needed<% end %>
+				<% elsif (defined?(waste_saving_rating)) && waste_saving_rating.to_f != 0.to_f %>
+					<%= "%g" % ("%.2f" % percent_in_cupboards.to_f) %>% of recipe ingredients going off in next few days
 				<% end %>
 			</div>
 		</div>

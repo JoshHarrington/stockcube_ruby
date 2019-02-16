@@ -48,7 +48,6 @@ module StockHelper
 				user = User.find(user_id)
 				recipe_ingredient_ids = recipe.ingredients.map(&:id).uniq
 
-
 				num_ingredients_in_recipe = recipe_ingredient_ids.length
 				cupboard_stock_out_of_date_soon_ingredient_ids = Stock.where(cupboard_id: active_cupboard_ids, hidden: false).where(:use_by_date => two_days_ago..four_days_ahead).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
 				num_ingredients_in_stock_in_ingredient_list_going_out_of_date_soon = recipe_ingredient_ids.select {|i_id| cupboard_stock_out_of_date_soon_ingredient_ids.include? i_id }.length
