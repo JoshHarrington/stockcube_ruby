@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
-  match "/404", :to => "errors#not_found", :via => :all
-  match "/500", :to => "errors#internal_server_error", :via => :all
+  match '/404', :to => 'errors#not_found', :via => :all
+  match '/500', :to => 'errors#internal_server_error', :via => :all
   root 'static_pages#home'
   # get '/about' => 'static_pages#about'
+
+  get '/logo', to: 'static_pages#logo'
 
   # get '/elements' => 'static_pages#elements'
 
@@ -83,7 +85,7 @@ Rails.application.routes.draw do
   get '/profile', to: 'users#show', as: :user_profile
   get '/profile/edit', to: 'users#edit', as: :user_profile_edit
   post '/users/notifications', to: 'users#notifications'
-  get '/google_login', to: redirect("/auth/google_oauth2")
+  get '/google_login', to: redirect('/auth/google_oauth2')
   get '/auth/google_oauth2/callback', to: 'users#google_auth'
 
   post '/feedback/submit' => 'feedback#submit'
