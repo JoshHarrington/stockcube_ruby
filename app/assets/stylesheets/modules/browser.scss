@@ -12,6 +12,9 @@
 	height: 0;
 	padding-top: 50%;
 	overflow: scroll;
+	@media (max-width: 800px){
+		overflow: hidden;
+	}
 	position: relative;
 	img {
 		width: 100%;

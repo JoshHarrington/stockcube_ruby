@@ -1,102 +1,105 @@
 <% provide(:title, 'Home') %>
 
-
-<main>
-  <section class="feature-banner--title">
-    <div class="feature-banner--title-content">
-      <% if logged_in? && current_user %>
-        <span class="feature-banner--title-tagline">Hello there</span>
-      <% else %>
-        <span class="feature-banner--title-tagline">Say hello to</span>
-      <% end %>
-      <h1><span>Stockcubes</span><%= icomoon('logo', '0 0 38 20') %></h1>
-    </div>
-  </section>
-
-  <section class="features">
-    <div class="feature_row">
-      <div class="feature_row--content">
-        <h2>What is Stockcubes?</h2>
-        <p>An online record for your food, helping you throw less away</p>
-      </div>
-      <div class="browser">
-        <div class="browser--top_bar">
-          <span class="browser--top_bar--button"></span>
-          <span class="browser--top_bar--button"></span>
-          <span class="browser--top_bar--button"></span>
-        </div>
-        <div class="browser--content browser--content-fixed_ratio_overlay">
-          <img src="<%= asset_path('cupboard_stock.png') %>" alt="">
-        </div>
-      </div>
-    </div>
-
-
-    <div class="feature_row">
-      <div class="feature_row--content">
-        <h2>How does it work?</h2>
-        <p>You put in details about your food and it helps you build meals with the food you have.</p>
-        <p>It can tell you when your food's going out of date</p>
-      </div>
-      <div class="browser">
-        <div class="browser--top_bar">
-          <span class="browser--top_bar--button"></span>
-          <span class="browser--top_bar--button"></span>
-          <span class="browser--top_bar--button"></span>
-        </div>
-        <div class="browser--content">
-          <video autoplay poster="<%= asset_path('cupboard_add_stock_poster.jpg') %>" playsinline loop muted>
-            <source src="<%= asset_path('cupboard_add_stock.mp4') %>">
-            <source src="<%= asset_path('cupboard_add_stock.webm') %>">
-          </video>
-        </div>
-      </div>
-    </div>
-    <div class="feature_row">
-      <div class="feature_row--content">
-        <h2>Why would you want it?</h2>
-        <p>You'll want Stockcubes if you want to save money and reduce the amount of food that you throw away</p>
-      </div>
-      <div class="browser">
-        <div class="browser--top_bar">
-          <span class="browser--top_bar--button"></span>
-          <span class="browser--top_bar--button"></span>
-          <span class="browser--top_bar--button"></span>
-        </div>
-        <div class="browser--content">
-          <video autoplay poster="<%= asset_path('recipe_shopping_list_add_poster.png') %>" playsinline loop muted>
-            <source src="<%= asset_path('recipe_shopping_list_add.mp4') %>">
-            <source src="<%= asset_path('recipe_shopping_list_add.webm') %>">
-          </video>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="feature-banner--sibling">
+<section class="feature-banner--title">
+  <div class="feature-banner--title-content">
     <% if logged_in? && current_user %>
-      <h2>Want to get more involved?</h2>
-      <ul>
-        <li><p>Check out the <%= link_to 'roadmap', 'https://trello.com/b/5mJZ882b/stockcubes-roadmap-work-in-progress', target: "_blank" %></p></li>
-        <li><p>Chat to the <%= link_to 'team', 'mailto:team@getstockcubes.com?subject=Getting%20involved%20with%20Stockcubes', target: "_blank" %></p></li>
-        <li><p><%= link_to 'Send feedback', 'mailto:team@getstockcubes.com?subject=Feedback', target: "_blank" %> about features and bugs</p></li>
-        <li><p>Add your <%= link_to 'own recipes', new_recipe_path %></p></li>
-        <li><p><%= link_to 'Tell your friends', 'https://twitter.com/intent/tweet?text=Everyone%20needs%20to%20check%20out%20Stockcubes%2C%20it%27s%20the%20best%20way%20to%20keep%20track%20of%20all%20the%20food%20in%20your%20kitchen%21&url=https://www.getstockcubes.com/', target: '_blank' %> about Stockcubes</p></li>
-      </ul>
-
-      <%= link_to "Start adding stock!", cupboards_path, class: "list_block--collection--action" %>
+      <span class="feature-banner--title-tagline">Hello there</span>
     <% else %>
-      <h2>Sound like your sort of thing?</h2>
-      <ul>
-        <li><p>No sign up fee</p></li>
-        <li><p>Free to use</p></li>
-        <li><p>... and quick to get started ;)</p></li>
-        <li><p>A full library of recipes</p></li>
-        <li><p>You can add you own too</p></li>
-        <li><p>Build shopping lists with recipes</p></li>
-      </ul>
-
-      <%= link_to "Get involved!", signup_path, class: "list_block--collection--action" %>
+      <span class="feature-banner--title-tagline">Say hello to</span>
     <% end %>
-  </section>
-</main>
+    <h1><span>Stockcubes</span><%= icomoon('logo', '0 0 38 20') %>
+      <% if logged_in? && current_user %>
+      <span class="speech_bubble speech_bubble-little">hi</span>
+      <% else %>
+      <span class="speech_bubble">well hello there</span>
+      <% end %>
+    </h1>
+  </div>
+</section>
+
+<section class="features">
+  <div class="feature_row">
+    <div class="feature_row--content">
+      <h2>What is Stockcubes?</h2>
+      <p>An online record for your food, helping you throw less away</p>
+    </div>
+    <div class="browser">
+      <div class="browser--top_bar">
+        <span class="browser--top_bar--button"></span>
+        <span class="browser--top_bar--button"></span>
+        <span class="browser--top_bar--button"></span>
+      </div>
+      <div class="browser--content browser--content-fixed_ratio_overlay">
+        <img src="<%= asset_path('cupboard_stock.png') %>" alt="">
+      </div>
+    </div>
+  </div>
+
+
+  <div class="feature_row">
+    <div class="feature_row--content">
+      <h2>How does it work?</h2>
+      <p>You put in details about your food and it helps you build meals with the food you have.</p>
+      <p>It can tell you when your food's going out of date</p>
+    </div>
+    <div class="browser">
+      <div class="browser--top_bar">
+        <span class="browser--top_bar--button"></span>
+        <span class="browser--top_bar--button"></span>
+        <span class="browser--top_bar--button"></span>
+      </div>
+      <div class="browser--content">
+        <video autoplay poster="<%= asset_path('cupboard_add_stock_poster.jpg') %>" playsinline loop muted>
+          <source src="<%= asset_path('cupboard_add_stock.mp4') %>">
+          <source src="<%= asset_path('cupboard_add_stock.webm') %>">
+        </video>
+      </div>
+    </div>
+  </div>
+  <div class="feature_row">
+    <div class="feature_row--content">
+      <h2>Why would you want it?</h2>
+      <p>You'll want Stockcubes if you want to save money and reduce the amount of food that you throw away</p>
+    </div>
+    <div class="browser">
+      <div class="browser--top_bar">
+        <span class="browser--top_bar--button"></span>
+        <span class="browser--top_bar--button"></span>
+        <span class="browser--top_bar--button"></span>
+      </div>
+      <div class="browser--content">
+        <video autoplay poster="<%= asset_path('recipe_shopping_list_add_poster.png') %>" playsinline loop muted>
+          <source src="<%= asset_path('recipe_shopping_list_add.mp4') %>">
+          <source src="<%= asset_path('recipe_shopping_list_add.webm') %>">
+        </video>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature-banner--sibling">
+  <% if logged_in? && current_user %>
+    <h2>Want to get more involved?</h2>
+    <ul>
+      <li><p>Check out the <%= link_to 'roadmap', 'https://trello.com/b/5mJZ882b/stockcubes-roadmap-work-in-progress', target: "_blank" %></p></li>
+      <li><p>Chat to the <%= link_to 'team', 'mailto:team@getstockcubes.com?subject=Getting%20involved%20with%20Stockcubes', target: "_blank" %></p></li>
+      <li><p><%= link_to 'Send feedback', 'mailto:team@getstockcubes.com?subject=Feedback', target: "_blank" %> about features and bugs</p></li>
+      <li><p>Add your <%= link_to 'own recipes', new_recipe_path %></p></li>
+      <li><p><%= link_to 'Tell your friends', 'https://twitter.com/intent/tweet?text=Everyone%20needs%20to%20check%20out%20Stockcubes%2C%20it%27s%20the%20best%20way%20to%20keep%20track%20of%20all%20the%20food%20in%20your%20kitchen%21&url=https://www.getstockcubes.com/&via=stock_cubes', target: '_blank' %> about Stockcubes</p></li>
+    </ul>
+
+    <%= link_to "Start adding stock!", cupboards_path, class: "list_block--collection--action" %>
+  <% else %>
+    <h2>Sound like your sort of thing?</h2>
+    <ul>
+      <li><p>No sign up fee</p></li>
+      <li><p>Free to use</p></li>
+      <li><p>... and quick to get started ;)</p></li>
+      <li><p>A full library of recipes</p></li>
+      <li><p>You can add you own too</p></li>
+      <li><p>Build shopping lists with recipes</p></li>
+    </ul>
+
+    <%= link_to "Get involved!", signup_path, class: "list_block--collection--action" %>
+  <% end %>
+</section>

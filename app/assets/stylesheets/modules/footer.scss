@@ -13,6 +13,9 @@
 	max-height: 0;
 	transition: max-height .3s;
 	overflow: hidden;
+	.static_pages_controller.home_page & {
+		display: none;
+	}
 }
 
 #footer-feedback-form {
@@ -35,6 +38,9 @@
 	border-width: 1px 0 0 1px;
 	padding: em(10, 15);
 	margin-top: em(20, 15);
+	.static_pages_controller.home_page & {
+		display: none;
+	}
 }
 
 .feedback_form_button:checked {
@@ -49,7 +55,8 @@
 .footer_inner {
 	border-top: 2px solid $teal-40;
 	margin-top: em(20, 10);
-	.footer_feedback_form--wrapper + & {
+	.footer_feedback_form--wrapper + &,
+	.static_pages_controller.home_page & {
 		border-top-width: 1px;
 		margin-top: 0;
 	}
