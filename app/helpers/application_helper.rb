@@ -107,7 +107,17 @@ module ApplicationHelper
 			"🤖 Amy Tan",
 			"🤖 Celeste Ng",
 			"🤖 Elizabeth Poliner"]
-			fresh_names = names - User.all.map(&:name).uniq
-			return fresh_names.sample
+		fresh_names = names - User.all.map(&:name).uniq
+		return fresh_names.sample
+	end
+	def link_current_page_element(page_path, link_string, optional_section = nil)
+		section = request.path_parameters[:controller]
+		if current_page?(page_path)
+			return '<li class="current_page"><span class="fake_link">'.html_safe + link_string.html_safe + '</span></li>'.html_safe
+		elsif page_path.to_s.include?(section) || (optional_section != nil ? section.to_s.include?(optional_section) : false)
+			return '<li class="current_section">'.html_safe + link_to(link_string, page_path) + '</li>'.html_safe
+		else
+			return '<li>'.html_safe + link_to(link_string, page_path) + '</li>'.html_safe
 		end
+	end
 end
