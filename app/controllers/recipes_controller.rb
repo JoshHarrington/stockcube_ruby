@@ -20,7 +20,9 @@ class RecipesController < ApplicationController
 		@fallback_recipes = @fallback_recipes_unformatted.paginate(:page => params[:page], :per_page => 12)
 
 		if params.has_key?(:search) && params[:search].to_s != ''
-			@recipes = Recipe.search(params[:search], operator: 'or', fields: ["ingredient_names^10"]).results.uniq.paginate(:page => params[:page], :per_page => 12)
+			@recipes = Recipe.search(params[:search], operator: 'or', fields: ["ingredient_names^10", "title^2"]).results.uniq.paginate(:page => params[:page], :per_page => 12)
+
+			@ingredient_results = Ingredient.search(params[:search],  operator: 'or').results
 
 			@mini_progress_on = true
 

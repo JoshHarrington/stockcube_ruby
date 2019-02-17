@@ -18,5 +18,6 @@ class Stock < ApplicationRecord
 
 	def quantity
     Quantity.new(amount, unit.name)
-  end
+	end
+
 end

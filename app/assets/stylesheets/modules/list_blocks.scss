@@ -382,7 +382,7 @@ a.list_block {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
-	margin-right: em(9, 10);
+	margin-right: em(7, 10);
 	border-radius: em(12, 10);
 	overflow: hidden;
 	margin-top: em(3, 10);
@@ -500,9 +500,22 @@ a.list_block {
 	flex-direction: column;
 }
 
-.list_block--tag_bar {
+.list_block--cuisine_bar {
 	background-color: $teal-10;
 	padding: em(12, 10) em(8, 10);
+}
+
+.list_block--tag_bar {
+	display: flex;
+	flex-wrap: wrap;
+	padding: em(6, 12);
+	font-size: em(12, 10);
+	a {
+		font-size: inherit;
+		color: black;
+		text-decoration: none;
+		cursor: pointer;
+	}
 }
 
 .list_block--info_rows {
@@ -610,9 +623,6 @@ a.list_block {
 		@media (max-width: 899px) and (min-width: 700px) {
 			flex-basis: calc(25% - 6px);
 		}
-		// @media (min-width: 1300px) {
-		// 	max-width: em(180, 15);
-		// }
 	}
 	&.date-part-warning {
 		background-color: $warning-amber;

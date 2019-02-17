@@ -30,7 +30,14 @@
             num_stock_ingredients = user_recipe_stock_match[:num_stock_ingredients]
             num_needed_ingredients = user_recipe_stock_match[:num_needed_ingredients]
           %>
-          <%= render 'recipe_list_partial', recipe: recipe, ingredient_stock_match_decimal: ingredient_stock_match_decimal, num_stock_ingredients: num_stock_ingredients, num_needed_ingredients: num_needed_ingredients %>
+          <%=
+            render 'recipe_list_partial',
+            recipe: recipe,
+            ingredient_stock_match_decimal: ingredient_stock_match_decimal,
+            num_stock_ingredients: num_stock_ingredients,
+            num_needed_ingredients: num_needed_ingredients,
+            ingredient_results: @ingredient_results
+          %>
         <% end %>
       </div>
       <% if @no_results == nil %>

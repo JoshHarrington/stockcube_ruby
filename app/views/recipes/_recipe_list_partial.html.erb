@@ -80,7 +80,20 @@
 	</div>
 	<% if recipe.cuisine && recipe.cuisine.to_s != '' %>
 		<div class="list_block--content_end">
-			<div class="list_block--tag_bar">
+			<% if defined?(ingredient_results) && ingredient_results != nil %>
+				<%
+					search_ingredient_ids = ingredient_results.map(&:id) & recipe.ingredients.map(&:id)
+					ingredients_from_search = Ingredient.where(id: search_ingredient_ids)
+				%>
+				<% if ingredients_from_search.length > 0 %>
+					<div class="list_block--tag_bar">
+						<% ingredients_from_search.each do |i| %>
+							<%= link_to i.name, recipes_path(search: i.name), class: "people_marker people_marker__wide" %>
+						<% end %>
+					</div>
+				<% end %>
+			<% end %>
+			<div class="list_block--cuisine_bar">
 				<p><%= recipe.cuisine %></p>
 			</div>
 		</div>

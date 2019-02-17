@@ -8,4 +8,10 @@ class Ingredient < ApplicationRecord
 	has_many :shopping_lists, through: :shopping_list_portions
 	has_one :user_fav_stock
 
+	searchkick
+
+  def search_data
+    {name: name}
+  end
+
 end
