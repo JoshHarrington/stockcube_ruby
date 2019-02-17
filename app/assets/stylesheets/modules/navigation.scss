@@ -441,6 +441,16 @@ footer[role="contentinfo"] {
       display: none;
     }
   }
+  .block>ul>.current_section > a,
+  .block>ul>.current_section > .fake_link,
+  .current_page > a,
+  .current_page > .fake_link {
+    border-left: em(5, 10) solid $teal-120;
+  }
+  ul ul .current_page > a,
+  ul ul .current_page > .fake_link {
+    border-width: em(10, 10);
+  }
   html.js {
     #nav {
       height: 100%;
