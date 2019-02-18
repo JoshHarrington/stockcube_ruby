@@ -16,6 +16,7 @@ module StockHelper
 			num_needed_ingredients: num_needed_ingredients,
 			waste_saving_rating: waste_saving_rating
 		)
+		flash[:info] = %Q[Recipe stock information updated!]
 	end
 
 	def recipe_stock_matches_update(user_id = nil, recipe_id = nil)

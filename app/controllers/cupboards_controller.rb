@@ -161,7 +161,6 @@ class CupboardsController < ApplicationController
 			end
 			recipe_stock_matches_update(current_user[:id], nil)
 			shopping_list_portions_update(current_user[:id])
-			flash[:info] = %Q[Recipe stock information updated!]
 		end
 		if params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != '' && current_user.cupboards.where(hidden: false, setup: false).length > 1
 			@cupboard_to_delete = Cupboard.find(params[:cupboard_id_delete].to_i)

@@ -62,7 +62,6 @@ class StocksController < ApplicationController
 			redirect_to cupboards_path(anchor: @stock.cupboard_id)
 			recipe_stock_matches_update(current_user[:id], nil)
 			shopping_list_portions_update(current_user[:id])
-			flash[:info] = %Q[Recipe stock information updated!]
 			StockUser.find_or_create_by(
 				stock_id: @stock.id,
 				user_id: current_user[:id]
@@ -115,7 +114,6 @@ class StocksController < ApplicationController
 			redirect_to cupboards_path(anchor: @stock.cupboard_id)
 			recipe_stock_matches_update(current_user[:id], nil)
 			shopping_list_portions_update(current_user[:id])
-			flash[:info] = %Q[Recipe stock information updated!]
 		else
 			flash[:danger] = %Q[Looks like there was a problem, make sure you pick an ingredient, and set a stock amount]
 			redirect_to edit_stock_path(@stock), fallback: cupboards_path
