@@ -1,6 +1,6 @@
 <div class="list_block--collection--wrap">
 	<% provide(:title, (@cupboard.setup ? 'Importing shop stock' : "Editing '#{@cupboard.location.to_s}''")) %>
-	<%= form_for @cupboard, :html => {id: "edit_cupboard_form", class: "edit_cupboard_form"} do |f| %>
+	<%= form_for @cupboard, url: {action: "edit"}, :html => {id: "edit_cupboard_form", class: "edit_cupboard_form"} do |f| %>
 		<div class="list_block--collection--sibling list_block--collection--sibling-multi_action">
 			<% if @cupboard.setup %>
 				<h2>Importing shop stock</h2>
