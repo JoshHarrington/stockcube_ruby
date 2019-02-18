@@ -227,7 +227,7 @@ class RecipesController < ApplicationController
 
 			# give notice that the recipe has been added with link to shopping list
 			if current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last[:archived] === false && current_user.shopping_lists.order('updated_at asc').last.recipes.length > 0
-				@string = "Added the '#{@recipe.title}' to your #{link_to("current shopping list", current_shopping_list_ingredients_path)}"
+				@string = "Added the '#{@recipe.title}' to your #{link_to("current shopping list", shopping_lists_current_shop_path)}"
 				redirect_back fallback_location: recipes_path, notice: @string
 			end
 		else
