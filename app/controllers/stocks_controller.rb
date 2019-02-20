@@ -46,7 +46,6 @@ class StocksController < ApplicationController
 
 	end
 	def create
-		Rails.logger.debug stock_params
 		@stock = Stock.new(stock_params)
 
 		@cupboards = current_user.cupboards.where(hidden: false, setup: false)
