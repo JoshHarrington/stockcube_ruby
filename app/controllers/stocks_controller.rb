@@ -111,7 +111,8 @@ class StocksController < ApplicationController
 
 		if @stock.update(stock_params)
 			redirect_to cupboards_path(anchor: @stock.cupboard_id)
-			recipe_stock_matches_update(current_user[:id], nil)
+			# recipe_stock_matches_update(current_user[:id], nil)
+			update_recipe_stock_from_stock_change(@stock[:ingredient_id])
 			shopping_list_portions_update(current_user[:id])
 		else
 			flash[:danger] = %Q[Looks like there was a problem, make sure you pick an ingredient, and set a stock amount]

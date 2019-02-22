@@ -137,7 +137,7 @@
         <ul>
           <% @portions.each do |portion| %>
               <%
-                if @cupboard_stock_in_date_ingredient_ids.include?(portion.ingredient.id)
+                if @cupboard_stock_in_date_ingredient_ids.include?(portion.ingredient_id)
                   ingredient_in_stock = true
                 end
               %>
