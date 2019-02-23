@@ -1,16 +1,43 @@
 module StockHelper
-	# if updating one ingredient (stock addition)
+	# if updating one or more ingredients (stock addition) - ingredient_id should be defined
+	# if no ingredient_id defined then use all of current users stock to search for matching recipes
 
-	def	update_recipe_stock_from_stock_change(ingredient_id)
+	def	update_recipe_stock_matches(ingredient_id = nil, user_id = nil, recipe_id = nil)
 		two_days_ago = Date.current - 2.days
-		user_id = current_user[:id]
-		ingredient_name = Ingredient.find(ingredient_id)[:name]
-		recipes = Recipe.search(ingredient_name, fields: ["ingredient_names^100"]).results.uniq
+		if user_id != nil
+			user_id = user_id
+		elsif current_user
+			user_id = current_user[:id]
+		end
+
 		active_cupboard_ids = CupboardUser.where(user_id: user_id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard == nil && (cu.cupboard.setup == true || cu.cupboard.hidden == true) }.compact
 		cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: active_cupboard_ids, hidden: false).where("use_by_date >= :date", date: two_days_ago).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
 
-		recipes.each do |recipe|
-			recipe_ingredient_ids = recipe.portions.map(&:ingredient_id)
+		if ingredient_id.class == Integer
+			ingredient_name = Ingredient.find(ingredient_id)[:name]
+			recipes = Recipe.search(ingredient_name, fields: ["ingredient_names^100"]).results.uniq
+		elsif ingredient_id.class == Array
+			ingredient_name = Ingredient.find(ingredient_id.uniq).map(&:name)
+			recipes = Recipe.search(ingredient_name, operator: "or", fields: ["ingredient_names^100"]).results.uniq
+		elsif recipe_id == nil
+			recipes = Recipe.all.uniq
+		end
+
+		if recipe_id != nil
+			recipe = Recipe.find(recipe_id)
+			recipe_stock_update(recipe, cupboard_stock_in_date_ingredient_ids, user_id)
+		else
+			recipes.each do |recipe|
+				recipe_stock_update(recipe, cupboard_stock_in_date_ingredient_ids, user_id)
+			end
+		end
+
+		flash[:info] = %Q[We've updated your <a href="/recipes">recipe list</a> based on your stock<br/>so you can see the quickest recipes to make]
+
+	end
+
+	def recipe_stock_update(recipe, cupboard_stock_in_date_ingredient_ids, user_id)
+		recipe_ingredient_ids = recipe.portions.map(&:ingredient_id)
 			num_ingredients_total = recipe_ingredient_ids.length.to_i
 			recipe_stock_ingredient_matches = recipe_ingredient_ids & cupboard_stock_in_date_ingredient_ids
 			num_stock_ingredients = recipe_stock_ingredient_matches.length.to_i
@@ -26,12 +53,7 @@ module StockHelper
 				num_stock_ingredients: num_stock_ingredients,
 				num_needed_ingredients: num_needed_ingredients
 			)
-		end
-
-		flash[:info] = %Q[We've updated your <a href="/recipes">recipe list</a> based on your stock<br/>so you can see the quickest recipes to make]
-
 	end
-
 
 end
 

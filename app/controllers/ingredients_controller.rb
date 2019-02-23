@@ -23,7 +23,8 @@ class IngredientsController < ApplicationController
 			ingredient_unit.ingredients << @ingredient
 		end
     if @ingredient.save
-      redirect_to ingredients_path
+			redirect_to ingredients_path
+			Ingredient.reindex
     else
       render 'new'
     end
@@ -43,6 +44,7 @@ class IngredientsController < ApplicationController
 		@portions = @ingredient.portions
 			if @ingredient.update(ingredient_params)
 				redirect_to ingredients_path
+				Ingredient.reindex
 			else
 				render 'edit'
 			end

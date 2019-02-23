@@ -56,12 +56,11 @@ class StocksController < ApplicationController
 			)
 		end
 
-
     if @stock.save
 			redirect_to cupboards_path(anchor: @stock.cupboard_id)
-			recipe_stock_matches_update(current_user[:id], nil)
+			update_recipe_stock_matches(@stock[:ingredient_id])
 			shopping_list_portions_update(current_user[:id])
-			StockUser.find_or_create_by(
+			StockUser.create(
 				stock_id: @stock.id,
 				user_id: current_user[:id]
 			)
@@ -104,15 +103,16 @@ class StocksController < ApplicationController
 	def update
 		@stock = Stock.find(params[:id])
 
-		StockUser.find_or_create_by(
-			stock_id: @stock.id,
-			user_id: current_user[:id]
-		)
+		if StockUser.where(stock_id: @stock[:id]).length == 0
+			StockUser.create(
+				stock_id: @stock.id,
+				user_id: current_user[:id]
+			)
+		end
 
 		if @stock.update(stock_params)
 			redirect_to cupboards_path(anchor: @stock.cupboard_id)
-			# recipe_stock_matches_update(current_user[:id], nil)
-			update_recipe_stock_from_stock_change(@stock[:ingredient_id])
+			update_recipe_stock_matches(@stock[:ingredient_id])
 			shopping_list_portions_update(current_user[:id])
 		else
 			flash[:danger] = %Q[Looks like there was a problem, make sure you pick an ingredient, and set a stock amount]

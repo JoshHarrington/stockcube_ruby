@@ -92,6 +92,6 @@ module UsersHelper
       use_by_date: Date.current + 100.years
     )
 
-    recipe_stock_matches_update(user.id, nil)
+    update_recipe_stock_matches(nil, user.id)
   end
 end
