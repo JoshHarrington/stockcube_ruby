@@ -56,6 +56,32 @@ class StocksController < ApplicationController
 			)
 		end
 
+
+		# if params[:portion].has_key?(:ingredient_id) && params[:portion][:ingredient_id].present?
+		# 	if params[:portion][:ingredient_id].to_i == 0
+		# 		new_ingredient_from_portion = Ingredient.find_or_create_by(name: params[:portion][:ingredient_id], unit_id: (@portion_unit || 8))
+		# 		selected_ingredient_id = new_ingredient_from_portion.id
+		# 		new_stuff_added = true
+		# 	else
+		# 		selected_ingredient_id = params[:portion][:ingredient_id]
+		# 	end
+		# else
+		# 	flash[:danger] = "Make sure you select an ingredient"
+		# end
+		if params.has_key?(:stock) && params[:stock].has_key?(:ingredient_id) && params[:stock][:ingredient_id].class == String
+			if params[:stock].has_key?(:unit_id) && params[:stock][:unit_id].to_i != 0
+				unit_id = params[:stock][:unit_id]
+			else
+				unit_id = 8
+			end
+			new_ingredient = Ingredient.find_or_create_by(name: params[:stock][:ingredient_id], unit_id: unit_id)
+			@stock.update_attributes(
+				ingredient_id: new_ingredient[:id]
+			)
+			Ingredient.reindex
+		end
+
+
     if @stock.save
 			redirect_to cupboards_path(anchor: @stock.cupboard_id)
 			update_recipe_stock_matches(@stock[:ingredient_id])
@@ -67,7 +93,7 @@ class StocksController < ApplicationController
 		else
 			unit_id = 8
 			if params.has_key?(:stock) && params[:stock].has_key?(:unit_id) && params[:stock][:unit_id].to_i != 0
-				unit_id = params[:unit_id]
+				unit_id = params[:stock][:unit_id]
 			end
 			ingredient_id = false
 			if params.has_key?(:stock) && params[:stock].has_key?(:ingredient_id) && params[:stock][:ingredient_id].to_i != 0

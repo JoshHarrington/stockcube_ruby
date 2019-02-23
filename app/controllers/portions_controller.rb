@@ -38,6 +38,7 @@ class PortionsController < ApplicationController
 			else
 				selected_ingredient_id = params[:portion][:ingredient_id]
 			end
+			Ingredient.reindex
 		else
 			flash[:danger] = "Make sure you select an ingredient"
 		end
