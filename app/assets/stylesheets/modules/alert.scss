@@ -10,13 +10,35 @@
 	color: white;
 	box-shadow: 0 2px 7px 0 #00000087;
 	background: hsl(0, 0%, 19%);
+	width: em(400, 14);
 	max-width: calc(100% - 34px);
 	line-height: 1.45;
+	&.alert-update_request {
+		display: none;
+	}
 	a {
 		color: $teal-100;
 	}
 	&.alert-success {
 		right: auto;
 		left: em(17, 14);
+	}
+	.button {
+		border: 1px solid $teal-100;
+		border-radius: 2px;
+		padding: em(4, 14) em(7, 14);
+    background: none;
+    color: black;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+    border: 1px solid #49a99f;
+    display: inline-block;
+    margin-top: 9px;
+    text-decoration: none;
+		background: $teal-70;
+		& + .button {
+			margin-left: em(6, 14);
+		}
 	}
 }

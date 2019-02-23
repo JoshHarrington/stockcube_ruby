@@ -57,22 +57,48 @@ class StocksController < ApplicationController
 		end
 
 
+		# if params[:portion].has_key?(:ingredient_id) && params[:portion][:ingredient_id].present?
+		# 	if params[:portion][:ingredient_id].to_i == 0
+		# 		new_ingredient_from_portion = Ingredient.find_or_create_by(name: params[:portion][:ingredient_id], unit_id: (@portion_unit || 8))
+		# 		selected_ingredient_id = new_ingredient_from_portion.id
+		# 		new_stuff_added = true
+		# 	else
+		# 		selected_ingredient_id = params[:portion][:ingredient_id]
+		# 	end
+		# else
+		# 	flash[:danger] = "Make sure you select an ingredient"
+		# end
+		if params.has_key?(:stock) && params[:stock].has_key?(:ingredient_id) && params[:stock][:ingredient_id].class == String
+			if params[:stock].has_key?(:unit_id) && params[:stock][:unit_id].to_i != 0
+				unit_id = params[:stock][:unit_id]
+			else
+				unit_id = 8
+			end
+			new_ingredient = Ingredient.find_or_create_by(name: params[:stock][:ingredient_id], unit_id: unit_id)
+			@stock.update_attributes(
+				ingredient_id: new_ingredient[:id]
+			)
+			Ingredient.reindex
+		end
+
+
     if @stock.save
 			redirect_to cupboards_path(anchor: @stock.cupboard_id)
-			recipe_stock_matches_update(current_user[:id], nil)
+			update_recipe_stock_matches(@stock[:ingredient_id])
 			shopping_list_portions_update(current_user[:id])
-			StockUser.find_or_create_by(
+			StockUser.create(
 				stock_id: @stock.id,
 				user_id: current_user[:id]
 			)
 		else
 			unit_id = 8
 			if params.has_key?(:stock) && params[:stock].has_key?(:unit_id) && params[:stock][:unit_id].to_i != 0
-				unit_id = params[:unit_id]
+				unit_id = params[:stock][:unit_id]
 			end
 			ingredient_id = false
 			if params.has_key?(:stock) && params[:stock].has_key?(:ingredient_id) && params[:stock][:ingredient_id].to_i != 0
 				ingredient_id = params[:stock][:ingredient_id]
+				### if ingredient name instead of id is given, create new ingredient
 			end
 			cupboard_id = @cupboards.first
 			if params.has_key?(:stock) && params[:stock].has_key?(:cupboard_id) && params[:stock][:cupboard_id].to_i != 0
@@ -104,14 +130,16 @@ class StocksController < ApplicationController
 	def update
 		@stock = Stock.find(params[:id])
 
-		StockUser.find_or_create_by(
-			stock_id: @stock.id,
-			user_id: current_user[:id]
-		)
+		if StockUser.where(stock_id: @stock[:id]).length == 0
+			StockUser.create(
+				stock_id: @stock.id,
+				user_id: current_user[:id]
+			)
+		end
 
 		if @stock.update(stock_params)
 			redirect_to cupboards_path(anchor: @stock.cupboard_id)
-			recipe_stock_matches_update(current_user[:id], nil)
+			update_recipe_stock_matches(@stock[:ingredient_id])
 			shopping_list_portions_update(current_user[:id])
 		else
 			flash[:danger] = %Q[Looks like there was a problem, make sure you pick an ingredient, and set a stock amount]

@@ -20,7 +20,7 @@ class RecipesController < ApplicationController
 		@fallback_recipes = @fallback_recipes_unformatted.paginate(:page => params[:page], :per_page => 12)
 
 		if params.has_key?(:search) && params[:search].to_s != ''
-			@recipes = Recipe.search(params[:search], operator: 'or', fields: ["ingredient_names^10", "title^2"]).results.uniq.paginate(:page => params[:page], :per_page => 12)
+			@recipes = Recipe.search(params[:search], operator: 'or', fields: ["ingredient_names^12", "title^4", "cuisine^3", "description^1"]).results.uniq.paginate(:page => params[:page], :per_page => 12)
 
 			@ingredient_results = Ingredient.search(params[:search],  operator: 'or').results
 
@@ -41,6 +41,10 @@ class RecipesController < ApplicationController
 		ingredients = Ingredient.all.map(&:name).uniq
 
 		@recipe_search_autocomplete_list = (recipe_titles + ingredients).sort_by(&:downcase)
+
+		if UserRecipeStockMatch.where(user_id: current_user[:id]).order("updated_at desc").first.updated_at < 12.hours.ago
+			flash[:update_request] = %Q[Looks like it's been a while since your recipe list got updated based on your stock, would you like to do that now? <br/><a class="button" href="/recipes/update_matches">Yes, update!</a> <button class="button" id="dismiss_no_update">No thanks</button>]
+		end
 
 	end
 
@@ -87,6 +91,10 @@ class RecipesController < ApplicationController
 			end
 		else
 			render new_recipe_path(:anchor => 'recipe_title_container')
+		end
+		if @recipe.live
+			Recipe.reindex
+			update_recipe_stock_matches(nil, nil, @recipe.id)
 		end
 	end
 	def edit
@@ -136,22 +144,33 @@ class RecipesController < ApplicationController
 		end
 
 		if params.has_key?(:redirect) && params[:redirect].to_s != ''
-			@recipe.update(recipe_params)
+			@recipe.update(recipe_params.except(:user_id))
 			if @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' || @recipe.portions.length == 0
 				@recipe.update_attributes(live: false)
 			end
 			redirect_to portions_new_path(:recipe_id => params[:id])
+			Recipe.reindex
+			update_recipe_stock_matches(nil, nil, @recipe.id)
 		else
-			if @recipe.update(recipe_params)
+			if @recipe.update(recipe_params.except(:user_id))
 				if @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' || @recipe.portions.length == 0
 					@recipe.update_attributes(live: false)
 				end
 				redirect_to recipe_path(@recipe)
-				recipe_stock_matches_update(nil, @recipe[:id])
+				if @recipe.live
+					update_recipe_stock_matches(nil, nil, @recipe.id)
+				end
+				Recipe.reindex
+				update_recipe_stock_matches(nil, nil, @recipe.id)
 			else
 				render 'edit'
 			end
 		end
+	end
+
+	def update_recipe_stock_matches_method
+		update_recipe_stock_matches
+		redirect_back fallback_location: recipes_path
 	end
 
 	def publish_update

@@ -3,7 +3,6 @@ class UsersController < ApplicationController
   before_action :admin_user,     only: [:destroy, :index]
   before_action :demo_user,      only: [:index, :show, :new, :create, :edit, :update, :destroy]
 
-  include StockHelper
   include UsersHelper
   include ApplicationHelper
 

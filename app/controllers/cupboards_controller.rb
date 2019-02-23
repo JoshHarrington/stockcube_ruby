@@ -159,7 +159,8 @@ class CupboardsController < ApplicationController
 					hidden: true
 				)
 			end
-			recipe_stock_matches_update(current_user[:id], nil)
+			stock_ingredient_ids = @stock_to_delete.map(&:ingredient_id).uniq
+			update_recipe_stock_matches(stock_ingredient_ids)
 			shopping_list_portions_update(current_user[:id])
 		end
 		if params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != '' && current_user.cupboards.where(hidden: false, setup: false).length > 1
@@ -167,8 +168,10 @@ class CupboardsController < ApplicationController
 			@cupboard_to_delete.update_attribute(
 				:hidden, true
 			)
-		elsif params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != '' && current_user.cupboards.where(hidden: false, setup: false).length == 1
-			flash[:warning] = "Don't delete that cupboard! It's the last one you have :O"
+
+			### this warning won't be shown at the right point in the flow so will just confuse users
+			# elsif params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != '' && current_user.cupboards.where(hidden: false, setup: false).length == 1
+			# 	flash[:warning] = "Don't delete that cupboard! It's the last one you have :O"
 		end
 	end
 	def autosave_sorting
@@ -193,6 +196,8 @@ class CupboardsController < ApplicationController
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)
 		@units = Unit.where.not(name: nil)
 
+		cupboard_ingredient_ids = @cupboard.stocks.map(&:ingredient_id).uniq
+		update_recipe_stock_matches(cupboard_ingredient_ids)
 
 		if params.has_key?(:stock_items)
 			params[:stock_items].to_unsafe_h.map do |stock_id, values|
@@ -223,13 +228,11 @@ class CupboardsController < ApplicationController
 			end
 		end
 
-
 		if @cupboard.setup == true
 			@cupboard.update_attributes(hidden: true)
 		end
 
 		redirect_to cupboards_path
-		recipe_stock_matches_update(current_user[:id], nil)
 		shopping_list_portions_update(current_user[:id])
   end
 	private
