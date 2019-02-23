@@ -13,7 +13,7 @@ gem 'rails', '~> 5.1.4'
 # Use Puma as the app server
 gem 'puma', '~> 3.7'
 # Use SCSS for stylesheets
-gem 'sass-rails', '~> 5.0'
+gem 'sassc-rails'
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes
@@ -67,6 +67,10 @@ gem 'rubyzip', '>= 1.2.2'
 
 gem 'omniauth'
 gem 'omniauth-google-oauth2'
+
+gem "nokogiri", ">= 1.8.5"
+gem "rack", ">= 2.0.6"
+gem "loofah", ">= 2.2.3"
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
