@@ -72,6 +72,7 @@ class StocksController < ApplicationController
 			ingredient_id = false
 			if params.has_key?(:stock) && params[:stock].has_key?(:ingredient_id) && params[:stock][:ingredient_id].to_i != 0
 				ingredient_id = params[:stock][:ingredient_id]
+				### if ingredient name instead of id is given, create new ingredient
 			end
 			cupboard_id = @cupboards.first
 			if params.has_key?(:stock) && params[:stock].has_key?(:cupboard_id) && params[:stock][:cupboard_id].to_i != 0
