@@ -13,6 +13,7 @@ gem 'rails', '~> 5.1.4'
 # Use Puma as the app server
 gem 'puma', '~> 3.7'
 # Use SassC for stylesheets
+# See http://sass.logdown.com/posts/7081811 for discussion on migration
 gem 'sassc-rails'
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
