@@ -96,9 +96,23 @@
     <div id="outer-wrap">
       <div id="inner-wrap">
         <%= render 'layouts/header' %>
-        <% flash.each do |message_type, message| %>
-          <%= content_tag(:div, message.html_safe, class: "alert alert-#{message_type}") %>
-        <% end %>
+        <div class="alert_group">
+          <div class="alert_wrapper">
+            <div class="alert alert-sticky"><span class="alert_close_btn dismiss_no_update">&#735;</span>Some sticky content Some sticky content  Some sticky content Some sticky content Some sticky content Some sticky content Some sticky content Some sticky content Some sticky content Some sticky content Some sticky content</div>
+          </div>
+          <div class="alert_wrapper">
+            <div class="alert alert-info">Some info content</div>
+          </div>
+          <div class="alert_wrapper">
+            <div class="alert alert-sticky"><span class="alert_close_btn dismiss_no_update">&#735;</span>Some sticky content</div>
+          </div>
+          <div class="alert_wrapper">
+            <div class="alert alert-info">Some info content Some info content Some info content Some info content Some info content Some info content Some info content Some info content Some info content</div>
+          </div>
+          <%# flash.each do |message_type, message| %>
+            <%#= content_tag(:div, message.html_safe, class: "alert alert-#{message_type}") %>
+          <%# end %>
+        </div>
         <main>
           <%= yield %>
           <%= debug(params) if Rails.env.development? %>

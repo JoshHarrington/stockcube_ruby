@@ -68,7 +68,7 @@ class UsersController < ApplicationController
             flash[:info] = "Looks like you might already have been added to that cupboard"
           end
         end
-        flash[:info] = "You're all setup!"
+        flash[:sticky] = %Q[<span class="alert_close_btn dismiss_no_update">&#735;</span>You're all setup! Start <a href="/cupboards">adding stock</a> today]
         log_in @user
         redirect_to root_url
       else
