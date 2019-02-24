@@ -68,7 +68,7 @@ class StocksController < ApplicationController
 		# else
 		# 	flash[:danger] = "Make sure you select an ingredient"
 		# end
-		if params.has_key?(:stock) && params[:stock].has_key?(:ingredient_id) && params[:stock][:ingredient_id].class == String
+		if params.has_key?(:stock) && params[:stock].has_key?(:ingredient_id) && params[:stock][:ingredient_id].to_i == 0 && params[:stock][:ingredient_id].class == String
 			if params[:stock].has_key?(:unit_id) && params[:stock][:unit_id].to_i != 0
 				unit_id = params[:stock][:unit_id]
 			else
