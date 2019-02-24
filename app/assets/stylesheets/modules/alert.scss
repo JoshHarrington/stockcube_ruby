@@ -24,7 +24,7 @@
 		left: em(17, 14);
 	}
 	.button {
-		border: 1px solid $teal-100;
+		border: 1px solid $teal-40;
 		border-radius: 2px;
 		padding: em(4, 14) em(7, 14);
     background: none;
@@ -40,5 +40,8 @@
 		& + .button {
 			margin-left: em(6, 14);
 		}
+	}
+	.button-secondary {
+		background-color: $teal-110;
 	}
 }

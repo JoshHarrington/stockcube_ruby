@@ -4,7 +4,7 @@ function clearNotice(all = null){
 			opacity: 0
 		}, 1500);
 		document.querySelector('.alert').style.pointerEvents = 'none'
-	} else {
+	} else if (document.querySelector('.alert:not(.alert-update_request)') != null) {
 		$(".alert:not(.alert-update_request)").animate({
 			opacity: 0
 		}, 500);
