@@ -10,11 +10,12 @@
 	color: white;
 	box-shadow: 0 2px 7px 0 #00000087;
 	background: hsl(0, 0%, 19%);
-	width: em(400, 14);
+	width: em(360, 14);
 	max-width: calc(100% - 34px);
 	line-height: 1.45;
 	&.alert-update_request {
 		display: none;
+		padding-right: em(39, 14);
 	}
 	a {
 		color: $teal-100;
@@ -44,4 +45,19 @@
 	.button-secondary {
 		background-color: $teal-110;
 	}
+	.alert_close_btn {
+		position: absolute;
+		display: block;
+		font-size: em(56, 14);
+    line-height: .45;
+    padding: em(10, 56);
+    top: em(4, 56);
+		right: em(2, 56);
+		cursor: pointer;
+		&:hover,
+		&:focus {
+			color: $black-20;
+		}
+	}
+
 }

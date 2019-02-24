@@ -52,11 +52,11 @@ class CupboardsController < ApplicationController
 				@other_cupboard_users = User.where(id: @other_cupboard_user_ids)
 			else
 				redirect_to cupboards_path
-				flash[:info] = %Q[Looks like there's an issue with the cupboard you're trying to share from, <br/> if in doubt contact <a href="mailto:support@getstockcubes.com">support@getstockcubes.com</a>]
+				flash[:info] = %Q[Looks like there's an issue with the cupboard you're trying to share from, if in doubt contact <a href="mailto:support@getstockcubes.com">support@getstockcubes.com</a>]
 			end
 		else
 			redirect_to cupboards_path
-			flash[:info] = %Q[Looks like there's an issue with the cupboard you're trying to share from, <br/> if in doubt contact <a href="mailto:support@getstockcubes.com">support@getstockcubes.com</a>]
+			flash[:info] = %Q[Looks like there's an issue with the cupboard you're trying to share from, if in doubt contact <a href="mailto:support@getstockcubes.com">support@getstockcubes.com</a>]
 		end
 	end
 	def share_request

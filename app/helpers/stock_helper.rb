@@ -32,7 +32,7 @@ module StockHelper
 			end
 		end
 
-		flash[:info] = %Q[We've updated your <a href="/recipes">recipe list</a> based on your stock<br/>so you can see the quickest recipes to make]
+		flash[:info] = %Q[We've updated your <a href="/recipes">recipe list</a> based on your stock so you can see the quickest recipes to make]
 
 	end
 

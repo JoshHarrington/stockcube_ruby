@@ -43,7 +43,7 @@ class RecipesController < ApplicationController
 		@recipe_search_autocomplete_list = (recipe_titles + ingredients).sort_by(&:downcase)
 
 		if UserRecipeStockMatch.where(user_id: current_user[:id]).order("updated_at desc").first.updated_at < 12.hours.ago
-			flash[:update_request] = %Q[Looks like it's been a while since your recipe list got updated based on your stock, would you like to do that now? <br/><a class="button" href="/recipes/update_matches">Yes, update!</a> <button class="button button-secondary" id="dismiss_no_update">No thanks</button>]
+			flash[:update_request] = %Q[<span class="alert_close_btn dismiss_no_update">&#735;</span>Looks like it's been a while since your recipe list got updated based on your stock, would you like to do that now? <br/><a class="button" href="/recipes/update_matches">Yes, update!</a> <button class="button button-secondary dismiss_no_update">No thanks</button>]
 		end
 
 	end

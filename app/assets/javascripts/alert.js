@@ -22,10 +22,13 @@ $(document).ready(function() {
 		}).length) {
 			document.querySelector('.alert-update_request').style.display = 'block'
 		}
-		document.querySelector('#dismiss_no_update').addEventListener("click", function(){
-			clearNotice('all');
-			noRecipeUpdate();
-		});
+		var noUpdateBtns = document.querySelectorAll('.dismiss_no_update');
+		for (var i = 0; i < noUpdateBtns.length; i++) {
+			noUpdateBtns[i].addEventListener('click', function() {
+				clearNotice('all');
+				noRecipeUpdate();
+			});
+		}
 	}
 });
 
