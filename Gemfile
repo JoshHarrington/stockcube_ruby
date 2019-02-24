@@ -15,7 +15,6 @@ gem 'puma', '~> 3.7'
 
 # Use sass-rails for stylesheets
 gem 'sass-rails'
-gem 'yui-compressor', '~> 0.12.0'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
