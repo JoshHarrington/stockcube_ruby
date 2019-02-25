@@ -98,10 +98,10 @@
         <%= render 'layouts/header' %>
         <div class="alert_group">
           <% flash.each do |message_type, message| %>
-            <div class="alert_wrapper">
-              <div class="alert alert-<%= message_type %>">
-                <% if message_type.to_s == 'sticky' %>
-                <span class="alert_close_btn dismiss_no_update">&#735;</span>
+            <div class="alert_wrapper <%= message_type.to_s == 'sticky_recipe' ? 'alert_hide' : ''%>">
+              <div class="alert alert-<%= message_type %> <%= message_type.to_s == 'sticky_recipe' ? 'alert-sticky' : ''%>">
+                <% if message_type.to_s == 'sticky' || message_type.to_s == 'sticky_recipe' %>
+                  <span class="alert_close_btn dismiss_no_update">&#735;</span>
                 <% end %>
                 <%= message.html_safe %>
               </div>

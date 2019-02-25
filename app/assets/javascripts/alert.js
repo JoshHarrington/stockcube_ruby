@@ -1,5 +1,4 @@
 function hideAlert(el) {
-
 	if (el.classList.contains('alert_wrapper')) {
 		el.classList.add('alert_hide')
 	} else {
@@ -7,34 +6,54 @@ function hideAlert(el) {
 	}
 }
 
+function showAlert(el) {
+	if (el.classList.contains('alert_wrapper')) {
+		el.classList.remove('alert_hide')
+	} else {
+		showAlert(el.parentNode)
+	}
+}
+
 $(document).ready(function() {
 	if (document.querySelector('.alert') != null) {
 
-
 		var standardAlerts = document.querySelectorAll('.alert:not(.alert-sticky)');
-		var maxIntervalsToRun = standardAlerts.length
 
-		var counter = 0;
-		var interval = setInterval(function(){
-			hideAlert(standardAlerts[counter]);
-			counter++;
-			if(counter === maxIntervalsToRun) {
-				clearInterval(interval);
-			}
-		}, 4000);
+		if (standardAlerts.length) {
+			var maxIntervalsToRun = standardAlerts.length
+			var counter = 0;
+			var interval = setInterval(function(){
+				hideAlert(standardAlerts[counter]);
+				counter++;
+				if(counter === maxIntervalsToRun) {
+					clearInterval(interval);
+				}
+			}, 4000);
+		}
 
 		var noUpdateBtns = document.querySelectorAll('.dismiss_no_update');
 		for (var i = 0; i < noUpdateBtns.length; i++) {
 			noUpdateBtns[i].addEventListener('click', function(e) {
 				hideAlert(e.target)
-				if (document.body.classList.contains('recipes_controller') && document.body.classList.contains('index_page')){
-					noRecipeUpdate();
-				}
+				noRecipeUpdate(e.target)
 			});
+		}
+
+		if (document.cookie.split(';').filter(function(item) {
+			return item.trim().indexOf('recipeUpdate=nope') !== 0
+		}).length) {
+			var recipeAlerts = document.querySelectorAll('.alert-sticky_recipe');
+			for (var i = 0; i < recipeAlerts.length; i++) {
+				showAlert(recipeAlerts[i])
+			}
 		}
 	}
 });
 
-function noRecipeUpdate() {
-	document.cookie = "recipeUpdate=nope; max-age=21600"
+function noRecipeUpdate(el) {
+	if (el.classList.contains('alert-sticky_recipe')) {
+		document.cookie = "recipeUpdate=nope; max-age=21600"
+	} else {
+		noRecipeUpdate(el.parentNode)
+	}
 }

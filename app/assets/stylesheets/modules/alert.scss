@@ -1,19 +1,6 @@
 .alert {
-	// font-size: em(14, 10);
-	// padding: em(16, 14);
-	// position: fixed;
-	// bottom: em(20, 14);
-	// right: em(17, 14);
-	// z-index: 4;
-	// border-radius: 2px;
-	// background-color: $black-90;
-	// color: white;
-	// box-shadow: 0 2px 7px 0 #00000087;
-	// background: hsl(0, 0%, 19%);
-	// width: em(360, 14);
-	// max-width: calc(100% - 34px);
-	// line-height: 1.45;
-	&.alert-sticky {
+	&.alert-sticky,
+	&.alert-sticky_recipe {
 		padding-right: em(39, 14);
 	}
 	a {
