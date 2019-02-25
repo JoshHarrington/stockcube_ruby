@@ -86,7 +86,8 @@
 	flex-direction: column-reverse;
 	padding: 0 20px 19px 0;
 	max-height: 70vh;
-	overflow: auto;
+	overflow-y: auto;
+	overflow-x: hidden;
 	max-width: 100%;
 	width: 350px;
 }
