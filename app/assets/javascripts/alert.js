@@ -39,8 +39,8 @@ $(document).ready(function() {
 			});
 		}
 
-		if (document.cookie.split(';').filter(function(item) {
-			return item.trim().indexOf('recipeUpdate=nope') !== 0
+		if (!document.cookie.split(';').filter(function(item) {
+			return item.trim().indexOf('recipeUpdate=') === 0
 		}).length) {
 			var recipeAlerts = document.querySelectorAll('.alert-sticky_recipe');
 			for (var i = 0; i < recipeAlerts.length; i++) {
