@@ -28,7 +28,7 @@ $(document).ready(function() {
 				if(counter === maxIntervalsToRun) {
 					clearInterval(interval);
 				}
-			}, 4000);
+			}, 6000);
 		}
 
 		var noUpdateBtns = document.querySelectorAll('.dismiss_no_update');

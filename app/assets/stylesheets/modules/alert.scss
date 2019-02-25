@@ -82,12 +82,12 @@
 .alert_wrapper {
 	max-height: 27em;
 	right: 0;
-	transition: right .3s .3s, max-height .3s;
+	transition: right .4s .3s, max-height .4s;
 	position: relative;
 }
 
 .alert_hide {
 	right: -120%;
 	max-height: 0;
-	transition: right .3s, max-height .3s .3s;
+	transition: right .4s, max-height .4s .3s;
 }
