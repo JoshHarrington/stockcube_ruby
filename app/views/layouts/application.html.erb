@@ -97,21 +97,16 @@
       <div id="inner-wrap">
         <%= render 'layouts/header' %>
         <div class="alert_group">
-          <div class="alert_wrapper">
-            <div class="alert alert-sticky"><span class="alert_close_btn dismiss_no_update">&#735;</span>Some sticky content Some sticky content  Some sticky content Some sticky content Some sticky content Some sticky content Some sticky content Some sticky content Some sticky content Some sticky content Some sticky content</div>
-          </div>
-          <div class="alert_wrapper">
-            <div class="alert alert-info">Some info content</div>
-          </div>
-          <div class="alert_wrapper">
-            <div class="alert alert-sticky"><span class="alert_close_btn dismiss_no_update">&#735;</span>Some sticky content</div>
-          </div>
-          <div class="alert_wrapper">
-            <div class="alert alert-info">Some info content Some info content Some info content Some info content Some info content Some info content Some info content Some info content Some info content</div>
-          </div>
-          <%# flash.each do |message_type, message| %>
-            <%#= content_tag(:div, message.html_safe, class: "alert alert-#{message_type}") %>
-          <%# end %>
+          <% flash.each do |message_type, message| %>
+            <div class="alert_wrapper">
+              <div class="alert alert-<%= message_type %>">
+                <% if message_type.to_s == 'sticky' %>
+                <span class="alert_close_btn dismiss_no_update">&#735;</span>
+                <% end %>
+                <%= message.html_safe %>
+              </div>
+            </div>
+          <% end %>
         </div>
         <main>
           <%= yield %>

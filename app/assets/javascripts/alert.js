@@ -27,7 +27,7 @@ $(document).ready(function() {
 		for (var i = 0; i < noUpdateBtns.length; i++) {
 			noUpdateBtns[i].addEventListener('click', function(e) {
 				hideAlert(e.target)
-				if (e.target.classList.contains('recipe_no_update_cookie_set')){
+				if (document.body.classList.contains('recipes_controller') && document.body.classList.contains('index_page')){
 					noRecipeUpdate();
 				}
 			});
