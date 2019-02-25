@@ -52,7 +52,7 @@ $(document).ready(function() {
 
 function noRecipeUpdate(el) {
 	if (el.classList.contains('alert-sticky_recipe')) {
-		document.cookie = "recipeUpdate=nope; max-age=21600;path='/'"
+		document.cookie = "recipeUpdate=nope; max-age=21600;path=/"
 	} else {
 		noRecipeUpdate(el.parentNode)
 	}
