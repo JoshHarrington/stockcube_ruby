@@ -71,7 +71,8 @@
     <% end %>
     <%= javascript_include_tag 'in_head/modernizr-custom' %>
     <%= stylesheet_link_tag    'application', media: 'all' %>
-    <%= javascript_include_tag 'application', :defer => "defer" %>
+    <%#= javascript_include_tag 'application', :defer => "defer" %>
+    <%= javascript_pack_tag 'application' %>
   </head>
 
   <body class="<%= controller_name %>_controller <%= action_name %>_page">
