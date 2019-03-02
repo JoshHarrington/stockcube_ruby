@@ -33,7 +33,7 @@
 
     <meta property="og:type"               content="article" />
     <meta property="og:title"              content="<%= yield(:title) %> | Stockcubes" />
-    <meta property="og:image"              content="<%= asset_url('stockcubes_fb_tile.jpg')%>" />
+    <meta property="og:image"              content="<%= asset_pack_path('app/webpacker/favicons/stockcubes_fb_tile.jpg')%>" />
 
     <meta name="google-signin-client_id" content="12687063408-vr45rsrjrjsspu9819f64rro5ouh16pf.apps.googleusercontent.com">
 
@@ -43,35 +43,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <link rel="shortcut icon" href="<%= asset_path('favicon.ico') %>" />
-    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="<%= asset_path('apple-touch-icon-57x57.png')%>" />
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="<%= asset_path('apple-touch-icon-114x114.png')%>" />
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="<%= asset_path('apple-touch-icon-72x72.png')%>" />
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="<%= asset_path('apple-touch-icon-144x144.png')%>" />
-    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="<%= asset_path('apple-touch-icon-60x60.png')%>" />
-    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="<%= asset_path('apple-touch-icon-120x120.png')%>" />
-    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="<%= asset_path('apple-touch-icon-76x76.png')%>" />
-    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="<%= asset_path('apple-touch-icon-152x152.png')%>" />
-    <link rel="icon" type="image/png" href="<%= asset_path('favicon-196x196.png')%>" sizes="196x196" />
-    <link rel="icon" type="image/png" href="<%= asset_path('favicon-96x96.png')%>" sizes="96x96" />
-    <link rel="icon" type="image/png" href="<%= asset_path('favicon-32x32.png')%>" sizes="32x32" />
-    <link rel="icon" type="image/png" href="<%= asset_path('favicon-16x16.png')%>" sizes="16x16" />
-    <link rel="icon" type="image/png" href="<%= asset_path('favicon-128.png')%>" sizes="128x128" />
+    <link rel="shortcut icon" href="<%= asset_pack_path('app/webpacker/favicons/favicon.ico') %>" />
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="<%= asset_pack_path('app/webpacker/favicons/apple-touch-icon-57x57.png')%>" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="<%= asset_pack_path('app/webpacker/favicons/apple-touch-icon-114x114.png')%>" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="<%= asset_pack_path('app/webpacker/favicons/apple-touch-icon-72x72.png')%>" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="<%= asset_pack_path('app/webpacker/favicons/apple-touch-icon-144x144.png')%>" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="<%= asset_pack_path('app/webpacker/favicons/apple-touch-icon-60x60.png')%>" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="<%= asset_pack_path('app/webpacker/favicons/apple-touch-icon-120x120.png')%>" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="<%= asset_pack_path('app/webpacker/favicons/apple-touch-icon-76x76.png')%>" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="<%= asset_pack_path('app/webpacker/favicons/apple-touch-icon-152x152.png')%>" />
+    <link rel="icon" type="image/png" href="<%= asset_pack_path('app/webpacker/favicons/favicon-196x196.png')%>" sizes="196x196" />
+    <link rel="icon" type="image/png" href="<%= asset_pack_path('app/webpacker/favicons/favicon-96x96.png')%>" sizes="96x96" />
+    <link rel="icon" type="image/png" href="<%= asset_pack_path('app/webpacker/favicons/favicon-32x32.png')%>" sizes="32x32" />
+    <link rel="icon" type="image/png" href="<%= asset_pack_path('app/webpacker/favicons/favicon-16x16.png')%>" sizes="16x16" />
+    <link rel="icon" type="image/png" href="<%= asset_pack_path('app/webpacker/favicons/favicon-128.png')%>" sizes="128x128" />
     <meta name="application-name" content="Stockcubes"/>
     <meta name="msapplication-TileColor" content="#AAE2DE" />
     <meta name="theme-color" content="#AAE2DE">
-    <meta name="msapplication-TileImage" content="<%= asset_path('mstile-144x144.png')%>" />
-    <meta name="msapplication-square70x70logo" content="<%= asset_path('mstile-70x70.png')%>" />
-    <meta name="msapplication-square150x150logo" content="<%= asset_path('mstile-150x150.png')%>" />
-    <meta name="msapplication-wide310x150logo" content="<%= asset_path('mstile-310x150.png')%>" />
-    <meta name="msapplication-square310x310logo" content="<%= asset_path('mstile-310x310.png')%>" />
+    <meta name="msapplication-TileImage" content="<%= asset_pack_path('app/webpacker/favicons/mstile-144x144.png')%>" />
+    <meta name="msapplication-square70x70logo" content="<%= asset_pack_path('app/webpacker/favicons/mstile-70x70.png')%>" />
+    <meta name="msapplication-square150x150logo" content="<%= asset_pack_path('app/webpacker/favicons/mstile-150x150.png')%>" />
+    <meta name="msapplication-wide310x150logo" content="<%= asset_pack_path('app/webpacker/favicons/mstile-310x150.png')%>" />
+    <meta name="msapplication-square310x310logo" content="<%= asset_pack_path('app/webpacker/favicons/mstile-310x310.png')%>" />
 
     <% if Rails.env.development? %>
       <%= javascript_include_tag 'vendor/tota11y.min.js' %>
     <% end %>
     <%= javascript_include_tag 'in_head/modernizr-custom' %>
-    <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%#= stylesheet_link_tag    'application', media: 'all' %>
     <%#= javascript_include_tag 'application', :defer => "defer" %>
+    <%= stylesheet_pack_tag 'import' %>
     <%= javascript_pack_tag 'application' %>
   </head>
 
