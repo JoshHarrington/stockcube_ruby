@@ -13,7 +13,7 @@ environment.loaders.append('file', {
       loader: 'file-loader',
       options: {
 				useRelativePath: true,
-        name: '[path][name]-[hash].[ext]'
+				name: 'assets/[folder]/[name]-[hash].[ext]',
       }
     }
   ]
