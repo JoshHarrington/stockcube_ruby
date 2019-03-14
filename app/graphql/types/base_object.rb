@@ -1,4 +1,3 @@
-module Types
-  class BaseObject < GraphQL::Schema::Object
-  end
+class Types::BaseObject < GraphQL::Schema::Object
+  field :limit, Int, null: true
 end
