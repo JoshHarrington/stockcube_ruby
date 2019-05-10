@@ -97,6 +97,10 @@ GEM
     fraction (0.3.2)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
+    graphiql-rails (1.7.0)
+      railties
+      sprockets-rails
+    graphql (1.9.3)
     hashid-rails (1.2.2)
       activerecord (>= 4.0)
       hashids (~> 1.0)
@@ -207,6 +211,7 @@ GEM
     rb-fsevent (0.10.3)
     rb-inotify (0.10.0)
       ffi (~> 1.0)
+    rb-readline (0.5.5)
     react-rails (2.4.7)
       babel-transpiler (>= 0.7.0)
       connection_pool
@@ -297,6 +302,8 @@ DEPENDENCIES
   faker (= 1.7.3)
   ffi (>= 1.9.24)
   fraction (~> 0.3.2)
+  graphiql-rails
+  graphql
   hashid-rails (~> 1.2, >= 1.2.1)
   jbuilder (~> 2.5)
   jquery-rails (~> 4.3, >= 4.3.1)
@@ -314,6 +321,7 @@ DEPENDENCIES
   rack (>= 2.0.6)
   rails (~> 5.1.4)
   rails-controller-testing
+  rb-readline
   react-rails
   rubyzip (>= 1.2.2)
   sass-rails
