@@ -77,6 +77,8 @@ gem "loofah", ">= 2.2.3"
 gem 'webpacker'
 gem 'react-rails'
 
+gem 'intercom-rails'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
