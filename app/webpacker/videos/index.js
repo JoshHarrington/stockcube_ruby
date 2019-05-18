@@ -1,8 +1,0 @@
-import './cupboard_add_stock.mov'
-import './cupboard_add_stock.mp4'
-import './cupboard_add_stock.webm'
-import './recipe_shopping_list_add.mov'
-import './recipe_shopping_list_add.mp4'
-import './recipe_shopping_list_add.webm'
-import './shopping_list_check.mp4'
-import './shopping_list_check.webm'
