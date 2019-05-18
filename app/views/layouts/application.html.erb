@@ -67,11 +67,9 @@
     <meta name="msapplication-square310x310logo" content="<%= asset_pack_path('assets/favicons/mstile-310x310.png')%>" />
 
     <% if Rails.env.development? %>
-      <%= javascript_include_tag 'vendor/tota11y.min.js' %>
+      <%= javascript_pack_tag 'tota11y' %>
     <% end %>
-    <%= javascript_include_tag 'in_head/modernizr-custom' %>
-    <%#= stylesheet_link_tag    'application', media: 'all' %>
-    <%#= javascript_include_tag 'application', :defer => "defer" %>
+    <%= javascript_pack_tag 'modernizr-custom' %>
     <%= stylesheet_pack_tag 'import' %>
     <%= javascript_pack_tag 'application' %>
   </head>

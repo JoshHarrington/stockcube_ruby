@@ -84,6 +84,7 @@ var listBlockEdit = function(page) {
 		$list_block.removeClass('edit_mode delete_mode');
 
 		if (dataString != '') {
+			console.log('hi', dataString);
 			$.ajax({
 				type: "POST",
 				url: "/" + page + "s/autosave",

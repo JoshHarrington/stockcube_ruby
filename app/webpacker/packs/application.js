@@ -7,9 +7,10 @@
 // To reference this file, add <%= javascript_pack_tag 'application' %> to the appropriate
 // layout file, like app/views/layouts/application.html.erb
 
+
 import '../functions/general';
 import '../functions/alert';
-import '../functions/cupboard';
+// import '../functions/cupboard';
 import '../functions/list_block';
 import '../functions/navigation';
 import '../functions/vendor/selectize.min.js';
