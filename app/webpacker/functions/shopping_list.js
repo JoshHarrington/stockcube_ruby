@@ -13,6 +13,7 @@ var shoppingList = function() {
 		}
 		$.ajax({
 			type: "POST",
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
 			url: "/shopping_lists/autosave_checked_items",
 			data: (empty ? "shopping_list_portion_ids['empty']" : checked_items.join('')),
 			dataType: "script"

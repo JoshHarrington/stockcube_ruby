@@ -153,7 +153,6 @@ class CupboardsController < ApplicationController
 			)
 		end
 		if params.has_key?(:stock_id) && params[:stock_id].to_s != ''
-			Rails.logger.debug "stock id passed" + params[:stock_id].to_s
 			@stock_to_delete = Stock.find(params[:stock_id])
 			@stock_to_delete.each do |stock|
 				stock.update_attributes(

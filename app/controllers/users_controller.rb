@@ -136,19 +136,19 @@ class UsersController < ApplicationController
   def notifications
     if params.has_key?(:notifications) && params.has_key?(:weekday)
       user_notification_status = current_user.user_setting.notify
-      param_notification_status = params[:notifications].to_unsafe_h.keys[0].to_s
+      param_notification_status = params[:notifications].to_unsafe_h.keys[0]
 
-      user_weekday_setting = current_user.user_setting.notify_day
+      user_weekday_setting = current_user.user_setting.notify_day.to_i
       param_weekday_setting = params[:weekday].to_unsafe_h.keys[0].to_i
 
       weekday_range = [*0..6]
       if weekday_range.include?(param_weekday_setting)
-        if param_notification_status.to_s != user_notification_status || user_weekday_setting.to_s != param_weekday_setting.to_s
-          current_user.user_setting.update_attributes(
-            notify: param_notification_status,
-            notify_day: param_weekday_setting
-          )
-        end
+        current_user.user_setting.update_attributes(
+          notify_day: param_weekday_setting
+        )
+        current_user.user_setting.update_attributes(
+          notify: param_notification_status
+        )
       end
     end
   end

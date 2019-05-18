@@ -16,6 +16,7 @@ var user_function = function() {
 		if (weekdays.includes(parseInt(day_pick))){
 			$.ajax({
 				type: "POST",
+				beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
 				url: "/users/notifications",
 				data: "notifications[" + notifications + "]&weekday[" + day_pick + "]",
 				dataType: "script"

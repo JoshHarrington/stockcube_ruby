@@ -7,6 +7,7 @@ var listBlockEdit = function(page) {
 			var dataString = 'cupboard_location='+ $list_block_title +'&cupboard_id='+ $cupboard_id;
 			$.ajax({
 				type: "POST",
+				beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
 				url: "/" + page + "s/autosave",
 				data: dataString,
 				dataType: "script"
@@ -51,6 +52,7 @@ var listBlockEdit = function(page) {
 				$($list_block).attr('hidden', true);
 				$.ajax({
 					type: "POST",
+					beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
 					url: "/" + page + "s/autosave",
 					data: $delete_list_block_values,
 					dataType: "script"
@@ -87,6 +89,7 @@ var listBlockEdit = function(page) {
 			console.log('hi', dataString);
 			$.ajax({
 				type: "POST",
+				beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
 				url: "/" + page + "s/autosave",
 				data: dataString,
 				dataType: "script"
