@@ -1,4 +1,40 @@
+import Sortable from 'sortablejs';
+
+
 var cupboard = function() {
+
+	const cupboardStocks = document.querySelectorAll('.cupboard.list_block:not(.shared) .list_block--content')
+	cupboardStocks.forEach(function(stock) {
+		new Sortable(stock, {
+			group: 'shared',
+			animation: 150,
+			draggable: '.list_block--item:not(.non_sortable)',
+			ghostClass: 'list_block--item_placeholder',
+			onStart: function() {
+				document.querySelectorAll('.cupboard.list_block.shared').forEach(function(shared_cupboard) {
+					shared_cupboard.classList.add('sortable_not_allowed')
+				})
+			},
+			onEnd: function(e) {
+				document.querySelectorAll('.cupboard.list_block.shared.sortable_not_allowed').forEach(function(shared_cupboard) {
+					shared_cupboard.classList.remove('sortable_not_allowed')
+				})
+
+				const el = e.item
+				const stock_id = el.getAttribute('data-stock-id')
+				const cupboard_to_id = e.to.getAttribute('data-cupboard-id')
+				const cupboard_from_id = e.from.getAttribute('data-cupboard-id')
+				const data = "stock_id=" + stock_id + "&cupboard_id=" + cupboard_to_id + "&old_cupboard_id=" + cupboard_from_id;
+				const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+				const request = new XMLHttpRequest();
+				request.open('POST', '/cupboards/autosave_sorting', true);
+				request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+				request.setRequestHeader('X-CSRF-Token', csrfToken);
+				request.send(data);
+			}
+		})
+	});
+
 
 
 	/// use hashids to create data-matching attribute based on shared users
@@ -8,44 +44,18 @@ var cupboard = function() {
 
 	/// possible issue: does the sortable system ignore classes added whilst sorting is ongoing
 
-	$( '.cupboard.list_block:not(.shared) .list_block--content' ).sortable({
-		connectWith: '.cupboard.list_block:not(.shared) .list_block--content',
-		placeholder: 'list_block--item_placeholder',
-		items: '.list_block--item_show',
-		cancel: '.empty-card'
-	}).disableSelection();
+	// $( '.cupboard.list_block:not(.shared) .list_block--content' ).sortable({
+	// 	connectWith: '.cupboard.list_block:not(.shared) .list_block--content',
+	// 	placeholder: 'list_block--item_placeholder',
+	// 	items: '.list_block--item_show',
+	// 	cancel: '.empty-card'
+	// }).disableSelection();
 
-	$( '.cupboard.list_block .list_block--content' ).on( 'sortstart', function() {
-		$( '.cupboard.list_block .list_block--content' ).addClass('hide_add');
-	});
 
-	$( '.cupboard.list_block .list_block--content' ).on( 'sortstop', function(e, ui) {
-		$( '.cupboard.list_block .list_block--content' ).removeClass('hide_add');
-		var moved_item = ui.item;
-		var list_block_parent = moved_item.closest('.list_block');
-		var new_cupboard_id = list_block_parent.data('id');
-		var old_cupboard_id = moved_item.data('cupboard-id');
-		var stock_id = moved_item.data('stock-id');
-		var data = "stock_id=" + stock_id + "&cupboard_id=" + new_cupboard_id + "&old_cupboard_id=" + old_cupboard_id;
-		if (new_cupboard_id !== old_cupboard_id) {
-			$('#stock_' + stock_id).appendTo(list_block_parent);
-			$('label[for="stock_' + stock_id + '"]').appendTo(list_block_parent);
-			if (list_block_parent.hasClass('empty')) {
-				list_block_parent.removeClass('empty all-out-of-date');
-			}
-			if ($('.cupboard.list_block[data-id="'+ old_cupboard_id +'"] .list_block--item:not(.list_block--item_new)').length == 0) {
-				$('.cupboard.list_block[data-id="'+ old_cupboard_id +'"]').addClass('empty');
-			}
-			$.ajax({
-				type: "POST",
-				beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-				url: "/cupboards/autosave_sorting",
-				data: data,
-				dataType: "script"
-			});
-			moved_item.data('cupboard-id', new_cupboard_id);
-		}
-	});
+	/// currently not setup in new version - is this needed?
+	// $( '.cupboard.list_block .list_block--content' ).on( 'sortstart', function() {
+	// 	$( '.cupboard.list_block .list_block--content' ).addClass('hide_add');
+	// });
 
 }
 

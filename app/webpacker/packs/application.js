@@ -8,9 +8,15 @@
 // layout file, like app/views/layouts/application.html.erb
 
 
+import $ from 'jquery'
+global.$ = $
+global.jQuery = $
+
 import '../functions/general';
 import '../functions/alert';
-// import '../functions/cupboard';
+
+//// will need to include jquery ui - sortable to get sorting to work
+import '../functions/cupboard';
 import '../functions/list_block';
 import '../functions/navigation';
 import '../functions/vendor/selectize.min.js';

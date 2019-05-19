@@ -1,6 +1,9 @@
 {
-  "name": "StockcubeApp",
+  "name": "stockcubes_app",
   "private": true,
+  "resolutions": {
+    "**/**/fsevents": "^1.2.9"
+  },
   "dependencies": {
     "@rails/webpacker": "3.5",
     "babel-preset-react": "^6.24.1",
@@ -8,7 +11,8 @@
     "prop-types": "^15.7.2",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
-    "react_ujs": "^2.4.4"
+    "react_ujs": "^2.4.4",
+    "sortablejs": "^1.9.0"
   },
   "devDependencies": {
     "webpack-dev-server": "^3.2.1"

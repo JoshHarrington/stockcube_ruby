@@ -3,7 +3,8 @@ const { environment } = require('@rails/webpacker')
 const webpack = require('webpack');
 environment.plugins.append('Provide', new webpack.ProvidePlugin({
   $: 'jquery',
-  jQuery: 'jquery'
+  JQuery: 'jquery',
+  jquery: 'jquery'
 }));
 
 environment.loaders.append('file', {

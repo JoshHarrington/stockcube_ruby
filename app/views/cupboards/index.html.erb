@@ -7,9 +7,12 @@
   </div>
   <div id="cupboard-list" class="list_block--collection">
     <% @cupboards.each do |cupboard| %>
-      <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack <%= cupboard_shared_class(cupboard) %><%= @cupboards.length == 1 ? 'list_block-wide' : nil %>" id="<%= cupboard.id %>" data-id="<%= cupboard.id %>">
-        <div class="list_block--content">
-          <div class="list_block--title">
+      <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack <%= cupboard_shared_class(cupboard) %><%= @cupboards.length == 1 ? 'list_block-wide' : nil %>" id="<%= cupboard.id %>">
+        <div class="list_block--content" data-cupboard-id="<%= cupboard.id %>">
+          <% if cupboard.cupboard_users.length > 1 %>
+            <div class="list_block--title_note">SHARED CUPBOARD</div>
+          <% end %>
+          <div class="list_block--title non_sortable">
             <% if current_user.cupboard_users.where(cupboard_id: cupboard[:id]).first[:owner] == true && @cupboards.length > 1 %>
               <span class="delete_list_block_button list_block--action">
                 <%= icomoon('bin') %>
@@ -54,7 +57,7 @@
               <% end %>
             <% end %>
           <% end %>
-          <%= link_to "Add more stock", stocks_new_path(:cupboard_id => cupboard.id), class: "list_block--item list_block--item_new" %>
+          <%= link_to "Add more stock", stocks_new_path(:cupboard_id => cupboard.id), class: "list_block--item list_block--item_new non_sortable" %>
         </div>
         <div class="list_block--content_end">
           <span class="edit_mode--message">EDIT MODE</span>
