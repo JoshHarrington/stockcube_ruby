@@ -8,6 +8,7 @@
 				class="list_block--item--action list_block--item--action--btn delete_stock_btn"
 				id="<%= @delete_stock_hashids.encode(@stock.id) %>"
 				data-cupboard-id="<%= @stock.cupboard_id %>"
+				tabindex="0"
 			><%= icomoon('bin') %></span>
 		</div>
 		<div class="item_form--contents">
@@ -26,8 +27,14 @@
 				<div class="item_form--content_row">
 					<%= label_tag 'cupboard_pick', 'Cupboard pick'  %>
 					<% @cupboards.each_with_index do |cupboard, index| %>
+
 						<%= s.radio_button "cupboard_id", cupboard.id , {class: "fancy_radio_button", id: "cupboard_id_#{cupboard.id}", checked: (cupboard.id == @current_cupboard.id ? true : false) } %>
-						<%= s.label "cupboard_id", cupboard.location, {class: "fancy_radio_button__label", for: "cupboard_id_#{cupboard.id}"} %>
+						<%= s.label "cupboard_id", {class: "fancy_radio_button__label", for: "cupboard_id_#{cupboard.id}"} do %>
+							<% if cupboard.cupboard_users.length > 1 %>
+								<span class="list_block--title_note list_block--title_note_small">SHARED</span>
+							<% end %>
+							<%= cupboard.location %>
+						<% end %>
 					<% end %>
 				</div>
 			<% end %>

@@ -349,6 +349,20 @@ input[type=date]{
 
 .item_form--title {
 	background-color: $teal-10;
+	display: flex;
+	align-items: center;
+	h1, h2, h3, h4, h5, h6 {
+		flex-grow: 1;
+    padding-right: 1em;
+    word-break: break-word;
+    width: calc(100% - 45px);
+    line-height: 1.4;
+	}
+	.list_block--item--action--btn {
+		padding: em(8, 15);
+		width: em(40, 15);
+		height: em(40, 15);
+	}
 }
 
 .item_form--title,

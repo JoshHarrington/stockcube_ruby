@@ -595,6 +595,12 @@ a.list_block {
 	color: $black-60;
 }
 
+.list_block--title_note_small {
+	font-size: em(10, 15);
+	padding-left: 0;
+	display: block;
+}
+
 .list_block--title_chunky {
 	padding-bottom: em(1, 10);
 	h3 {

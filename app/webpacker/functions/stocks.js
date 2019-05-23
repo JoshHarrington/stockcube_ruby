@@ -61,6 +61,11 @@ var stock_form = function(){
 		const hashedId = btn.getAttribute('id')
 		const cupboardId = btn.getAttribute('data-cupboard-id')
 		btn.addEventListener('click', function(){deleteStock(hashedId, cupboardId)}, false)
+		btn.addEventListener('keypress', function(e){
+      if (e.key === 'Enter') {
+        deleteStock(hashedId, cupboardId)
+      }
+    }, false)
 	})
 };
 
