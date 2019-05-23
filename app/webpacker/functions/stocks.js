@@ -41,6 +41,27 @@ var stock_form = function(){
     sortField: 'text',
     copyClassesToDropdown: true
   });
+  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+
+  function deleteStock(hashedId, cupboardId) {
+		const confirmed = confirm("Are you sure you want to delete this ingredient from your cupboards?");
+		if (confirmed == true) {
+			const data = "stock_id=" + hashedId
+			const request = new XMLHttpRequest()
+			request.open('POST', '/stocks/delete_stock', true)
+			request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+			request.setRequestHeader('X-CSRF-Token', csrfToken)
+      request.send(data)
+      window.location.replace('/cupboards#' + cupboardId)
+		}
+	}
+
+	const deleteBtns = document.querySelectorAll('.delete_stock_btn')
+	deleteBtns.forEach(function(btn) {
+		const hashedId = btn.getAttribute('id')
+		const cupboardId = btn.getAttribute('data-cupboard-id')
+		btn.addEventListener('click', function(){deleteStock(hashedId, cupboardId)}, false)
+	})
 };
 
 
