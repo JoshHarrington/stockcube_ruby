@@ -8,7 +8,8 @@ class CupboardsController < ApplicationController
 		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
 		@cupboards = Cupboard.where(id: @cupboard_ids).order(created_at: :desc)
 		@user_fav_stocks = current_user.user_fav_stocks.order('updated_at desc')
-		@hashids = Hashids.new(ENV['CUPBOARD_USER_ID_SALT'])
+		@cupboard_users_hashids = Hashids.new(ENV['CUPBOARD_USER_ID_SALT'])
+		@quick_add_hashids = Hashids.new(ENV['QUICK_ADD_STOCK_ID_SALT'])
 	end
 	def show
 		@cupboard = Cupboard.find(params[:id])
@@ -181,6 +182,17 @@ class CupboardsController < ApplicationController
 			@stock_to_edit.update_attributes(
 				cupboard_id: params[:cupboard_id]
 			)
+		end
+	end
+	def delete_quick_add_stock
+		if params.has_key?(:quick_add_stock_id) && params[:quick_add_stock_id].to_s != ''
+			quick_add_hashids = Hashids.new(ENV['QUICK_ADD_STOCK_ID_SALT'])
+			decrypted_quick_add_id = quick_add_hashids.decode(params[:quick_add_stock_id])
+			if current_user && current_user.user_fav_stocks.find(decrypted_quick_add_id).length
+				current_user.user_fav_stocks.find(decrypted_quick_add_id.first).delete
+			else
+				Rails.logger.debug "No quick add stock found"
+			end
 		end
 	end
 	def edit

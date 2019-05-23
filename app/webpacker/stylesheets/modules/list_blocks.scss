@@ -724,10 +724,20 @@ a.list_block {
 	margin-bottom: em(10, 15);
 }
 
+.list_block--item--content_left {
+	margin-right: em(10, 15);
+	flex-basis: calc(100% - 40px);
+}
+
 .list_block--item--action {
 	@extend .pretty_form--submit_button;
 }
 
+.list_block--item--action--btn {
+	margin-top: 0;
+	width: em(30, 15);
+	height: em(30, 15);
+}
 
 .list_block--item_placeholder {
 	background-color: $teal-10;

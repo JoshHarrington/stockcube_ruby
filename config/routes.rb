@@ -66,6 +66,7 @@ Rails.application.routes.draw do
   post '/cupboards/autosave' => 'cupboards#autosave'
   post '/cupboards/autosave_sorting' => 'cupboards#autosave_sorting'
   post '/cupboards/share_request' => 'cupboards#share_request'
+  post '/cupboards/delete_quick_add_stock' => 'cupboards#delete_quick_add_stock'
 
   get '/ingredients' => 'ingredients#index'
   get '/ingredients/new' => 'ingredients#new'

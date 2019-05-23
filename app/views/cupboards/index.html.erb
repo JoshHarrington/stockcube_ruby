@@ -8,7 +8,7 @@
   <div id="cupboard-list" class="list_block--collection">
     <% @cupboards.each do |cupboard| %>
       <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack <%= cupboard_shared_class(cupboard) %><%= @cupboards.length == 1 ? 'list_block-wide' : nil %>" id="<%= cupboard.id %>">
-        <div class="list_block--content" data-cupboard-id="<%= cupboard.id %>" data-cupboard-users="<%= @hashids.encode(cupboard.cupboard_users.map(&:user_id).sort!) %>">
+        <div class="list_block--content" data-cupboard-id="<%= cupboard.id %>" data-cupboard-users="<%= @cupboard_users_hashids.encode(cupboard.cupboard_users.map(&:user_id).sort!) %>">
           <% if cupboard.cupboard_users.length > 1 %>
             <div class="list_block--title_note">SHARED CUPBOARD</div>
           <% end %>
@@ -103,7 +103,8 @@
           <%= link_to "Create new \"Quick add stock\" template", quick_add_stock_new_path, class: "list_block--item list_block--item_new" %>
           <% @user_fav_stocks.each do |fav_stock| %>
             <div class="list_block--item">
-              <span class="list_block--item--content"><%= fav_stock.unit.name == 'Each' ? pluralize(fav_stock.stock_amount, fav_stock.ingredient.name) : pluralize(fav_stock.stock_amount, fav_stock.unit.name) + (fav_stock.unit.name.to_s == 'Loaf' || fav_stock.unit.name.to_s == 'Pint' ? ' of ' : ' ') + fav_stock.ingredient.name %></span>
+              <span class="list_block--item--content list_block--item--content_left"><%= fav_stock.unit.name == 'Each' ? pluralize(fav_stock.stock_amount, fav_stock.ingredient.name) : pluralize(fav_stock.stock_amount, fav_stock.unit.name) + (fav_stock.unit.name.to_s == 'Loaf' || fav_stock.unit.name.to_s == 'Pint' ? ' of ' : ' ') + fav_stock.ingredient.name %></span>
+              <span class="list_block--item--action list_block--item--action--btn quick_add_stock_delete_btn" id="<%= @quick_add_hashids.encode(fav_stock.id) %>"><%= icomoon('bin') %></span>
               <%= link_to 'Use', stocks_new_path(cupboard_id: @cupboards.first.id, ingredient: fav_stock.ingredient_id, stock_amount: fav_stock.stock_amount, unit: fav_stock.unit_id, standard_use_by_limit: fav_stock.standard_use_by_limit), class: "list_block--item--action pretty_form--submit_button"%>
               <%= link_to 'Edit', quick_add_stock_edit_path(fav_stock.id), class: "list_block--item--action pretty_form--submit_button"%>
             </div>
