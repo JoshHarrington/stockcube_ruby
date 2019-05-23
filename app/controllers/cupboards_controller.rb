@@ -189,7 +189,7 @@ class CupboardsController < ApplicationController
 			quick_add_hashids = Hashids.new(ENV['QUICK_ADD_STOCK_ID_SALT'])
 			decrypted_quick_add_id = quick_add_hashids.decode(params[:quick_add_stock_id])
 			if current_user && current_user.user_fav_stocks.find(decrypted_quick_add_id).length
-				current_user.user_fav_stocks.find(decrypted_quick_add_id.first).delete
+				current_user.user_fav_stocks.find(decrypted_quick_add_id.class == Array ? decrypted_quick_add_id.first : decrypted_quick_add_id).delete
 			else
 				Rails.logger.debug "No quick add stock found"
 			end

@@ -1,10 +1,8 @@
 import Sortable from 'sortablejs';
 
-
 var cupboard = function() {
 
 	const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-
 	const cupboardStocks = document.querySelectorAll('.cupboard.list_block .list_block--content')
 	cupboardStocks.forEach(function(stock) {
 		const cupboardUsersHash = stock.getAttribute('data-cupboard-users')
@@ -27,17 +25,15 @@ var cupboard = function() {
 				const stock_id = el.getAttribute('data-stock-id')
 				const cupboard_to_id = e.to.getAttribute('data-cupboard-id')
 				const cupboard_from_id = e.from.getAttribute('data-cupboard-id')
-				const data = "stock_id=" + stock_id + "&cupboard_id=" + cupboard_to_id + "&old_cupboard_id=" + cupboard_from_id;
-
-				const request = new XMLHttpRequest();
-				request.open('POST', '/cupboards/autosave_sorting', true);
-				request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-				request.setRequestHeader('X-CSRF-Token', csrfToken);
-				request.send(data);
+				const data = "stock_id=" + stock_id + "&cupboard_id=" + cupboard_to_id + "&old_cupboard_id=" + cupboard_from_id
+				const request = new XMLHttpRequest()
+				request.open('POST', '/cupboards/autosave_sorting', true)
+				request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+				request.setRequestHeader('X-CSRF-Token', csrfToken)
+				request.send(data)
 			}
 		})
 	});
-
 
 	function deleteQuickAddStock(hashedId) {
 		const confirmed = confirm("Are you sure you want to delete this quick add stock?\nThere's no going back!");
@@ -50,7 +46,6 @@ var cupboard = function() {
 			request.send(data)
 			document.getElementById(hashedId).parentNode.style.display = 'none'
 		}
-
 	}
 
 	const deleteBtns = document.querySelectorAll('.quick_add_stock_delete_btn')
@@ -58,7 +53,6 @@ var cupboard = function() {
 		const hashedId = btn.getAttribute('id')
 		btn.addEventListener('click', function(){deleteQuickAddStock(hashedId)}, false)
 	})
-
 }
 
 
