@@ -25,15 +25,13 @@
 			<% if @cupboards.length > 1 %>
 				<div class="item_form--content_row">
 					<%= label_tag 'cupboard_pick', 'Cupboard pick'  %>
-					<% if @cupboard_found %>
-						<% @cupboards.each_with_index do |cupboard, index| %>
-							<%= s.radio_button "cupboard_id", cupboard.id , {class: "fancy_radio_button", id: "cupboard_id_#{cupboard.id}", checked: (params.has_key?(:cupboard_id) ? (cupboard.id.to_i == params[:cupboard_id].to_i ? true : false) : (index == 0 ? true : false))} %>
-							<%= s.label "cupboard_id", cupboard.location, {class: "fancy_radio_button__label", for: "cupboard_id_#{cupboard.id}"} %>
-						<% end %>
-					<% else %>
-						<% @cupboards.each_with_index do |cupboard, index| %>
-							<%= s.radio_button "cupboard_id", cupboard.id, {class: "fancy_radio_button", id: "cupboard_id_#{cupboard.id}", checked: (index == 0 ? true : false)} %>
-							<%= s.label "cupboard_id", cupboard.location, {class: "fancy_radio_button__label", for: "cupboard_id_#{cupboard.id}"} %>
+					<% @cupboards.each_with_index do |cupboard, index| %>
+						<%= s.radio_button "cupboard_id", cupboard.id , {class: "fancy_radio_button", id: "cupboard_id_#{cupboard.id}", checked: (params.has_key?(:cupboard_id) && @cupboards.map(&:id).include?(params[:cupboard_id].to_i) ? (cupboard.id.to_i == params[:cupboard_id].to_i ? true : false) : (index == 0 ? true : false))} %>
+						<%= s.label "cupboard_id", {class: "fancy_radio_button__label", for: "cupboard_id_#{cupboard.id}"} do %>
+							<% if cupboard.cupboard_users.length > 1 %>
+								<span class="list_block--title_note list_block--title_note_small">SHARED</span>
+							<% end %>
+							<%= cupboard.location %>
 						<% end %>
 					<% end %>
 				</div>
