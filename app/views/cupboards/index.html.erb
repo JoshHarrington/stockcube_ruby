@@ -8,7 +8,7 @@
   <div id="cupboard-list" class="list_block--collection">
     <% @cupboards.each do |cupboard| %>
       <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack <%= cupboard_shared_class(cupboard) %><%= @cupboards.length == 1 ? 'list_block-wide' : nil %>" id="<%= cupboard.id %>">
-        <div class="list_block--content" data-cupboard-id="<%= cupboard.id %>">
+        <div class="list_block--content" data-cupboard-id="<%= cupboard.id %>" data-cupboard-users="<%= @hashids.encode(cupboard.cupboard_users.map(&:user_id).sort!) %>">
           <% if cupboard.cupboard_users.length > 1 %>
             <div class="list_block--title_note">SHARED CUPBOARD</div>
           <% end %>

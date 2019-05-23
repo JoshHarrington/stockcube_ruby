@@ -3,21 +3,22 @@ import Sortable from 'sortablejs';
 
 var cupboard = function() {
 
-	const cupboardStocks = document.querySelectorAll('.cupboard.list_block:not(.shared) .list_block--content')
+	const cupboardStocks = document.querySelectorAll('.cupboard.list_block .list_block--content')
 	cupboardStocks.forEach(function(stock) {
+		const cupboardUsersHash = stock.getAttribute('data-cupboard-users')
 		new Sortable(stock, {
-			group: 'shared',
+			group: cupboardUsersHash,
 			animation: 150,
 			draggable: '.list_block--item:not(.non_sortable)',
 			ghostClass: 'list_block--item_placeholder',
 			onStart: function() {
-				document.querySelectorAll('.cupboard.list_block.shared').forEach(function(shared_cupboard) {
-					shared_cupboard.classList.add('sortable_not_allowed')
+				document.querySelectorAll('.cupboard.list_block .list_block--content:not([data-cupboard-users="' + cupboardUsersHash + '"]').forEach(function(non_matching_cupboard) {
+					non_matching_cupboard.parentNode.classList.add('sortable_not_allowed')
 				})
 			},
 			onEnd: function(e) {
-				document.querySelectorAll('.cupboard.list_block.shared.sortable_not_allowed').forEach(function(shared_cupboard) {
-					shared_cupboard.classList.remove('sortable_not_allowed')
+				document.querySelectorAll('.cupboard.list_block.sortable_not_allowed').forEach(function(non_matching_cupboard) {
+					non_matching_cupboard.classList.remove('sortable_not_allowed')
 				})
 
 				const el = e.item

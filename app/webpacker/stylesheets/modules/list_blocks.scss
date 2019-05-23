@@ -237,12 +237,13 @@
 	position: relative;
 	&::before {
 		position: absolute;
-		content: "Shared cupboards can't be dragged into";
+		content: "Cupboards with a different set of users can't be dragged into";
 		font-size: 2em;
 		padding: 2em;
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		text-align: center;
 		height: 100%;
 		width: 100%;
 		left: 0;

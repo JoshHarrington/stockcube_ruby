@@ -8,6 +8,7 @@ class CupboardsController < ApplicationController
 		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
 		@cupboards = Cupboard.where(id: @cupboard_ids).order(created_at: :desc)
 		@user_fav_stocks = current_user.user_fav_stocks.order('updated_at desc')
+		@hashids = Hashids.new(ENV['CUPBOARD_USER_ID_SALT'])
 	end
 	def show
 		@cupboard = Cupboard.find(params[:id])
