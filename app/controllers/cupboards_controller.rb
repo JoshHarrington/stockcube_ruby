@@ -10,6 +10,7 @@ class CupboardsController < ApplicationController
 		@user_fav_stocks = current_user.user_fav_stocks.order('updated_at desc')
 		@cupboard_users_hashids = Hashids.new(ENV['CUPBOARD_USER_ID_SALT'])
 		@quick_add_hashids = Hashids.new(ENV['QUICK_ADD_STOCK_ID_SALT'])
+		@stock_hashids = Hashids.new(ENV['CUPBOARD_STOCK_ID_SALT'])
 	end
 	def show
 		@cupboard = Cupboard.find(params[:id])
@@ -182,6 +183,18 @@ class CupboardsController < ApplicationController
 			@stock_to_edit.update_attributes(
 				cupboard_id: params[:cupboard_id]
 			)
+		end
+	end
+	def delete_cupboard_stock
+		if params.has_key?(:cupboard_stock_id) && params[:cupboard_stock_id].to_s != ''
+			stock_hashids = Hashids.new(ENV['CUPBOARD_STOCK_ID_SALT'])
+			decrypted_stock_id = stock_hashids.decode(params[:cupboard_stock_id])
+			if current_user && current_user.stock.find(decrypted_stock_id).length
+				current_user.stock.find(decrypted_stock_id.class == Array ? decrypted_stock_id.first : decrypted_stock_id).delete
+			else
+				Rails.logger.debug "No stock found with that id for that user"
+				flash[:warning] = %Q[Something went wrong! Please email <a href="mailto:help@getstockcubes.com">mailto:help@getstockcubes.com</a> for support."]
+			end
 		end
 	end
 	def delete_quick_add_stock

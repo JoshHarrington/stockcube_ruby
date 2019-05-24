@@ -48,12 +48,35 @@ var cupboard = function() {
 		}
 	}
 
-	const deleteBtns = document.querySelectorAll('.quick_add_stock_delete_btn')
-	deleteBtns.forEach(function(btn) {
+	const quickAddStockDeleteBtns = document.querySelectorAll('.quick_add_stock_delete_btn')
+	quickAddStockDeleteBtns.forEach(function(btn) {
 		const hashedId = btn.getAttribute('id')
 		btn.addEventListener('click', function(){deleteQuickAddStock(hashedId)}, false)
 	})
+
+	function deleteCupboardStock(hashedId, event) {
+		const confirmed = confirm("Are you sure you want to delete this ingredient from your cupboard?\nThis can't be undone :O");
+		if (confirmed == true) {
+			const data = "cupboard_stock_id=" + hashedId
+			const request = new XMLHttpRequest()
+			request.open('POST', '/cupboards/delete_cupboard_stock', true)
+			request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+			request.setRequestHeader('X-CSRF-Token', csrfToken)
+			request.send(data)
+			document.getElementById(hashedId).parentNode.style.display = 'none'
+		}
+		event.preventDefault()
+	}
+
+	const cupboardStockDeleteBtns = document.querySelectorAll('.cupboard_stock_delete_btn')
+	cupboardStockDeleteBtns.forEach(function(btn) {
+		const hashedId = btn.getAttribute('id')
+		btn.addEventListener('click', function(e){
+			deleteCupboardStock(hashedId, event)
+		}, false)
+	})
 }
+
 
 
 $(document).ready(function() {

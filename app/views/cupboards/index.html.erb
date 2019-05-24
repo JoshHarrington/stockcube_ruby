@@ -23,15 +23,6 @@
               <%= hidden_field_tag "cupboard_id", cupboard.id %>
               <%= text_field_tag "cupboard_location", cupboard.location %>
             </h3>
-              <%= link_to edit_cupboard_path(cupboard), class: "edit_list_block_button list_block--action", title: "pick items to remove" do %>
-                <%= icomoon('edit') %>
-              <% end %>
-            <span class="finish_editing_list_block_button list_block--action">
-              <%= icomoon('bin') %>
-            </span>
-            <span class="close_without_edit_list_block_button list_block--action">
-              <%= icomoon('close') %>
-            </span>
           </div>
           <% if cupboard.stocks.first %>
             <% cupboard_stocks_selection(cupboard).each do |stock| %>
@@ -39,20 +30,13 @@
                 <% out_of_date_sentence = 'out of date' + (stock.use_by_date > Time.zone.now ? ' in ' : ' ') + (distance_of_time_in_words(Time.zone.now, stock.use_by_date)) + (stock.use_by_date <= Time.zone.now ? ' ago': '') %>
 
                 <%= link_to ((cupboard.communal == false || stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? edit_stock_path(stock.id) : ''), class: "list_block--item list_block--item_stacked list_block--item_show#{date_warning_class(stock)} stock_#{stock.id} #{(cupboard.communal == false || stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? '' : 'list_block--item-disabled'}", :data => { :cupboard_id => "#{cupboard.id}", :stock_id => "#{stock.id}" }, title: "#{stock.ingredient.name} - #{out_of_date_sentence}" do %>
-                  <p><%= stock.ingredient.name %></p>
-                  <% if cupboard.communal && stock.users.length > 0 %><p> [<%= stock.users.first.name%>]</p><% end %>
-                  <p><%= round_if_whole(stock.amount) %> <%= stock.unit.name %></p>
-                  <span class="h6 list_block--item--lesser_note"><%= distance_of_time_in_words(Time.zone.now, stock.use_by_date) + (stock.use_by_date <= Time.zone.now ? ' ago': '')%></span>
-                <% end %>
-                <% if cupboard.communal == false || stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id]) %>
-                  <%= check_box_tag "stock_id[]", value = "#{stock.id}", checked = false, id: "stock_#{stock.id}", class: "list_block--item_edit--checkbox" %>
-                  <%= label_tag "stock_#{stock.id}", class: "list_block--item list_block--item_stacked list_block--item_edit#{date_warning_class(stock)}" do %>
-                    <span class="list_block--item_edit_marker"><%= icomoon('bin') %></span>
+                  <span class="list_block--item--content list_block--item--content_left">
                     <p><%= stock.ingredient.name %></p>
                     <% if cupboard.communal && stock.users.length > 0 %><p> [<%= stock.users.first.name%>]</p><% end %>
                     <p><%= round_if_whole(stock.amount) %> <%= stock.unit.name %></p>
-                    <span class="h6 list_block--item--lesser_note"><%= distance_of_time_in_words(Time.zone.now, stock.use_by_date) + (stock.use_by_date <= Time.zone.now ? ' ago': '')%></span>
-                  <% end %>
+                  </span>
+                  <span class="list_block--item--action list_block--item--action--btn cupboard_stock_delete_btn" id="<%= @stock_hashids.encode(stock.id) %>"><%= icomoon('bin') %></span>
+                  <span class="h6 list_block--item--lesser_note"><%= distance_of_time_in_words(Time.zone.now, stock.use_by_date) + (stock.use_by_date <= Time.zone.now ? ' ago': '')%></span>
                 <% end %>
               <% end %>
             <% end %>
