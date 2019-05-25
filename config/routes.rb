@@ -50,23 +50,26 @@ Rails.application.routes.draw do
   get '/stocks/picks' => 'stocks#picks'
   get '/stocks/:id' => 'stocks#show', as: :stock
   get '/stocks/:id/edit' => 'stocks#edit', as: :edit_stock
+  get '/stocks/new/:id' => 'stocks#new', as: :new_stock_with_id
   patch '/stocks/:id' => 'stocks#update'
   post '/stocks' => 'stocks#create'
+  post '/stocks/new/:id' => 'stocks#create'
   post '/stocks/delete_stock' => 'stocks#delete_stock'
 
   get '/cupboards' => 'cupboards#index'
   get '/cupboards/new' => 'cupboards#new'
   get '/cupboards/edit_all' => 'cupboards#edit_all', as: :edit_all_cupboard
-  get '/cupboards/share' => 'cupboards#share', as: :cupboard_share
+  get '/cupboards/share/:id' => 'cupboards#share', as: :cupboard_share
   get '/cupboards/accept_cupboard_invite' => 'cupboards#accept_cupboard_invite'
+  get '/cupboards/:id' => 'cupboards#index'
   post '/cupboards/accept_cupboard_invite' => 'cupboards#accept_cupboard_invite', as: :accept_cupboard_invite
-  get '/cupboards/sharing_request' => 'cupboards#sharing_request', as: :cupboard_sharing_request
-  get '/cupboards/:id/edit' => 'cupboards#edit', as: :edit_cupboard
-  patch '/cupboards/:id/edit' => 'cupboards#update'
+  # get '/cupboards/sharing_request' => 'cupboards#sharing_request', as: :cupboard_sharing_request
+  # get '/cupboards/:id/edit' => 'cupboards#edit', as: :edit_cupboard
+  # patch '/cupboards/:id/edit' => 'cupboards#update'
   post '/cupboards' => 'cupboards#create'
   post '/cupboards/autosave' => 'cupboards#autosave'
   post '/cupboards/autosave_sorting' => 'cupboards#autosave_sorting'
-  post '/cupboards/share_request' => 'cupboards#share_request'
+  post '/cupboards/share/:id' => 'cupboards#share_request'
   post '/cupboards/delete_quick_add_stock' => 'cupboards#delete_quick_add_stock'
   post '/cupboards/delete_cupboard_stock' => 'cupboards#delete_cupboard_stock'
 

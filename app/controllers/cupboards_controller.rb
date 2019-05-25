@@ -3,7 +3,7 @@ class CupboardsController < ApplicationController
 	include StockHelper
 	include ShoppingListsHelper
 	before_action :logged_in_user, only: [:index, :show, :new, :create, :edit_all, :share, :share_request, :accept_cupboard_invite, :autosave, :autosave_sorting, :edit, :update]
-	before_action :correct_user,   only: [:show, :edit, :update, :share]
+	before_action :correct_user,   only: [:show, :edit, :update]
 	def index
 		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
 		@cupboards = Cupboard.where(id: @cupboard_ids).order(created_at: :desc)
@@ -11,6 +11,8 @@ class CupboardsController < ApplicationController
 		@cupboard_users_hashids = Hashids.new(ENV['CUPBOARD_USER_ID_SALT'])
 		@quick_add_hashids = Hashids.new(ENV['QUICK_ADD_STOCK_ID_SALT'])
 		@stock_hashids = Hashids.new(ENV['CUPBOARD_STOCK_ID_SALT'])
+		@cupboard_sharing_hashids = Hashids.new(ENV['CUPBOARD_SHARING_ID_SALT'])
+		@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 	end
 	def show
 		@cupboard = Cupboard.find(params[:id])
@@ -42,88 +44,94 @@ class CupboardsController < ApplicationController
 		@cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
 	end
 	def share
-		if params.has_key?(:cupboard_id) && params[:cupboard_id].to_i != 0
-			@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false, setup: false)
-			if @cupboards.map(&:id).include?(params[:cupboard_id].to_i)
-				@cupboard = Cupboard.find(params[:cupboard_id])
-				@cupboard_name = @cupboard.location
-				@current_cupboard_user_ids = []
-				if @cupboard.users.length > 0
-					@current_cupboard_user_ids = @cupboard.users.map(&:id)
-				end
-				@other_cupboard_user_ids = @cupboards.map{ |c| c.users.map(&:id).flatten.uniq.compact - @current_cupboard_user_ids }.flatten.uniq.compact
-				@other_cupboard_users = User.where(id: @other_cupboard_user_ids)
-			else
-				redirect_to cupboards_path
-				flash[:info] = %Q[Looks like there's an issue with the cupboard you're trying to share from, if in doubt contact <a href="mailto:support@getstockcubes.com">support@getstockcubes.com</a>]
-			end
-		else
+		@cupboard_sharing_hashids = Hashids.new(ENV['CUPBOARD_SHARING_ID_SALT'])
+		decrypted_cupboard_id = @cupboard_sharing_hashids.decode(params[:id])
+		@cupboard = Cupboard.find(decrypted_cupboard_id.class == Array ? decrypted_cupboard_id.first : decrypted_cupboard_id)
+
+		### This check to see if the current user should have access
+		###  can go after rewriting :correct_user function
+		if !@cupboard || !@cupboard.cupboard_users.map(&:user_id).include?(current_user.id)
 			redirect_to cupboards_path
-			flash[:info] = %Q[Looks like there's an issue with the cupboard you're trying to share from, if in doubt contact <a href="mailto:support@getstockcubes.com">support@getstockcubes.com</a>]
+			flash[:info] = %Q[Looks like there's an issue with the cupboard you're trying to share, if in doubt contact <a href="mailto:support@getstockcubes.com">support@getstockcubes.com</a>]
 		end
+
+		@cupboard_name = @cupboard.location
+		@all_other_cupboard_users = User.where(id: current_user.cupboards.where.not(id: decrypted_cupboard_id).order(location: :asc).where(hidden: false, setup: false).map(&:users)[0].where.not(id: @cupboard.users.map(&:id)).uniq.map(&:id))
+
+
+
+		# if params.has_key?(:cupboard_id) && params[:cupboard_id].to_i != 0
+		# 	@cupboards = current_user.cupboards.order(location: :asc).where(hidden: false, setup: false)
+		# 	if @cupboards.map(&:id).include?(params[:cupboard_id].to_i)
+		# 		@cupboard = Cupboard.find(params[:cupboard_id])
+		# 		@cupboard_name = @cupboard.location
+		# 		@current_cupboard_user_ids = []
+		# 		if @cupboard.users.length > 0
+		# 			@current_cupboard_user_ids = @cupboard.users.map(&:id)
+		# 		end
+		# 		@other_cupboard_user_ids = @cupboards.map{ |c| c.users.map(&:id).flatten.uniq.compact - @current_cupboard_user_ids }.flatten.uniq.compact
+		# 		@other_cupboard_users = User.where(id: @other_cupboard_user_ids)
+		# 	else
+		# 		redirect_to cupboards_path
+		# 		flash[:info] = %Q[Looks like there's an issue with the cupboard you're trying to share from, if in doubt contact <a href="mailto:support@getstockcubes.com">support@getstockcubes.com</a>]
+		# 	end
+		# else
+		# 	redirect_to cupboards_path
+		# 	flash[:info] = %Q[Looks like there's an issue with the cupboard you're trying to share from, if in doubt contact <a href="mailto:support@getstockcubes.com">support@getstockcubes.com</a>]
+		# end
 	end
 	def share_request
-		if params.has_key?(:cupboard_user_emails) && params[:cupboard_user_emails].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
-			cupboard = Cupboard.find(params[:cupboard_id].to_i)
-			cupboard_user_emails_string = params[:cupboard_user_emails].to_s.downcase
-			cupboard_user_emails_string = cupboard_user_emails_string.gsub(/\s+/, "")
-			if cupboard_user_emails_string.include? ","
-				cupboard_user_emails_array = cupboard_user_emails_string.split(',')
-			else
-				cupboard_user_emails_array = []
-				cupboard_user_emails_array.push(cupboard_user_emails_string)
+		Rails.logger.debug "share request fired"
+		Rails.logger.debug params
+
+		emails_valid = true
+		if params.has_key?(:cupboard_user_emails) && params[:cupboard_user_emails].to_s != ''
+			cupboard_sharing_hashids = Hashids.new(ENV['CUPBOARD_SHARING_ID_SALT'])
+			decrypted_cupboard_id = cupboard_sharing_hashids.decode(params[:id])
+			cupboard = Cupboard.find(decrypted_cupboard_id.class == Array ? decrypted_cupboard_id.first : decrypted_cupboard_id)
+			cupboard_user_emails_string = params[:cupboard_user_emails].to_s.downcase.gsub(/\s+/, '')
+			cupboard_user_emails_array = (cupboard_user_emails_string.include?(',') ? cupboard_user_emails_string.split(',') : [].push(cupboard_user_emails_string))
+
+			cupboard_user_emails_array.each do |email|
+				if /^([a-zA-Z0-9_\-\.\+]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/.match?(email) == false
+					emails_valid = false
+					break
+				end
 			end
-			if cupboard_user_emails_array.length > 0
-				hashids = Hashids.new(ENV['CUPBOARD_ID_SALT'])
-				encrypted_cupboard_id = hashids.encode(params[:cupboard_id])
+
+			if emails_valid == false
+				flash[:warning] = %Q[Looks like there might be a typo in one of the emails you entered, please double-check!]
+				redirect_to cupboard_share_path(params[:id], cupboard_user_emails: cupboard_user_emails_string)
+			end
+
+			if emails_valid == true
+				cupboard_email_sharing_hashids = Hashids.new(ENV['CUPBOARD_EMAIL_SHARE_ID_SALT'])
+				encoded_cupboard_id = cupboard_email_sharing_hashids.encode(decrypted_cupboard_id)
 				cupboard_user_emails_array.each do |email|
 					if User.where(email: email).exists?
 						cupboard_sharing_user = User.where(email: email).last
-						if CupboardUser.where(cupboard_id: params[:cupboard_id], user_id: cupboard_sharing_user.id).length > 1
-							## delete extra cupboard_users
-							extra_cupboard_user_ids = CupboardUser.where(cupboard_id: params[:cupboard_id], user_id: cupboard_sharing_user.id).map(&:id)
-							extra_cupboard_user_ids__less_first = extra_cupboard_user_ids[1..-1]
-							CupboardUser.find(extra_cupboard_user_ids__less_first).delete_all
-						elsif CupboardUser.where(cupboard_id: params[:cupboard_id], user_id: cupboard_sharing_user.id).length > 0
-							flash[:info] = %Q[That cupboard has already been shared with that person! <br/><br/>They may need to accept it though]
-						else
+						if not cupboard.users.include?(cupboard_sharing_user)
 							cupboard.users << cupboard_sharing_user
-							if email.include?("@") && email.include?(".")
-								CupboardMailer.sharing_cupboard_request_existing_account(email, current_user, encrypted_cupboard_id).deliver_now
-							end
+							CupboardMailer.sharing_cupboard_request_existing_account(email, current_user, encoded_cupboard_id).deliver_now
 							flash[:success] = "#{cupboard.location} shared!"
+						else
+							flash[:warning] = %Q[Looks like you're trying to share with someone who's already part of that cupboard, please check and resubmit]
+							redirect_to cupboard_share_path(params[:id], cupboard_user_emails: cupboard_user_emails_string)
 						end
 					else
-						if email.include?("@") && email.include?(".")
-							CupboardMailer.sharing_cupboard_request_new_account(email, current_user, encrypted_cupboard_id).deliver_now
-							flash[:success] = "#{cupboard.location} shared!"
-						end
+						CupboardMailer.sharing_cupboard_request_new_account(email, current_user, encoded_cupboard_id).deliver_now
+						flash[:success] = "#{cupboard.location} shared!"
 					end
 				end
+				@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+				redirect_to cupboards_path(anchor: @cupboard_id_hashids.encode(decrypted_cupboard_id))
 			end
 		end
-
-		if params.has_key?(:communal) && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
-			if current_user && (current_user.admin || (CupboardUser.where(user_id: current_user[:id], cupboard_id: params[:cupboard_id]).length > 0 && CupboardUser.where(user_id: current_user[:id], cupboard_id: params[:cupboard_id]).first.owner))
-				cupboard = Cupboard.find(params[:cupboard_id])
-				if params[:communal].to_s == 'false'
-					cupboard.update_attributes(
-						communal: false
-					)
-				elsif params[:communal].to_s == 'true'
-					cupboard.update_attributes(
-						communal: true
-					)
-				end
-			end
-		end
-
-		redirect_to cupboards_path
 	end
 
 	def accept_cupboard_invite
 		if params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
-			hashids = Hashids.new(ENV['CUPBOARD_ID_SALT'])
+			hashids = Hashids.new(ENV['CUPBOARD_EMAIL_SHARE_ID_SALT'])
 			decrypted_cupboard_id = hashids.decode(params[:cupboard_id])
 			if decrypted_cupboard_id.class.to_s == 'Array'
 				decrypted_cupboard_id.each do |cupboard_id|
@@ -140,7 +148,8 @@ class CupboardsController < ApplicationController
 				cupboard = Cupboard.where(id: decrypted_cupboard_id).first
 				flash[:success] = "#{cupboard.location} has been added!"
 			end
-			redirect_to cupboards_path(anchor: decrypted_cupboard_id.first.to_s)
+			cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+			redirect_to cupboards_path(anchor: cupboard_id_hashids.encode(decrypted_cupboard_id.first))
 		else
 			flash[:danger] = %Q[Something went wrong! Email the team for help: <a href="mailto:team@getstockcubes.com?subject=Something%20went%20wrong%20when%20accepting%20a%20shared%20cupboard%20request" target="_blank">team@getstockcubes.com</a>]
 			redirect_to root_path
@@ -277,6 +286,8 @@ class CupboardsController < ApplicationController
 
 		# Confirms the correct user.
 		def correct_user
+
+			### rewrite this to always take encoded ids
 			if params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != '' && params[:id] != 'accept_cupboard_invite'
 				@cupboard = Cupboard.find(params[:cupboard_id])
 				@user_ids = @cupboard.users.map(&:id)

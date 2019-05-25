@@ -25,16 +25,14 @@ class StocksController < ApplicationController
 	end
 
 	def new
+		@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 		@stock = Stock.new
 		@cupboards = current_user.cupboards.where(hidden: false, setup: false).order(created_at: :desc)
 		if @cupboards.length == 0
 			new_cupboard = Cupboard.create(location: "Kitchen")
 			CupboardUser.create(cupboard_id: new_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
-		end
-		if params.has_key?(:cupboard_id) && params[:cupboard_id].present?
-			@cupboard_found = @cupboards.map(&:id).include?(params[:cupboard_id].to_i)
-		else
-			@cupboard_found = false
+			redirect_to new_stock_with_id_path(@cupboard_id_hashids.encode(new_cupboard[:id]))
+			flash[:warning] = %Q[Looks like you didn't have a cupboard to add stock to so we've created one for you]
 		end
 		@ingredients = Ingredient.all.sort_by{|i| i.name.downcase}
 		if params.has_key?(:standard_use_by_limit) && params[:standard_use_by_limit]
@@ -47,10 +45,21 @@ class StocksController < ApplicationController
 	end
 	def create
 		@stock = Stock.new(stock_params)
+		Rails.logger.debug params
+
+		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 
 		@cupboards = current_user.cupboards.where(hidden: false, setup: false)
-		@cupboard_found = @cupboards.map(&:id).include?(params[:stock][:cupboard_id].to_i)
-		unless @cupboard_found
+
+		if (params.has_key?(:id) && @cupboards.map(&:id).include?(cupboard_id_hashids.decode(params[:id]).first))
+			@stock.update_attributes(
+				cupboard_id: cupboard_id_hashids.decode(params[:id]).first
+			)
+		elsif @cupboards.map(&:id).include?(cupboard_id_hashids.decode(params[:stock][:cupboard_id]).first)
+			@stock.update_attributes(
+				cupboard_id: cupboard_id_hashids.decode(params[:stock][:cupboard_id]).first
+			)
+		else
 			@stock.update_attributes(
 				cupboard_id: @cupboards.first
 			)
@@ -83,7 +92,7 @@ class StocksController < ApplicationController
 
 
     if @stock.save
-			redirect_to cupboards_path(anchor: @stock.cupboard_id)
+			redirect_to cupboards_path(anchor: cupboard_id_hashids.encode(@stock.cupboard_id))
 			update_recipe_stock_matches(@stock[:ingredient_id])
 			shopping_list_portions_update(current_user[:id])
 			StockUser.create(
@@ -101,7 +110,9 @@ class StocksController < ApplicationController
 				### if ingredient name instead of id is given, create new ingredient
 			end
 			cupboard_id = @cupboards.first
-			if params.has_key?(:stock) && params[:stock].has_key?(:cupboard_id) && params[:stock][:cupboard_id].to_i != 0
+			if params.has_key?(:id) && @cupboards.map(&:id).include?(cupboard_id_hashids.decode(params[:id]).first)
+				cupboard_id = cupboard_id_hashids.decode(params[:id])
+			elsif params.has_key?(:stock) && params[:stock].has_key?(:cupboard_id) && params[:stock][:cupboard_id].to_i != 0
 				cupboard_id = params[:stock][:cupboard_id]
 			end
 			amount = false
@@ -152,7 +163,7 @@ class StocksController < ApplicationController
 		end
 
 		if @stock.update(stock_params)
-			redirect_to cupboards_path(anchor: @stock.cupboard_id)
+			redirect_to cupboards_path(anchor: cupboard_id_hashids.encode(@stock.cupboard_id))
 			update_recipe_stock_matches(@stock[:ingredient_id])
 			shopping_list_portions_update(current_user[:id])
 		else

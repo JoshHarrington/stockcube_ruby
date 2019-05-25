@@ -7,13 +7,13 @@
   </div>
   <div id="cupboard-list" class="list_block--collection">
     <% @cupboards.each do |cupboard| %>
-      <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack <%= cupboard_shared_class(cupboard) %><%= @cupboards.length == 1 ? 'list_block-wide' : nil %>" id="<%= cupboard.id %>">
+      <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack <%= cupboard_shared_class(cupboard) %><%= @cupboards.length == 1 ? 'list_block-wide' : nil %>" id="<%= @cupboard_id_hashids.encode(cupboard.id) %>">
         <div class="list_block--content" data-cupboard-id="<%= cupboard.id %>" data-cupboard-users="<%= @cupboard_users_hashids.encode(cupboard.cupboard_users.map(&:user_id).sort!) %>">
           <% if cupboard.cupboard_users.length > 1 %>
             <div class="list_block--title_note">SHARED CUPBOARD</div>
           <% end %>
           <div class="list_block--title non_sortable">
-            <% if current_user.cupboard_users.where(cupboard_id: cupboard[:id]).first[:owner] == true && @cupboards.length > 1 %>
+            <% if cupboard.cupboard_users.length == 1 && @cupboards.length > 1 %>
               <span class="delete_list_block_button list_block--action">
                 <%= icomoon('bin') %>
                 <%= hidden_field_tag "cupboard_id_delete", cupboard.id %>
@@ -21,7 +21,7 @@
             <% end %>
             <h3>
               <%= hidden_field_tag "cupboard_id", cupboard.id %>
-              <%= text_field_tag "cupboard_location", cupboard.location %>
+              <%= text_field_tag "cupboard_location", cupboard.location, {readonly: cupboard.cupboard_users.where(owner: true).first.user != current_user, title: cupboard.cupboard_users.where(owner: true).first.user != current_user ? "Only the owner can edit a cupboard's name" : nil} %>
             </h3>
           </div>
           <% if cupboard.stocks.first %>
@@ -41,14 +41,13 @@
               <% end %>
             <% end %>
           <% end %>
-          <%= link_to "Add more stock", stocks_new_path(:cupboard_id => cupboard.id), class: "list_block--item list_block--item_new non_sortable" %>
+          <%= link_to "Add more stock", new_stock_with_id_path(@cupboard_id_hashids.encode(cupboard.id)), class: "list_block--item list_block--item_new non_sortable" %>
         </div>
         <div class="list_block--content_end">
-          <span class="edit_mode--message">EDIT MODE</span>
           <% if cupboard.users.length < 2 %>
-            <%= link_to "Cupboard sharing settings", cupboard_share_path(:cupboard_id => cupboard.id), class: "list_block--info_bar list_block--info_bar--sharing_active", title: "Start sharing this cupboard" %>
+            <%= link_to "Cupboard sharing settings", cupboard_share_path(@cupboard_sharing_hashids.encode(cupboard.id)), class: "list_block--info_bar list_block--info_bar--sharing_active", title: "Start sharing this cupboard" %>
           <% else %>
-            <%= link_to cupboard_share_path(:cupboard_id => cupboard.id), class: "list_block--info_bar", title: "Sharing settings" do %>
+            <%= link_to cupboard_share_path(@cupboard_sharing_hashids.encode(cupboard.id)), class: "list_block--info_bar", title: "Sharing settings" do %>
               <div class="list_block--info_bar-content">
                 <p>
                   Shared with

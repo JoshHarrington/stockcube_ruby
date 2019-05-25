@@ -39,7 +39,8 @@ module CupboardHelper
 		if cupboard.stocks.where(hidden: false).length == 0 || cupboard.stocks.empty? || (cupboard.stocks.length == 1 && cupboard.stocks.first.ingredient.name.downcase.to_s == "water")
 			return 'empty'
 		else
-			stocks = cupboard.stocks.where(hidden: false).order(use_by_date: :desc)
+			water_ingredient_id = Ingredient.where('lower(name) = ?', "water").first.id
+			stocks = cupboard.stocks.where(hidden: false).where.not(ingredient_id: water_ingredient_id).order(use_by_date: :desc)
 			days_from_now = (stocks.first.use_by_date - Date.current).to_i
 			if days_from_now <= -2
 				return 'empty all-out-of-date'

@@ -14,12 +14,12 @@ $bp-mobile: 600px;
 	align-items: baseline;
 	flex-wrap: wrap;
 	justify-content: center;
-	*:not(.pretty_form--submit_button):not(.pretty_form--flex_list):not(.pretty_form--flex_list li) {
-		@media (max-width: $bp-mobile) {
-			width: 100%;
-			text-align: left;
-		}
-	}
+	// *:not(.pretty_form--submit_button):not(.pretty_form--flex_list):not(.pretty_form--flex_list li):not(.icon-information-outline) {
+	// 	@media (max-width: $bp-mobile) {
+	// 		// width: 100%;
+	// 		// text-align: left;
+	// 	}
+	// }
 	.info {
 		margin-bottom: em(10, 15);
 	}
@@ -65,6 +65,9 @@ input[type=date]{
 
 .pretty_form--row {
 	position: relative;
+	overflow-wrap: break-word;
+  word-wrap: break-word;
+	hyphens: auto;
 	& + & {
 		margin-top: em(20, 10);
 	}

@@ -37,7 +37,7 @@
               cupboard = Cupboard.find(cupboard_id)
               cupboard_name = cupboard.location
               cupboard_owner = CupboardUser.where(cupboard_id: cupboard_id, owner: true).first.user.name
-              hashids = Hashids.new(ENV['CUPBOARD_ID_SALT'])
+              hashids = Hashids.new(ENV['CUPBOARD_EMAIL_SHARE_ID_SALT'])
               encrypted_cupboard_id = hashids.encode(cupboard_id)
             %>
             <li>

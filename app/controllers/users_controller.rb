@@ -54,7 +54,7 @@ class UsersController < ApplicationController
 
         if params.has_key?(:user) && params[:user][:cupboard_id].to_s != ''
           @user.send_activation_email_with_cupboard_add
-          hashids = Hashids.new(ENV['CUPBOARD_ID_SALT'])
+          hashids = Hashids.new(ENV['CUPBOARD_EMAIL_SHARE_ID_SALT'])
           decrypted_cupboard_id = hashids.decode(params[:user][:cupboard_id])
           if CupboardUser.where(cupboard_id: params[:user][:cupboard_id], user_id: @user.id).length == 0
             if decrypted_cupboard_id.class.to_s == 'Array'

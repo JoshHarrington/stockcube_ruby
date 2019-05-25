@@ -1,12 +1,11 @@
 var listBlockEdit = function(page) {
 
 	if (page == 'cupboard') {
-		/// could use keyup here but would need to debounce to ensure server is not bombarded
+		/// could use keyup here but would need to debounce (or throttle?) to ensure server is not bombarded
 		$('.list_block--title input').change(function(){
 			var $list_block_title = $(this).val();
 			var $cupboard_id = $(this).closest('.list_block--content').data('cupboard-id');
 			var dataString = 'cupboard_location='+ $list_block_title +'&cupboard_id='+ $cupboard_id;
-			console.log('cupboard title update', dataString)
 			$.ajax({
 				type: "POST",
 				beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},

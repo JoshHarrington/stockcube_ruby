@@ -2,7 +2,7 @@
 
 <div class="item_form--wrapper">
 
-	<%= form_for @stock, :html => {id: "stock_form", class: "item_form"}, :validate => true do |s| %>
+	<%= form_for @stock, :url => "/stocks/new/" + (params.has_key?(:id) ? params[:id] : ''), :html => {id: "stock_form", class: "item_form"}, :validate => true do |s| %>
 		<div class="item_form--title">
 			<h1>Adding stock to cupboards</h1>
 		</div>
@@ -19,15 +19,19 @@
 			<div class="item_form--content_row">
 				<%= label_tag 'stock_use_by_date', 'Use by date'  %> <%= s.date_field(:use_by_date, min: Date.current, value: @use_by_limit, validate: true) %>
 				<% if @cupboards.length == 1 %>
-					<%= s.hidden_field "cupboard_id", value: @cupboards.last.id.to_s %>
+					<%= s.hidden_field "cupboard_id", value: @cupboard_id_hashids.encode(@cupboards.last.id) %>
 				<% end %>
 			</div>
 			<% if @cupboards.length > 1 %>
 				<div class="item_form--content_row">
 					<%= label_tag 'cupboard_pick', 'Cupboard pick'  %>
 					<% @cupboards.each_with_index do |cupboard, index| %>
-						<%= s.radio_button "cupboard_id", cupboard.id , {class: "fancy_radio_button", id: "cupboard_id_#{cupboard.id}", checked: (params.has_key?(:cupboard_id) && @cupboards.map(&:id).include?(params[:cupboard_id].to_i) ? (cupboard.id.to_i == params[:cupboard_id].to_i ? true : false) : (index == 0 ? true : false))} %>
-						<%= s.label "cupboard_id", {class: "fancy_radio_button__label", for: "cupboard_id_#{cupboard.id}"} do %>
+						<%= s.radio_button "cupboard_id", @cupboard_id_hashids.encode(cupboard[:id]) , {
+							class: "fancy_radio_button", id: "cupboard_id_#{@cupboard_id_hashids.encode(cupboard[:id])}",
+							checked:
+								(params.has_key?(:id) && @cupboards.map(&:id).include?(@cupboard_id_hashids.decode(params[:id]).first) ?
+									cupboard[:id] == @cupboard_id_hashids.decode(params[:id]).first : index == 0 )} %>
+						<%= s.label "cupboard_id", {class: "fancy_radio_button__label", for: "cupboard_id_#{@cupboard_id_hashids.encode(cupboard[:id])}"} do %>
 							<% if cupboard.cupboard_users.length > 1 %>
 								<span class="list_block--title_note list_block--title_note_small">SHARED</span>
 							<% end %>
