@@ -156,7 +156,7 @@ class CupboardsController < ApplicationController
 		end
 	end
 	def autosave
-		if params.has_key?(:cupboard_location) && params[:cupboard_location].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
+		if params.has_key?(:cupboard_location) && params[:cupboard_location].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != '' && Cupboard.find(params[:cupboard_id]).cupboard_users.where(owner: true).first.user == current_user
 			@cupboard_id = params[:cupboard_id]
 			@cupboard_title = params[:cupboard_location]
 			@cupboard_to_edit = current_user.cupboards.find(@cupboard_id)
@@ -175,7 +175,7 @@ class CupboardsController < ApplicationController
 			update_recipe_stock_matches(stock_ingredient_ids)
 			shopping_list_portions_update(current_user[:id])
 		end
-		if params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != '' && current_user.cupboards.where(hidden: false, setup: false).length > 1
+		if params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != '' && current_user.cupboards.where(hidden: false, setup: false).length > 1 && Cupboard.find(params[:cupboard_id]).cupboard_users.where(owner: true).first.user == current_user
 			@cupboard_to_delete = Cupboard.find(params[:cupboard_id_delete].to_i)
 			@cupboard_to_delete.update_attribute(
 				:hidden, true

@@ -90,7 +90,6 @@ class StocksController < ApplicationController
 			Ingredient.reindex
 		end
 
-
     if @stock.save
 			redirect_to cupboards_path(anchor: cupboard_id_hashids.encode(@stock.cupboard_id))
 			update_recipe_stock_matches(@stock[:ingredient_id])
@@ -163,6 +162,7 @@ class StocksController < ApplicationController
 		end
 
 		if @stock.update(stock_params)
+			cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 			redirect_to cupboards_path(anchor: cupboard_id_hashids.encode(@stock.cupboard_id))
 			update_recipe_stock_matches(@stock[:ingredient_id])
 			shopping_list_portions_update(current_user[:id])
