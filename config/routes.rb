@@ -37,6 +37,7 @@ Rails.application.routes.draw do
   get '/recipes/yours' => 'recipes#yours', as: :your_recipes
   get '/recipes/update_matches' => 'recipes#update_recipe_stock_matches_method', as: :update_matches
   get '/recipes/:id/publish_update' => 'recipes#publish_update', as: :publish_update_recipe
+  get '/recipes/:id/delete' => 'recipes#delete', as: :recipe_delete
   post '/recipes' => 'recipes#create'
 
   get '/portions/new' => 'portions#new'
@@ -72,6 +73,7 @@ Rails.application.routes.draw do
   post '/cupboards/share/:id' => 'cupboards#share_request'
   post '/cupboards/delete_quick_add_stock' => 'cupboards#delete_quick_add_stock'
   post '/cupboards/delete_cupboard_stock' => 'cupboards#delete_cupboard_stock'
+  post '/cupboards/delete_cupboard_user' => 'cupboards#delete_cupboard_user'
 
   get '/ingredients' => 'ingredients#index'
   get '/ingredients/new' => 'ingredients#new'

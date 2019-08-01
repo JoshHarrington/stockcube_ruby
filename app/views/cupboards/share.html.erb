@@ -10,7 +10,12 @@
 				<% if @cupboard.cupboard_users.length > 1 %>
 					<ul class="pretty_form--flex_list">
 						<% @cupboard.cupboard_users.where.not(user_id: current_user.id).each do |cupboard_user| %>
-							<li><p class="people_marker people_marker__wide<%= cupboard_user.accepted == false ? ' not_accepted' : '' %>"><%= cupboard_user.user.name %><%= cupboard_user.accepted == false ? ' (Waiting for invite to be accepted)' : '' %></p></li>
+							<li><p class="people_marker people_marker__wide<%= cupboard_user.accepted == false ? ' not_accepted' : '' %>"><%= cupboard_user.user.name %><%= cupboard_user.accepted == false ? ' (Waiting for invite to be accepted)' : '' %>
+								<%# commented out for now %>
+								<% false && if @cupboard.cupboard_users.where(owner: true).first.user == current_user %>
+									<span class="delete_cupboard_user" id="<%= @cupboard_users_hashids.encode(cupboard_user[:id]) %>">+</span>
+								<% end %>
+							</p></li>
 						<% end %>
 					</ul>
 				<% end %>

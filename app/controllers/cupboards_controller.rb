@@ -47,6 +47,7 @@ class CupboardsController < ApplicationController
 		@cupboard_sharing_hashids = Hashids.new(ENV['CUPBOARD_SHARING_ID_SALT'])
 		decrypted_cupboard_id = @cupboard_sharing_hashids.decode(params[:id])
 		@cupboard = Cupboard.find(decrypted_cupboard_id.class == Array ? decrypted_cupboard_id.first : decrypted_cupboard_id)
+		@cupboard_users_hashids = Hashids.new(ENV['CUPBOARD_USER_ID_SALT'])
 
 		### This check to see if the current user should have access
 		###  can go after rewriting :correct_user function
@@ -215,6 +216,18 @@ class CupboardsController < ApplicationController
 			else
 				Rails.logger.debug "No quick add stock found"
 			end
+		end
+	end
+	def delete_cupboard_user
+		if params.has_key?(:user_id) && params[:user_id].to_s != ''
+			user_hashids = Hashids.new(ENV['CUPBOARD_USER_ID_SALT'])
+			decrypted_user_id = user_hashids.decode(params[:user_id])
+			# Rails.logger.debug CupboardUser.find(decrypted_user_id).user.name
+			# if current_user && current_user.user_fav_stocks.find(decrypted_user_id).length
+			# 	current_user.user_fav_stocks.find(decrypted_user_id.class == Array ? decrypted_user_id.first : decrypted_user_id).delete
+			# else
+			# 	Rails.logger.debug "No quick add stock found"
+			# end
 		end
 	end
 	def edit

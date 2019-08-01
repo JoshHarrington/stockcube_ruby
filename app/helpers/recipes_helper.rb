@@ -27,14 +27,14 @@ module RecipesHelper
 	def portion_amount_unit_and_ingredient(portion)
 
 		## check if ingredient unit is correct unit, fallback to portion unit if different
-		if portion.unit_number == portion.ingredient.unit_id
+		if portion.unit_id == portion.ingredient.unit_id
 			if portion.ingredient.unit.short_name
 				portion_unit = portion.ingredient.unit.short_name.downcase
 			else
 				portion_unit = portion.ingredient.unit.name
 			end
 		else
-			correct_unit = Unit.where(unit_number: portion.unit_number).first
+			correct_unit = portion.unit
 			if correct_unit.short_name
 				portion_unit = correct_unit.short_name.downcase
 			else

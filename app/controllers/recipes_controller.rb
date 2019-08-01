@@ -7,7 +7,7 @@ class RecipesController < ApplicationController
 	require 'will_paginate/array'
 
 	before_action :logged_in_user, only: [:edit, :new, :index]
-	before_action :correct_user_or_admin, 	 only: [:edit, :publish_update]
+	before_action :correct_user_or_admin, 	 only: [:edit, :publish_update, :delete]
 
 	def index
 
@@ -135,9 +135,9 @@ class RecipesController < ApplicationController
 						amount: values[:amount]
 					)
 				end
-				unless portion.unit_number == values[:unit_number].to_f
+				unless portion.unit_id == values[:unit_id].to_f
 					portion.update_attributes(
-						unit_number: values[:unit_number]
+						unit_id: values[:unit_id]
 					)
 				end
 			end
@@ -200,7 +200,7 @@ class RecipesController < ApplicationController
 		end
 	end
 
-	def destroy
+	def delete
 		@recipe = Recipe.find(params[:id])
 		@recipe.portions.destroy_all
 		@recipe.destroy
@@ -211,7 +211,6 @@ class RecipesController < ApplicationController
 			redirect_to recipes_path
 		end
 	end
-
 
 
 
@@ -258,7 +257,7 @@ class RecipesController < ApplicationController
 
 	private
 		def recipe_params
-			params.require(:recipe).permit(:user_id, :search, :live, :public, :cuisine, :search_ingredients, :title, :description, :prep_time, :cook_time, :yield, :note, portions_attributes:[:amount, :unit_number, :ingredient_id, :recipe_id, :_destroy])
+			params.require(:recipe).permit(:user_id, :search, :live, :public, :cuisine, :search_ingredients, :title, :description, :prep_time, :cook_time, :yield, :note, portions_attributes:[:amount, :unit_id, :ingredient_id, :recipe_id, :_destroy])
 		end
 
 		def shopping_list_params

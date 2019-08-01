@@ -77,11 +77,36 @@ var cupboard = function() {
 	})
 }
 
+var cupboardShareDelete = function() {
+	const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+	function deleteCupboardUser(hashedId) {
+		const confirmed = confirm("Are you sure you want to delete this ingredient from your cupboard?\nThis can't be undone :O");
+		if (confirmed == true) {
+			const data = "user_id=" + hashedId
+			const request = new XMLHttpRequest()
+			request.open('POST', '/cupboards/delete_cupboard_user', true)
+			request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+			request.setRequestHeader('X-CSRF-Token', csrfToken)
+			request.send(data)
+			document.getElementById(hashedId).parentNode.style.display = 'none'
+		}
+		// event.preventDefault()
+	}
+	const deleteUsersEls = document.querySelectorAll('.delete_cupboard_user')
+	deleteUsersEls.forEach(function(deleteEl) {
+		const hashedId = deleteEl.getAttribute('id')
+		deleteEl.addEventListener('click', function(){deleteCupboardUser(hashedId)}, false)
+	})
+}
+
 
 
 $(document).ready(function() {
 	if ($('#cupboard-list').length > 0) {
 		cupboard();
+	}
+	if($('.cupboards_controller.share_page').length > 0) {
+		cupboardShareDelete()
 	}
 });
 

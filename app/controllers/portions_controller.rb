@@ -17,13 +17,13 @@ class PortionsController < ApplicationController
 		new_stuff_added = false
 
 
-		if params[:portion].has_key?(:unit_number) && params[:portion][:unit_number].present?
-			if params[:portion][:unit_number].to_i == 0
-				new_unit_from_portion = Unit.find_or_create_by(name: params[:portion][:unit_number])
+		if params[:portion].has_key?(:unit_id) && params[:portion][:unit_id].present?
+			if params[:portion][:unit_id].to_i == 0
+				new_unit_from_portion = Unit.find_or_create_by(name: params[:portion][:unit_id])
 				@portion_unit = new_unit_from_portion.id
 				new_stuff_added = true
 			else
-				@portion_unit = params[:portion][:unit_number]
+				@portion_unit = params[:portion][:unit_id]
 			end
 		else
 			flash[:danger] = "Make sure you select or add a unit"
@@ -44,7 +44,7 @@ class PortionsController < ApplicationController
 		end
 
 		@portion.update_attributes(
-			unit_number: @portion_unit,
+			unit_id: @portion_unit,
 			ingredient_id: selected_ingredient_id
 		)
 
@@ -83,8 +83,7 @@ class PortionsController < ApplicationController
 		@current_ingredient = @portion.ingredient
 		@current_ingredient_unit = @portion.ingredient.unit
 		@current_ingredient_unit_number = @current_ingredient_unit.unit_number
-		@current_unit_number = @portion.unit_number
-		@current_unit = Unit.where(unit_number: @current_unit_number).first
+		@current_unit = @portion.unit
 
 		if @current_ingredient_unit.unit_type == "volume"
 			@units_select = Unit.where(:unit_type => "volume")
@@ -108,8 +107,7 @@ class PortionsController < ApplicationController
 		@current_ingredient = @portion.ingredient
 		@current_ingredient_unit = @portion.ingredient.unit
 		@current_ingredient_unit_number = @current_ingredient_unit.unit_number
-		@current_unit_number = @portion.unit_number
-		@current_unit = Unit.where(unit_number: @current_unit_number).first
+		@current_unit = @portion.unit
 
 		if not params[:recipe_id] == @current_recipe.id
 			@portion.update_attributes(
@@ -132,9 +130,9 @@ class PortionsController < ApplicationController
 			@preselect_unit = @units_select.first
 		end
 
-		if not params[:portion][:unit_number] == @current_unit_number
+		if not params[:portion][:unit_id] == @current_unit_number
 			@portion.update_attributes(
-				unit_number: params[:portion][:unit_number]
+				unit_id: params[:portion][:unit_id]
 			)
 		end
 
@@ -146,6 +144,6 @@ class PortionsController < ApplicationController
 	end
 	private
 		def portion_params
-			params.require(:portion).permit(:amount, :unit_number, :recipe_id, :ingredient_id)
+			params.require(:portion).permit(:amount, :unit_id, :recipe_id, :ingredient_id)
 		end
 end

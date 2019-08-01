@@ -446,8 +446,8 @@ a.list_block {
 	li:nth-child(5n + 5) & {
 		background-color: palegoldenrod;
 	}
-	&:hover,
-	&:focus {
+	&[title]:hover,
+	&[title]:focus {
 		max-width: em(100, 10);
 		padding: em(6, 10) em(10, 10);
 		&::after {
@@ -459,6 +459,23 @@ a.list_block {
 		}
 		span {
 			display: none;
+		}
+	}
+	&:not([title]) span {
+		display: flex;
+		font-size: em(30, 15);
+    width: em(26, 30);
+    height: em(26, 30);
+    transform: rotate(45deg);
+    background-color: #ffffff87;
+    border-radius: 50%;
+    line-height: em(15, 30);
+    padding: em(4, 30);
+		margin-left: em(10, 30);
+		transition: background-color .2s;
+		cursor: pointer;
+		&:hover {
+			background-color: white;
 		}
 	}
 	&.people_marker__wide {

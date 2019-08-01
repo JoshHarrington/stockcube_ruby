@@ -10,7 +10,7 @@ class Portion < ApplicationRecord
   validates :amount, presence: true
   validates_numericality_of :amount, on: :create
 	validates :ingredient_id, presence: true
-	validates :unit_number, presence: true
+	validates :unit_id, presence: true
 
 
 

@@ -140,7 +140,7 @@ module TaskShoppingListsHelper
 			shopping_list_portion = ShoppingListPortion.find_or_create_by(
 				shopping_list_id: current_shopping_list_id,
 				ingredient_id: portion.ingredient_id,
-				unit_number: portion.unit_number
+				unit_number: portion.unit_id
 			)
 
 			puts 'shopping list portion created: id #' + shopping_list_portion.id.to_s
@@ -148,7 +148,7 @@ module TaskShoppingListsHelper
 			set_portion_amount = 0
 
 			### set ingredients unis to default metric names
-			portion_unit = Unit.where(unit_number: portion.unit_number).first
+			portion_unit = Unit.where(unit_number: portion.unit_id).first
 			default_mass_unit = Unit.where(unit_number: 8).first
 			default_volume_unit = Unit.where(unit_number: 11).first
 			if portion_unit.metric_ratio != nil
@@ -162,7 +162,7 @@ module TaskShoppingListsHelper
 				set_portion_amount += portion.amount * portion_unit.metric_ratio
 			else
 				set_portion_amount += portion.amount
-				ingredient_unit_number = portion.unit_number
+				ingredient_unit_number = portion.unit_id
 				portion_unit.short_name ? ingredient_unit_name = portion_unit.short_name : ingredient_unit_name = portion_unit.name
 			end
 
@@ -275,13 +275,13 @@ module TaskShoppingListsHelper
 				shopping_list_portion = ShoppingListPortion.find_or_create_by(
 					shopping_list_id: current_shopping_list_id,
 					ingredient_id: portion.ingredient_id,
-					unit_number: portion.unit_number
+					unit_number: portion.unit_id
 				)
 
 				set_portion_amount = 0
 
 				### set ingredients unis to default metric names
-				portion_unit = Unit.where(unit_number: portion.unit_number).first
+				portion_unit = portion.unit
 				default_mass_unit = Unit.where(unit_number: 8).first
 				default_volume_unit = Unit.where(unit_number: 11).first
 				if portion_unit.metric_ratio != nil
@@ -295,7 +295,7 @@ module TaskShoppingListsHelper
 					set_portion_amount += portion.amount * portion_unit.metric_ratio
 				else
 					set_portion_amount += portion.amount
-					ingredient_unit_number = portion.unit_number
+					ingredient_unit_number = portion.unit_id
 					portion_unit.short_name ? ingredient_unit_name = portion_unit.short_name : ingredient_unit_name = portion_unit.name
 				end
 
