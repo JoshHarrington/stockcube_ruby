@@ -4,9 +4,11 @@
   </div>
 	<div class="list_block--collection">
 		<div class="list_block list_block-stack list_block-wide">
-			<% @recipes.each do |r| %>
-				<div class="list_block--item"><%= r.title %></div>
-			<% end %>
+			<div class="list_block--content pb-1">
+				<% @recipes.each do |r| %>
+					<div class="list_block--item"><%= r.title %></div>
+				<% end %>
+			</div>
 		</div>
 	</div>
 	<br />
