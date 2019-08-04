@@ -60,14 +60,14 @@ Rails.application.routes.draw do
 
   get '/cupboards' => 'cupboards#index'
   get '/cupboards/new' => 'cupboards#new'
-  get '/cupboards/edit_all' => 'cupboards#edit_all', as: :edit_all_cupboard
+  # get '/cupboards/edit_all' => 'cupboards#edit_all', as: :edit_all_cupboard
   get '/cupboards/share/:id' => 'cupboards#share', as: :cupboard_share
   get '/cupboards/accept_cupboard_invite' => 'cupboards#accept_cupboard_invite'
   get '/cupboards/:id' => 'cupboards#index'
   post '/cupboards/accept_cupboard_invite' => 'cupboards#accept_cupboard_invite', as: :accept_cupboard_invite
   # get '/cupboards/sharing_request' => 'cupboards#sharing_request', as: :cupboard_sharing_request
-  # get '/cupboards/:id/edit' => 'cupboards#edit', as: :edit_cupboard
-  # patch '/cupboards/:id/edit' => 'cupboards#update'
+  get '/cupboards/:id/edit' => 'cupboards#edit', as: :edit_cupboard
+  patch '/cupboards/:id/edit' => 'cupboards#update'
   post '/cupboards' => 'cupboards#create'
   post '/cupboards/autosave' => 'cupboards#autosave'
   post '/cupboards/autosave_sorting' => 'cupboards#autosave_sorting'
