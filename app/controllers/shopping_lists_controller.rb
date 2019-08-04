@@ -88,7 +88,7 @@ class ShoppingListsController < ApplicationController
       current_user.shopping_lists.order('updated_at asc').last.shopping_list_portions.each do |shopping_list_portion|
         if shopping_list_portion.checked == true
           Stock.create(
-            unit_id: shopping_list_portion.unit_id,
+            unit_id: shopping_list_portion.unit_number,
             amount: shopping_list_portion.portion_amount,
             ingredient_id: shopping_list_portion.ingredient_id,
             cupboard_id: @import_cupboard.id,
