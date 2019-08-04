@@ -176,7 +176,7 @@ class CupboardsController < ApplicationController
 			update_recipe_stock_matches(stock_ingredient_ids)
 			shopping_list_portions_update(current_user[:id])
 		end
-		if params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != '' && current_user.cupboards.where(hidden: false, setup: false).length > 1 && Cupboard.find(params[:cupboard_id]).cupboard_users.where(owner: true).first.user == current_user
+		if params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != '' && current_user.cupboards.where(hidden: false, setup: false).length > 1 && Cupboard.find(params[:cupboard_id_delete]).cupboard_users.where(owner: true).first.user == current_user
 			@cupboard_to_delete = Cupboard.find(params[:cupboard_id_delete].to_i)
 			@cupboard_to_delete.update_attribute(
 				:hidden, true
@@ -232,10 +232,15 @@ class CupboardsController < ApplicationController
 	end
 	def edit
 		@cupboard = Cupboard.find(params[:id])
-		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map(&:cupboard_id)
-		@all_cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
 		@stocks = @cupboard.stocks.order(use_by_date: :asc)
-		@units = Unit.where.not(name: nil)
+		unless @stocks.length > 0
+			redirect_to cupboards_path
+			flash[:warning] = %Q[Looks like there was a problem, <a href="mailto:support@getstockcubes.com">email us</a> if you need support]
+		else
+			@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map(&:cupboard_id)
+			@all_cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
+			@units = Unit.where.not(name: nil)
+		end
 	end
 	def update
 		@cupboard = Cupboard.find(params[:id])
