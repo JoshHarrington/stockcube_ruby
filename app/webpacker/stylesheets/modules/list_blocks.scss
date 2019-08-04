@@ -314,6 +314,9 @@ a.list_block {
 			min-width: em(8, 10);
 		}
 	}
+	&.pb-1 {
+		padding-bottom: em(12, 10);
+	}
 }
 
 .list_block--content_start {
