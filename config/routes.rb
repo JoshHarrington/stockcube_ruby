@@ -4,8 +4,6 @@ Rails.application.routes.draw do
   root 'static_pages#home'
   # get '/about' => 'static_pages#about'
 
-  get '/dashboard' => 'static_pages#dashboard'
-
   get '/logo', to: 'static_pages#logo'
 
   # get '/elements' => 'static_pages#elements'
@@ -100,6 +98,8 @@ Rails.application.routes.draw do
   get '/auth/google_oauth2/callback', to: 'users#google_auth'
 
   post '/feedback/submit' => 'feedback#submit'
+
+  get '/dashboard', to: 'dashboard#dash'
 
   resources :users
   resources :user_fav_stocks
