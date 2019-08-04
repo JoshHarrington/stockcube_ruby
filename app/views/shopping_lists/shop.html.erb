@@ -12,7 +12,7 @@
   </div>
   <div class="list_block--collection">
     <%= form_tag({controller: "shopping_lists", action: "shopping_list_to_cupboard" }, class: "list_block list_block-wide", id: "shopping_list_shop_mode_form",  method: :post) do %>
-      <div class="list_block--content">
+      <div class="list_block--content pb-1">
         <% @shopping_list_portions.each_with_index do |sl_portion, index| %>
           <% if sl_portion.in_cupboard == true && sl_portion.enough_in_cupboard == true %>
             <%= check_box_tag "shopping_list_item[#{sl_portion.id}]", "#{sl_portion.portion_amount}", sl_portion.checked, data: {"id" => sl_portion.id} %>
