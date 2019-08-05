@@ -1,10 +1,10 @@
-<div class="list_block--collection--wrap">
+<div class="list_block--collection--wrap" id="dashboard">
 	<div class="list_block--collection--sibling">
     <h2>Recipes</h2>
   </div>
 	<div class="list_block--collection">
 		<div class="list_block list_block-stack list_block-wide">
-			<div class="list_block--content pb-1">
+			<div class="list_block--content pb-1" data-recipe-list>
 				<% @recipes.each do |r| %>
 					<div class="list_block--item"><%= r.title %></div>
 				<% end %>
@@ -17,7 +17,7 @@
 	<div class="list_block--collection--sibling">
 		<h2>Planner</h2>
   </div>
-	<div class="list_block--collection">
+	<div class="list_block--collection" data-planner>
 		<div class="list_block list_block-stack">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quas delectus ducimus sapiente porro eligendi ratione, dolore tempora rerum quibusdam perspiciatis?</div>
 		<div class="list_block list_block-stack">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quas delectus ducimus sapiente porro eligendi ratione, dolore tempora rerum quibusdam perspiciatis?</div>
 		<div class="list_block list_block-stack">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quas delectus ducimus sapiente porro eligendi ratione, dolore tempora rerum quibusdam perspiciatis?</div>
