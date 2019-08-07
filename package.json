@@ -18,7 +18,7 @@
   "devDependencies": {
     "webpack-dev-server": "^3.2.1"
   },
-  "scripts": {
-    "build": "yarn install && bundle install --without development:test --path vendor/bundle --binstubs vendor/bundle/bin -j4 --deployment"
+  "engines": {
+    "yarn": "1.16.0"
   }
 }
