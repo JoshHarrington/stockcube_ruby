@@ -28,9 +28,3 @@ import '../functions/cupboard_share';
 import '../functions/user';
 import '../functions/feedback';
 import '../functions/dashboard';
-
-// Support component names relative to this directory:
-var componentRequireContext = require.context("components", true)
-var ReactRailsUJS = require("react_ujs")
-ReactRailsUJS.useContext(componentRequireContext)
-

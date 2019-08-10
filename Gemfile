@@ -74,7 +74,7 @@ gem "nokogiri", ">= 1.8.5"
 gem "rack", ">= 2.0.6"
 gem "loofah", ">= 2.2.3"
 
-gem 'webpacker'
+gem 'webpacker', '~> 4.0', '>= 4.0.7'
 gem 'react-rails'
 
 # Use Capistrano for deployment

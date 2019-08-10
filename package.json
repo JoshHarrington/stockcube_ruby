@@ -5,18 +5,21 @@
     "**/**/fsevents": "^1.2.9"
   },
   "dependencies": {
-    "@rails/webpacker": "3.5.5",
+    "@rails/webpacker": "^4.0.7",
     "babel-preset-react": "^6.24.1",
     "jquery": "^3.3.1",
+    "postcss-cssnext": "^3.1.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
     "react_ujs": "^2.4.4",
     "sortablejs": "^1.9.0",
-    "tiny-slider": "^2.9.2"
+    "tiny-slider": "^2.9.2",
+    "url-loader": "^2.1.0"
   },
   "devDependencies": {
-    "webpack-dev-server": "^3.2.1"
+    "node-sass": "^4.12.0",
+    "webpack-dev-server": "^3.8.0"
   },
   "engines": {
     "yarn": "1.16.0"
