@@ -13,7 +13,7 @@ class UserFavStocksController < ApplicationController
 		@unit_select = Unit.where.not(name: nil)
 		if @user_fav_stock.save
 			flash[:success] = 'New "Quick add stock" created!'
-			redirect_to cupboards_path
+			redirect_to cupboards_path(anchor: 'quick_add_stock')
     else
       render 'new'
 		end
