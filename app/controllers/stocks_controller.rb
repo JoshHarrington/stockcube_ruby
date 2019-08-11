@@ -24,6 +24,19 @@ class StocksController < ApplicationController
 		@gram_unit_id = Unit.where(name: "Gram").first.id
 	end
 
+	def new_no_id
+		@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+		@cupboards = current_user.cupboards.where(hidden: false, setup: false).order(created_at: :desc)
+		if @cupboards.length == 0
+			new_cupboard = Cupboard.create(location: "Kitchen")
+			CupboardUser.create(cupboard_id: new_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
+			redirect_to stocks_new_path(:cupboard_id => @cupboard_id_hashids.encode(new_cupboard[:id]))
+			flash[:warning] = %Q[Looks like you didn't have a cupboard to add stock to so we've created one for you]
+		else
+			redirect_to stocks_new_path(:cupboard_id => @cupboard_id_hashids.encode(@cupboards.first.id))
+		end
+	end
+
 	def new
 		@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 		@stock = Stock.new
@@ -31,7 +44,7 @@ class StocksController < ApplicationController
 		if @cupboards.length == 0
 			new_cupboard = Cupboard.create(location: "Kitchen")
 			CupboardUser.create(cupboard_id: new_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
-			redirect_to new_stock_with_id_path(@cupboard_id_hashids.encode(new_cupboard[:id]))
+			redirect_to stocks_new_path(:cupboard_id => @cupboard_id_hashids.encode(new_cupboard[:id]))
 			flash[:warning] = %Q[Looks like you didn't have a cupboard to add stock to so we've created one for you]
 		end
 		@ingredients = Ingredient.all.sort_by{|i| i.name.downcase}
@@ -108,8 +121,8 @@ class StocksController < ApplicationController
 				ingredient_id = params[:stock][:ingredient_id]
 				### if ingredient name instead of id is given, create new ingredient
 			end
-			cupboard_id = @cupboards.first
-			if params.has_key?(:id) && @cupboards.map(&:id).include?(cupboard_id_hashids.decode(params[:id]).first)
+			cupboard_id = @cupboards.first.id
+			if params.has_key?(:cupboard_id) && @cupboards.map(&:id).include?(cupboard_id_hashids.decode(params[:cupboard_id]).first)
 				cupboard_id = cupboard_id_hashids.decode(params[:id])
 			elsif params.has_key?(:stock) && params[:stock].has_key?(:cupboard_id) && params[:stock][:cupboard_id].to_i != 0
 				cupboard_id = params[:stock][:cupboard_id]
@@ -120,7 +133,8 @@ class StocksController < ApplicationController
 			end
 
 			flash[:danger] = %Q[Make sure you pick an ingredient, and set a stock amount]
-			redirect_to stocks_new_path(cupboard_id: (cupboard_id || false), ingredient: (ingredient_id || false), stock_amount: (amount || false), unit: (unit_id || false))
+			encoded_cupboard_id = cupboard_id_hashids.encode(cupboard_id)
+			redirect_to stocks_new_path(cupboard_id: encoded_cupboard_id, ingredient: (ingredient_id || false),  unit: (unit_id || false), stock_amount: (amount || false))
 
     end
 	end

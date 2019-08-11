@@ -44,14 +44,14 @@ Rails.application.routes.draw do
   post '/portions' => 'portions#create'
 
   get '/stocks' => 'stocks#index'
-  get '/stocks/new' => 'stocks#new'
+  get '/stocks/new' => 'stocks#new_no_id', as: :stocks_new_no_id
+  get '/stocks/new/:cupboard_id' => 'stocks#new', as: :stocks_new
   get '/stocks/picks' => 'stocks#picks'
   get '/stocks/:id' => 'stocks#show', as: :stock
   get '/stocks/:id/edit' => 'stocks#edit', as: :edit_stock
-  get '/stocks/new/:id' => 'stocks#new', as: :new_stock_with_id
   patch '/stocks/:id' => 'stocks#update'
   post '/stocks' => 'stocks#create'
-  post '/stocks/new/:id' => 'stocks#create'
+  post '/stocks/new/:cupboard_id' => 'stocks#create'
   post '/stocks/delete_stock' => 'stocks#delete_stock'
 
   get '/cupboards' => 'cupboards#index'

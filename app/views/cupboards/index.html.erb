@@ -39,7 +39,7 @@
                 <% end %>
             <% end %>
           <% end %>
-          <%= link_to "Add more stock", new_stock_with_id_path(@cupboard_id_hashids.encode(cupboard.id)), class: "list_block--item list_block--item_new non_sortable" %>
+          <%= link_to "Add more stock", stocks_new_path(:cupboard_id => @cupboard_id_hashids.encode(cupboard.id)), class: "list_block--item list_block--item_new non_sortable" %>
         </div>
         <div class="list_block--content_end">
           <% if cupboard.users.length < 2 %>

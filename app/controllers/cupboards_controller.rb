@@ -33,8 +33,8 @@ class CupboardsController < ApplicationController
 					accepted: true
 				)
 			end
-
-			redirect_to stocks_new_path(:cupboard_id => @cupboard.id)
+			@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+			redirect_to stocks_new_path(:cupboard_id => @cupboard_id_hashids.encode(@cupboard.id))
     else
       render 'new'
     end
