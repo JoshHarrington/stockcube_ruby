@@ -4,6 +4,6 @@ class UnitsController < ApplicationController
 	end
 	private
 		def unit_params
-			params.require(:unit).permit(:id, :unit_number, :unit_type)
+			params.require(:unit).permit(:id, :unit_type)
 		end
 end

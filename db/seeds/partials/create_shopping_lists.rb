@@ -22,12 +22,12 @@ shopping_list_portion_ids.each do |portion_id|
 	if ingredient_obj
 		shopping_list_1.ingredients << ingredient_obj
 		shopping_list_portion_obj = ShoppingListPortion.where(ingredient_id: ingredient_obj.id, shopping_list_id: shopping_list_1.id)
-		portion_unit_obj = Unit.where(id: portion_obj.unit_number).first
+		portion_unit_obj = Unit.find(portion_obj.unit_id)
 
 		shopping_list_portion_obj.each do |shopping_list_portion|
 			if portion_unit_obj.metric_ratio
 				metric_amount = portion_obj.amount * portion_unit_obj.metric_ratio
-				
+
 				if metric_amount < 20
 					metric_amount = metric_amount.ceil
 				elsif metric_amount < 400
@@ -45,32 +45,32 @@ shopping_list_portion_ids.each do |portion_id|
 				if portion_unit_obj.unit_type == "volume" && metric_amount < 1000
 					## add unit number for milliliters
 					shopping_list_portion.update_attributes(
-						:unit_number => 11
+						:unit_id => 11
 					)
 				elsif portion_unit_obj.unit_type == "volume" && metric_amount >= 1000
 					metric_amount = metric_amount / 1000
 					## convert to liters
 					shopping_list_portion.update_attributes(
-						:unit_number => 12,
+						:unit_id => 12,
 						:amount => metric_amount
 					)
 				elsif portion_unit_obj.unit_type == "mass" && metric_amount < 1000
 					## add unit number for grams
 					shopping_list_portion.update_attributes(
-						:unit_number => 8
+						:unit_id => 8
 					)
 				elsif portion_unit_obj.unit_type == "mass" && metric_amount >= 1000
 					metric_amount = metric_amount / 1000
 					## convert to kilograms
 					shopping_list_portion.update_attributes(
-						:unit_number => 9,
+						:unit_id => 9,
 						:amount => metric_amount
 					)
 				end
 			else
 				shopping_list_portion.update_attributes(
 					:amount => portion_obj.amount,
-					:unit_number => portion_obj.unit_number,
+					:unit_id => portion_obj.unit_id,
 					:recipe_number => portion_obj.recipe_id
 				)
 			end

@@ -1,6 +1,6 @@
-<%= form_for(@cupboard) do |f| %>  
-	<div class="field"> 
-		Label <%= f.label :cupboard %><br> 
+<%= form_for(@cupboard) do |f| %>
+	<div class="field">
+		Label <%= f.label :cupboard %><br>
 		Location <%= f.text_field :location %><br>
 	</div>
 	<fieldset id="cupboard-ingredients">
@@ -15,7 +15,7 @@
 						<%= f.date_field :use_by_date %>
 
 						<%= f.fields_for :ingredient do |stock_ingredient| %>
-							<%= stock_ingredient.select :unit_id, Unit.all.collect { |unit| [ unit.name, unit.unit_number ] } %>
+							<%= stock_ingredient.select :unit_id, Unit.all.collect { |unit| [ unit.name, unit.id ] } %>
 							<%= stock_ingredient.text_field :name, :readonly => true %>
 						<% end %>
 
@@ -27,9 +27,9 @@
     </ol>
 		<%= link_to_add_association 'add ingredient', f, :stocks, 'data-association-insertion-node' => "#cupboard-ingredients ol", 'data-association-insertion-method' => "append", :wrap_object => Proc.new {|stock| stock.build_ingredient; stock } %>
   </fieldset>
-	<div class="actions"> 
-		<%= f.submit "Save" %> 
-	</div> 
+	<div class="actions">
+		<%= f.submit "Save" %>
+	</div>
 <% end %>
 
 <% @stocks.each do |stock| %>

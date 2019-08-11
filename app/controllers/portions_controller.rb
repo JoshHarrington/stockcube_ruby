@@ -7,7 +7,6 @@ class PortionsController < ApplicationController
 		@portion = Portion.new
 		@ingredients = Ingredient.all.order('name ASC')
 		@unit_select = Unit.all.map{|u| u if u.name != nil }.compact
-		# @unit_select = Unit.all.map{|u| u if u.name != nil }.compact.map{|u| {id: u.id, name: u.name.pluralize} }
 	end
 	def create
 		@portion = Portion.new(portion_params)
@@ -60,88 +59,6 @@ class PortionsController < ApplicationController
 		end
 	end
 
-	# def edit
-	# 	@portion = Portion.find(params[:id])
-	# end
-	# def update
-	# 	@portion = Portion.find(params[:id])
-	# 	@recipe = @portion.recipe
-  #     if @portion.update(portion_params)
-  #       redirect_to recipe_path(@recipe)
-  #     else
-  #       render 'edit'
-  #     end
-	# end
-
-
-
-	def edit
-		@portion = Portion.find(params[:id])
-		@recipes = Recipe.all
-		@current_recipe = @portion.recipe
-		@ingredients = Ingredient.all.order('name ASC')
-		@current_ingredient = @portion.ingredient
-		@current_ingredient_unit = @portion.ingredient.unit
-		@current_ingredient_unit_number = @current_ingredient_unit.unit_number
-		@current_unit = @portion.unit
-
-		if @current_ingredient_unit.unit_type == "volume"
-			@units_select = Unit.where(:unit_type => "volume")
-		elsif @current_ingredient_unit.unit_type == "mass"
-			@units_select = Unit.where(unit_type: "mass")
-		else
-			@units_select = Unit.where(unit_type: "other")
-		end
-
-		if @current_unit.unit_type == @current_ingredient_unit.unit_type
-			@preselect_unit = @current_unit
-		else
-			@preselect_unit = @unit_select.first
-		end
-	end
-	def update
-		@portion = Portion.find(params[:id])
-		@recipes = current_user.recipes
-		@current_recipe = @portion.recipe
-		@ingredients = Ingredient.all.order('name ASC')
-		@current_ingredient = @portion.ingredient
-		@current_ingredient_unit = @portion.ingredient.unit
-		@current_ingredient_unit_number = @current_ingredient_unit.unit_number
-		@current_unit = @portion.unit
-
-		if not params[:recipe_id] == @current_recipe.id
-			@portion.update_attributes(
-				recipe_id: params[:recipe_id]
-			)
-			@current_recipe = recipe.where(id: params[:recipe_id]).first
-		end
-
-		if @current_ingredient_unit.unit_type == "volume"
-			@units_select = Unit.where(:unit_type => "volume")
-		elsif @current_ingredient_unit.unit_type == "mass"
-			@units_select = Unit.where(unit_type: "mass")
-		else
-			@units_select = Unit.where(unit_type: "other")
-		end
-
-		if @current_unit.unit_type == @current_ingredient_unit.unit_type
-			@preselect_unit = @current_unit
-		else
-			@preselect_unit = @units_select.first
-		end
-
-		if not params[:portion][:unit_id] == @current_unit_number
-			@portion.update_attributes(
-				unit_id: params[:portion][:unit_id]
-			)
-		end
-
-		if @portion.update(portion_params)
-			redirect_to edit_recipe_path(@current_recipe)
-		else
-			render 'edit'
-		end
-	end
 	private
 		def portion_params
 			params.require(:portion).permit(:amount, :unit_id, :recipe_id, :ingredient_id)

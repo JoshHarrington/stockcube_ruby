@@ -18,10 +18,6 @@ class IngredientsController < ApplicationController
   def create
 		@ingredient = Ingredient.new(ingredient_params)
 		@units = Unit.all
-		if params[:unit_number]
-			ingredient_unit = Unit.where(unit_number: params[:unit_number]).first
-			ingredient_unit.ingredients << @ingredient
-		end
     if @ingredient.save
 			redirect_to ingredients_path
 			Ingredient.reindex
@@ -37,21 +33,18 @@ class IngredientsController < ApplicationController
 	def update
 		@ingredient = Ingredient.find(params[:id])
 		@units = Unit.all
-		if params[:unit_number]
-			ingredient_unit = Unit.where(unit_number: params[:unit_number]).first
-			ingredient_unit.ingredients << @ingredient
-		end
+
 		@portions = @ingredient.portions
-			if @ingredient.update(ingredient_params)
-				redirect_to ingredients_path
-				Ingredient.reindex
-			else
-				render 'edit'
-			end
+		if @ingredient.update(ingredient_params)
+			redirect_to ingredients_path
+			Ingredient.reindex
+		else
+			render 'edit'
+		end
 	end
 	private
 		def ingredient_params
-			params.require(:ingredient).permit(:name, :searchable, :vegan, :vegetarian, :gluten_free, :dairy_free, :kosher, units_attributes:[:id, :unit_number, :name, :short_name, :unit_type, :_destroy])
+			params.require(:ingredient).permit(:name, :searchable, :vegan, :vegetarian, :gluten_free, :dairy_free, :kosher, units_attributes:[:id, :name, :short_name, :unit_type, :_destroy])
 		end
 
 		# Confirms a logged-in user.

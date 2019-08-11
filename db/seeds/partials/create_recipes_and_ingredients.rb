@@ -169,9 +169,9 @@ recipes.css('recipe').each_with_index do |recipe, recipe_index|
         recipe_id: recipe_new.id,
         ingredient_id: ingredient_obj.id,
         amount: ingredient_amount,
-        unit_number: ingredient_unit
+        unit_id: ingredient_unit
       )
-      unit_obj = Unit.find_or_create_by(unit_number: ingredient_unit)
+      unit_obj = Unit.find_or_create_by(id: ingredient_unit)
 
       ## link the units and ingredients tables on the correct unit
       unit_obj.ingredients << ingredient_obj

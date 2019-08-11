@@ -41,8 +41,6 @@ Rails.application.routes.draw do
 
   get '/portions/new' => 'portions#new'
   get '/portions/:id' => 'portions#show', as: :portion
-  get '/portions/:id/edit' => 'portions#edit', as: :edit_portion
-  patch '/portions/:id' => 'portions#update'
   post '/portions' => 'portions#create'
 
   get '/stocks' => 'stocks#index'

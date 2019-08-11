@@ -40,32 +40,32 @@ module TaskShoppingListsHelper
 			if portion_unit_obj.unit_type.to_s == "volume" && metric_amount < 1000
 				## add unit number for milliliters
 				shopping_list_portion.update_attributes(
-					:unit_number => 11
+					:unit_id => 11
 				)
 			elsif portion_unit_obj.unit_type.to_s == "volume" && metric_amount >= 1000
 				metric_amount = metric_amount / 1000
 				## convert to liters
 				shopping_list_portion.update_attributes(
-					:unit_number => 12,
+					:unit_id => 12,
 					:portion_amount => metric_amount
 				)
 			elsif portion_unit_obj.unit_type.to_s == "mass" && metric_amount < 1000
 				## add unit number for grams
 				shopping_list_portion.update_attributes(
-					:unit_number => 8
+					:unit_id => 8
 				)
 			elsif portion_unit_obj.unit_type.to_s == "mass" && metric_amount >= 1000
 				metric_amount = metric_amount / 1000
 				## convert to kilograms
 				shopping_list_portion.update_attributes(
-					:unit_number => 9,
+					:unit_id => 9,
 					:portion_amount => metric_amount
 				)
 			end
 		else
 			shopping_list_portion.update_attributes(
 				:portion_amount => portion_obj.amount,
-				:unit_number => portion_obj.unit_number,
+				:unit_id => portion_obj.unit_id,
 				:recipe_number => portion_obj.recipe_id
 			)
 		end
@@ -140,7 +140,7 @@ module TaskShoppingListsHelper
 			shopping_list_portion = ShoppingListPortion.find_or_create_by(
 				shopping_list_id: current_shopping_list_id,
 				ingredient_id: portion.ingredient_id,
-				unit_number: portion.unit_id
+				unit_id: portion.unit_id
 			)
 
 			puts 'shopping list portion created: id #' + shopping_list_portion.id.to_s
@@ -148,21 +148,21 @@ module TaskShoppingListsHelper
 			set_portion_amount = 0
 
 			### set ingredients unis to default metric names
-			portion_unit = Unit.where(unit_number: portion.unit_id).first
-			default_mass_unit = Unit.where(unit_number: 8).first
-			default_volume_unit = Unit.where(unit_number: 11).first
+			portion_unit = Unit.find(portion.unit_id)
+			default_mass_unit = Unit.find(8)
+			default_volume_unit = Unit.find(11)
 			if portion_unit.metric_ratio != nil
 				if portion_unit.unit_type.to_s == "mass"
-					ingredient_unit_number = 8
+					ingredient_unit_id = 8
 					default_mass_unit.short_name ? ingredient_unit_name = default_mass_unit.short_name : ingredient_unit_name = default_mass_unit.name
 				elsif portion_unit.unit_type.to_s == "volume"
-					ingredient_unit_number = 11
+					ingredient_unit_id = 11
 					default_volume_unit.short_name ? ingredient_unit_name = default_volume_unit.short_name : ingredient_unit_name = default_volume_unit.name
 				end
 				set_portion_amount += portion.amount * portion_unit.metric_ratio
 			else
 				set_portion_amount += portion.amount
-				ingredient_unit_number = portion.unit_id
+				ingredient_unit_id = portion.unit_id
 				portion_unit.short_name ? ingredient_unit_name = portion_unit.short_name : ingredient_unit_name = portion_unit.name
 			end
 
@@ -171,7 +171,7 @@ module TaskShoppingListsHelper
 			if similar_shopping_list_portion_all.length > 0 && similar_shopping_list_portion_all.first.id != shopping_list_portion.id
 				similar_shopping_list_portion = similar_shopping_list_portion_all.first
 
-				similar_shopping_list_portion_unit = Unit.where(unit_number: similar_shopping_list_portion.unit_number).first
+				similar_shopping_list_portion_unit = Unit.find(similar_shopping_list_portion.unit_id)
 
 				if similar_shopping_list_portion_unit && similar_shopping_list_portion_unit.metric_ratio != nil && similar_shopping_list_portion.portion_amount
 					set_portion_amount += similar_shopping_list_portion.portion_amount * similar_shopping_list_portion_unit.metric_ratio
@@ -234,7 +234,7 @@ module TaskShoppingListsHelper
       shopping_list_portion.update_attributes(
 				portion_amount: set_portion_amount,
 				unit_name: ingredient_unit_name.downcase,
-				unit_number: ingredient_unit_number
+				unit_id: ingredient_unit_id
 			)
 		end
 		puts 'run through all shopping list portion additions or updates'
@@ -275,27 +275,27 @@ module TaskShoppingListsHelper
 				shopping_list_portion = ShoppingListPortion.find_or_create_by(
 					shopping_list_id: current_shopping_list_id,
 					ingredient_id: portion.ingredient_id,
-					unit_number: portion.unit_id
+					unit_id: portion.unit_id
 				)
 
 				set_portion_amount = 0
 
 				### set ingredients unis to default metric names
 				portion_unit = portion.unit
-				default_mass_unit = Unit.where(unit_number: 8).first
-				default_volume_unit = Unit.where(unit_number: 11).first
+				default_mass_unit = Unit.find(8)
+				default_volume_unit = Unit.find(11)
 				if portion_unit.metric_ratio != nil
 					if portion_unit.unit_type.to_s == "mass"
-						ingredient_unit_number = 8
+						ingredient_unit_id = 8
 						default_mass_unit.short_name ? ingredient_unit_name = default_mass_unit.short_name : ingredient_unit_name = default_mass_unit.name
 					elsif portion_unit.unit_type.to_s == "volume"
-						ingredient_unit_number = 11
+						ingredient_unit_id = 11
 						default_volume_unit.short_name ? ingredient_unit_name = default_volume_unit.short_name : ingredient_unit_name = default_volume_unit.name
 					end
 					set_portion_amount += portion.amount * portion_unit.metric_ratio
 				else
 					set_portion_amount += portion.amount
-					ingredient_unit_number = portion.unit_id
+					ingredient_unit_id = portion.unit_id
 					portion_unit.short_name ? ingredient_unit_name = portion_unit.short_name : ingredient_unit_name = portion_unit.name
 				end
 
@@ -304,7 +304,7 @@ module TaskShoppingListsHelper
 				if similar_shopping_list_portion_all.length > 0 && similar_shopping_list_portion_all.first.id != shopping_list_portion.id
 					similar_shopping_list_portion = similar_shopping_list_portion_all.first
 
-					similar_shopping_list_portion_unit = Unit.where(unit_number: similar_shopping_list_portion.unit_number).first
+					similar_shopping_list_portion_unit = Unit.find(similar_shopping_list_portion.unit_id)
 
 					if similar_shopping_list_portion_unit && similar_shopping_list_portion_unit.metric_ratio != nil && similar_shopping_list_portion.portion_amount
 						set_portion_amount += similar_shopping_list_portion.portion_amount * similar_shopping_list_portion_unit.metric_ratio
@@ -367,7 +367,7 @@ module TaskShoppingListsHelper
 				shopping_list_portion.update_attributes(
 					portion_amount: set_portion_amount,
 					unit_name: ingredient_unit_name.downcase,
-					unit_number: ingredient_unit_number
+					unit_id: ingredient_unit_id
 				)
 			end
 		end

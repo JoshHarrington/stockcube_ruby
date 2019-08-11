@@ -4,7 +4,7 @@ require 'uri'
 require 'date'
 
 
-unless Unit.exists?(unit_number: 3)
+unless Unit.exists?(id: 3)
 	## units
 	puts "Creating Units and adding to table"
 
