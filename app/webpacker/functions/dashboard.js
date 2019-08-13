@@ -1,6 +1,8 @@
 import { ready, ajaxRequest } from './utils'
 import Sortable from 'sortablejs'
 import {tns} from 'tiny-slider/src/tiny-slider'
+import SVG from '../icons/symbol-defs.svg'
+import PNGBin from '../icons/png-icons/bin.png'
 
 const plannerRecipeAddData = (e) => (
 	"recipe_id=" + e.item.id + "&planner_date=" + e.item.parentNode.id
@@ -13,8 +15,16 @@ const plannerRecipeUpdateData = (e) => (
 const addPlannerRecipe = (e) => {
 	ajaxRequest(plannerRecipeAddData(e), '/planner/recipe_add')
 
+	const deleteBtn = document.createElement('button')
+	deleteBtn.innerHTML = `<svg class="icomoon-icon icon-bin"><use xlink:href="${SVG}#icon-bin"></use></svg><img class="icon-png" src="${PNGBin}"></button>`
+	deleteBtn.classList.add('delete', 'list_block--item--action', 'list_block--item--action--btn')
+
+
 	const parentId = e.item.parentNode.id
 	e.item.setAttribute('data-parent-id', parentId)
+
+	e.item.appendChild(deleteBtn)
+	deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
 }
 
 const updatePlannerRecipe = (e) => {
