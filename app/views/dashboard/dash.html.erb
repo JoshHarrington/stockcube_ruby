@@ -34,7 +34,10 @@
 			</h2><div class="tiny-drop" id="<%= date_id %>">
 				<% PlannerRecipe.where(date: date, user_id: current_user.id).each do |p_recipe| %>
 					<% recipe = p_recipe.recipe %>
-					<div class="list_block--item" data-planner-id="<%= @planner_recipe_date_hash.encode(p_recipe.id) %>" id="<%= @recipe_id_hash.encode(recipe.id) %>"><%= recipe.title %></div>
+					<div class="list_block--item" data-parent-id="<%= date_id %>" id="<%= @recipe_id_hash.encode(recipe.id) %>">
+						<%= recipe.title %>
+						<button class="delete list_block--item--action list_block--item--action--btn"><%= icomoon('bin') %></button>
+					</div>
 				<% end %>
 			</div></div></div>
 

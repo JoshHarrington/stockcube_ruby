@@ -1,104 +1,37 @@
-import { ready } from './utils'
+import { ready, ajaxRequest } from './utils'
 import Sortable from 'sortablejs'
 import {tns} from 'tiny-slider/src/tiny-slider'
 
-const recipeToPlannerMove = (e) => {
-	if (e.dataset && e.dataset.plannerId) {
-		return "recipe_id=" + e.item.id + "&planner_date=" + e.item.parentNode.id + "&planner_id" + e.item.dataset.plannerId
-	} else {
-		return "recipe_id=" + e.item.id + "&planner_date=" + e.item.parentNode.id
-	}
+const plannerRecipeAddData = (e) => (
+	"recipe_id=" + e.item.id + "&planner_date=" + e.item.parentNode.id
+)
+
+const plannerRecipeUpdateData = (e) => (
+	"recipe_id=" + e.item.id + "&old_date=" + e.item.dataset.parentId + "&new_date=" + e.item.parentNode.id
+)
+
+const addPlannerRecipe = (e) => {
+	ajaxRequest(plannerRecipeAddData(e), '/planner/recipe_add')
+
+	const parentId = e.item.parentNode.id
+	e.item.setAttribute('data-parent-id', parentId)
 }
 
-let nextInterval = null
-let prevInterval = null
+const updatePlannerRecipe = (e) => {
+	ajaxRequest(plannerRecipeUpdateData(e), '/planner/recipe_update')
 
-let slider
-
-const startSliderScroll = (direction) => {
-	if (slider) {
-		if (direction === 'next') {
-			console.log('startSliderScroll, next')
-			nextInterval = setInterval(function(){
-				slider.goTo(direction)
-			}, 400);
-		} else if (direction === 'prev') {
-			console.log('startSliderScroll, prev')
-			prevInterval = setInterval(function(){
-				slider.goTo(direction)
-			}, 400);
-		}
-	}
+	const parentId = e.item.parentNode.id
+	e.item.setAttribute('data-parent-id', parentId)
 }
 
-const stopSliderScroll = (direction) => {
-	if (slider) {
-		if (direction === 'next') {
-			console.log(stopSliderScroll, 'next')
-			clearInterval(nextInterval)
-		} else if (direction === 'prev') {
-			console.log(stopSliderScroll, 'prev')
-			clearInterval(prevInterval)
-		}
-	}
-}
+const deletePlannerRecipe = (deleteBtn) => {
+	const buttonParent = deleteBtn.parentNode
+	const dateId = buttonParent.dataset.parentId
+	const recipeId = buttonParent.id
+	const deleteString = "recipe_id=" + recipeId + "&date=" + dateId
+	ajaxRequest(deleteString, '/planner/recipe_delete')
 
-const arrowDrag = (e) => {
-
-	const prevButton = document.querySelector('#prev_button')
-	const nextButton = document.querySelector('#next_button')
-
-	prevButton.addEventListener("dragover", function() {
-		console.log('dragover prev button')
-		startSliderScroll('prev')
-	})
-	prevButton.addEventListener("dragleave", function() {
-		console.log('dragleave prev button')
-		stopSliderScroll('prev')
-	})
-
-	nextButton.addEventListener("dragover", function(event) {
-		console.log('dragover next button', event)
-		startSliderScroll('next')
-	})
-	nextButton.addEventListener("dragleave", function(event) {
-		console.log('dragleave next button', event)
-		stopSliderScroll('next')
-	})
-}
-
-const clearArrowEvents = () => {
-	const prevButton = document.querySelector('#prev_button')
-	const nextButton = document.querySelector('#next_button')
-
-	prevButton.removeEventListener("dragover", function() {
-		console.log('dragover prev button')
-		startSliderScroll('prev')
-	})
-
-	prevButton.removeEventListener("dragleave", function() {
-		console.log('dragleave prev button')
-		stopSliderScroll('prev')
-	})
-
-	nextButton.removeEventListener("dragover", function(event) {
-		console.log('dragover next button', event)
-		startSliderScroll('next')
-	})
-
-	nextButton.removeEventListener("dragleave", function(event) {
-		console.log('dragleave next button', event)
-		stopSliderScroll('next')
-	})
-}
-
-const ajaxRequest = (data, path) => {
-	const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-	const request = new XMLHttpRequest()
-	request.open('POST', path, true)
-	request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
-	request.setRequestHeader('X-CSRF-Token', csrfToken)
-	request.send(data)
+	buttonParent.style.display = 'none'
 }
 
 const dashboardFn = () => {
@@ -111,13 +44,8 @@ const dashboardFn = () => {
 			put: false,
 		},
 		sort: false,
-		// onMove: function(e) {
-		// 	arrowDrag(e)
-		// },
 		onEnd: function(e) {
-			ajaxRequest(recipeToPlannerMove(e), '/planner/recipe_add')
-		// 	recipeDrag(e)
-		// 	clearArrowEvents(e)
+			addPlannerRecipe(e)
 		}
 	})
 	plannerBlocks.forEach(function(dayBlock){
@@ -127,17 +55,12 @@ const dashboardFn = () => {
 				pull: true,
 				put: true
 			},
-			// onMove: function(e) {
-			// 	arrowDrag(e)
-			// },
-			// onEnd: function(e) {
-			// // 	recipeDrag(e)
-			// // 	clearArrowEvents(e)
-			// 	ajaxRequest(recipeToPlannerMove(e), '/planner/recipe_add')
-			// }
+			onEnd: function(e) {
+				updatePlannerRecipe(e)
+			}
 		})
 	})
-  slider = tns({
+  const slider = tns({
     container: '[data-planner]',
     items: 4,
 		slideBy: 1,
@@ -149,6 +72,12 @@ const dashboardFn = () => {
 		arrowKeys: true,
 		swipeAngle: false
 	});
+
+	const plannerRecipeDeleteButtons = document.querySelectorAll('.tiny-slide .list_block--item button.delete')
+
+	plannerRecipeDeleteButtons.forEach(function(deleteBtn){
+		deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
+	})
 
 }
 

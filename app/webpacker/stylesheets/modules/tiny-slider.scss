@@ -5,6 +5,9 @@
 
 .tiny-slide {
 	min-height: em(250, 10);
+	.list_block--item--action--btn {
+		padding: em(6, 15);
+	}
 }
 
 .tiny-contents {
