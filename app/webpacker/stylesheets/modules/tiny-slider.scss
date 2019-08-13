@@ -3,9 +3,18 @@
 	align-items: stretch;
 }
 
+.tiny-slide {
+	min-height: em(250, 10);
+}
+
 .tiny-contents {
 	border: 1px solid gray;
 	padding: 10px;
 	height: 100%;
+	display: flex;
+	flex-direction: column;
 }
 
+.tiny-drop {
+	flex-grow: 2;
+}

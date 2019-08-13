@@ -4,15 +4,10 @@
   </div>
 	<div class="list_block--collection">
 		<div class="list_block list_block-stack list_block-wide">
-			<div class="list_block--content pb-1" data-recipe-list="">
-				<div class="list_block--item" id="Ae">Black Bean</div>
-				<div class="list_block--item" id="Y1">Rendang Beef</div>
-				<div class="list_block--item" id="Xq">Kung Pao Chicken</div>
-				<div class="list_block--item" id="0R">Malooba Chicken</div>
-				<div class="list_block--item" id="5M">Poulet Parisienne Chicken</div>
-				<div class="list_block--item" id="Wq">Reshmi Kebab Chicken</div>
-				<div class="list_block--item" id="Vm">Sesame Chicken</div>
-				<div class="list_block--item" id="M9">Shandong Chicken</div>
+			<div class="list_block--content pb-1" data-recipe-list>
+				<% @recipes.each do |r| %>
+					<div class="list_block--item" id="<%= @recipe_id_hash.encode(r.id) %>"><%= r.title %></div>
+				<% end %>
 			</div>
 		</div>
 	</div>
@@ -21,23 +16,44 @@
 	<br />
 	<div class="list_block--collection--sibling">
 		<h2>Planner</h2>
+		<p>Tomorrow: <%= Date.current + 1.day%></p>
   </div>
 	<div data-planner class="tiny-wrapper">
-		<div class="tiny-slide"><div class="tiny-contents"><h2>1</h2><div class="tiny-drop" id="drop-1"></div></div></div>
+		<% (-1..7).each do |d| %>
+			<% date = Date.current + d.days %>
+			<div class="tiny-slide"><div class="tiny-contents"><h2>
+			<% if d == -1 %>Yesterday<% end %>
+			<% if d == 0 %>Today<% end %>
+			<% if d == 1 %>Tomorrow<% end %>
+			<%= date.to_s(:short) %>
+			<%
+				date = Date.current + d.days
+				date_num = date.to_formatted_s(:number)
+				date_id = @planner_recipe_date_hash.encode(date_num)
+			%>
+			</h2><div class="tiny-drop" id="<%= date_id %>">
+				<% PlannerRecipe.where(date: date, user_id: current_user.id).each do |p_recipe| %>
+					<% recipe = p_recipe.recipe %>
+					<div class="list_block--item" data-planner-id="<%= @planner_recipe_date_hash.encode(p_recipe.id) %>" id="<%= @recipe_id_hash.encode(recipe.id) %>"><%= recipe.title %></div>
+				<% end %>
+			</div></div></div>
+
+		<% end %>
+		<%# <div class="tiny-slide"><div class="tiny-contents"><h2>1</h2><div class="tiny-drop" id="drop-1"></div></div></div>
 		<div class="tiny-slide"><div class="tiny-contents"><h2>2</h2><div class="tiny-drop" id="drop-2"></div></div></div>
 		<div class="tiny-slide"><div class="tiny-contents"><h2>3</h2><div class="tiny-drop" id="drop-3"></div></div></div>
 		<div class="tiny-slide"><div class="tiny-contents"><h2>4</h2><div class="tiny-drop" id="drop-4"></div></div></div>
 		<div class="tiny-slide"><div class="tiny-contents"><h2>5</h2><div class="tiny-drop" id="drop-5"></div></div></div>
 		<div class="tiny-slide"><div class="tiny-contents"><h2>6</h2><div class="tiny-drop" id="drop-6"></div></div></div>
-		<div class="tiny-slide"><div class="tiny-contents"><h2>7</h2><div class="tiny-drop" id="drop-7"></div></div></div>
+		<div class="tiny-slide"><div class="tiny-contents"><h2>7</h2><div class="tiny-drop" id="drop-7"></div></div></div> %>
 	</div>
 
-	<div id="prev_button" style="width: 40%; background-color: red">PREVIOUS</div>
+	<%# <div id="prev_button" style="width: 40%; background-color: red">PREVIOUS</div>
 	<br />
 	<br />
 	<br />
 
-	<div id="next_button" style="width: 40%; background-color: blue">NEXT</div>
+	<div id="next_button" style="width: 40%; background-color: blue">NEXT</div> %>
 	<br />
 	<hr />
 	<br />
