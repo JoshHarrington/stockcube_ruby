@@ -80,7 +80,9 @@ const dashboardFn = () => {
 		gutter: 10,
 		edgePadding: 40,
 		arrowKeys: true,
-		swipeAngle: false
+		swipeAngle: false,
+		controlsContainer: '.tiny-controls',
+		nav: false
 	});
 
 	const plannerRecipeDeleteButtons = document.querySelectorAll('.tiny-slide .list_block--item button.delete')

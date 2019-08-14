@@ -15,47 +15,40 @@
 	<hr />
 	<br />
 	<div class="list_block--collection--sibling">
-		<h2>Planner</h2>
+		<h2 class="tiny-slider--title">Planner</h2>
   </div>
-	<div data-planner class="tiny-wrapper">
-		<% (-1..7).each do |d| %>
-			<% date = Date.current + d.days %>
-			<div class="tiny-slide"><div class="tiny-contents"><h2>
-			<% if d == -1 %>Yesterday<% end %>
-			<% if d == 0 %>Today<% end %>
-			<% if d == 1 %>Tomorrow<% end %>
-			<%= date.to_s(:short) %>
-			<%
-				date = Date.current + d.days
-				date_num = date.to_formatted_s(:number)
-				date_id = @planner_recipe_date_hash.encode(date_num)
-			%>
-			</h2><div class="tiny-drop" id="<%= date_id %>">
-				<% PlannerRecipe.where(date: date, user_id: current_user.id).each do |p_recipe| %>
-					<% recipe = p_recipe.recipe %>
-					<div class="list_block--item" data-parent-id="<%= date_id %>" id="<%= @recipe_id_hash.encode(recipe.id) %>">
-						<%= recipe.title %>
-						<button class="delete list_block--item--action list_block--item--action--btn"><%= icomoon('bin') %></button>
-					</div>
-				<% end %>
-			</div></div></div>
+	<div class="extra-tiny-wrapper">
+		<div class="tiny-controls">
+			<button class="tiny-control tiny-control--prev prev"><%= icomoon('arrow_back') %></button>
+			<button class="tiny-control tiny-control--next next"><%= icomoon('arrow_forward') %></button>
+		</div>
+		<div data-planner class="tiny-wrapper">
+			<% (-1..7).each do |d| %>
+				<% date = Date.current + d.days %>
+				<div class="tiny-slide"><div class="tiny-contents"><h2>
+				<% if d == -1 %>Yesterday<% end %>
+				<% if d == 0 %>Today<% end %>
+				<% if d == 1 %>Tomorrow<% end %>
+				<%= date.to_s(:short) %>
+				<%
+					date = Date.current + d.days
+					date_num = date.to_formatted_s(:number)
+					date_id = @planner_recipe_date_hash.encode(date_num)
+				%>
+				</h2><div class="tiny-drop" id="<%= date_id %>">
+					<% PlannerRecipe.where(date: date, user_id: current_user.id).each do |p_recipe| %>
+						<% recipe = p_recipe.recipe %>
+						<div class="list_block--item" data-parent-id="<%= date_id %>" id="<%= @recipe_id_hash.encode(recipe.id) %>">
+							<%= recipe.title %>
+							<button class="delete list_block--item--action list_block--item--action--btn"><%= icomoon('bin') %></button>
+						</div>
+					<% end %>
+				</div></div></div>
 
-		<% end %>
-		<%# <div class="tiny-slide"><div class="tiny-contents"><h2>1</h2><div class="tiny-drop" id="drop-1"></div></div></div>
-		<div class="tiny-slide"><div class="tiny-contents"><h2>2</h2><div class="tiny-drop" id="drop-2"></div></div></div>
-		<div class="tiny-slide"><div class="tiny-contents"><h2>3</h2><div class="tiny-drop" id="drop-3"></div></div></div>
-		<div class="tiny-slide"><div class="tiny-contents"><h2>4</h2><div class="tiny-drop" id="drop-4"></div></div></div>
-		<div class="tiny-slide"><div class="tiny-contents"><h2>5</h2><div class="tiny-drop" id="drop-5"></div></div></div>
-		<div class="tiny-slide"><div class="tiny-contents"><h2>6</h2><div class="tiny-drop" id="drop-6"></div></div></div>
-		<div class="tiny-slide"><div class="tiny-contents"><h2>7</h2><div class="tiny-drop" id="drop-7"></div></div></div> %>
+			<% end %>
+		</div>
 	</div>
 
-	<%# <div id="prev_button" style="width: 40%; background-color: red">PREVIOUS</div>
-	<br />
-	<br />
-	<br />
-
-	<div id="next_button" style="width: 40%; background-color: blue">NEXT</div> %>
 	<br />
 	<hr />
 	<br />
