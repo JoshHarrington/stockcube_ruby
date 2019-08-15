@@ -50,8 +50,14 @@
 }
 
 .tiny-control--prev {
-	left: em(16, 11);
+	left: em(8, 11);
+	@media (max-width: $bp-mobile) {
+		left: 0;
+	}
 }
 .tiny-control--next {
-	right: em(16, 11);
+	right: em(8, 11);
+	@media (max-width: $bp-mobile) {
+		right: 0;
+	}
 }

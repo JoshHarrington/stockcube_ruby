@@ -72,7 +72,7 @@ const dashboardFn = () => {
 	})
   const slider = tns({
     container: '[data-planner]',
-    items: 4,
+    items: 1,
 		slideBy: 1,
 		mouseDrag: true,
 		startIndex: 1,
