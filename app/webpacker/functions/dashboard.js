@@ -82,7 +82,21 @@ const dashboardFn = () => {
 		arrowKeys: true,
 		swipeAngle: false,
 		controlsContainer: '.tiny-controls',
-		nav: false
+		nav: false,
+		responsive: {
+      420: {
+        items: 1
+      },
+      640: {
+        items: 2
+      },
+      900: {
+        items: 3
+      },
+      1200: {
+        items: 4
+      }
+    }
 	});
 
 	const plannerRecipeDeleteButtons = document.querySelectorAll('.tiny-slide .list_block--item button.delete')
