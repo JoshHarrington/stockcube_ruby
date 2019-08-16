@@ -12,6 +12,17 @@ const plannerRecipeUpdateData = (e) => (
 	"recipe_id=" + e.item.id + "&old_date=" + e.item.dataset.parentId + "&new_date=" + e.item.parentNode.id
 )
 
+const reloadPage = () => {
+	location.reload(true)
+}
+
+const updateNeeded = () => {
+	const shopping_list_update_string = document.querySelector('#shopping_list_update')
+	shopping_list_update_string.style.display = "block"
+	const shopping_list_update_btn = document.querySelector('#shopping_list_update button')
+	shopping_list_update_btn.addEventListener("click", function(){reloadPage()})
+}
+
 const addPlannerRecipe = (e) => {
 	ajaxRequest(plannerRecipeAddData(e), '/planner/recipe_add')
 
@@ -19,12 +30,19 @@ const addPlannerRecipe = (e) => {
 	deleteBtn.innerHTML = `<svg class="icomoon-icon icon-bin"><use xlink:href="${SVG}#icon-bin"></use></svg><img class="icon-png" src="${PNGBin}"></button>`
 	deleteBtn.classList.add('delete', 'list_block--item--action', 'list_block--item--action--btn')
 
+	const trackingBar = document.createElement('span')
+	trackingBar.classList.add('list_block--item--tracking_bar')
+	trackingBar.setAttribute('title', 'Refresh page to see percentage of recipe in stock')
 
 	const parentId = e.item.parentNode.id
 	e.item.setAttribute('data-parent-id', parentId)
+	e.item.classList.add('list_block--item--with-bar')
 
+	e.item.prepend(trackingBar)
 	e.item.appendChild(deleteBtn)
 	deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
+
+	updateNeeded()
 }
 
 const updatePlannerRecipe = (e) => {
@@ -42,6 +60,8 @@ const deletePlannerRecipe = (deleteBtn) => {
 	ajaxRequest(deleteString, '/planner/recipe_delete')
 
 	buttonParent.style.display = 'none'
+
+	updateNeeded()
 }
 
 const dashboardFn = () => {
@@ -55,7 +75,9 @@ const dashboardFn = () => {
 		},
 		sort: false,
 		onEnd: function(e) {
-			addPlannerRecipe(e)
+			if (e.item.parentNode.classList.contains('tiny-drop')){
+				addPlannerRecipe(e)
+			}
 		}
 	})
 	plannerBlocks.forEach(function(dayBlock){

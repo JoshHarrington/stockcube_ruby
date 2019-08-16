@@ -1,0 +1,32 @@
+.floating_shopping_list--wrapper {
+	position: fixed;
+	top: 20vh;
+	right: 0;
+	z-index: 20;
+	width: 20em;
+	font-size: 1.3em;
+	background: white;
+	border: 1px solid black;
+	padding: 10px;
+	max-width: 100%;
+	height: 60vh;
+	left: calc(100% - 20em);
+	transition: left .3s;
+	&.closed {
+		left: 100%;
+	}
+	h2 {
+		padding-bottom: 0.3em;
+	}
+}
+
+.floating_shopping_list {
+	overflow: auto;
+	height: calc(100% - 1.6em);
+	li {
+		font-size: 1.2em;
+		+ li {
+			margin-top: .5em;
+		}
+	}
+}

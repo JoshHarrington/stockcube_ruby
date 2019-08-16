@@ -38,6 +38,7 @@
 	border-width: 1px 0 0 1px;
 	padding: em(10, 15);
 	margin-top: em(20, 15);
+	background-color: white;
 	.static_pages_controller.home_page & {
 		display: none;
 	}

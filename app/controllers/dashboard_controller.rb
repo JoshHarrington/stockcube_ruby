@@ -1,8 +1,10 @@
 class DashboardController < ApplicationController
+	include PlannerShoppingListHelper
 	def dash
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
 		@recipes = Recipe.first(8)
+		@planner_shopping_list_portions = PlannerShoppingListPortion.where(user_id: 4).select{|p| p.planner_recipe.date > Date.current - 1.day && p.planner_recipe.date < Date.current + 7.day}
 	end
 
 	def recipe_add_to_planner
@@ -16,11 +18,15 @@ class DashboardController < ApplicationController
 		user_id = current_user.id
 		date_string = Date.parse(@planner_recipe_date_hash.decode(params[:planner_date]).first.to_s).to_date
 
-		PlannerRecipe.find_or_create_by(
+		planner_recipe = PlannerRecipe.find_or_create_by(
 			user_id: user_id,
 			recipe_id: recipe_id,
 			date: date_string
 		)
+
+		if recipe.portions.length > 0
+			add_planner_recipe_to_shopping_list(planner_recipe)
+		end
 
 	end
 
@@ -59,11 +65,15 @@ class DashboardController < ApplicationController
 		user_id = current_user.id
 		date = Date.parse(@planner_recipe_date_hash.decode(params[:date]).first.to_s).to_date
 
-		PlannerRecipe.find_by(
+
+		planner_recipe = PlannerRecipe.find_by(
 			user_id: user_id,
 			recipe_id: recipe_id,
 			date: date
-		).delete
+		)
+
+		# PlannerShoppingListPortion.where(planner_recipe_id: planner_recipe.id).delete_all
+		planner_recipe.destroy
 
 	end
 end

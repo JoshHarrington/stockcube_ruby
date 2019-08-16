@@ -857,3 +857,27 @@ a.list_block--item {
 	margin: 1rem em(-2, 12) em(-2, 12) em(-2, 12);
 	align-self: flex-end;
 }
+
+.list_block--item--with-bar {
+	border: none;
+	padding-top: em(17, 15);
+}
+
+.list_block--item--tracking_bar {
+	width: 100%;
+	height: em(8, 15);
+	position: absolute;
+	background-color: red;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+}
+
+.list_block--item--tracking_bar-percent {
+	height: 100%;
+	background-color: blue;
+	display: block;
+	border-top-left-radius: 2px;
+}

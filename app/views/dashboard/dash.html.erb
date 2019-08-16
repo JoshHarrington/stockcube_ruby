@@ -14,6 +14,20 @@
 	<br />
 	<hr />
 	<br />
+	<%# <div class="list_block--collection--sibling">
+    <h2>Shopping List</h2> <p style="display: none;" id="shopping_list_update">Shopping List out of date: <button>Update</button></p>
+  </div> %>
+	<% if @planner_shopping_list_portions.length > 0 %>
+		<div class="floating_shopping_list--wrapper">
+			<%# <button id="shopping_list_toggle">Shopping List</button> %>
+			<h2>Shopping List</h2>
+			<ul class="floating_shopping_list">
+				<% @planner_shopping_list_portions.each do |p| %>
+					<li><%= p.amount %> <%= p.ingredient.name %> <%= p.unit.name %></li>
+				<% end %>
+			</ul>
+		</div>
+	<% end %>
 	<div class="list_block--collection--sibling">
 		<h2 class="tiny-slider--title">Planner</h2>
   </div>
@@ -37,9 +51,17 @@
 				%>
 				</h2><div class="tiny-drop" id="<%= date_id %>">
 					<% PlannerRecipe.where(date: date, user_id: current_user.id).each do |p_recipe| %>
-						<% recipe = p_recipe.recipe %>
-						<div class="list_block--item" data-parent-id="<%= date_id %>" id="<%= @recipe_id_hash.encode(recipe.id) %>">
-							<%= recipe.title %>
+						<%
+							recipe = p_recipe.recipe
+							user_recipe_stock_match = UserRecipeStockMatch.where(user_id: current_user.id, recipe_id: recipe.id).first
+							ingredient_stock_match_decimal = user_recipe_stock_match ? user_recipe_stock_match[:ingredient_stock_match_decimal] : nil
+							num_stock_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_stock_ingredients] : nil
+							num_needed_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_needed_ingredients] : nil
+							percent_in_cupboards = ingredient_stock_match_decimal ? (ingredient_stock_match_decimal.to_f * 100).round : 0
+						%>
+						<div class="list_block--item list_block--item--with-bar" data-parent-id="<%= date_id %>" id="<%= @recipe_id_hash.encode(recipe.id) %>" title="<%= user_recipe_stock_match && num_stock_ingredients.to_s + " ingredients in stock, " + num_needed_ingredients.to_s + " needed" %>" aria-lable="<%= user_recipe_stock_match ? recipe.title + ": " + num_stock_ingredients.to_s + " ingredients in stock, " + num_needed_ingredients.to_s + " needed" : recipe.title %>">
+							<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards %>%"></span></span>
+							<%= link_to recipe.title, recipe_path(recipe) %>
 							<button class="delete list_block--item--action list_block--item--action--btn"><%= icomoon('bin') %></button>
 						</div>
 					<% end %>
