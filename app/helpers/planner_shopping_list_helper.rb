@@ -1,7 +1,7 @@
 module PlannerShoppingListHelper
 	def add_planner_recipe_to_shopping_list(planner_recipe = nil)
 		return if planner_recipe == nil
-		planner_shopping_list = PlannerShoppingList.where(user_id: current_user.id).last
+		planner_shopping_list = PlannerShoppingList.find_by_or_create(user_id: current_user.id)
 		planner_recipe.recipe.portions.each do |p|
 			PlannerShoppingListPortion.create(
 				user_id: current_user.id,
