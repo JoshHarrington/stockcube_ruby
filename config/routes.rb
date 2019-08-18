@@ -35,6 +35,7 @@ Rails.application.routes.draw do
   get '/recipes/yours' => 'recipes#yours', as: :your_recipes
   get '/recipes/update_matches' => 'recipes#update_recipe_stock_matches_method', as: :update_matches
   get '/recipes/:id/add_to_shopping_list' => 'recipes#add_to_shopping_list'
+  get '/recipes/:id/favourite' => 'recipes#favourite'
   get '/recipes/:id/publish_update' => 'recipes#publish_update', as: :publish_update_recipe
   get '/recipes/:id/delete' => 'recipes#delete', as: :recipe_delete
   post '/recipes' => 'recipes#create'
