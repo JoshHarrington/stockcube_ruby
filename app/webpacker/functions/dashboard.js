@@ -42,7 +42,7 @@ const addPlannerRecipe = (e) => {
 	e.item.appendChild(deleteBtn)
 	deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
 
-	updateNeeded()
+	// updateNeeded()
 }
 
 const updatePlannerRecipe = (e) => {
@@ -61,7 +61,7 @@ const deletePlannerRecipe = (deleteBtn) => {
 
 	buttonParent.style.display = 'none'
 
-	updateNeeded()
+	// updateNeeded()
 }
 
 const dashboardFn = () => {
