@@ -28,6 +28,9 @@ class User < ApplicationRecord
   has_many :favourite_recipes # just the 'relationships'
   has_many :favourites, through: :favourite_recipes, source: :recipe # the actual recipes a user favourites
 
+  has_many :planner_shopping_lists
+  has_many :planner_recipes
+
   class << self
     # Returns the hash digest of the given string.
     def digest(string)
