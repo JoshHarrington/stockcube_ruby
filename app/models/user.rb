@@ -22,7 +22,7 @@ class User < ApplicationRecord
   has_one :user_setting, dependent: :destroy
 
 	has_many :stock_users
-  has_many :stock, through: :stock_users
+  has_many :stocks, through: :stock_users
 
   # Favourite recipes of user
   has_many :favourite_recipes # just the 'relationships'

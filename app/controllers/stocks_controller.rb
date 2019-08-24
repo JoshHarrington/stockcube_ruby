@@ -157,8 +157,8 @@ class StocksController < ApplicationController
 		if params.has_key?(:stock_id) && params[:stock_id].to_s != ''
 			stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
 			decrypted_stock_id = stock_hashids.decode(params[:stock_id])
-			if current_user && current_user.stock.find(decrypted_stock_id).length
-				current_user.stock.find(decrypted_stock_id.class == Array ? decrypted_stock_id.first : decrypted_stock_id).delete
+			if current_user && current_user.stocks.find(decrypted_stock_id).length
+				current_user.stocks.find(decrypted_stock_id.class == Array ? decrypted_stock_id.first : decrypted_stock_id).delete
 			else
 				Rails.logger.debug "No stock found with that id for that user"
 				flash[:warning] = %Q[Something went wrong! Please email <a href="mailto:help@getstockcubes.com">mailto:help@getstockcubes.com</a> for support."]
