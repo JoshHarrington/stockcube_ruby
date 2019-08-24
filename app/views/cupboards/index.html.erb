@@ -1,12 +1,12 @@
 <% provide(:title, 'Your cupboards') %>
 
 
-<div class="list_block--collection--wrap">
-  <div class="list_block--collection--sibling">
-    <h2>Planner Ingredients</h2>
-  </div>
-  <div class="list_block--collection">
-    <% if @planner_recipes.length > 0 %>
+<% if @planner_recipes.length > 0 %>
+  <div class="list_block--collection--wrap">
+    <div class="list_block--collection--sibling">
+      <h2>Planner Ingredients</h2>
+    </div>
+    <div class="list_block--collection">
       <% @planner_recipes.select{|pr| planner_stocks(pr.id).length > 0}.each do |p_recipe| %>
         <div class="cupboard list_block">
           <div class="list_block--content">
@@ -26,9 +26,9 @@
           </div>
         </div>
       <% end %>
-    <% end %>
+    </div>
   </div>
-</div>
+<% end %>
 <div class="list_block--collection--wrap">
   <div class="list_block--collection--sibling">
     <h2>Your Cupboards</h2>
