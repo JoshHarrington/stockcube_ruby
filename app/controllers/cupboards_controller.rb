@@ -5,8 +5,8 @@ class CupboardsController < ApplicationController
 	before_action :logged_in_user, only: [:index, :show, :new, :create, :edit_all, :share, :share_request, :accept_cupboard_invite, :autosave, :autosave_sorting, :edit, :update]
 	before_action :correct_user,   only: [:show, :edit, :update]
 	def index
-		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
-		@cupboards = Cupboard.where(id: @cupboard_ids).order(created_at: :desc)
+		@cupboards = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact.sort_by{|c| c.created_at}.reverse!
+		@planner_recipes = PlannerRecipe.where(user_id: current_user.id)
 		@user_fav_stocks = current_user.user_fav_stocks.order('updated_at desc')
 		@cupboard_users_hashids = Hashids.new(ENV['CUPBOARD_USER_ID_SALT'])
 		@quick_add_hashids = Hashids.new(ENV['QUICK_ADD_STOCK_ID_SALT'])
@@ -188,19 +188,25 @@ class CupboardsController < ApplicationController
 		end
 	end
 	def autosave_sorting
-		if current_user && params.has_key?(:stock_id) && params.has_key?(:cupboard_id) && params.has_key?(:old_cupboard_id) && params[:stock_id].to_s != '' && params[:cupboard_id].to_s != '' && params[:old_cupboard_id].to_s != ''
-			@stock_to_edit = Stock.where(id: params[:stock_id]).first
-			@stock_to_edit.update_attributes(
-				cupboard_id: params[:cupboard_id]
-			)
-		end
+		return unless current_user && params.has_key?(:stock_id) && params.has_key?(:cupboard_id) && params.has_key?(:old_cupboard_id) && params[:stock_id].to_s != '' && params[:cupboard_id].to_s != '' && params[:old_cupboard_id].to_s != ''
+		@stock_to_edit = Stock.where(id: params[:stock_id]).first
+		@stock_to_edit.update_attributes(
+			cupboard_id: params[:cupboard_id]
+		)
 	end
 	def delete_cupboard_stock
 		if params.has_key?(:cupboard_stock_id) && params[:cupboard_stock_id].to_s != ''
 			stock_hashids = Hashids.new(ENV['CUPBOARD_STOCK_ID_SALT'])
 			decrypted_stock_id = stock_hashids.decode(params[:cupboard_stock_id])
-			if current_user && current_user.stock.find(decrypted_stock_id).length
-				current_user.stock.find(decrypted_stock_id.class == Array ? decrypted_stock_id.first : decrypted_stock_id).delete
+
+			## this only works if you've edited some stock
+			## need to check if stock is alternatively inside a cupboard you have access to
+			## should you be able to delete someone else's stock?
+			## or should the site tell you why you can't delete
+
+			### currently the user becomes able to delete as soon as they edit
+			if current_user && current_user.stocks.find(decrypted_stock_id).length
+				current_user.stocks.find(decrypted_stock_id.class == Array ? decrypted_stock_id.first : decrypted_stock_id).delete
 			else
 				Rails.logger.debug "No stock found with that id for that user"
 				flash[:warning] = %Q[Something went wrong! Please email <a href="mailto:help@getstockcubes.com">mailto:help@getstockcubes.com</a> for support."]
