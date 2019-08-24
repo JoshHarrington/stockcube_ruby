@@ -3,6 +3,34 @@
 
 <div class="list_block--collection--wrap">
   <div class="list_block--collection--sibling">
+    <h2>Planner Ingredients</h2>
+  </div>
+  <div class="list_block--collection">
+    <% if @planner_recipes.length > 0 %>
+      <% @planner_recipes.select{|pr| planner_stocks(pr.id).length > 0}.each do |p_recipe| %>
+        <div class="cupboard list_block">
+          <div class="list_block--content">
+            <div class="list_block--title non_sortable">
+              <h3><%= p_recipe.recipe.title %> (<%= p_recipe.date.to_s(:short) %>)</h3>
+            </div>
+            <% planner_stocks(p_recipe.id).length > 0 && planner_stocks(p_recipe.id).each do |stock| %>
+              <% out_of_date_sentence = 'out of date' + (stock.use_by_date > Time.zone.now ? ' in ' : ' ') + (distance_of_time_in_words(Time.zone.now, stock.use_by_date)) + (stock.use_by_date <= Time.zone.now ? ' ago': '') %>
+              <%= link_to ((stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? edit_stock_path(stock.id) : ''), class: "list_block--item list_block--item_stacked", title: "#{stock.ingredient.name} - #{out_of_date_sentence}" do %>
+                <span class="list_block--item--content list_block--item--content_left">
+                  <p><%= stock.ingredient.name %></p>
+                  <p><%= round_if_whole(stock.amount) %> <%= stock.unit.name %></p>
+                </span>
+                <span class="h6 list_block--item--lesser_note"><%= distance_of_time_in_words(Time.zone.now, stock.use_by_date) + (stock.use_by_date <= Time.zone.now ? ' ago': '')%></span>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+<div class="list_block--collection--wrap">
+  <div class="list_block--collection--sibling">
     <h2>Your Cupboards</h2>
   </div>
   <div id="cupboard-list" class="list_block--collection">
