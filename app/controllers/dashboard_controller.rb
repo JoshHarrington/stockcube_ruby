@@ -72,6 +72,8 @@ class DashboardController < ApplicationController
 			date: date
 		)
 
+		combine_divided_stock_after_planner_recipe_delete(planner_recipe)
+
 		# PlannerShoppingListPortion.where(planner_recipe_id: planner_recipe.id).delete_all
 		planner_recipe.destroy
 
