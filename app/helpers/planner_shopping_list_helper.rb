@@ -82,7 +82,8 @@ module PlannerShoppingListHelper
 
 	def combine_divided_stock_after_planner_recipe_delete(planner_recipe = nil)
 		planner_recipe.stocks.where('stocks.updated_at > ?', Date.current - 1.hour).each do |stock|
-			stock_partner = stock.cupboard.stocks.where.not(id: stock.id).find_by(ingredient_id: stock.ingredient_id)
+			stock_partner = stock.cupboard.stocks.where.not(id: stock.id).find_by(ingredient_id: stock.ingredient_id, use_by_date: stock.use_by_date)
+			return unless stock_partner.present?
 			stock_partner.update_attributes(amount: ingredient_plus_addition(stock_partner, stock), unit_id: default_unit_id(stock_partner))
 			stock.delete
 		end
