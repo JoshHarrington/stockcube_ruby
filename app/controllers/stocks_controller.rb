@@ -47,7 +47,7 @@ class StocksController < ApplicationController
 			redirect_to stocks_new_path(:cupboard_id => @cupboard_id_hashids.encode(new_cupboard[:id]))
 			flash[:warning] = %Q[Looks like you didn't have a cupboard to add stock to so we've created one for you]
 		end
-		@ingredients = Ingredient.all.sort_by{|i| i.name.downcase}
+		@ingredients = Ingredient.all.reject{|i| i.name == ''}.sort_by{|i| i.name.downcase}
 		if params.has_key?(:standard_use_by_limit) && params[:standard_use_by_limit]
 			@use_by_limit = Date.current + params[:standard_use_by_limit].to_i.days
 		else
