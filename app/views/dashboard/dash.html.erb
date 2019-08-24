@@ -14,20 +14,24 @@
 	<br />
 	<hr />
 	<br />
-	<%# <div class="list_block--collection--sibling">
-    <h2>Shopping List</h2> <p style="display: none;" id="shopping_list_update">Shopping List out of date: <button>Update</button></p>
-  </div> %>
-	<% if @planner_shopping_list_portions.length > 0 %>
-		<div class="floating_shopping_list--wrapper">
-			<%# <button id="shopping_list_toggle">Shopping List</button> %>
-			<h2>Shopping List</h2>
-			<ul class="floating_shopping_list">
-				<% @planner_shopping_list_portions.each do |p| %>
-					<li><%= p.amount %> <%= p.ingredient.name %> <%= p.unit.name %></li>
+	<div class="list_block--collection--sibling">
+    <h2>Shopping List</h2>
+  </div>
+	<div class="list_block--collection">
+		<div class="list_block list_block-stack list_block-wide">
+			<div class="list_block--content pb-1">
+				<% if @planner_shopping_list_portions.length == 0 %>
+					Add some recipes to planner or add your own custom items!
+				<% else %>
+					<% @planner_shopping_list_portions.each do |psl_portion| %>
+						<div class="list_block--item"><%= psl_portion.amount %> <%= psl_portion.unit.name %> <%= psl_portion.ingredient.name %></div>
+					<% end %>
 				<% end %>
-			</ul>
+			</div>
 		</div>
-	<% end %>
+	</div>
+	<br />
+
 	<div class="list_block--collection--sibling">
 		<h2 class="tiny-slider--title">Planner</h2>
   </div>
