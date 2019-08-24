@@ -19,7 +19,7 @@ module PlannerShoppingListHelper
 				portion_from_ing = recipe_portions.select{|p| p.ingredient_id == ing}.first
 
 				ingredient_plus_diff_amount = ingredient_plus_difference(stock_from_ing, portion_from_ing)
-				default_metric_unit = Unit.find_by(metric_ratio: 1, unit_type: stock_from_ing.unit.unit_type)
+				default_unit_id_output = default_unit_id(portion_from_ing)
 
 				if ingredient_plus_diff_amount <= 0
 					stock_from_ing.update_attributes(
@@ -32,7 +32,7 @@ module PlannerShoppingListHelper
 							user_id: current_user.id,
 							planner_recipe_id: planner_recipe.id,
 							ingredient_id: ing,
-							unit_id: default_metric_unit.id,
+							unit_id: default_unit_id_output,
 							amount: -(ingredient_plus_diff_amount),
 							planner_shopping_list_id: planner_shopping_list.id
 						)
@@ -42,7 +42,7 @@ module PlannerShoppingListHelper
 						ingredient_id: ing,
 						amount: ingredient_plus_converter(portion_from_ing),
 						planner_recipe_id: planner_recipe.id,
-						unit_id: default_metric_unit.id,
+						unit_id: default_unit_id_output,
 						use_by_date: stock_from_ing.use_by_date,
 						cupboard_id: stock_from_ing.cupboard_id,
 						hidden: false,
@@ -56,7 +56,7 @@ module PlannerShoppingListHelper
 					}
 
 					stock_from_ing.update_attributes(
-						unit_id: default_metric_unit.id,
+						unit_id: default_unit_id_output,
 						amount: ingredient_plus_diff_amount
 					)
 
