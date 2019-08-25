@@ -74,8 +74,16 @@ class DashboardController < ApplicationController
 
 		combine_divided_stock_after_planner_recipe_delete(planner_recipe)
 
-		# PlannerShoppingListPortion.where(planner_recipe_id: planner_recipe.id).delete_all
 		planner_recipe.destroy
 
+	end
+
+	def get_shopping_list_content
+		planner_shopping_list_portions = current_user.planner_shopping_lists.first.planner_shopping_list_portions.select{|p| p.planner_recipe.date > Date.current - 1.day && p.planner_recipe.date < Date.current + 7.day}.map{|pslp| pslp.amount.to_s + ' ' + pslp.unit.name + ' ' + pslp.ingredient.name }
+
+		respond_to do |format|
+			format.json { render json: planner_shopping_list_portions.as_json}
+			format.html { redirect_to dashboard_path }
+		end
 	end
 end
