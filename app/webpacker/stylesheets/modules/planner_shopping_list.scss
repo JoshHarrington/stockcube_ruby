@@ -30,3 +30,22 @@
 		}
 	}
 }
+
+.loading-block {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0,0,0,0.3);
+	z-index: 2;
+	padding: .5em;
+}
+
+.loading-notice {
+	background: rgba(0,0,0,0.6);
+	padding: .4em;
+	font-size: 2.8em;
+	color: white;
+}
