@@ -5,6 +5,7 @@ class DashboardController < ApplicationController
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
 		@recipes = Recipe.first(8)
 		@planner_shopping_list_portions = current_user.planner_shopping_lists.first.planner_shopping_list_portions.select{|p| p.planner_recipe.date > Date.current - 1.day && p.planner_recipe.date < Date.current + 7.day}
+		@planner_shopping_list_portions_list = @planner_shopping_list_portions.map{|pslp| pslp.amount.to_s + ' ' + pslp.unit.name + ' ' + pslp.ingredient.name }.as_json
 	end
 
 	def recipe_add_to_planner

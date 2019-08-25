@@ -1,3 +1,5 @@
+<script>window.plannerShoppingListItems = <%= raw @planner_shopping_list_portions_list %></script>
+
 <div class="list_block--collection--wrap" id="dashboard">
 	<div class="list_block--collection--sibling">
     <h2>Recipes</h2>
@@ -18,7 +20,7 @@
     <h2>Shopping List</h2>
   </div>
 	<div class="list_block--collection">
-		<div class="list_block list_block-stack list_block-wide">
+		<div class="list_block list_block-stack list_block-wide" data-shopping-list>
 			<div class="list_block--content pb-1">
 				<% if @planner_shopping_list_portions.length == 0 %>
 					Add some recipes to planner or add your own custom items!
