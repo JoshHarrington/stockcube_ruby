@@ -28,9 +28,8 @@ const updateShoppingList = () => {
 	const ajaxCheck = () => {
 		if (window.plannerShoppingListItems === plannerShoppingListItems && iterations < 10) {
 			// running a check for ajax output
-			const checkForplannerShoppingListItems = window.setTimeout(() => {ajaxCheck()}, .2*1000)
-			console.log(iterations, 'iterations inside shopping list function')
 			++iterations
+			const checkForplannerShoppingListItems = window.setTimeout(() => {ajaxCheck()}, .2*1000)
 		} else {
 			// ajax output is set
 			plannerShoppingListItems = window.plannerShoppingListItems
