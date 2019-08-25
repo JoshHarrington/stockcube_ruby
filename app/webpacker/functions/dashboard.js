@@ -16,12 +16,62 @@ const reloadPage = () => {
 	location.reload(true)
 }
 
-const updateNeeded = () => {
-	const shopping_list_update_string = document.querySelector('#shopping_list_update')
-	shopping_list_update_string.style.display = "block"
-	const shopping_list_update_btn = document.querySelector('#shopping_list_update button')
-	shopping_list_update_btn.addEventListener("click", function(){reloadPage()})
+const updateShoppingList = () => {
+	let plannerShoppingListItems = window.plannerShoppingListItems
+
+	const ShoppingList = document.querySelector('[data-shopping-list]')
+
+	const ListBlockContent = document.createElement('div')
+	const ajaxRequestOutput = ajaxRequest(plannerShoppingListItems, '/planner/shopping_list', 'GET', 'plannerShoppingListItems')
+
+	let iterations = 0
+	const ajaxCheck = () => {
+		if (window.plannerShoppingListItems === plannerShoppingListItems && iterations < 10) {
+			// running a check for ajax output
+			const checkForplannerShoppingListItems = window.setTimeout(() => {ajaxCheck()}, .2*1000)
+			console.log(iterations, 'iterations inside shopping list function')
+			++iterations
+		} else {
+			// ajax output is set
+			plannerShoppingListItems = window.plannerShoppingListItems
+			const previousListBlockContent = document.querySelector('[data-shopping-list] .list_block--content')
+			ListBlockContent.classList.add('list_block--content', 'pb-1')
+			if (plannerShoppingListItems.length === 0 ){
+				ListBlockContent.innerHTML = 'Add some recipes to planner or add your own custom items!'
+			} else {
+				plannerShoppingListItems.forEach(function(item) {
+					const Ingredient = document.createElement('div')
+					Ingredient.classList.add('list_block--item')
+					Ingredient.innerHTML = item
+					ListBlockContent.appendChild(Ingredient)
+				})
+			}
+			previousListBlockContent.remove()
+			ShoppingList.appendChild(ListBlockContent)
+
+			const LoadingNotice = document.querySelector('.loading-block')
+			LoadingNotice.remove()
+		}
+	}
+
+	ajaxCheck()
+
 }
+
+const updateShoppingListWithDelay = () => {
+	const ShoppingList = document.querySelector('[data-shopping-list]')
+	const LoadingBlock = document.createElement('div')
+	LoadingBlock.classList.add('loading-block')
+	LoadingBlock.innerHTML = `<span class="loading-notice">Updating...</span>`
+	ShoppingList.appendChild(LoadingBlock)
+
+	const shoppingListDelay = window.setTimeout(() => {
+		updateShoppingList()
+	}, .4*1000)
+}
+
+
+window.updateShoppingList = updateShoppingList
 
 const addPlannerRecipe = (e) => {
 	ajaxRequest(plannerRecipeAddData(e), '/planner/recipe_add')
@@ -42,7 +92,8 @@ const addPlannerRecipe = (e) => {
 	e.item.appendChild(deleteBtn)
 	deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
 
-	// updateNeeded()
+	updateShoppingListWithDelay()
+
 }
 
 const updatePlannerRecipe = (e) => {
@@ -61,7 +112,7 @@ const deletePlannerRecipe = (deleteBtn) => {
 
 	buttonParent.style.display = 'none'
 
-	// updateNeeded()
+	updateShoppingListWithDelay()
 }
 
 const dashboardFn = () => {
