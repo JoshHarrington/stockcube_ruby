@@ -99,6 +99,7 @@ Rails.application.routes.draw do
   post '/feedback/submit' => 'feedback#submit'
 
   get '/dashboard', to: 'dashboard#dash', as: :dashboard
+  get '/planner/shopping_list', to: 'dashboard#get_shopping_list_content'
   post '/planner/recipe_add', to: 'dashboard#recipe_add_to_planner'
   post '/planner/recipe_update', to: 'dashboard#recipe_update_in_planner'
   post '/planner/recipe_delete', to: 'dashboard#delete_recipe_from_planner'
