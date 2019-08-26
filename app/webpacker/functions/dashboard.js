@@ -68,8 +68,6 @@ const updateShoppingListWithDelay = () => {
 }
 
 
-window.updateShoppingList = updateShoppingList
-
 const addPlannerRecipe = (e) => {
 	ajaxRequest(plannerRecipeAddData(e), '/planner/recipe_add')
 
