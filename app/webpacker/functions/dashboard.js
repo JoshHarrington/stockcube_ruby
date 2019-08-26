@@ -22,15 +22,13 @@ const updateShoppingList = () => {
 	const ShoppingList = document.querySelector('[data-shopping-list]')
 
 	const ListBlockContent = document.createElement('div')
-	const ajaxRequestOutput = ajaxRequest(plannerShoppingListItems, '/planner/shopping_list', 'GET', 'plannerShoppingListItems')
+	ajaxRequest(plannerShoppingListItems, '/planner/shopping_list', 'GET', 'plannerShoppingListItems')
 
-	let iterations = 0
-	const ajaxCheck = () => {
+	const ajaxCheck = (iterations = 0) => {
 		if (window.plannerShoppingListItems === plannerShoppingListItems && iterations < 10) {
 			// running a check for ajax output
-			++iterations
-			const checkForplannerShoppingListItems = window.setTimeout(() => {ajaxCheck()}, .2*1000)
-		} else {
+			const checkForplannerShoppingListItems = window.setTimeout(() => {ajaxCheck(iterations + 1)}, .3*1000)
+		} else if (window.plannerShoppingListItems !== plannerShoppingListItems) {
 			// ajax output is set
 			plannerShoppingListItems = window.plannerShoppingListItems
 			const previousListBlockContent = document.querySelector('[data-shopping-list] .list_block--content')
