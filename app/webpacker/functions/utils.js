@@ -60,8 +60,10 @@ const ajaxRequest = (data, path, type, windowObj = undefined, iterations = 0) =>
 
       } else {
         // We reached our target server, but it returned an error
-        console.log('error getting data from the server, restarting request')
-        const restartRequest = window.setTimeout(() => {ajaxRequest(data, path, type, windowObj, iterations + 1)}, .2*1000)
+        console.log('error getting data from the server, restarting request if iterations less than 10')
+        if (iterations < 10) {
+          const restartRequest = window.setTimeout(() => {ajaxRequest(data, path, type, windowObj, iterations + 1)}, .2*1000)
+        }
       }
     }
   }
