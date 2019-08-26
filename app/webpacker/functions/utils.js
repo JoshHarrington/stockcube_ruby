@@ -6,9 +6,8 @@ const ready = (fn) => {
   }
 }
 
-let iterations = 0
 
-const ajaxRequest = (data, path, type, windowObj = undefined) => {
+const ajaxRequest = (data, path, type, windowObj = undefined, iterations = 0) => {
 	const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
   const request = new XMLHttpRequest()
   const requestType = type || 'POST'
@@ -24,23 +23,45 @@ const ajaxRequest = (data, path, type, windowObj = undefined) => {
     request.setRequestHeader('Content-Type', 'application/json')
     request.onload = function() {
       if (this.status >= 200 && this.status < 400) {
-        // Success!
-        const resp = JSON.parse(this.response)
 
-        if (windowObj !== undefined) {
+        if (this.status === 202) {
+          // server not ready, retry in a moment
+          const restartRequest = window.setTimeout(() => {ajaxRequest(data, path, type, windowObj, iterations + 1)}, .2*1000)
+        } else {
 
-          if (data === resp && requestType === 'GET' && iterations < 10) {
-            // response is the same as when the page loaded
-            ++iterations
-            const restartRequest = window.setTimeout(() => {ajaxRequest(data, path, type)}, .2*1000)
-          } else {
-            window[windowObj] = resp
+          // Success!
+          const resp = JSON.parse(this.response)
+
+          if (windowObj !== undefined) {
+
+            /// is there a difference between the resp and the data?
+
+            let difference = false
+            if (resp.length === 0 && resp.length !== data.length) {
+              difference = true
+            } else if ( resp.filter(x => !data.includes(x)).length !== 0 || data.filter(x => !resp.includes(x)).length !== 0) {
+              difference = true
+            }
+
+            window.resp = resp
+            window.data = data
+
+            if (difference) {
+              window[windowObj] = resp
+            } else if (!difference && requestType === 'GET' && iterations < 10) {
+              // response is the same as when the page loaded
+              const restartRequest = window.setTimeout(() => {ajaxRequest(data, path, type, windowObj, iterations + 1)}, .2*1000)
+            } else {
+              // ran ten times, resp still the same as data, setting the window obj to be whatever the resp is
+              window[windowObj] = resp
+            }
           }
         }
 
       } else {
         // We reached our target server, but it returned an error
-        console.log('error getting data from the server')
+        console.log('error getting data from the server, restarting request')
+        const restartRequest = window.setTimeout(() => {ajaxRequest(data, path, type, windowObj, iterations + 1)}, .2*1000)
       }
     }
   }
