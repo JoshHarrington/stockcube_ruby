@@ -61,7 +61,8 @@ const updateShoppingList = () => {
 				}
 			}
 		} else {
-			console.log('ajaxCheck - shopping list couldn\'t be updated, setup fallback')
+			window.updateShoppingList = updateShoppingList
+			// shopping list couldn't be updated, setup fallback
 			const LoadingNotices = document.querySelectorAll('.loading-block')
 			if (LoadingNotices !== undefined && LoadingNotices !== null) {
 				for(let i = 0; i < LoadingNotices.length; i++) {
@@ -72,7 +73,7 @@ const updateShoppingList = () => {
 			FailureNotice.classList.add('loading-block')
 			const FailureNoticeButton = document.createElement('button')
 			FailureNoticeButton.classList.add('loading-notice')
-			FailureNoticeButton.setAttribute('onclick', 'updateShoppingList()')
+			FailureNoticeButton.setAttribute('onclick', 'window.updateShoppingList()')
 			FailureNoticeButton.innerHTML = 'There was a problem, try again'
 			FailureNotice.appendChild(FailureNoticeButton)
 			ShoppingList.appendChild(FailureNotice)
@@ -82,6 +83,7 @@ const updateShoppingList = () => {
 	ajaxCheck()
 
 }
+
 
 const updateShoppingListWithDelay = () => {
 	const ShoppingList = document.querySelector('[data-shopping-list]')
