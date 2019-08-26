@@ -25,10 +25,18 @@ const updateShoppingList = () => {
 	ajaxRequest(plannerShoppingListItems, '/planner/shopping_list', 'GET', 'plannerShoppingListItems')
 
 	const ajaxCheck = (iterations = 0) => {
-		if (window.plannerShoppingListItems === plannerShoppingListItems && iterations < 10) {
+		let resp = window.plannerShoppingListItems
+		let data = plannerShoppingListItems
+		let difference = false
+		if (resp.length === 0 && resp.length !== data.length) {
+			difference = true
+		} else if ( resp.filter(x => !data.includes(x)).length !== 0 || data.filter(x => !resp.includes(x)).length !== 0) {
+			difference = true
+		}
+		if (!difference && iterations < 10) {
 			// running a check for ajax output
 			const checkForplannerShoppingListItems = window.setTimeout(() => {ajaxCheck(iterations + 1)}, .3*1000)
-		} else if (window.plannerShoppingListItems !== plannerShoppingListItems) {
+		} else if (difference) {
 			// ajax output is set
 			plannerShoppingListItems = window.plannerShoppingListItems
 			const previousListBlockContent = document.querySelector('[data-shopping-list] .list_block--content')
@@ -46,8 +54,28 @@ const updateShoppingList = () => {
 			previousListBlockContent.remove()
 			ShoppingList.appendChild(ListBlockContent)
 
-			const LoadingNotice = document.querySelector('.loading-block')
-			LoadingNotice.remove()
+			const LoadingNotices = document.querySelectorAll('.loading-block')
+			if (LoadingNotices !== undefined && LoadingNotices !== null) {
+				for(let i = 0; i < LoadingNotices.length; i++) {
+					LoadingNotices[i].remove()
+				}
+			}
+		} else {
+			console.log('ajaxCheck - shopping list couldn\'t be updated, setup fallback')
+			const LoadingNotices = document.querySelectorAll('.loading-block')
+			if (LoadingNotices !== undefined && LoadingNotices !== null) {
+				for(let i = 0; i < LoadingNotices.length; i++) {
+					LoadingNotices[i].remove()
+				}
+			}
+			const FailureNotice = document.createElement('div')
+			FailureNotice.classList.add('loading-block')
+			const FailureNoticeButton = document.createElement('button')
+			FailureNoticeButton.classList.add('loading-notice')
+			FailureNoticeButton.setAttribute('onclick', 'updateShoppingList()')
+			FailureNoticeButton.innerHTML = 'There was a problem, try again'
+			FailureNotice.appendChild(FailureNoticeButton)
+			ShoppingList.appendChild(FailureNotice)
 		}
 	}
 
@@ -57,14 +85,17 @@ const updateShoppingList = () => {
 
 const updateShoppingListWithDelay = () => {
 	const ShoppingList = document.querySelector('[data-shopping-list]')
-	const LoadingBlock = document.createElement('div')
-	LoadingBlock.classList.add('loading-block')
-	LoadingBlock.innerHTML = `<span class="loading-notice">Updating...</span>`
-	ShoppingList.appendChild(LoadingBlock)
+	const LoadingNoticePrev = document.querySelectorAll('.loading-block')
+	if (LoadingNoticePrev.length === 0) {
+		const LoadingNoticeNew = document.createElement('div')
+		LoadingNoticeNew.classList.add('loading-block')
+		LoadingNoticeNew.innerHTML = `<span class="loading-notice">Updating...</span>`
+		ShoppingList.appendChild(LoadingNoticeNew)
+	}
 
 	const shoppingListDelay = window.setTimeout(() => {
 		updateShoppingList()
-	}, .4*1000)
+	}, .6*1000)
 }
 
 
