@@ -9,6 +9,9 @@ class DashboardController < ApplicationController
 	end
 
 	def recipe_add_to_planner
+		current_user.planner_shopping_lists.first.update_attributes(
+			ready: false
+		)
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
 		return unless params.has_key?(:recipe_id) && Recipe.exists?(@recipe_id_hash.decode(params[:recipe_id]).first)
@@ -29,9 +32,17 @@ class DashboardController < ApplicationController
 			add_planner_recipe_to_shopping_list(planner_recipe)
 		end
 
+		current_user.planner_shopping_lists.first.update_attributes(
+			ready: true
+		)
+
 	end
 
 	def recipe_update_in_planner
+		current_user.planner_shopping_lists.first.update_attributes(
+			ready: false
+		)
+
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
 		return unless params.has_key?(:recipe_id) && Recipe.exists?(@recipe_id_hash.decode(params[:recipe_id]).first)
@@ -53,9 +64,15 @@ class DashboardController < ApplicationController
 		).update_attributes(
 			date: new_date
 		)
+		current_user.planner_shopping_lists.first.update_attributes(
+			ready: true
+		)
 	end
 
 	def delete_recipe_from_planner
+		current_user.planner_shopping_lists.first.update_attributes(
+			ready: false
+		)
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
 		return unless params.has_key?(:recipe_id) && Recipe.exists?(@recipe_id_hash.decode(params[:recipe_id]).first)
@@ -77,14 +94,23 @@ class DashboardController < ApplicationController
 
 		planner_recipe.destroy
 
+		current_user.planner_shopping_lists.first.update_attributes(
+			ready: true
+		)
 	end
 
 	def get_shopping_list_content
-		planner_shopping_list_portions = current_user.planner_shopping_lists.first.planner_shopping_list_portions.select{|p| p.planner_recipe.date > Date.current - 1.day && p.planner_recipe.date < Date.current + 7.day}.map{|pslp| pslp.amount.to_s + ' ' + pslp.unit.name + ' ' + pslp.ingredient.name }
+		if current_user.planner_shopping_lists.first.ready == true
 
-		respond_to do |format|
-			format.json { render json: planner_shopping_list_portions.as_json}
-			format.html { redirect_to dashboard_path }
+			planner_shopping_list_portions = current_user.planner_shopping_lists.first.planner_shopping_list_portions.select{|p| p.planner_recipe.date > Date.current - 1.day && p.planner_recipe.date < Date.current + 7.day}.map{|pslp| pslp.amount.to_s + ' ' + pslp.unit.name + ' ' + pslp.ingredient.name }
+
+			respond_to do |format|
+				format.json { render json: planner_shopping_list_portions.as_json}
+				format.html { redirect_to dashboard_path }
+			end
+
+		else
+			render(:file => File.join(Rails.root, 'public/202.html'), :status => 202, :layout => false)
 		end
 	end
 end
