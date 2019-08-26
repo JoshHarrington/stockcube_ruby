@@ -110,7 +110,10 @@ class DashboardController < ApplicationController
 			end
 
 		else
-			render(:file => File.join(Rails.root, 'public/202.html'), :status => 202, :layout => false)
+			respond_to do |format|
+				format.json { render json: [].as_json, status: 202}
+				format.html { redirect_to dashboard_path }
+			end
 		end
 	end
 end
