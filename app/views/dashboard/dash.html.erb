@@ -23,7 +23,7 @@
 		<div class="list_block list_block-stack list_block-wide" data-shopping-list>
 			<div class="list_block--content pb-1">
 				<% if @planner_shopping_list_portions.length == 0 %>
-					Add some recipes to planner or add your own custom items!
+					<p>Add some recipes to planner or add your own custom items!</p>
 				<% else %>
 					<% @planner_shopping_list_portions.each do |psl_portion| %>
 						<div class="list_block--item"><%= psl_portion.amount %> <%= psl_portion.unit.name %> <%= psl_portion.ingredient.name %></div>
