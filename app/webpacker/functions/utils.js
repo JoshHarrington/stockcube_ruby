@@ -24,9 +24,9 @@ const ajaxRequest = (data, path, type, windowObj = undefined, iterations = 0) =>
     request.onload = function() {
       if (this.status >= 200 && this.status < 400) {
 
-        if (this.status === 202) {
+        if (this.status === 202 && iterations < 15) {
           // server not ready, retry in a moment
-          const restartRequest = window.setTimeout(() => {ajaxRequest(data, path, type, windowObj, iterations + 1)}, .2*1000)
+          const restartRequest = window.setTimeout(() => {ajaxRequest(data, path, type, windowObj, iterations + 1)}, .3*1000)
         } else {
 
           // Success!
@@ -50,7 +50,7 @@ const ajaxRequest = (data, path, type, windowObj = undefined, iterations = 0) =>
               window[windowObj] = resp
             } else if (!difference && requestType === 'GET' && iterations < 10) {
               // response is the same as when the page loaded
-              const restartRequest = window.setTimeout(() => {ajaxRequest(data, path, type, windowObj, iterations + 1)}, .2*1000)
+              const restartRequest = window.setTimeout(() => {ajaxRequest(data, path, type, windowObj, iterations + 1)}, .3*1000)
             } else {
               // ran ten times, resp still the same as data, setting the window obj to be whatever the resp is
               window[windowObj] = resp
@@ -60,8 +60,10 @@ const ajaxRequest = (data, path, type, windowObj = undefined, iterations = 0) =>
 
       } else {
         // We reached our target server, but it returned an error
-        console.log('error getting data from the server, restarting request')
-        const restartRequest = window.setTimeout(() => {ajaxRequest(data, path, type, windowObj, iterations + 1)}, .2*1000)
+        console.log('error getting data from the server, restarting request if iterations less than 5')
+        if (iterations < 5) {
+          const restartRequest = window.setTimeout(() => {ajaxRequest(data, path, type, windowObj, iterations + 1)}, .3*1000)
+        }
       }
     }
   }
