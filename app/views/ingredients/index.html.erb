@@ -12,8 +12,8 @@
         <div class="ingredient col-xs-2">
           <%= link_to edit_ingredient_path(ingredient) do %>
             <h3><%= ingredient.name %></h3>
-            <p>Default unit: <%= ingredient.unit.name %></p>
-            <p>[<%= ingredient.vegan && 'Vegan, ' %><%= ingredient.vegetarian && 'Vegetarian, ' %><%= ingredient.dairy_free && 'Dairy free, ' %> <%= ingredient.gluten_free && 'Gluten free, ' %><%= ingredient.kosher && 'Kosher' %>]</p>
+            <span>Default unit: <%= ingredient.unit.name %></span>
+            <span>[<%= ingredient.vegan == true ? 'Vegan, ' : '' %><%= ingredient.vegetarian == true ? 'Vegetarian, ' : '' %><%= ingredient.dairy_free == true ? 'Dairy free, ' : '' %> <%= ingredient.gluten_free == true ? 'Gluten free, ' : '' %><%= ingredient.kosher == true ? 'Kosher' : '' %>]</span>
           <% end  %>
           <br />
           <br />
