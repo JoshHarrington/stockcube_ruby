@@ -1,22 +1,25 @@
 <div class="main ingredient-index">
-      <div class="container">
-        <div class="row">
+  <div class="container">
+    <div class="row">
 
-          <%= link_to 'New Ingredient', ingredients_new_path %>
+      <%= link_to 'New Ingredient', ingredients_new_path %>
 
-          <br />
-          <br />
-          <br />
-          <% @ingredients.sort_by {|ingredient| ingredient.recipes.length}.reverse.each do |ingredient| %>
+      <br />
+      <br />
+      <br />
+      <% @ingredients.sort_by {|ingredient| ingredient.recipes.length}.reverse.each do |ingredient| %>
 
-            <div class="ingredient col-xs-2">
-              <h3><%= link_to "#{ingredient.name}", ingredient_path(ingredient) %></h3>
-              <%= link_to "Edit Ingredient", edit_ingredient_path(ingredient) %>
-              <br />
-              <br />
-            </div>
-            <br />
+        <div class="ingredient col-xs-2">
+          <%= link_to edit_ingredient_path(ingredient) do %>
+            <h3><%= ingredient.name %></h3>
+            <p>Default unit: <%= ingredient.unit.name %></p>
+            <p>[<%= ingredient.vegan && 'Vegan, ' %><%= ingredient.vegetarian && 'Vegetarian, ' %><%= ingredient.dairy_free && 'Dairy free, ' %> <%= ingredient.gluten_free && 'Gluten free, ' %><%= ingredient.kosher && 'Kosher' %>]</p>
           <% end  %>
+          <br />
+          <br />
+        </div>
+        <br />
+      <% end  %>
 
-      </div>
+  </div>
 </div>
