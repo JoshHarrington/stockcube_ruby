@@ -56,76 +56,106 @@ const manageNotices = (leaveOrCreateByType = undefined) => {
 
 }
 
-const updateShoppingList = (delay = 0, parentIterations = 0, prevState = undefined) => {
+function checkForUpdates(onSuccess) {
+  setTimeout(() => fetch("/planner/shopping_list").then((response) => {
+    if(response.status != 200){
+      setTimeout(() => checkForUpdates(onSuccess), 200)
+    } else {
+      response.json().then(onSuccess)
+    }
+  }), 400)
+}
 
-	if (prevState !== 'failing') {
-		manageNotices('loading')
+const renderShoppingList = (shoppingListItems) => {
+	const ShoppingList = document.querySelector('[data-shopping-list]')
+	const ListBlockContent = document.createElement('div')
+	const previousListBlockContent = document.querySelector('[data-shopping-list] .list_block--content')
+	ListBlockContent.classList.add('list_block--content', 'pb-1')
+	if (shoppingListItems.length === 0 ){
+		ListBlockContent.innerHTML = '<p>Add some recipes to planner or add your own custom items!</p>'
+	} else {
+		shoppingListItems.forEach(function(item) {
+			const Ingredient = document.createElement('div')
+			Ingredient.classList.add('list_block--item')
+			Ingredient.innerHTML = item
+			ListBlockContent.appendChild(Ingredient)
+		})
 	}
-
-	const shoppingListDelay = window.setTimeout(() => {
-
-		let plannerShoppingListItems = window.plannerShoppingListItems
-
-		const ShoppingList = document.querySelector('[data-shopping-list]')
-
-		const ListBlockContent = document.createElement('div')
-		ajaxRequest(plannerShoppingListItems, '/planner/shopping_list', 'GET', 'plannerShoppingListItems', parentIterations)
-
-		const ajaxCheck = (iterations = parentIterations) => {
-			let resp = window.plannerShoppingListItems
-			let data = plannerShoppingListItems
-			let difference = false
-			if (resp.length === 0 && resp.length !== data.length) {
-				difference = true
-			} else if ( resp.filter(x => !data.includes(x)).length !== 0 || data.filter(x => !resp.includes(x)).length !== 0) {
-				difference = true
-			}
-			if (difference) {
-				console.log('iterations: ', iterations, 'success branch')
-				// ajax output is set
-				plannerShoppingListItems = window.plannerShoppingListItems
-				const previousListBlockContent = document.querySelector('[data-shopping-list] .list_block--content')
-				ListBlockContent.classList.add('list_block--content', 'pb-1')
-				if (plannerShoppingListItems.length === 0 ){
-					ListBlockContent.innerHTML = '<p>Add some recipes to planner or add your own custom items!</p>'
-				} else {
-					plannerShoppingListItems.forEach(function(item) {
-						const Ingredient = document.createElement('div')
-						Ingredient.classList.add('list_block--item')
-						Ingredient.innerHTML = item
-						ListBlockContent.appendChild(Ingredient)
-					})
-				}
-				previousListBlockContent.remove()
-				ShoppingList.appendChild(ListBlockContent)
-
-				manageNotices()
-
-			} else if (!difference && iterations < 15) {
-				console.log('iterations: ', iterations, 'failing branch, less than 10 iterations')
-
-				// running a check for ajax output
-				manageNotices('loading')
-				const checkForplannerShoppingListItems = window.setTimeout(() => {ajaxCheck(iterations + 1)}, .4*1000)
-			} else {
-				console.log('iterations: ', iterations, 'failing branch, less than 20 iterations')
-
-				// shopping list couldn't be updated, setup fallback
-
-				manageNotices('failure')
-
-				// updateShoppingList(10, 0, 'failing')
-			}
-		}
-
-		ajaxCheck()
-
-	}, delay*1000)
-
+	previousListBlockContent.remove()
+	ShoppingList.appendChild(ListBlockContent)
 }
 
 
-window.updateShoppingList = updateShoppingList
+// const updateShoppingList = (delay = 0, parentIterations = 0, prevState = undefined) => {
+
+// 	if (prevState !== 'failing') {
+// 		manageNotices('loading')
+// 	}
+
+// 	const shoppingListDelay = window.setTimeout(() => {
+
+// 		let plannerShoppingListItems = window.plannerShoppingListItems
+
+// 		const ShoppingList = document.querySelector('[data-shopping-list]')
+
+// 		const ListBlockContent = document.createElement('div')
+// 		ajaxRequest(plannerShoppingListItems, '/planner/shopping_list', 'GET', 'plannerShoppingListItems', parentIterations)
+
+// 		const ajaxCheck = (iterations = parentIterations) => {
+// 			let resp = window.plannerShoppingListItems
+// 			let data = plannerShoppingListItems
+// 			let difference = false
+// 			if (resp.length === 0 && resp.length !== data.length) {
+// 				difference = true
+// 			} else if ( resp.filter(x => !data.includes(x)).length !== 0 || data.filter(x => !resp.includes(x)).length !== 0) {
+// 				difference = true
+// 			}
+// 			if (difference) {
+// 				console.log('iterations: ', iterations, 'success branch')
+// 				// ajax output is set
+// 				plannerShoppingListItems = window.plannerShoppingListItems
+// 				const previousListBlockContent = document.querySelector('[data-shopping-list] .list_block--content')
+// 				ListBlockContent.classList.add('list_block--content', 'pb-1')
+// 				if (plannerShoppingListItems.length === 0 ){
+// 					ListBlockContent.innerHTML = '<p>Add some recipes to planner or add your own custom items!</p>'
+// 				} else {
+// 					plannerShoppingListItems.forEach(function(item) {
+// 						const Ingredient = document.createElement('div')
+// 						Ingredient.classList.add('list_block--item')
+// 						Ingredient.innerHTML = item
+// 						ListBlockContent.appendChild(Ingredient)
+// 					})
+// 				}
+// 				previousListBlockContent.remove()
+// 				ShoppingList.appendChild(ListBlockContent)
+
+// 				manageNotices()
+
+// 			} else if (!difference && iterations < 15) {
+// 				console.log('iterations: ', iterations, 'failing branch, less than 10 iterations')
+
+// 				// running a check for ajax output
+// 				manageNotices('loading')
+// 				const checkForplannerShoppingListItems = window.setTimeout(() => {ajaxCheck(iterations + 1)}, .4*1000)
+// 			} else {
+// 				console.log('iterations: ', iterations, 'failing branch, less than 20 iterations')
+
+// 				// shopping list couldn't be updated, setup fallback
+
+// 				manageNotices('failure')
+
+// 				// updateShoppingList(10, 0, 'failing')
+// 			}
+// 		}
+
+// 		ajaxCheck()
+
+// 	}, delay*1000)
+
+// }
+
+
+// window.updateShoppingList = updateShoppingList
 
 const addPlannerRecipe = (e) => {
 	ajaxRequest(plannerRecipeAddData(e), '/planner/recipe_add')
@@ -146,7 +176,10 @@ const addPlannerRecipe = (e) => {
 	e.item.appendChild(deleteBtn)
 	deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
 
-	updateShoppingList(.6)
+// 	updateShoppingList(.6)
+	checkForUpdates(function(shoppingListItems) {
+	  renderShoppingList(shoppingListItems)
+	})
 
 }
 
@@ -166,7 +199,10 @@ const deletePlannerRecipe = (deleteBtn) => {
 
 	buttonParent.style.display = 'none'
 
-	updateShoppingList(.6)
+// 	updateShoppingList(.6)
+	checkForUpdates(function(shoppingListItems) {
+	  renderShoppingList(shoppingListItems)
+	})
 }
 
 const dashboardFn = () => {
