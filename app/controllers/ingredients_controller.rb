@@ -44,7 +44,7 @@ class IngredientsController < ApplicationController
 	end
 	private
 		def ingredient_params
-			params.require(:ingredient).permit(:name, :searchable, :vegan, :vegetarian, :gluten_free, :dairy_free, :kosher, units_attributes:[:id, :name, :short_name, :unit_type, :_destroy])
+			params.require(:ingredient).permit(:name, :searchable, :vegan, :vegetarian, :gluten_free, :dairy_free, :kosher, :unit_id)
 		end
 
 		# Confirms a logged-in user.
