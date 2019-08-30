@@ -85,7 +85,6 @@ const renderShoppingList = (shoppingListItems) => {
 	ShoppingList.appendChild(ListBlockContent)
 }
 
-
 // const updateShoppingList = (delay = 0, parentIterations = 0, prevState = undefined) => {
 
 // 	if (prevState !== 'failing') {
