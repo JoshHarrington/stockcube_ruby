@@ -13,11 +13,11 @@ class IngredientsController < ApplicationController
 	end
 	def new
     @ingredient = Ingredient.new
-		@units = Unit.all
+		@units = Unit.all.reject{|u| u.name == nil }
   end
   def create
 		@ingredient = Ingredient.new(ingredient_params)
-		@units = Unit.all
+		@units = Unit.all.reject{|u| u.name == nil }
     if @ingredient.save
 			redirect_to ingredients_path
 			Ingredient.reindex
@@ -28,11 +28,11 @@ class IngredientsController < ApplicationController
 	def edit
 		@ingredient = Ingredient.find(params[:id])
 		@portions = @ingredient.portions
-		@units = Unit.all
+		@units = Unit.all.reject{|u| u.name == nil }
 	end
 	def update
 		@ingredient = Ingredient.find(params[:id])
-		@units = Unit.all
+		@units = Unit.all.reject{|u| u.name == nil }
 
 		@portions = @ingredient.portions
 		if @ingredient.update(ingredient_params)
