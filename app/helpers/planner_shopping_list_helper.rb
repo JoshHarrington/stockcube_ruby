@@ -4,7 +4,7 @@ module PlannerShoppingListHelper
 		return if planner_recipe == nil
 		planner_shopping_list = PlannerShoppingList.find_or_create_by(user_id: current_user.id)
 
-		recipe_portions = planner_recipe.recipe.portions
+		recipe_portions = planner_recipe.recipe.portions.reject{|p| p.ingredient.name.downcase == 'water'}
 		ingredients_from_recipe_portions = recipe_portions.map(&:ingredient_id)
 
 		cupboards = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact.sort_by{|c| c.created_at}.reverse!
