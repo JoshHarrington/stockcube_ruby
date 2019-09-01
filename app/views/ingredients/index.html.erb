@@ -1,25 +1,26 @@
 <div class="main ingredient-index">
   <div class="container">
-    <div class="row">
-
-      <%= link_to 'New Ingredient', ingredients_new_path %>
-
-      <br />
-      <br />
-      <br />
-      <% @ingredients.sort_by {|ingredient| ingredient.recipes.length}.reverse.each do |ingredient| %>
-
-        <div class="ingredient col-xs-2">
-          <%= link_to edit_ingredient_path(ingredient) do %>
-            <h3><%= ingredient.name %></h3>
-            <span>Default unit: <%= ingredient.unit.name %></span>
-            <span>[<%= ingredient.vegan == true ? 'Vegan, ' : '' %><%= ingredient.vegetarian == true ? 'Vegetarian, ' : '' %><%= ingredient.dairy_free == true ? 'Dairy free, ' : '' %> <%= ingredient.gluten_free == true ? 'Gluten free, ' : '' %><%= ingredient.kosher == true ? 'Kosher' : '' %>]</span>
-          <% end  %>
-          <br />
-          <br />
-        </div>
+    <div class="list_block--collection--wrap">
+      <div class="list_block--collection--sibling">
+        <h1>Ingredients list</h1>
         <br />
-      <% end  %>
+        <%= link_to 'New Ingredient', ingredients_new_path %>
+      </div>
+      <div class="list_block--collection list_block--collection__tight">
+        <% @ingredients.sort_by {|ingredient| ingredient.recipes.length}.reverse.each do |ingredient| %>
 
+          <div class="list_block list_block__column">
+            <div class="list_block--content">
+              <div class="list_block--title">
+                <h3><%= link_to ingredient.name, edit_ingredient_path(ingredient) %></h3>
+              </div>
+              <p>Default unit: <%= ingredient.unit ? ingredient.unit.name : 'No unit set' %></p>
+              <p style="width:100%">[<%= ingredient.vegan == true ? 'Vegan, ' : '' %><%= ingredient.vegetarian == true ? 'Vegetarian, ' : '' %><%= ingredient.dairy_free == true ? 'Dairy free, ' : '' %> <%= ingredient.gluten_free == true ? 'Gluten free, ' : '' %><%= ingredient.kosher == true ? 'Kosher' : '' %>]</p>
+            </div>
+          </div>
+
+        <% end  %>
+      </div>
+    </div>
   </div>
 </div>
