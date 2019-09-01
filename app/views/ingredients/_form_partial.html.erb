@@ -2,7 +2,7 @@
 		<p>Ingredient Name</p> <%= i.text_field :name %><br>
 		<br />
 		<p>Unit</p>
-		<%= i.select :unit_id, options_from_collection_for_select(@units, "id", "name", (ingredient && ingredient.unit_id ? ingredient.unit_id : 1) ), include_blank: true %><br />
+		<%= i.select :unit_id, options_from_collection_for_select(@units, "id", "name", (ingredient && ingredient.unit_id ? ingredient.unit_id : 1) ), prompt: "-- Please select --" %><br />
 		<br />
 		<p>Vegan <%= i.check_box "vegan" %></p><br	/>
 		<p>Vegetarian <%= i.check_box "vegetarian" %></p><br	/>
