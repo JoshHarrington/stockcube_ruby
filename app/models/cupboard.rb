@@ -1,5 +1,5 @@
 class Cupboard < ApplicationRecord
-	has_many :stocks
+	has_many :stocks, dependent: :delete_all
 	has_many :ingredients, through: :stocks
 
 	has_many :cupboard_users,  dependent: :delete_all

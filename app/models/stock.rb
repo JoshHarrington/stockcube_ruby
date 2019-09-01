@@ -3,7 +3,7 @@ class Stock < ApplicationRecord
 	belongs_to :ingredient
 	belongs_to :unit
 	belongs_to :planner_recipe, optional: true
-	has_many :stock_users
+	has_many :stock_users, dependent: :delete_all
 	has_many :users, through: :stock_users
 
 	accepts_nested_attributes_for :ingredient,
