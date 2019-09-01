@@ -4,8 +4,7 @@ class DashboardController < ApplicationController
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
 		@recipes = Recipe.first(8)
-		@planner_shopping_list_portions = current_user.planner_shopping_lists.first.planner_shopping_list_portions.select{|p| p.planner_recipe.date > Date.current - 1.day && p.planner_recipe.date < Date.current + 7.day}
-		@planner_shopping_list_portions_list = @planner_shopping_list_portions.map{|pslp| pslp.amount.to_s + ' ' + pslp.unit.name + ' ' + pslp.ingredient.name }.as_json
+		@planner_recipes = current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.day && pr.date < Date.current + 7.day}.sort_by{|pr| pr.date}
 	end
 
 	def recipe_add_to_planner
@@ -102,10 +101,10 @@ class DashboardController < ApplicationController
 	def get_shopping_list_content
 		if current_user.planner_shopping_lists.first.ready == true
 
-			planner_shopping_list_portions = current_user.planner_shopping_lists.first.planner_shopping_list_portions.select{|p| p.planner_recipe.date > Date.current - 1.day && p.planner_recipe.date < Date.current + 7.day}.map{|pslp| pslp.amount.to_s + ' ' + pslp.unit.name + ' ' + pslp.ingredient.name }
+			planner_recipes = current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.day && pr.date < Date.current + 7.day}.sort_by{|pr| pr.date}.map{|pr| pr.planner_shopping_list_portions.reject{|p|p.ingredient.name.downcase == 'water'}.map{|p| {"planner_recipe_id": pr.id, "shopping_list_portion_id": p.id, "planner_recipe_description": pr.recipe.title + ' (' + pr.date.to_s(:short) + ')', "portion_description": p.amount.to_f.to_s + ' ' + p.unit.name + ' ' + p.ingredient.name} } }
 
 			respond_to do |format|
-				format.json { render json: planner_shopping_list_portions.as_json}
+				format.json { render json: planner_recipes.as_json}
 				format.html { redirect_to dashboard_path }
 			end
 
