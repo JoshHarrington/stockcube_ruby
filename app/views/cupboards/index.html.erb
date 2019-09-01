@@ -3,8 +3,9 @@
 
 <% if @planner_recipes.length > 0 %>
   <div class="list_block--collection--wrap">
-    <div class="list_block--collection--sibling">
+    <div class="list_block--collection--sibling list_block--collection--sibling_stack">
       <h2>Planner Ingredients</h2>
+      <p class="item_form--content_item_note"><%= icomoon('information-outline')%> These are reserved ingredients, that we think you're going to be using in recipes soon</p>
     </div>
     <div class="list_block--collection">
       <% @planner_recipes.select{|pr| planner_stocks(pr.id).length > 0}.each do |p_recipe| %>
