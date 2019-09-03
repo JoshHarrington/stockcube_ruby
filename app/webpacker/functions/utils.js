@@ -19,7 +19,7 @@ const ajaxRequest = (data, path, loop = 0) => {
   request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
   request.onload = function () {
     if (this.status === 500 && loop < 4) {
-      setTimeout(() => ajaxRequest(data, path, loop++), 300)
+      setTimeout(() => ajaxRequest(data, path, loop + 1), 600)
     }
   };
   request.send(data)
