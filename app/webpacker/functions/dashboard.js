@@ -164,7 +164,6 @@ const deletePlannerRecipe = (deleteBtn) => {
 
 	buttonParent.style.display = 'none'
 
-// 	updateShoppingList(.6)
 	checkForUpdates(function(shoppingListItems) {
 	  renderShoppingList(shoppingListItems)
 	})
