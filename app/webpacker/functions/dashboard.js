@@ -153,6 +153,10 @@ const updatePlannerRecipe = (e) => {
 
 	const parentId = e.item.parentNode.id
 	e.item.setAttribute('data-parent-id', parentId)
+
+	checkForUpdates(function(shoppingListItems) {
+	  renderShoppingList(shoppingListItems)
+	})
 }
 
 const deletePlannerRecipe = (deleteBtn) => {
@@ -233,6 +237,10 @@ const dashboardFn = () => {
 	})
 
 	setupShoppingListButton()
+
+	checkForUpdates(function(shoppingListItems) {
+	  renderShoppingList(shoppingListItems)
+	})
 
 }
 
