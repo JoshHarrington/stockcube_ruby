@@ -67,94 +67,61 @@ function checkForUpdates(onSuccess) {
 }
 
 const renderShoppingList = (shoppingListItems) => {
-	const ShoppingList = document.querySelector('[data-shopping-list]')
-	const ListBlockContent = document.createElement('div')
-	const previousListBlockContent = document.querySelector('[data-shopping-list] .list_block--content')
-	ListBlockContent.classList.add('list_block--content', 'pb-1')
+	const ShoppingList = document.querySelector('#planner_shopping_list')
+
+	const ListTopUl = document.createElement('ul')
+
+	const OldShoppingListContent = document.querySelector('#planner_shopping_list > ul')
+
 	if (shoppingListItems.length === 0 ){
-		ListBlockContent.innerHTML = '<p>Add some recipes to planner or add your own custom items!</p>'
+		hideShoppingList()
+		ListTopUl.innerHTML = '<p>Shopping List is currently empty, move some recipes to your planner to get items added to this list</p>'
 	} else {
-		shoppingListItems.forEach(function(item) {
-			const Ingredient = document.createElement('div')
-			Ingredient.classList.add('list_block--item')
-			Ingredient.innerHTML = item
-			ListBlockContent.appendChild(Ingredient)
+		shoppingListItems.forEach(function(planner_recipe) {
+			const ListRecipeLi = document.createElement('li')
+			const ListRecipeTitle = document.createElement('h3')
+			ListRecipeTitle.innerHTML = planner_recipe[0]["planner_recipe_description"]
+			ListRecipeLi.appendChild(ListRecipeTitle)
+			const RecipePortionUl = document.createElement('ul')
+			RecipePortionUl.classList.add('planner_sl-recipe_list')
+			planner_recipe.forEach(function(portion) {
+				const RecipePortionLi = document.createElement('li')
+				RecipePortionLi.innerHTML = '<p><label><input type="checkbox" name="planner_shopping_list_portions['+ portion["shopping_list_portion_id"] +'][add]" id="planner_shopping_list_portions_id_add" value="'+ portion["shopping_list_portion_id"] +'"> ' + portion["portion_description"] + '</label></p><h5>Use by date:</h5><p><input type="date" name="planner_shopping_list_portions['+ portion["shopping_list_portion_id"] +'][date]" id="planner_shopping_list_portions_id_date" value="2019-09-15" min="2019-09-01"></p><hr />'
+				RecipePortionUl.appendChild(RecipePortionLi)
+			})
+			ListRecipeLi.appendChild(RecipePortionUl)
+			ListTopUl.appendChild(ListRecipeLi)
 		})
+
+		showShoppingList()
 	}
-	previousListBlockContent.remove()
-	ShoppingList.appendChild(ListBlockContent)
+	OldShoppingListContent.remove()
+	ShoppingList.appendChild(ListTopUl)
 }
 
-// const updateShoppingList = (delay = 0, parentIterations = 0, prevState = undefined) => {
 
-// 	if (prevState !== 'failing') {
-// 		manageNotices('loading')
-// 	}
+const showShoppingList = () => {
+	const html = document.querySelector('html')
+	if (!html.classList.contains('shopping_list_open')) {
+		html.classList.add('shopping_list_open')
+	}
+}
 
-// 	const shoppingListDelay = window.setTimeout(() => {
+const hideShoppingList = () => {
+	const html = document.querySelector('html')
+	if (html.classList.contains('shopping_list_open')) {
+		html.classList.remove('shopping_list_open')
+	}
+}
 
-// 		let plannerShoppingListItems = window.plannerShoppingListItems
+const setupShoppingListButton = () => {
+	const html = document.querySelector('html')
+	const toggleBtn = document.querySelector('#planner_shopping_list .list_toggle')
+	toggleBtn.addEventListener("click", function(){
+		html.classList.toggle('shopping_list_open')
+	})
+}
 
-// 		const ShoppingList = document.querySelector('[data-shopping-list]')
-
-// 		const ListBlockContent = document.createElement('div')
-// 		ajaxRequest(plannerShoppingListItems, '/planner/shopping_list', 'GET', 'plannerShoppingListItems', parentIterations)
-
-// 		const ajaxCheck = (iterations = parentIterations) => {
-// 			let resp = window.plannerShoppingListItems
-// 			let data = plannerShoppingListItems
-// 			let difference = false
-// 			if (resp.length === 0 && resp.length !== data.length) {
-// 				difference = true
-// 			} else if ( resp.filter(x => !data.includes(x)).length !== 0 || data.filter(x => !resp.includes(x)).length !== 0) {
-// 				difference = true
-// 			}
-// 			if (difference) {
-// 				console.log('iterations: ', iterations, 'success branch')
-// 				// ajax output is set
-// 				plannerShoppingListItems = window.plannerShoppingListItems
-// 				const previousListBlockContent = document.querySelector('[data-shopping-list] .list_block--content')
-// 				ListBlockContent.classList.add('list_block--content', 'pb-1')
-// 				if (plannerShoppingListItems.length === 0 ){
-// 					ListBlockContent.innerHTML = '<p>Add some recipes to planner or add your own custom items!</p>'
-// 				} else {
-// 					plannerShoppingListItems.forEach(function(item) {
-// 						const Ingredient = document.createElement('div')
-// 						Ingredient.classList.add('list_block--item')
-// 						Ingredient.innerHTML = item
-// 						ListBlockContent.appendChild(Ingredient)
-// 					})
-// 				}
-// 				previousListBlockContent.remove()
-// 				ShoppingList.appendChild(ListBlockContent)
-
-// 				manageNotices()
-
-// 			} else if (!difference && iterations < 15) {
-// 				console.log('iterations: ', iterations, 'failing branch, less than 10 iterations')
-
-// 				// running a check for ajax output
-// 				manageNotices('loading')
-// 				const checkForplannerShoppingListItems = window.setTimeout(() => {ajaxCheck(iterations + 1)}, .4*1000)
-// 			} else {
-// 				console.log('iterations: ', iterations, 'failing branch, less than 20 iterations')
-
-// 				// shopping list couldn't be updated, setup fallback
-
-// 				manageNotices('failure')
-
-// 				// updateShoppingList(10, 0, 'failing')
-// 			}
-// 		}
-
-// 		ajaxCheck()
-
-// 	}, delay*1000)
-
-// }
-
-
-// window.updateShoppingList = updateShoppingList
 
 const addPlannerRecipe = (e) => {
 	ajaxRequest(plannerRecipeAddData(e), '/planner/recipe_add')
@@ -175,7 +142,6 @@ const addPlannerRecipe = (e) => {
 	e.item.appendChild(deleteBtn)
 	deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
 
-// 	updateShoppingList(.6)
 	checkForUpdates(function(shoppingListItems) {
 	  renderShoppingList(shoppingListItems)
 	})
@@ -266,6 +232,8 @@ const dashboardFn = () => {
 	plannerRecipeDeleteButtons.forEach(function(deleteBtn){
 		deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
 	})
+
+	setupShoppingListButton()
 
 }
 

@@ -120,4 +120,10 @@ module ApplicationHelper
 			return '<li>'.html_safe + link_to(link_string, page_path) + '</li>'.html_safe
 		end
 	end
+	def shopping_list_class
+		return unless current_user && current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.day && pr.date < Date.current + 7.day}
+		if current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.day && pr.date < Date.current + 7.day}.length > 0
+			return 'shopping_list_open'
+		end
+	end
 end

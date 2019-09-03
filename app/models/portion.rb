@@ -1,7 +1,7 @@
 class Portion < ApplicationRecord
   belongs_to :recipe
   belongs_to :ingredient
-  has_one :unit
+  belongs_to :unit
 
   validates :amount, presence: true
   validates_numericality_of :amount, on: :create
