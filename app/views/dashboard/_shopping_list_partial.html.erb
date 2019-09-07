@@ -1,28 +1,30 @@
+<%
+	planner_recipe_portions = current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.day && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}}.flatten
+	combi_portions = current_user.planner_shopping_lists.first.combi_planner_shopping_list_portions
+	@shopping_list_portions = planner_recipe_portions + combi_portions
+	if @shopping_list_portions.length > 0
+		@shopping_list_portions.sort_by!{|p| p.ingredient.name}
+	end
+%>
+
 <aside id="planner_shopping_list">
 	<h2>Shopping List</h2>
 	<button class="list_toggle"><span class="cross icon_char" title="Close shopping list">&#735;</span><span class="chevron_left icon_char" title="Open shopping list">&#706;</span></button>
-	<% if @planner_recipes.length == 0 %>
+	<% if @shopping_list_portions.length == 0 %>
 		<ul><p>Shopping List is currently empty, move some recipes to your planner to get items added to this list</p></ul>
 	<% else %>
-		<ul>
-			<% @planner_recipes.each do |pr| %>
+		<ul class="planner_sl-recipe_list">
+			<% @shopping_list_portions.each do |portion| %>
 				<li>
-					<h3><%= pr.recipe.title %> (<%= pr.date.to_s(:short) %>)</h3>
-					<ul class="planner_sl-recipe_list">
-						<% pr.planner_shopping_list_portions.each do |portion| %>
-							<li>
-								<p>
-									<label>
-										<%= check_box_tag "planner_shopping_list_portions[id][add]", "planner_shopping_list_portions_id", false, class: "" %>
-										<%= portion.amount %> <%= portion.unit.name %> <%= portion.ingredient.name %>
-									</label>
-								</p>
-								<h5>Use by date:</h5>
-								<p><%= date_field_tag "planner_shopping_list_portions[id][date]", Date.current + 2.weeks, min: Date.current %></p>
-								<hr />
-							</li>
-						<% end %>
-					</ul>
+					<p>
+						<label>
+							<%= check_box_tag "planner_shopping_list_portions[id][add]", "planner_shopping_list_portions_id", false, class: "" %>
+							<%= portion.amount %> <%= portion.unit.name %> <%= portion.ingredient.name %>
+						</label>
+					</p>
+					<h5>Use by date:</h5>
+					<p><%= date_field_tag "planner_shopping_list_portions[id][date]", Date.current + 2.weeks, min: Date.current %></p>
+					<hr />
 				</li>
 			<% end %>
 		</ul>
