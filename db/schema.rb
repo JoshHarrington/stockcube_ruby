@@ -10,10 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190826080515) do
+ActiveRecord::Schema.define(version: 20190907081528) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "combi_planner_sl_portions", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "planner_shopping_list_id"
+    t.bigint "ingredient_id"
+    t.bigint "unit_id"
+    t.decimal "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ingredient_id"], name: "index_combi_planner_sl_portions_on_ingredient_id"
+    t.index ["planner_shopping_list_id"], name: "index_combi_planner_sl_portions_on_planner_shopping_list_id"
+    t.index ["unit_id"], name: "index_combi_planner_sl_portions_on_unit_id"
+    t.index ["user_id"], name: "index_combi_planner_sl_portions_on_user_id"
+  end
 
   create_table "cupboard_users", force: :cascade do |t|
     t.bigint "cupboard_id"
@@ -80,6 +94,8 @@ ActiveRecord::Schema.define(version: 20190826080515) do
     t.decimal "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "combi_planner_sl_portion_id"
+    t.index ["combi_planner_sl_portion_id"], name: "index_planner_shopping_list_portion_to_combi"
     t.index ["ingredient_id"], name: "index_planner_shopping_list_portions_on_ingredient_id"
     t.index ["planner_recipe_id"], name: "index_planner_shopping_list_portions_on_planner_recipe_id"
     t.index ["planner_shopping_list_id"], name: "index_planner_shopping_list__portions"
@@ -240,8 +256,13 @@ ActiveRecord::Schema.define(version: 20190826080515) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "combi_planner_sl_portions", "ingredients"
+  add_foreign_key "combi_planner_sl_portions", "planner_shopping_lists"
+  add_foreign_key "combi_planner_sl_portions", "units"
+  add_foreign_key "combi_planner_sl_portions", "users"
   add_foreign_key "planner_recipes", "recipes"
   add_foreign_key "planner_recipes", "users"
+  add_foreign_key "planner_shopping_list_portions", "combi_planner_sl_portions"
   add_foreign_key "planner_shopping_list_portions", "ingredients"
   add_foreign_key "planner_shopping_list_portions", "planner_recipes"
   add_foreign_key "planner_shopping_list_portions", "planner_shopping_lists"
