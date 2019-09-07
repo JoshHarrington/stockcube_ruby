@@ -1,5 +1,4 @@
 class CombiPlannerShoppingListPortion < ApplicationRecord
-	self.table_name = "combi_planner_sl_portions"
 
 	has_many 	 :planner_shopping_list_portions, dependent: :nullify
 
