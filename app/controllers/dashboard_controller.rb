@@ -4,7 +4,6 @@ class DashboardController < ApplicationController
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
 		@recipes = Recipe.first(8)
-		@planner_recipes = current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.day && pr.date < Date.current + 7.day}.sort_by{|pr| pr.date}
 	end
 
 	def recipe_add_to_planner
@@ -21,7 +20,7 @@ class DashboardController < ApplicationController
 		user_id = current_user.id
 		date_string = Date.parse(@planner_recipe_date_hash.decode(params[:planner_date]).first.to_s).to_date
 
-		planner_recipe = PlannerRecipe.find_or_create_by(
+		planner_recipe = PlannerRecipe.create(
 			user_id: user_id,
 			recipe_id: recipe_id,
 			date: date_string
@@ -30,6 +29,8 @@ class DashboardController < ApplicationController
 		if recipe.portions.length > 0
 			add_planner_recipe_to_shopping_list(planner_recipe)
 		end
+
+		update_planner_shopping_list_portions
 
 		current_user.planner_shopping_lists.first.update_attributes(
 			ready: true
@@ -63,6 +64,9 @@ class DashboardController < ApplicationController
 		).update_attributes(
 			date: new_date
 		)
+
+		update_planner_shopping_list_portions
+
 		current_user.planner_shopping_lists.first.update_attributes(
 			ready: true
 		)
@@ -89,9 +93,12 @@ class DashboardController < ApplicationController
 			date: date
 		)
 
-		combine_divided_stock_after_planner_recipe_delete(planner_recipe)
+		if planner_recipe
+			combine_divided_stock_after_planner_recipe_delete(planner_recipe)
+			planner_recipe.destroy
+		end
 
-		planner_recipe.destroy
+		update_planner_shopping_list_portions
 
 		current_user.planner_shopping_lists.first.update_attributes(
 			ready: true
@@ -101,10 +108,19 @@ class DashboardController < ApplicationController
 	def get_shopping_list_content
 		if current_user.planner_shopping_lists.first.ready == true
 
-			planner_recipes = current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.day && pr.date < Date.current + 7.day}.sort_by{|pr| pr.date}.map{|pr| pr.planner_shopping_list_portions.reject{|p|p.ingredient.name.downcase == 'water'}.map{|p| {"planner_recipe_id": pr.id, "shopping_list_portion_id": p.id, "planner_recipe_description": pr.recipe.title + ' (' + pr.date.to_s(:short) + ')', "portion_description": p.amount.to_f.to_s + ' ' + p.unit.name + ' ' + p.ingredient.name} } }
+			planner_recipe_portions = current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.day && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}}.flatten
+
+			combi_portions = current_user.planner_shopping_lists.first.combi_planner_shopping_list_portions
+			shopping_list_portions = planner_recipe_portions + combi_portions
+			if shopping_list_portions.length > 0
+				shopping_list_portions = shopping_list_portions.sort_by!{|p| p.ingredient.name}.map{|p| { "shopping_list_portion_id": p.id, "portion_description": p.amount.to_f.to_s + ' ' + p.unit.name + ' ' + p.ingredient.name} }
+			else
+				shopping_list_portions = []
+			end
+
 
 			respond_to do |format|
-				format.json { render json: planner_recipes.as_json}
+				format.json { render json: shopping_list_portions.as_json}
 				format.html { redirect_to dashboard_path }
 			end
 
