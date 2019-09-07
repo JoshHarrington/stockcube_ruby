@@ -1,6 +1,6 @@
-class DashboardController < ApplicationController
+class PlannerController < ApplicationController
 	include PlannerShoppingListHelper
-	def dash
+	def index
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
 		@recipes = Recipe.first(8)
@@ -121,13 +121,13 @@ class DashboardController < ApplicationController
 
 			respond_to do |format|
 				format.json { render json: shopping_list_portions.as_json}
-				format.html { redirect_to dashboard_path }
+				format.html { redirect_to planner_path }
 			end
 
 		else
 			respond_to do |format|
 				format.json { render json: [].as_json, status: 202}
-				format.html { redirect_to dashboard_path }
+				format.html { redirect_to planner_path }
 			end
 		end
 	end

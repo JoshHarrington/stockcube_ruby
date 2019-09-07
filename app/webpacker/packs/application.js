@@ -27,4 +27,4 @@ import '../functions/shopping_list';
 import '../functions/cupboard_share';
 import '../functions/user';
 import '../functions/feedback';
-import '../functions/dashboard';
+import '../functions/planner';

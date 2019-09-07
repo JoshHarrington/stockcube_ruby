@@ -165,7 +165,7 @@ const deletePlannerRecipe = (deleteBtn) => {
 	})
 }
 
-const dashboardFn = () => {
+const plannerFn = () => {
 	const recipeList = document.querySelector('[data-recipe-list]')
 	const plannerBlocks = document.querySelectorAll('[data-planner] .tiny-drop')
 	new Sortable.create(recipeList, {
@@ -236,4 +236,4 @@ const dashboardFn = () => {
 
 }
 
-ready(dashboardFn)
+ready(plannerFn)
