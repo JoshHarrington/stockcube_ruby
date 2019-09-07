@@ -21,7 +21,11 @@ module PlannerShoppingListHelper
 				portion_from_ing = recipe_portions.select{|p| p.ingredient_id == ing}.first
 
 				ingredient_plus_diff_amount = ingredient_plus_difference(stock_from_ing, portion_from_ing)
-				default_unit_id_output = default_unit_id(portion_from_ing)
+				if stock_from_ing.unit_id == portion_from_ing.unit_id
+					unit_id = portion_from_ing.unit_id
+				elsif ingredient_unit_type_match(stock_from_ing, portion_from_ing) && ingredient_metric_check(stock_from_ing) && ingredient_metric_check(portion_from_ing)
+					unit_id = default_unit_id(portion_from_ing)
+				end
 
 				if ingredient_plus_diff_amount
 					if ingredient_plus_diff_amount <= 0
@@ -35,7 +39,7 @@ module PlannerShoppingListHelper
 								user_id: current_user.id,
 								planner_recipe_id: planner_recipe.id,
 								ingredient_id: ing,
-								unit_id: default_unit_id_output,
+								unit_id: unit_id,
 								amount: -(ingredient_plus_diff_amount),
 								planner_shopping_list_id: planner_shopping_list.id
 							)
@@ -45,7 +49,7 @@ module PlannerShoppingListHelper
 							ingredient_id: ing,
 							amount: ingredient_plus_converter(portion_from_ing),
 							planner_recipe_id: planner_recipe.id,
-							unit_id: default_unit_id_output,
+							unit_id: unit_id,
 							use_by_date: stock_from_ing.use_by_date,
 							cupboard_id: stock_from_ing.cupboard_id,
 							hidden: false,
@@ -84,12 +88,57 @@ module PlannerShoppingListHelper
 
 	end
 
+	def update_planner_shopping_list_portions
+		planner_shopping_list = PlannerShoppingList.find_or_create_by(user_id: current_user.id)
+		planner_shopping_list_portions = planner_shopping_list.planner_shopping_list_portions
+		ingredients_from_planner_shopping_list = planner_shopping_list_portions.map(&:ingredient_id)
+		planner_shopping_list.combi_planner_shopping_list_portions.destroy_all
+
+		matching_ingredients = ingredients_from_planner_shopping_list.select{ |e| ingredients_from_planner_shopping_list.count(e) > 1 }.uniq
+
+		Rails.logger.debug "matching_ingredients"
+		Rails.logger.debug matching_ingredients
+		if matching_ingredients.length > 0
+			matching_ingredients.each do |m_ing|
+				matching_sl_portions = planner_shopping_list_portions.select{|p| p.ingredient_id == m_ing}
+
+				if ingredient_plus_addition(matching_sl_portions) == false
+					next
+				end
+
+				combi_addition_object = ingredient_plus_addition(matching_sl_portions)
+				combi_amount = combi_addition_object[:amount]
+				combi_unit_id = combi_addition_object[:unit_id]
+
+				combi_sl_portion = CombiPlannerShoppingListPortion.find_or_create_by(
+					user_id: current_user[:id],
+					planner_shopping_list_id: planner_shopping_list.id,
+					ingredient_id: m_ing,
+					amount: combi_amount,
+					unit_id: combi_unit_id
+				)
+
+				PlannerShoppingListPortion.where(id: matching_sl_portions.map(&:id)).update_all(
+					combi_planner_shopping_list_portion_id: combi_sl_portion[:id]
+				)
+
+			end
+		end
+	end
+
 
 	def combine_divided_stock_after_planner_recipe_delete(planner_recipe = nil)
+		return if planner_recipe == nil || planner_recipe.stocks.length < 1
 		planner_recipe.stocks.where('stocks.updated_at > ?', Date.current - 1.hour).each do |stock|
 			stock_partner = stock.cupboard.stocks.where.not(id: stock.id).find_by(ingredient_id: stock.ingredient_id, use_by_date: stock.use_by_date)
 			return unless stock_partner.present?
-			stock_partner.update_attributes(amount: ingredient_plus_addition(stock_partner, stock), unit_id: default_unit_id(stock_partner))
+			stock_group = [stock_partner, stock]
+			stock_amount = ingredient_plus_addition(stock_group)[:amount]
+			stock_unit_id = ingredient_plus_addition(stock_group)[:unit_id]
+			stock_partner.update_attributes(
+				amount: stock_amount,
+				unit_id: stock_unit_id
+			)
 			stock.delete
 		end
 	end
