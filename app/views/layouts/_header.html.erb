@@ -54,13 +54,13 @@
       <h2 class="block-title">Sections</h2>
       <ul>
       <% if logged_in? && current_user %><!--
-      --><%= link_current_page_element(recipes_path, 'Planner') %><!--
-      --><%= link_current_page_element(recipes_path, 'Recipes') %><%
-          if current_section == 'recipes' %><ul>
-            <%= link_current_page_element(recipes_path, 'All Recipes') %>
-            <%= link_current_page_element(recipes_new_path, 'Create new recipe') %>
-            <%= link_current_page_element(your_recipes_path, 'Your Recipes') %>
-          </ul><% end %><!--
+      --><%= link_current_page_element(planner_path, 'Planner') %><!--
+      --><%= link_current_page_element(recipes_path, 'Recipes') %><!----><%
+          if current_section == 'recipes' %><!----><ul>
+            <%= link_current_page_element(recipes_path, 'All Recipes') %><!--
+          --><%= link_current_page_element(recipes_new_path, 'Create new recipe') %><!--
+          --><%= link_current_page_element(your_recipes_path, 'Your Recipes') %><!--
+        --></ul><% end %><!--
       --><%= link_current_page_element(cupboards_path, 'Cupboards', 'stocks') %><!--
       --><% end %><!--
 
