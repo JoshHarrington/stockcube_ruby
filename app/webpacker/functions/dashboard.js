@@ -66,31 +66,23 @@ function checkForUpdates(onSuccess) {
   }), 400)
 }
 
-const renderShoppingList = (shoppingListItems) => {
+const renderShoppingList = (shoppingListPortions) => {
+
 	const ShoppingList = document.querySelector('#planner_shopping_list')
 
 	const ListTopUl = document.createElement('ul')
+	ListTopUl.classList.add('planner_sl-recipe_list')
 
 	const OldShoppingListContent = document.querySelector('#planner_shopping_list > ul')
 
-	if (shoppingListItems.length === 0 ){
+	if (shoppingListPortions.length === 0 ){
 		hideShoppingList()
 		ListTopUl.innerHTML = '<p>Shopping List is currently empty, move some recipes to your planner to get items added to this list</p>'
 	} else {
-		shoppingListItems.forEach(function(planner_recipe) {
-			const ListRecipeLi = document.createElement('li')
-			const ListRecipeTitle = document.createElement('h3')
-			ListRecipeTitle.innerHTML = planner_recipe[0]["planner_recipe_description"]
-			ListRecipeLi.appendChild(ListRecipeTitle)
-			const RecipePortionUl = document.createElement('ul')
-			RecipePortionUl.classList.add('planner_sl-recipe_list')
-			planner_recipe.forEach(function(portion) {
-				const RecipePortionLi = document.createElement('li')
-				RecipePortionLi.innerHTML = '<p><label><input type="checkbox" name="planner_shopping_list_portions['+ portion["shopping_list_portion_id"] +'][add]" id="planner_shopping_list_portions_id_add" value="'+ portion["shopping_list_portion_id"] +'"> ' + portion["portion_description"] + '</label></p><h5>Use by date:</h5><p><input type="date" name="planner_shopping_list_portions['+ portion["shopping_list_portion_id"] +'][date]" id="planner_shopping_list_portions_id_date" value="2019-09-15" min="2019-09-01"></p><hr />'
-				RecipePortionUl.appendChild(RecipePortionLi)
-			})
-			ListRecipeLi.appendChild(RecipePortionUl)
-			ListTopUl.appendChild(ListRecipeLi)
+		shoppingListPortions.forEach(function(portion) {
+			const RecipePortionLi = document.createElement('li')
+			RecipePortionLi.innerHTML = '<p><label><input type="checkbox" name="planner_shopping_list_portions['+ portion["shopping_list_portion_id"] +'][add]" id="planner_shopping_list_portions_id_add" value="'+ portion["shopping_list_portion_id"] +'"> ' + portion["portion_description"] + '</label></p><h5>Use by date:</h5><p><input type="date" name="planner_shopping_list_portions['+ portion["shopping_list_portion_id"] +'][date]" id="planner_shopping_list_portions_id_date" value="2019-09-15" min="2019-09-01"></p><hr />'
+			ListTopUl.appendChild(RecipePortionLi)
 		})
 
 		showShoppingList()
@@ -142,8 +134,8 @@ const addPlannerRecipe = (e) => {
 	e.item.appendChild(deleteBtn)
 	deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
 
-	checkForUpdates(function(shoppingListItems) {
-	  renderShoppingList(shoppingListItems)
+	checkForUpdates(function(shoppingListPortions) {
+	  renderShoppingList(shoppingListPortions)
 	})
 
 }
@@ -154,8 +146,8 @@ const updatePlannerRecipe = (e) => {
 	const parentId = e.item.parentNode.id
 	e.item.setAttribute('data-parent-id', parentId)
 
-	checkForUpdates(function(shoppingListItems) {
-	  renderShoppingList(shoppingListItems)
+	checkForUpdates(function(shoppingListPortions) {
+	  renderShoppingList(shoppingListPortions)
 	})
 }
 
@@ -168,8 +160,8 @@ const deletePlannerRecipe = (deleteBtn) => {
 
 	buttonParent.style.display = 'none'
 
-	checkForUpdates(function(shoppingListItems) {
-	  renderShoppingList(shoppingListItems)
+	checkForUpdates(function(shoppingListPortions) {
+	  renderShoppingList(shoppingListPortions)
 	})
 }
 
@@ -238,8 +230,8 @@ const dashboardFn = () => {
 
 	setupShoppingListButton()
 
-	checkForUpdates(function(shoppingListItems) {
-	  renderShoppingList(shoppingListItems)
+	checkForUpdates(function(shoppingListPortions) {
+	  renderShoppingList(shoppingListPortions)
 	})
 
 }
