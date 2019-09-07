@@ -95,9 +95,6 @@ module PlannerShoppingListHelper
 		planner_shopping_list.combi_planner_shopping_list_portions.destroy_all
 
 		matching_ingredients = ingredients_from_planner_shopping_list.select{ |e| ingredients_from_planner_shopping_list.count(e) > 1 }.uniq
-
-		Rails.logger.debug "matching_ingredients"
-		Rails.logger.debug matching_ingredients
 		if matching_ingredients.length > 0
 			matching_ingredients.each do |m_ing|
 				matching_sl_portions = planner_shopping_list_portions.select{|p| p.ingredient_id == m_ing}
