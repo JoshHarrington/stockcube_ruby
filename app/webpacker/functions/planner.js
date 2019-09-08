@@ -5,57 +5,12 @@ import SVG from '../icons/symbol-defs.svg'
 import PNGBin from '../icons/png-icons/bin.png'
 
 const plannerRecipeAddData = (id, date) => (
-	// "recipe_id=" + e.item.id + "&planner_date=" + e.item.parentNode.id
 	"recipe_id=" + id + "&planner_date=" + date
 )
 
 const plannerRecipeUpdateData = (e) => (
 	"recipe_id=" + e.item.id + "&old_date=" + e.item.dataset.parentId + "&new_date=" + e.item.parentNode.id
 )
-
-const reloadPage = () => {
-	location.reload(true)
-}
-
-const LoadingNotice = () => {
-	const LoadingNotice = document.createElement('div')
-	LoadingNotice.classList.add('loading', 'notices')
-	LoadingNotice.innerHTML = `<span class="loading-message">Updating...</span>`
-	return LoadingNotice
-}
-
-const FailureNotice = () => {
-	const FailureNotice = document.createElement('div')
-	FailureNotice.classList.add('failure', 'notices')
-	FailureNotice.innerHTML = `Looks like there was a problem updating your shopping list. Reload the page to get the latest version.`
-	return FailureNotice
-}
-
-const manageNotices = (leaveOrCreateByType = undefined) => {
-	// if leaveOrCreateByType not defined then should clear all notices
-
-	const Notices = document.querySelectorAll('.notices')
-	if (Notices.length > 0) {
-		for(let i = 0; i < Notices.length; i++) {
-			if (!Notices[i].classList.contains(leaveOrCreateByType)) {
-				// this notice is not wanted, so remove it
-				Notices[i].remove()
-			}
-		}
-	}
-	const ShoppingList = document.querySelector('[data-shopping-list]')
-	console.log(leaveOrCreateByType, ' :leaveOrCreateByType')
-	console.log(leaveOrCreateByType === 'loading', '=== loading')
-	console.log(leaveOrCreateByType === 'failure', '=== failure')
-	switch (leaveOrCreateByType) {
-		case 'loading':
-			ShoppingList.appendChild(LoadingNotice())
-		case 'failure':
-			ShoppingList.appendChild(FailureNotice())
-	}
-
-
-}
 
 function checkForUpdates(onSuccess) {
   setTimeout(() => fetch("/planner/shopping_list").then((response) => {
