@@ -5,6 +5,7 @@
 	if @shopping_list_portions.length > 0
 		@shopping_list_portions.sort_by!{|p| p.ingredient.name}
 	end
+	planner_portion_id_hash = Hashids.new(ENV['PLANNER_PORTIONS_SALT'])
 %>
 
 <aside id="planner_shopping_list">
@@ -15,15 +16,15 @@
 	<% else %>
 		<ul class="planner_sl-recipe_list">
 			<% @shopping_list_portions.each do |portion| %>
-				<li>
+				<li id="<%= planner_portion_id_hash.encode(portion.id) %>" class="shopping_list_portion <%= portion.class.name == "CombiPlannerShoppingListPortion" ? 'combi_portion' : 'individual_portion' %>">
 					<p>
 						<label>
-							<%= check_box_tag "planner_shopping_list_portions[id][add]", "planner_shopping_list_portions_id", false, class: "" %>
+							<%= check_box_tag "planner_shopping_list_portions_add[#{planner_portion_id_hash.encode(portion.id)}]", "planner_shopping_list_portions_add", false, class: "" %>
 							<%= portion.amount %> <%= portion.unit.name %> <%= portion.ingredient.name %>
 						</label>
 					</p>
 					<h5>Use by date:</h5>
-					<p><%= date_field_tag "planner_shopping_list_portions[id][date]", Date.current + 2.weeks, min: Date.current %></p>
+					<p><%= date_field_tag portion.id, Date.current + 2.weeks, min: Date.current %></p>
 					<hr />
 				</li>
 			<% end %>
