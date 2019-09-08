@@ -4,8 +4,9 @@ import {tns} from 'tiny-slider/src/tiny-slider'
 import SVG from '../icons/symbol-defs.svg'
 import PNGBin from '../icons/png-icons/bin.png'
 
-const plannerRecipeAddData = (e) => (
-	"recipe_id=" + e.item.id + "&planner_date=" + e.item.parentNode.id
+const plannerRecipeAddData = (id, date) => (
+	// "recipe_id=" + e.item.id + "&planner_date=" + e.item.parentNode.id
+	"recipe_id=" + id + "&planner_date=" + date
 )
 
 const plannerRecipeUpdateData = (e) => (
@@ -116,7 +117,7 @@ const setupShoppingListButton = () => {
 
 
 const addPlannerRecipe = (e) => {
-	ajaxRequest(plannerRecipeAddData(e), '/planner/recipe_add')
+	ajaxRequest(plannerRecipeAddData(e.item.id, e.item.parentNode.id), '/planner/recipe_add')
 
 	const deleteBtn = document.createElement('button')
 	deleteBtn.innerHTML = `<svg class="icomoon-icon icon-bin"><use xlink:href="${SVG}#icon-bin"></use></svg><img class="icon-png" src="${PNGBin}"></button>`
@@ -146,6 +147,34 @@ const updatePlannerRecipe = (e) => {
 	})
 }
 
+const showAlert = (message) => {
+	let alertGroup
+	if (document.querySelector('.alert_group')) {
+		alertGroup = document.querySelector('.alert_group')
+	} else {
+		const innerWrap = document.querySelector('#inner-wrap')
+		alertGroup = document.createElement('div')
+		alertGroup.classList.add('alert_group')
+		innerWrap.prepend(alertGroup)
+	}
+	const alertWrapper = document.createElement('div')
+	alertWrapper.classList.add('alert_wrapper', 'alert_hide')
+	alertGroup.appendChild(alertWrapper)
+	console.log('wrapper added to page', alertWrapper)
+	const alertNotice = document.createElement('div')
+	alertNotice.classList.add('alert', 'alert-notice')
+	alertNotice.innerHTML = message
+	alertWrapper.appendChild(alertNotice)
+	setTimeout(() => {
+		alertWrapper.classList.remove('alert_hide')
+	}, 50)
+
+	setTimeout(() => {
+		alertWrapper.classList.add('alert_hide')
+	}, 8000)
+
+}
+
 const deletePlannerRecipe = (deleteBtn) => {
 	const buttonParent = deleteBtn.parentNode
 	const dateId = buttonParent.dataset.parentId
@@ -161,73 +190,106 @@ const deletePlannerRecipe = (deleteBtn) => {
 }
 
 const plannerFn = () => {
-  const slider = tns({
-    container: '[data-planner]',
-    items: 1,
-		slideBy: 1,
-		startIndex: 1,
-		loop: false,
-		gutter: 10,
-		edgePadding: 40,
-		arrowKeys: true,
-		swipeAngle: false,
-		controlsContainer: '.tiny-controls',
-		nav: false,
-		responsive: {
-      420: {
-        items: 1
-      },
-      640: {
-        items: 2
-      },
-      900: {
-        items: 3
-      },
-      1200: {
-        items: 4
-      }
-    }
-	});
-
-	const recipeList = document.querySelector('[data-recipe-list]')
-	const plannerBlocks = document.querySelectorAll('[data-planner] .tiny-slide:not(.yesterday) .tiny-drop')
-	new Sortable.create(recipeList, {
-		group: {
-			name: 'recipe-sharing',
-			pull: 'clone',
-			put: false,
-		},
-		sort: false,
-		onEnd: function(e) {
-			if (e.item.parentNode.classList.contains('tiny-drop')){
-				addPlannerRecipe(e)
+	if (document.body.classList.contains('planner_controller', 'index_page')) {
+		const slider = tns({
+			container: '[data-planner]',
+			items: 1,
+			slideBy: 1,
+			startIndex: 1,
+			loop: false,
+			gutter: 10,
+			edgePadding: 40,
+			arrowKeys: true,
+			swipeAngle: false,
+			controlsContainer: '.tiny-controls',
+			nav: false,
+			responsive: {
+				420: {
+					items: 1
+				},
+				640: {
+					items: 2
+				},
+				900: {
+					items: 3
+				},
+				1200: {
+					items: 4
+				}
 			}
-		}
-	})
-	plannerBlocks.forEach(function(dayBlock){
-		new Sortable.create(dayBlock, {
+		});
+
+		const recipeList = document.querySelector('[data-recipe-list]')
+		const plannerBlocks = document.querySelectorAll('[data-planner] .tiny-slide:not(.yesterday) .tiny-drop')
+		new Sortable.create(recipeList, {
 			group: {
 				name: 'recipe-sharing',
-				pull: true,
-				put: true
+				pull: 'clone',
+				put: false,
 			},
+			sort: false,
 			onEnd: function(e) {
-				updatePlannerRecipe(e)
+				if (e.item.parentNode.classList.contains('tiny-drop')){
+					addPlannerRecipe(e)
+				}
 			}
 		})
-	})
+		plannerBlocks.forEach(function(dayBlock){
+			new Sortable.create(dayBlock, {
+				group: {
+					name: 'recipe-sharing',
+					pull: true,
+					put: true
+				},
+				onEnd: function(e) {
+					updatePlannerRecipe(e)
+				}
+			})
+		})
 
-	const plannerRecipeDeleteButtons = document.querySelectorAll('.tiny-slide .list_block--item button.delete')
+		const plannerRecipeDeleteButtons = document.querySelectorAll('.tiny-slide .list_block--item button.delete')
 
-	plannerRecipeDeleteButtons.forEach(function(deleteBtn){
-		deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
-	})
+		plannerRecipeDeleteButtons.forEach(function(deleteBtn){
+			deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
+		})
+
+		checkForUpdates(function(shoppingListPortions) {
+			renderShoppingList(shoppingListPortions)
+		})
+
+	}
+	if (document.body.classList.contains('recipes_controller', 'index_page')) {
+		const recipeAddToPlannerButtons = document.querySelectorAll('.list_block--action_row .add_recipe_to_planner')
+		recipeAddToPlannerButtons.forEach(function(addBtn){
+			const recipeId = addBtn.getAttribute('data-recipe-id')
+			const date = addBtn.getAttribute('data-date')
+			addBtn.addEventListener("click", function(){
+				ajaxRequest(plannerRecipeAddData(recipeId, date), '/planner/recipe_add')
+				addBtn.style.display = 'none'
+				checkForUpdates(function(shoppingListPortions) {
+					renderShoppingList(shoppingListPortions)
+				})
+				showAlert(`Recipe added to your <a href="/planner">planner</a><br />Your shopping list is now updating`)
+			})
+		})
+	}
+	if (document.body.classList.contains('recipes_controller', 'show_page')) {
+		if (document.querySelector('#add_recipe_to_planner')) {
+			const recipeAddToPlannerButton = document.querySelector('#add_recipe_to_planner')
+			const recipeId = recipeAddToPlannerButton.getAttribute('data-recipe-id')
+			const date = recipeAddToPlannerButton.getAttribute('data-date')
+			recipeAddToPlannerButton.addEventListener("click", function(){
+				ajaxRequest(plannerRecipeAddData(recipeId, date), '/planner/recipe_add')
+				recipeAddToPlannerButton.style.display = 'none'
+				checkForUpdates(function(shoppingListPortions) {
+					renderShoppingList(shoppingListPortions)
+				})
+				showAlert(`Recipe added to your <a href="/planner">planner</a><br />Your shopping list is now updating`)
+			})
+		}
+	}
 
 	setupShoppingListButton()
-
-	checkForUpdates(function(shoppingListPortions) {
-	  renderShoppingList(shoppingListPortions)
-	})
 
 }
 

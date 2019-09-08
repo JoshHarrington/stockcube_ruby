@@ -46,8 +46,8 @@
 							<% end %>
 						<% end %>
 					<% end %>
-					<% unless (current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last.archived == false && recipe.shopping_lists.include?(current_user.shopping_lists.order('updated_at asc').last)) || recipe.portions.length == 0 || !(recipe.live) %>
-						<%= link_to add_to_shopping_list_recipe_path(recipe), class: 'svg-btn', title: 'Add this recipe to your shopping list', method: :put do %>
+					<% if recipe.live && recipe.portions.length > 0 && !(current_user.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.recipe.id }.include?(recipe.id)) %>
+						<%= button_tag class: 'svg-btn add_recipe_to_planner', title: 'Add this recipe to your planner', data: {"recipe-id": @recipe_id_hash.encode(recipe.id), "date": @date_hashed_id } do %>
 							<%= icomoon('list-add') %>
 						<% end %>
 					<% end %>

@@ -71,7 +71,7 @@
 
 #inner-wrap {
 	transition: width .4s;
-	.shopping_list_open .planner_controller & {
+	.shopping_list_open & {
 		width: calc(100% - 30em);
 	}
 }

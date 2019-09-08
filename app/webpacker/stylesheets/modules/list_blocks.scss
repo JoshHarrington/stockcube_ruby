@@ -650,7 +650,7 @@ a.list_block {
 .list_block--action_row {
 	display: flex;
 	justify-content: flex-end;
-	a {
+	a, button {
 		width: em(40, 15);
 		height: em(40, 15);
 		margin-left: em(5, 15);
@@ -658,9 +658,14 @@ a.list_block {
 		border-radius: em(2, 15);
 		color: $teal-100;
 		padding: em(7, 15);
+		border: none;
 		&.unfavourite {
 			color: white;
 		}
+	}
+	button {
+		font-size: em(15, 10);
+		cursor: pointer;
 	}
 }
 

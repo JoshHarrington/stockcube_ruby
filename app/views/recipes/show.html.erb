@@ -33,9 +33,11 @@
             <%= icomoon('edit') %>
           <% end  %>
         <% end %>
-        <% unless (current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last.archived == false && @recipe.shopping_lists.include?(current_user.shopping_lists.order('updated_at asc').last)) || @recipe.portions.length == 0 || !(@recipe.live) %>
-          <%= link_to 'Add to shopping list', add_to_shopping_list_recipe_path(@recipe), class: 'list_block--collection--action', title: 'add to shopping list', method: :put %>
-        <% end %>
+        <% if @recipe.live && @recipe.portions.length > 0 && !(current_user.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.recipe.id }.include?(@recipe.id)) %>
+						<%= button_tag class: 'list_block--collection--action', id: 'add_recipe_to_planner', title: 'Add this recipe to your planner', data: {"recipe-id": @recipe_id_hash.encode(@recipe.id), "date": @date_hashed_id } do %>
+							Add to planner
+						<% end %>
+					<% end %>
       </div>
       <% if current_user && current_user == @recipe.user %>
         <p class="recipe_cuisine"><%= (@recipe.cuisine.to_s == '' || !@recipe.cuisine) ? 'Cuisines type not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe : (@recipe.cuisine.to_s +  ' Cuisine') %></p>

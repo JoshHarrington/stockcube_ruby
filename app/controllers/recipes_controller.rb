@@ -42,6 +42,13 @@ class RecipesController < ApplicationController
 
 		@recipe_search_autocomplete_list = (recipe_titles + ingredients).sort_by(&:downcase)
 
+		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
+		planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
+
+		date = Date.current + 1.days
+		date_num = date.to_formatted_s(:number)
+		@date_hashed_id = planner_recipe_date_hash.encode(date_num)
+
 	end
 
 
@@ -62,6 +69,13 @@ class RecipesController < ApplicationController
 
 		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
 		@cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: @cupboard_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
+
+		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
+		planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
+
+		date = Date.current + 1.days
+		date_num = date.to_formatted_s(:number)
+		@date_hashed_id = planner_recipe_date_hash.encode(date_num)
 
 	end
 	def favourites
