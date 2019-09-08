@@ -80,11 +80,8 @@ const setupShoppingListButton = () => {
 
 const setupShoppingListCheckingOff = () => {
 	const shoppingListPortionsChecks = document.querySelectorAll('#planner_shopping_list .planner_sl-recipe_list li input[type="checkbox"]')
-	console.log(shoppingListPortionsChecks, 'shoppingListPortionsChecks set')
 	shoppingListPortionsChecks.forEach(function(portionCheckbox){
-		console.log(portionCheckbox, 'for each loop portion')
 		portionCheckbox.addEventListener("change", function(){
-			console.log(portionCheckbox, 'portion checkbox changed')
 			const portionLi = portionCheckbox.closest('li')
 			const portionId = portionLi.getAttribute('id')
 			const portionType = portionLi.classList.contains('combi_portion') ? 'combi_portion' : 'individual_portion'
