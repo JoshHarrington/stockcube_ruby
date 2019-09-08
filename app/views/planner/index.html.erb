@@ -22,22 +22,24 @@
 						<%= link_to r.title, recipe_path(r) %>
 					</div>
 				<% end %>
-				<div class="list_block--title">
-					<h3>Favourite recipes</h3>
-				</div>
-				<% @fav_recipes.each do |fr| %>
-					<%
-						recipe = fr
-						user_recipe_stock_match = UserRecipeStockMatch.where(user_id: current_user.id, recipe_id: recipe.id).first
-						ingredient_stock_match_decimal = user_recipe_stock_match ? user_recipe_stock_match[:ingredient_stock_match_decimal] : nil
-						num_stock_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_stock_ingredients] : nil
-						num_needed_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_needed_ingredients] : nil
-						percent_in_cupboards = ingredient_stock_match_decimal ? (ingredient_stock_match_decimal.to_f * 100).round : 0
-					%>
-					<div class="list_block--item list_block--item--with-bar" id="<%= @recipe_id_hash.encode(fr.id) %>">
-						<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards %>%"></span></span>
-						<%= link_to fr.title, recipe_path(fr) %>
+				<% if @fav_recipes.length > 0 %>
+					<div class="list_block--title">
+						<h3>Favourite recipes</h3>
 					</div>
+					<% @fav_recipes.each do |fr| %>
+						<%
+							recipe = fr
+							user_recipe_stock_match = UserRecipeStockMatch.where(user_id: current_user.id, recipe_id: recipe.id).first
+							ingredient_stock_match_decimal = user_recipe_stock_match ? user_recipe_stock_match[:ingredient_stock_match_decimal] : nil
+							num_stock_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_stock_ingredients] : nil
+							num_needed_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_needed_ingredients] : nil
+							percent_in_cupboards = ingredient_stock_match_decimal ? (ingredient_stock_match_decimal.to_f * 100).round : 0
+						%>
+						<div class="list_block--item list_block--item--with-bar" id="<%= @recipe_id_hash.encode(fr.id) %>">
+							<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards %>%"></span></span>
+							<%= link_to fr.title, recipe_path(fr) %>
+						</div>
+					<% end %>
 				<% end %>
 			</div>
 		</div>
