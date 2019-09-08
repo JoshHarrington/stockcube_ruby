@@ -12,6 +12,7 @@ import $ from 'jquery'
 global.$ = $
 global.jQuery = $
 
+import '../functions/global';
 import '../functions/general';
 import '../functions/alert';
 

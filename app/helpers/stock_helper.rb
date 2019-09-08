@@ -2,7 +2,9 @@ module StockHelper
 	# if updating one or more ingredients (stock addition) - ingredient_id should be defined
 	# if no ingredient_id defined then use all of current users stock to search for matching recipes
 
-	def	update_recipe_stock_matches(ingredient_id = nil, user_id = nil, recipe_id = nil)
+
+	def update_recipe_stock_matches_core(ingredient_id = nil, user_id = nil, recipe_id = nil)
+		return unless current_user.user_recipe_stock_matches.order("updated_at desc").first.updated_at < 6.hours.ago
 		two_days_ago = Date.current - 2.days
 		if user_id != nil
 			user_id = user_id
@@ -11,7 +13,7 @@ module StockHelper
 		end
 
 		active_cupboard_ids = CupboardUser.where(user_id: user_id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard == nil && (cu.cupboard.setup == true || cu.cupboard.hidden == true) }.compact
-		cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: active_cupboard_ids, hidden: false).where("use_by_date >= :date", date: two_days_ago).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
+		cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: active_cupboard_ids, hidden: false, planner_recipe_id: nil).where("use_by_date >= :date", date: two_days_ago).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
 
 		if ingredient_id.class == Integer
 			ingredient_name = Ingredient.find(ingredient_id)[:name]
@@ -31,6 +33,10 @@ module StockHelper
 				recipe_stock_update(recipe, cupboard_stock_in_date_ingredient_ids, user_id)
 			end
 		end
+	end
+
+	def	update_recipe_stock_matches(ingredient_id = nil, user_id = nil, recipe_id = nil)
+		update_recipe_stock_matches_core(ingredient_id, user_id, recipe_id)
 
 		flash[:info] = %Q[We've updated your <a href="/recipes">recipe list</a> based on your stock so you can see the quickest recipes to make]
 
