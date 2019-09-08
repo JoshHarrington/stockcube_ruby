@@ -8,6 +8,7 @@
 	background: white;
 	border-left: 1px solid $teal-70;
 	transition: left .4s;
+	padding-bottom: em(55, 10);
 	>ul {
 		padding: 2em 1.2em;
 	}
@@ -91,5 +92,23 @@
 	}
 	input[type="checkbox"] {
 		margin-left: 0;
+	}
+}
+
+.shop_online_block {
+	position: fixed;
+	width: 30em;
+	background-color: $teal-40;
+	padding: em(16, 10);
+	right: 0;
+	bottom: 0;
+	display: flex;
+	justify-content: center;
+	transition: left .4s;
+	.shopping_list_open & {
+		left: calc(100% - 30em);
+	}
+	html:not(.shopping_list_open) & {
+		left: 100%;
 	}
 }

@@ -12,6 +12,45 @@ const plannerRecipeUpdateData = (e) => (
 	"recipe_id=" + e.item.id + "&old_date=" + e.item.dataset.parentId + "&new_date=" + e.item.parentNode.id
 )
 
+const whiskShoppingList = (whiskListPortions, shoppingListPortionsFull) => {
+	whisk.queue.push(function() {
+		whisk.listeners.addClickListener(
+			'whisk-add-products',
+			'shoppingList.addProductsToList', {
+				products: whiskListPortions
+			}
+		);
+	});
+	if (document.querySelector('#whisk-add-products')) {
+		document.querySelector('#whisk-add-products').addEventListener('click', function() {
+			shoppingListPortionsFull.forEach(function(portion){
+				const portionId = portion["shopping_list_portion_id"]
+				const portionType = portion["portion_type"] === "combi" ? "combi_portion" :	"individual_portion"
+				const date = portion["max_date"]
+				const portionData = "shopping_list_portion_id=" + portionId + "&portion_type=" + portionType + "&date=" + date
+				ajaxRequest(portionData, '/stocks/add_portion')
+			})
+			setTimeout(() => checkForUpdates(function(shoppingListPortions) {
+				renderShoppingList(shoppingListPortions)
+			}), 3000)
+		})
+	}
+}
+
+const setupViewWhiskShoppingListButton = () => {
+	if (document.querySelector('#view-whisk-list')) {
+		document.querySelector('#view-whisk-list').addEventListener('click', function() {
+			whisk.queue.push(function() {
+				whisk.shoppingList.viewList({
+					styles: {
+						type: 'modal',
+					},
+				});
+			});
+		})
+	}
+}
+
 function checkForUpdates(onSuccess) {
   setTimeout(() => fetch("/planner/shopping_list").then((response) => {
     if(response.status != 200){
@@ -30,11 +69,15 @@ const renderShoppingList = (shoppingListPortions) => {
 	ListTopUl.classList.add('planner_sl-recipe_list')
 
 	const OldShoppingListContent = document.querySelector('#planner_shopping_list > ul')
+	const shopOnlineBlock = document.querySelector('.shop_online_block')
 
 	if (shoppingListPortions.length === 0 ){
+		shopOnlineBlock.innerHTML = `<button id="view-whisk-list" class="list_block--collection--action">Open online shopping list</button>`
 		hideShoppingList()
 		ListTopUl.innerHTML = '<p>Shopping List is currently empty, move some recipes to your planner to get items added to this list</p>'
+		setupViewWhiskShoppingListButton()
 	} else {
+		const whiskShoppingListPortions = []
 		shoppingListPortions.forEach(function(portion) {
 			const RecipePortionLi = document.createElement('li')
 			RecipePortionLi.setAttribute('id', portion["shopping_list_portion_id"])
@@ -46,9 +89,15 @@ const renderShoppingList = (shoppingListPortions) => {
 			}
 			RecipePortionLi.innerHTML = '<p><label><input type="checkbox"> ' + portion["portion_description"] + '</label></p><h5>Use by date:</h5><p><input type="date" value="' + portion["max_date"] + '" min="' + portion["min_date"] + '"></p><hr />'
 			ListTopUl.appendChild(RecipePortionLi)
+
+			whiskShoppingListPortions.push(portion["portion_description"])
+
 		})
 
 		showShoppingList()
+
+		shopOnlineBlock.innerHTML = `<button id="whisk-add-products" class="list_block--collection--action">Add to online shopping list</button>`
+		whiskShoppingList(whiskShoppingListPortions, shoppingListPortions)
 	}
 	OldShoppingListContent.remove()
 	ShoppingList.appendChild(ListTopUl)
@@ -245,6 +294,7 @@ const plannerFn = () => {
 		checkForUpdates(function(shoppingListPortions) {
 			renderShoppingList(shoppingListPortions)
 		})
+		setupViewWhiskShoppingListButton()
 	}
 
 }

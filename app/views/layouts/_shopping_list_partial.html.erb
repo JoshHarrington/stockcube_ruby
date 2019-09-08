@@ -10,17 +10,6 @@
 
 <aside id="planner_shopping_list">
 	<h2>Shopping List</h2>
-	<button id="whisk-add-products">Add products to shopping list</button>
-	<script>
-		whisk.queue.push(function() {
-			whisk.listeners.addClickListener(
-				'whisk-add-products',
-				'shoppingList.addProductsToList', {
-					products: ['6 Almonds', '2 Tablespoons Butter', '2 Pound Chicken Breast']
-				}
-			);
-		});
-	</script>
 	<button class="list_toggle"><span class="cross icon_char" title="Close shopping list">&#735;</span><span class="chevron_left icon_char" title="Open shopping list">&#706;</span></button>
 	<% if @shopping_list_portions.length == 0 %>
 		<ul><p>Shopping List is currently empty, move some recipes to your planner to get items added to this list</p></ul>
@@ -41,4 +30,11 @@
 			<% end %>
 		</ul>
 	<% end %>
+	<div class="shop_online_block">
+		<% if @shopping_list_portions.length == 0 %>
+			<button id="view-whisk-list" class="list_block--collection--action">Open online shopping list</button>
+		<% else %>
+			<button id="whisk-add-products" class="list_block--collection--action">Add to online shopping list</button>
+		<% end %>
+	</div>
 </aside>
