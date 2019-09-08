@@ -17,8 +17,9 @@
 	<hr />
 	<br />
 
-	<div class="list_block--collection--sibling">
+	<div class="list_block--collection--sibling list_block--collection--sibling_stack">
 		<h2 class="tiny-slider--title">Planner</h2>
+		<p class="item_form--content_item_note"><%= icomoon('information-outline')%> Use keyboard arrow keys to move left and right</p>
   </div>
 	<div class="extra-tiny-wrapper">
 		<div class="tiny-controls">
@@ -28,7 +29,7 @@
 		<div data-planner class="tiny-wrapper">
 			<% (-1..7).each do |d| %>
 				<% date = Date.current + d.days %>
-				<div class="tiny-slide"><div class="tiny-contents"><h2>
+				<div class="tiny-slide <% if d == -1 %>yesterday<% end %>"><div class="tiny-contents"><h2>
 				<% if d == -1 %>Yesterday<% end %>
 				<% if d == 0 %>Today<% end %>
 				<% if d == 1 %>Tomorrow<% end %>

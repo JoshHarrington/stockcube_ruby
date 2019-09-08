@@ -1,6 +1,13 @@
 .tiny-slider--title {
 	padding-left: em(22, 18);
-	margin-bottom: em(14, 18);
+	margin-bottom: em(5, 18);
+	~ p {
+		padding-left: em(22, 15);
+		margin-bottom: em(15, 15);
+	}
+	~ .item_form--content_item_note {
+		margin-top: 0;
+	}
 }
 
 .tiny-wrapper {
@@ -13,6 +20,10 @@
 	.list_block--item--action--btn {
 		padding: em(6, 15);
 	}
+	&.yesterday {
+		cursor: no-drop;
+		pointer-events: none;
+	}
 }
 
 .tiny-contents {
@@ -21,6 +32,18 @@
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+	.yesterday & {
+		position: relative;
+		&:before {
+			content: " ";
+			position: absolute;
+			height: 100%;
+			width: 100%;
+			background-color: rgba(41, 41, 41, 0.315);
+			top: 0;
+			left: 0;
+		}
+	}
 }
 
 .tiny-drop {
