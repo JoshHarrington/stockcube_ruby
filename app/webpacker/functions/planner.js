@@ -1,4 +1,4 @@
-import { ready, ajaxRequest } from './utils'
+import { ready, ajaxRequest, showAlert } from './utils'
 import Sortable from 'sortablejs'
 import {tns} from 'tiny-slider/src/tiny-slider'
 import SVG from '../icons/symbol-defs.svg'
@@ -145,34 +145,6 @@ const updatePlannerRecipe = (e) => {
 	checkForUpdates(function(shoppingListPortions) {
 	  renderShoppingList(shoppingListPortions)
 	})
-}
-
-const showAlert = (message) => {
-	let alertGroup
-	if (document.querySelector('.alert_group')) {
-		alertGroup = document.querySelector('.alert_group')
-	} else {
-		const innerWrap = document.querySelector('#inner-wrap')
-		alertGroup = document.createElement('div')
-		alertGroup.classList.add('alert_group')
-		innerWrap.prepend(alertGroup)
-	}
-	const alertWrapper = document.createElement('div')
-	alertWrapper.classList.add('alert_wrapper', 'alert_hide')
-	alertGroup.appendChild(alertWrapper)
-	console.log('wrapper added to page', alertWrapper)
-	const alertNotice = document.createElement('div')
-	alertNotice.classList.add('alert', 'alert-notice')
-	alertNotice.innerHTML = message
-	alertWrapper.appendChild(alertNotice)
-	setTimeout(() => {
-		alertWrapper.classList.remove('alert_hide')
-	}, 50)
-
-	setTimeout(() => {
-		alertWrapper.classList.add('alert_hide')
-	}, 8000)
-
 }
 
 const deletePlannerRecipe = (deleteBtn) => {
