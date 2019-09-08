@@ -16,7 +16,7 @@
             </div>
             <% planner_stocks(p_recipe.id).length > 0 && planner_stocks(p_recipe.id).each do |stock| %>
               <% out_of_date_sentence = 'out of date' + (stock.use_by_date > Time.zone.now ? ' in ' : ' ') + (distance_of_time_in_words(Time.zone.now, stock.use_by_date)) + (stock.use_by_date <= Time.zone.now ? ' ago': '') %>
-              <%= link_to ((stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? edit_stock_path(stock.id) : ''), class: "list_block--item list_block--item_stacked", title: "#{stock.ingredient.name} - #{out_of_date_sentence}" do %>
+              <%= link_to ((stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? edit_stock_path(stock.id) : ''), class: "list_block--item non_sortable list_block--item_stacked", title: "#{stock.ingredient.name} - #{out_of_date_sentence}" do %>
                 <span class="list_block--item--content list_block--item--content_left">
                   <p><%= stock.ingredient.name %></p>
                   <p><%= round_if_whole(stock.amount) %> <%= stock.unit.name %></p>
