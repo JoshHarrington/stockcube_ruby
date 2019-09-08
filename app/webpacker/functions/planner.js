@@ -122,15 +122,10 @@ const addPlannerRecipe = (e) => {
 	deleteBtn.innerHTML = `<svg class="icomoon-icon icon-bin"><use xlink:href="${SVG}#icon-bin"></use></svg><img class="icon-png" src="${PNGBin}"></button>`
 	deleteBtn.classList.add('delete', 'list_block--item--action', 'list_block--item--action--btn')
 
-	const trackingBar = document.createElement('span')
-	trackingBar.classList.add('list_block--item--tracking_bar')
-	trackingBar.setAttribute('title', 'Refresh page to see percentage of recipe in stock')
-
 	const parentId = e.item.parentNode.id
 	e.item.setAttribute('data-parent-id', parentId)
 	e.item.classList.add('list_block--item--with-bar')
 
-	e.item.prepend(trackingBar)
 	e.item.appendChild(deleteBtn)
 	deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
 
