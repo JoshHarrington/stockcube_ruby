@@ -130,7 +130,6 @@ module TaskShoppingListsHelper
 
 		current_shopping_list.shopping_list_portions.delete_all
 
-		puts 'deleted all current shopping list portions'
 
 		@portions.each do |portion|
 			next if portion.ingredient.name.downcase == "water"
@@ -141,7 +140,6 @@ module TaskShoppingListsHelper
 				unit_id: portion.unit_id
 			)
 
-			puts 'shopping list portion created: id #' + shopping_list_portion.id.to_s
 
 			set_portion_amount = 0
 
@@ -235,7 +233,6 @@ module TaskShoppingListsHelper
 				unit_id: ingredient_unit_id
 			)
 		end
-		puts 'run through all shopping list portion additions or updates'
 
 	end
 
