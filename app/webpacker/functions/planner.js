@@ -37,7 +37,14 @@ const renderShoppingList = (shoppingListPortions) => {
 	} else {
 		shoppingListPortions.forEach(function(portion) {
 			const RecipePortionLi = document.createElement('li')
-			RecipePortionLi.innerHTML = '<p><label><input type="checkbox" name="planner_shopping_list_portions['+ portion["shopping_list_portion_id"] +'][add]" id="planner_shopping_list_portions_id_add" value="'+ portion["shopping_list_portion_id"] +'"> ' + portion["portion_description"] + '</label></p><h5>Use by date:</h5><p><input type="date" name="planner_shopping_list_portions['+ portion["shopping_list_portion_id"] +'][date]" id="planner_shopping_list_portions_id_date" value="' + portion["max_date"] + '" min="' + portion["min_date"] + '"></p><hr />'
+			RecipePortionLi.setAttribute('id', portion["shopping_list_portion_id"])
+			RecipePortionLi.classList.add('shopping_list_portion')
+			if (portion["portion_type"] == "combi") {
+				RecipePortionLi.classList.add('combi_portion')
+			} else {
+				RecipePortionLi.classList.add('individual_portion')
+			}
+			RecipePortionLi.innerHTML = '<p><label><input type="checkbox"> ' + portion["portion_description"] + '</label></p><h5>Use by date:</h5><p><input type="date" value="' + portion["max_date"] + '" min="' + portion["min_date"] + '"></p><hr />'
 			ListTopUl.appendChild(RecipePortionLi)
 		})
 
@@ -45,6 +52,7 @@ const renderShoppingList = (shoppingListPortions) => {
 	}
 	OldShoppingListContent.remove()
 	ShoppingList.appendChild(ListTopUl)
+	setupShoppingListCheckingOff()
 }
 
 
@@ -67,6 +75,28 @@ const setupShoppingListButton = () => {
 	const toggleBtn = document.querySelector('#planner_shopping_list .list_toggle')
 	toggleBtn.addEventListener("click", function(){
 		html.classList.toggle('shopping_list_open')
+	})
+}
+
+const setupShoppingListCheckingOff = () => {
+	const shoppingListPortionsChecks = document.querySelectorAll('#planner_shopping_list .planner_sl-recipe_list li input[type="checkbox"]')
+	console.log(shoppingListPortionsChecks, 'shoppingListPortionsChecks set')
+	shoppingListPortionsChecks.forEach(function(portionCheckbox){
+		console.log(portionCheckbox, 'for each loop portion')
+		portionCheckbox.addEventListener("change", function(){
+			console.log(portionCheckbox, 'portion checkbox changed')
+			const portionLi = portionCheckbox.closest('li')
+			const portionId = portionLi.getAttribute('id')
+			const portionType = portionLi.classList.contains('combi_portion') ? 'combi_portion' : 'individual_portion'
+			const date = portionLi.querySelector('input[type="date"]').value
+
+			const portionData = "shopping_list_portion_id=" + portionId + "&portion_type=" + portionType + "&date=" + date
+			ajaxRequest(portionData, '/stocks/add_portion')
+			portionLi.style.display = 'none'
+			checkForUpdates(function(shoppingListPortions) {
+				renderShoppingList(shoppingListPortions)
+			})
+		})
 	})
 }
 
@@ -180,10 +210,6 @@ const plannerFn = () => {
 			deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
 		})
 
-		checkForUpdates(function(shoppingListPortions) {
-			renderShoppingList(shoppingListPortions)
-		})
-
 	}
 	if (document.body.classList.contains('recipes_controller', 'index_page')) {
 		const recipeAddToPlannerButtons = document.querySelectorAll('.list_block--action_row .add_recipe_to_planner')
@@ -216,7 +242,13 @@ const plannerFn = () => {
 		}
 	}
 
-	setupShoppingListButton()
+
+	if (document.querySelector('#planner_shopping_list')) {
+		setupShoppingListButton()
+		checkForUpdates(function(shoppingListPortions) {
+			renderShoppingList(shoppingListPortions)
+		})
+	}
 
 }
 
