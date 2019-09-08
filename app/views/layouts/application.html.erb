@@ -72,6 +72,11 @@
     <%= javascript_pack_tag 'modernizr-custom' %>
     <%= stylesheet_pack_tag 'stylesheet' %>
     <%= javascript_pack_tag 'application' %>
+    <script async="true" src="https://cdn.whisk.com/sdk/shopping-list.js" type="text/javascript"></script>
+    <script>
+      var whisk = whisk || {};
+      whisk.queue = whisk.queue || [];
+    </script>
   </head>
 
   <body class="<%= controller_name %>_controller <%= action_name %>_page">
