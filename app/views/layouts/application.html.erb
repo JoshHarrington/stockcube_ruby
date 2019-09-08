@@ -111,6 +111,7 @@
           </div>
         <% end %>
         <main>
+          <%= render 'layouts/shopping_list_partial' %>
           <%= yield %>
           <%= debug(params) if Rails.env.development? %>
         </main>
