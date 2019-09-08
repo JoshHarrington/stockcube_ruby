@@ -30,6 +30,8 @@ class User < ApplicationRecord
 
   has_many :planner_shopping_lists
   has_many :planner_recipes
+  has_many :planner_shopping_list_portions
+  has_many :combi_planner_shopping_list_portions
 
   class << self
     # Returns the hash digest of the given string.
