@@ -7,6 +7,9 @@
 	<div class="list_block--collection">
 		<div class="list_block list_block-stack list_block-wide">
 			<div class="list_block--content pb-1" data-recipe-list>
+				<div class="list_block--title">
+					<h3>Top recipe matches</h3>
+				</div>
 				<% @recipes.each do |r| %>
 						<%
 							recipe = r
@@ -21,6 +24,23 @@
 						<%= link_to r.title, recipe_path(r) %>
 					</div>
 				<% end %>
+				<div class="list_block--title">
+					<h3>Favourite recipes</h3>
+				</div>
+				<% @fav_recipes.each do |fr| %>
+					<%
+						recipe = fr
+						user_recipe_stock_match = UserRecipeStockMatch.where(user_id: current_user.id, recipe_id: recipe.id).first
+						ingredient_stock_match_decimal = user_recipe_stock_match ? user_recipe_stock_match[:ingredient_stock_match_decimal] : nil
+						num_stock_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_stock_ingredients] : nil
+						num_needed_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_needed_ingredients] : nil
+						percent_in_cupboards = ingredient_stock_match_decimal ? (ingredient_stock_match_decimal.to_f * 100).round : 0
+					%>
+					<div class="list_block--item list_block--item--with-bar" id="<%= @recipe_id_hash.encode(fr.id) %>">
+						<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards %>%"></span></span>
+						<%= link_to fr.title, recipe_path(fr) %>
+					</div>
+				<% end %>
 			</div>
 		</div>
 	</div>
@@ -30,7 +50,7 @@
 
 	<div class="list_block--collection--sibling list_block--collection--sibling_stack">
 		<h2 class="tiny-slider--title">Planner</h2>
-		<p class="item_form--content_item_note"><%= icomoon('information-outline')%> Use keyboard arrow keys to move left and right</p>
+		<p class="item_form--content_item_note"><%= icomoon('information-outline')%> Use keyboard arrows to move left and right</p>
   </div>
 	<div class="extra-tiny-wrapper">
 		<div class="tiny-controls">

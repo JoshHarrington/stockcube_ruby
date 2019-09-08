@@ -572,6 +572,9 @@ a.list_block {
 		margin: 0 em(3, 10) em(10, 10);
 		flex-basis: calc(100% - 6px);
 	}
+	.list_block--content .list_block--item ~ & {
+		margin-top: em(16, 10);
+	}
 	h3 {
 		flex-grow: 1;
 	}
@@ -860,7 +863,7 @@ a.list_block--item {
 
 .list_block--item--with-bar {
 	border: none;
-	padding-top: em(17, 15);
+	padding-top: em(11, 15);
 }
 
 .list_block--item--tracking_bar {

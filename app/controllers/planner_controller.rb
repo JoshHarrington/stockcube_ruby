@@ -3,7 +3,12 @@ class PlannerController < ApplicationController
 	def index
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
-		@recipes = Recipe.first(8)
+
+		@recipes = current_user.user_recipe_stock_matches.order(ingredient_stock_match_decimal: :desc).select{|u_r| u_r.recipe && u_r.recipe.portions.length != 0 && (u_r.recipe[:public] || u_r.recipe[:user_id] == current_user[:id])}[0..7].map{|u_r| u_r.recipe}
+
+		recipe_ids = @recipes.map(&:id)
+		@fav_recipes = current_user.favourites.reject{|f| recipe_ids.include?(f.id) }.first(8)
+
 		update_planner_shopping_list_portions
 	end
 
