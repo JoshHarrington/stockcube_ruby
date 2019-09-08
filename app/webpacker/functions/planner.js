@@ -81,7 +81,7 @@ const renderShoppingList = (shoppingListPortions) => {
 	} else {
 		shoppingListPortions.forEach(function(portion) {
 			const RecipePortionLi = document.createElement('li')
-			RecipePortionLi.innerHTML = '<p><label><input type="checkbox" name="planner_shopping_list_portions['+ portion["shopping_list_portion_id"] +'][add]" id="planner_shopping_list_portions_id_add" value="'+ portion["shopping_list_portion_id"] +'"> ' + portion["portion_description"] + '</label></p><h5>Use by date:</h5><p><input type="date" name="planner_shopping_list_portions['+ portion["shopping_list_portion_id"] +'][date]" id="planner_shopping_list_portions_id_date" value="2019-09-15" min="2019-09-01"></p><hr />'
+			RecipePortionLi.innerHTML = '<p><label><input type="checkbox" name="planner_shopping_list_portions['+ portion["shopping_list_portion_id"] +'][add]" id="planner_shopping_list_portions_id_add" value="'+ portion["shopping_list_portion_id"] +'"> ' + portion["portion_description"] + '</label></p><h5>Use by date:</h5><p><input type="date" name="planner_shopping_list_portions['+ portion["shopping_list_portion_id"] +'][date]" id="planner_shopping_list_portions_id_date" value="' + portion["max_date"] + '" min="' + portion["min_date"] + '"></p><hr />'
 			ListTopUl.appendChild(RecipePortionLi)
 		})
 
@@ -166,8 +166,36 @@ const deletePlannerRecipe = (deleteBtn) => {
 }
 
 const plannerFn = () => {
+  const slider = tns({
+    container: '[data-planner]',
+    items: 1,
+		slideBy: 1,
+		startIndex: 1,
+		loop: false,
+		gutter: 10,
+		edgePadding: 40,
+		arrowKeys: true,
+		swipeAngle: false,
+		controlsContainer: '.tiny-controls',
+		nav: false,
+		responsive: {
+      420: {
+        items: 1
+      },
+      640: {
+        items: 2
+      },
+      900: {
+        items: 3
+      },
+      1200: {
+        items: 4
+      }
+    }
+	});
+
 	const recipeList = document.querySelector('[data-recipe-list]')
-	const plannerBlocks = document.querySelectorAll('[data-planner] .tiny-drop')
+	const plannerBlocks = document.querySelectorAll('[data-planner] .tiny-slide:not(.yesterday) .tiny-drop')
 	new Sortable.create(recipeList, {
 		group: {
 			name: 'recipe-sharing',
@@ -193,34 +221,6 @@ const plannerFn = () => {
 			}
 		})
 	})
-  const slider = tns({
-    container: '[data-planner]',
-    items: 1,
-		slideBy: 1,
-		mouseDrag: true,
-		startIndex: 1,
-		loop: false,
-		gutter: 10,
-		edgePadding: 40,
-		arrowKeys: true,
-		swipeAngle: false,
-		controlsContainer: '.tiny-controls',
-		nav: false,
-		responsive: {
-      420: {
-        items: 1
-      },
-      640: {
-        items: 2
-      },
-      900: {
-        items: 3
-      },
-      1200: {
-        items: 4
-      }
-    }
-	});
 
 	const plannerRecipeDeleteButtons = document.querySelectorAll('.tiny-slide .list_block--item button.delete')
 

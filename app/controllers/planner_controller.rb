@@ -113,7 +113,7 @@ class PlannerController < ApplicationController
 			combi_portions = current_user.planner_shopping_lists.first.combi_planner_shopping_list_portions
 			shopping_list_portions = planner_recipe_portions + combi_portions
 			if shopping_list_portions.length > 0
-				shopping_list_portions = shopping_list_portions.sort_by!{|p| p.ingredient.name}.map{|p| { "shopping_list_portion_id": p.id, "portion_description": p.amount.to_f.to_s + ' ' + p.unit.name + ' ' + p.ingredient.name} }
+				shopping_list_portions = shopping_list_portions.sort_by!{|p| p.ingredient.name}.map{|p| { "shopping_list_portion_id": p.id, "portion_description": p.amount.to_f.to_s + ' ' + p.unit.name + ' ' + p.ingredient.name, "max_date": (Date.current + 2.weeks).strftime("%Y-%m-%d"), "min_date": Date.current.strftime("%Y-%m-%d")} }
 			else
 				shopping_list_portions = []
 			end
