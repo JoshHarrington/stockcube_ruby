@@ -142,7 +142,11 @@ class StocksController < ApplicationController
 		@stock = Stock.find(params[:id])
 		@current_cupboard = @stock.cupboard
 
-		@cupboards = current_user.cupboards.where(hidden: false, setup: false).order(created_at: :desc)
+		if @stock.planner_recipe_id == nil
+			@cupboards = current_user.cupboard_users.where(accepted: true).select{|cu| cu.cupboard.setup == false && cu.cupboard.hidden == false }.map{|cu| cu.cupboard }.sort_by{|c| c.updated_at}
+		else
+			@cupboards = []
+		end
 
 		@ingredients = Ingredient.all.sort_by{|i| i.name.downcase}
 		@current_ingredient = @stock.ingredient
