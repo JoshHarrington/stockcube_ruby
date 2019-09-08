@@ -44,6 +44,12 @@
 			left: 0;
 			z-index: 2;
 		}
+		.list_block--item button.delete {
+			display: none;
+		}
+	}
+	.list_block--item .list_block--item--tracking_bar {
+		display: none;
 	}
 }
 

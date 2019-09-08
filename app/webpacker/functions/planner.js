@@ -124,7 +124,7 @@ const addPlannerRecipe = (e) => {
 
 	const parentId = e.item.parentNode.id
 	e.item.setAttribute('data-parent-id', parentId)
-	e.item.classList.add('list_block--item--with-bar')
+	e.item.classList.remove('list_block--item--with-bar')
 
 	e.item.appendChild(deleteBtn)
 	deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
