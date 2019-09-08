@@ -153,6 +153,30 @@ class StocksController < ApplicationController
 
 		@delete_stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
 	end
+
+	def add_shopping_list_portion
+		return unless params.has_key?(:shopping_list_portion_id) && current_user && params.has_key?(:portion_type) && params.has_key?(:date)
+		planner_portion_id_hash = Hashids.new(ENV['PLANNER_PORTIONS_SALT'])
+		if params[:portion_type] == 'combi_portion'
+			combi_portion = current_user.combi_planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
+		elsif params[:portion_type] == 'individual_portion'
+			individual_portion = current_user.planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
+		end
+
+		if combi_portion.present?
+			combi_portion.planner_shopping_list_portions.each do |portion|
+				add_individual_portion_as_stock(portion)
+				portion.destroy
+			end
+			combi_portion.destroy
+		end
+		if individual_portion.present?
+			add_individual_portion_as_stock(individual_portion)
+			individual_portion.destroy
+		end
+
+	end
+
 	def delete_stock
 		if params.has_key?(:stock_id) && params[:stock_id].to_s != ''
 			stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])

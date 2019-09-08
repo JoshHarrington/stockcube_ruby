@@ -61,5 +61,22 @@ module StockHelper
 			)
 	end
 
+	def add_individual_portion_as_stock(portion)
+
+		cupboard_id = current_user.cupboard_users.where(accepted: true).select{|cu| cu.cupboard.setup == false && cu.cupboard.hidden == false }.map{|cu| cu.cupboard }.sort_by{|c| c.updated_at}.first.id
+
+		recipe_stock = Stock.create(
+			ingredient_id: portion.ingredient_id,
+			amount: portion.amount,
+			planner_recipe_id: portion.planner_recipe_id,
+			unit_id: portion.unit_id,
+			use_by_date: params[:date],
+			cupboard_id: cupboard_id,
+			hidden: false,
+			always_available: false
+		)
+		current_user.stocks << recipe_stock
+	end
+
 end
 
