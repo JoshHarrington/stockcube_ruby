@@ -12,7 +12,7 @@
         <div class="cupboard list_block">
           <div class="list_block--content">
             <div class="list_block--title non_sortable">
-              <h3><%= p_recipe.recipe.title %> (<%= p_recipe.date.to_s(:short) %>)</h3>
+              <h3><%= link_to p_recipe.recipe.title, recipe_path(p_recipe.recipe) %> (<%= p_recipe.date.to_s(:short) %>)</h3>
             </div>
             <% planner_stocks(p_recipe.id).length > 0 && planner_stocks(p_recipe.id).each do |stock| %>
               <% out_of_date_sentence = 'out of date' + (stock.use_by_date > Time.zone.now ? ' in ' : ' ') + (distance_of_time_in_words(Time.zone.now, stock.use_by_date)) + (stock.use_by_date <= Time.zone.now ? ' ago': '') %>
