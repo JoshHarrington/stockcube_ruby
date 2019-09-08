@@ -4,6 +4,7 @@ class PlannerController < ApplicationController
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
 		@recipes = Recipe.first(8)
+		update_planner_shopping_list_portions
 	end
 
 	def recipe_add_to_planner
@@ -108,9 +109,9 @@ class PlannerController < ApplicationController
 	def get_shopping_list_content
 		if current_user.planner_shopping_lists.first.ready == true
 
-			planner_recipe_portions = current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.day && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}}.flatten
+			planner_recipe_portions = current_user.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}}.flatten
+			combi_portions = current_user.planner_shopping_lists.first.combi_planner_shopping_list_portions.select{|c|c.date > Date.current - 6.hours && c.date < Date.current + 7.day}
 
-			combi_portions = current_user.planner_shopping_lists.first.combi_planner_shopping_list_portions
 			shopping_list_portions = planner_recipe_portions + combi_portions
 			if shopping_list_portions.length > 0
 				shopping_list_portions = shopping_list_portions.sort_by!{|p| p.ingredient.name}.map{|p| { "shopping_list_portion_id": p.id, "portion_description": p.amount.to_f.to_s + ' ' + p.unit.name + ' ' + p.ingredient.name, "max_date": (Date.current + 2.weeks).strftime("%Y-%m-%d"), "min_date": Date.current.strftime("%Y-%m-%d")} }

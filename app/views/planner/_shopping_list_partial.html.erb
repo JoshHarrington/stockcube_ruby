@@ -1,6 +1,6 @@
 <%
-	planner_recipe_portions = current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.day && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}}.flatten
-	combi_portions = current_user.planner_shopping_lists.first.combi_planner_shopping_list_portions
+	planner_recipe_portions = current_user.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}}.flatten
+	combi_portions = current_user.planner_shopping_lists.first.combi_planner_shopping_list_portions.select{|c|c.date > Date.current - 6.hours && c.date < Date.current + 7.day}
 	@shopping_list_portions = planner_recipe_portions + combi_portions
 	if @shopping_list_portions.length > 0
 		@shopping_list_portions.sort_by!{|p| p.ingredient.name}

@@ -90,7 +90,7 @@ module PlannerShoppingListHelper
 
 	def update_planner_shopping_list_portions
 		planner_shopping_list = PlannerShoppingList.find_or_create_by(user_id: current_user.id)
-		planner_shopping_list_portions = planner_shopping_list.planner_shopping_list_portions
+		planner_shopping_list_portions = planner_shopping_list.planner_shopping_list_portions.select{|p|p.planner_recipe.date >= Date.current}.sort_by{|p|p.planner_recipe.date}
 		ingredients_from_planner_shopping_list = planner_shopping_list_portions.map(&:ingredient_id)
 		planner_shopping_list.combi_planner_shopping_list_portions.destroy_all
 
@@ -112,7 +112,8 @@ module PlannerShoppingListHelper
 					planner_shopping_list_id: planner_shopping_list.id,
 					ingredient_id: m_ing,
 					amount: combi_amount,
-					unit_id: combi_unit_id
+					unit_id: combi_unit_id,
+					date: matching_sl_portions.last.planner_recipe.date
 				)
 
 				PlannerShoppingListPortion.where(id: matching_sl_portions.map(&:id)).update_all(
