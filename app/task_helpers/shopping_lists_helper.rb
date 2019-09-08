@@ -104,7 +104,6 @@ module TaskShoppingListsHelper
 			current_shopping_list = ShoppingList.find(current_shopping_list_id)
 		end
 
-		puts current_shopping_list_id
 
 		if add_recipe_id == nil && recipe_ids_to_delete != nil
 			ShoppingListRecipe.where(shopping_list_id: current_shopping_list_id, recipe_id: recipe_ids_to_delete).delete_all
@@ -112,7 +111,6 @@ module TaskShoppingListsHelper
 			ShoppingListRecipe.find_or_create_by(shopping_list_id: current_shopping_list_id, recipe_id: add_recipe_id)
 		end
 
-		puts 'got past shopping list pick'
 
 		@portions = Portion.where(recipe_id: current_shopping_list.recipes)
 		@portion_ids = @portions.map(&:id)
