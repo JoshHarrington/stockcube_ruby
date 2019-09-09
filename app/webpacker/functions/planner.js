@@ -12,44 +12,48 @@ const plannerRecipeUpdateData = (e) => (
 	"recipe_id=" + e.item.id + "&old_date=" + e.item.dataset.parentId + "&new_date=" + e.item.parentNode.id
 )
 
-const whiskShoppingList = (whiskListPortions, shoppingListPortionsFull) => {
+
+const showWhiskList = () => {
 	whisk.queue.push(function() {
-		whisk.listeners.addClickListener(
-			'whisk-add-products',
-			'shoppingList.addProductsToList', {
-				products: whiskListPortions
-			}
-		);
+		whisk.shoppingList.viewList({
+			styles: {
+				type: 'modal',
+			},
+		});
 	});
-	if (document.querySelector('#whisk-add-products')) {
-		document.querySelector('#whisk-add-products').addEventListener('click', function() {
-			shoppingListPortionsFull.forEach(function(portion){
-				const portionId = portion["shopping_list_portion_id"]
-				const portionType = portion["portion_type"] === "combi" ? "combi_portion" :	"individual_portion"
-				const date = portion["max_date"]
-				const portionData = "shopping_list_portion_id=" + portionId + "&portion_type=" + portionType + "&date=" + date
-				ajaxRequest(portionData, '/stocks/add_portion')
-			})
-			setTimeout(() => checkForUpdates(function(shoppingListPortions) {
-				renderShoppingList(shoppingListPortions)
-			}), 3000)
+}
+
+const addToWhiskList = (whiskListPortions) => {
+	whisk.queue.push(function() {
+		whisk.shoppingList.addProductsToList({
+			products: whiskListPortions
 		})
+	});
+	ajaxRequest('Add Shopping list', '/stocks/add_shopping_list')
+	setTimeout(() => checkForUpdates(function(shoppingListPortions) {
+		renderShoppingList(shoppingListPortions)
+		showAlert(`Shopping List items added to your <a href="/cupboards">cupboards</a>`)
+	}), 2000)
+}
+
+const setupAddToWhiskShoppingListButton = (whiskListPortions) => {
+	if (document.querySelector('#whisk-add-products')) {
+		document.querySelector('#whisk-add-products').addEventListener('click', () => addToWhiskList(whiskListPortions))
+	}
+	if (document.querySelector('#view-whisk-list')) {
+		document.querySelector('#view-whisk-list').removeEventListener('click', showWhiskList)
 	}
 }
 
 const setupViewWhiskShoppingListButton = () => {
 	if (document.querySelector('#view-whisk-list')) {
-		document.querySelector('#view-whisk-list').addEventListener('click', function() {
-			whisk.queue.push(function() {
-				whisk.shoppingList.viewList({
-					styles: {
-						type: 'modal',
-					},
-				});
-			});
-		})
+		document.querySelector('#view-whisk-list').addEventListener('click', showWhiskList)
+	}
+	if (document.querySelector('#whisk-add-products')) {
+		document.querySelector('#whisk-add-products').removeEventListener('click', addToWhiskList)
 	}
 }
+
 
 function checkForUpdates(onSuccess) {
   setTimeout(() => fetch("/planner/shopping_list").then((response) => {
@@ -87,7 +91,8 @@ const renderShoppingList = (shoppingListPortions) => {
 			} else {
 				RecipePortionLi.classList.add('individual_portion')
 			}
-			RecipePortionLi.innerHTML = '<p><label><input type="checkbox"> ' + portion["portion_description"] + '</label></p><h5>Use by date:</h5><p><input type="date" value="' + portion["max_date"] + '" min="' + portion["min_date"] + '"></p><hr />'
+			// <h5>Use by date:</h5><p><input type="date" value="' + portion["max_date"] + '" min="' + portion["min_date"] + '"></p>
+			RecipePortionLi.innerHTML = '<p><label><input type="checkbox"> ' + portion["portion_description"] + '</label></p><hr />'
 			ListTopUl.appendChild(RecipePortionLi)
 
 			whiskShoppingListPortions.push(portion["portion_description"])
@@ -97,7 +102,7 @@ const renderShoppingList = (shoppingListPortions) => {
 		showShoppingList()
 
 		shopOnlineBlock.innerHTML = `<button id="whisk-add-products" class="list_block--collection--action">Add to online shopping list</button>`
-		whiskShoppingList(whiskShoppingListPortions, shoppingListPortions)
+		setupAddToWhiskShoppingListButton(whiskShoppingListPortions)
 	}
 	OldShoppingListContent.remove()
 	ShoppingList.appendChild(ListTopUl)
@@ -134,9 +139,9 @@ const setupShoppingListCheckingOff = () => {
 			const portionLi = portionCheckbox.closest('li')
 			const portionId = portionLi.getAttribute('id')
 			const portionType = portionLi.classList.contains('combi_portion') ? 'combi_portion' : 'individual_portion'
-			const date = portionLi.querySelector('input[type="date"]').value
+			// const date = portionLi.querySelector('input[type="date"]').value
 
-			const portionData = "shopping_list_portion_id=" + portionId + "&portion_type=" + portionType + "&date=" + date
+			const portionData = "shopping_list_portion_id=" + portionId + "&portion_type=" + portionType
 			ajaxRequest(portionData, '/stocks/add_portion')
 			portionLi.style.display = 'none'
 			checkForUpdates(function(shoppingListPortions) {
