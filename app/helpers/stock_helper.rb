@@ -4,7 +4,6 @@ module StockHelper
 
 
 	def update_recipe_stock_matches_core(ingredient_id = nil, user_id = nil, recipe_id = nil)
-		return unless current_user.user_recipe_stock_matches.order("updated_at desc").first.updated_at < 6.hours.ago
 		two_days_ago = Date.current - 2.days
 		if user_id != nil
 			user_id = user_id
@@ -36,6 +35,7 @@ module StockHelper
 	end
 
 	def	update_recipe_stock_matches(ingredient_id = nil, user_id = nil, recipe_id = nil)
+		return unless current_user.user_recipe_stock_matches.order("updated_at desc").first.updated_at < 20.minutes.ago
 		update_recipe_stock_matches_core(ingredient_id, user_id, recipe_id)
 
 		flash[:info] = %Q[We've updated your <a href="/recipes">recipe list</a> based on your stock so you can see the quickest recipes to make]
@@ -76,8 +76,6 @@ module StockHelper
 			always_available: false
 		)
 		current_user.stocks << recipe_stock
-
-		update_recipe_stock_matches_core(portion.ingredient_id, current_user.id)
 
 	end
 
