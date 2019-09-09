@@ -172,10 +172,12 @@ class StocksController < ApplicationController
 				add_individual_portion_as_stock(portion)
 				portion.destroy
 			end
+			update_recipe_stock_matches_core(combi_portion.ingredient_id, current_user.id)
 			combi_portion.destroy
 		end
 		if individual_portion.present?
 			add_individual_portion_as_stock(individual_portion)
+			update_recipe_stock_matches_core(individual_portion.ingredient_id, current_user.id)
 			individual_portion.destroy
 		end
 
@@ -202,6 +204,11 @@ class StocksController < ApplicationController
 				individual_portion.destroy
 			end
 		end
+
+		all_portions = combi_portions + portions
+		all_portion_ids = all_portions.map(&:ingredient_id)
+
+		update_recipe_stock_matches_core(all_portion_ids, current_user.id)
 	end
 
 	def delete_stock
