@@ -875,17 +875,17 @@ a.list_block--item {
 	width: 100%;
 	height: em(8, 15);
 	position: absolute;
-	background-color: red;
 	top: 0;
 	left: 0;
 	overflow: hidden;
 	border-top-left-radius: 2px;
 	border-top-right-radius: 2px;
+	background-color: $teal-15;
 }
 
 .list_block--item--tracking_bar-percent {
+	background-color: $teal-90;
 	height: 100%;
-	background-color: blue;
 	display: block;
 	border-top-left-radius: 2px;
 }
