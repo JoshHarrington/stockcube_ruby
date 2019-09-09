@@ -23,8 +23,6 @@
 							<%= portion.amount %> <%= portion.unit.name %> <%= portion.ingredient.name %>
 						</label>
 					</p>
-					<h5>Use by date:</h5>
-					<p><%= date_field_tag portion.id, Date.current + 2.weeks, min: Date.current %></p>
 					<hr />
 				</li>
 			<% end %>
