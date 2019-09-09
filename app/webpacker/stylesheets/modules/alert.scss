@@ -68,7 +68,7 @@
 	display: flex;
 	position: fixed;
 	z-index: 200;
-	right: 0px;
+	left: 0;
 	bottom: 0;
 	flex-direction: column-reverse;
 	padding: 0 20px 19px 20px;
@@ -81,13 +81,13 @@
 
 .alert_wrapper {
 	max-height: 27em;
-	right: 0;
-	transition: right .4s .3s, max-height .4s;
+	left: 0;
+	transition: left .4s .3s, max-height .4s;
 	position: relative;
 }
 
 .alert_hide {
-	right: -120%;
+	left: -120%;
 	max-height: 0;
-	transition: right .4s, max-height .4s .3s;
+	transition: left .4s, max-height .4s .3s;
 }
