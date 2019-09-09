@@ -70,12 +70,15 @@ module StockHelper
 			amount: portion.amount,
 			planner_recipe_id: portion.planner_recipe_id,
 			unit_id: portion.unit_id,
-			use_by_date: params[:date],
+			use_by_date: Date.current + 2.weeks,
 			cupboard_id: cupboard_id,
 			hidden: false,
 			always_available: false
 		)
 		current_user.stocks << recipe_stock
+
+		update_recipe_stock_matches_core(portion.ingredient_id, current_user.id)
+
 	end
 
 end
