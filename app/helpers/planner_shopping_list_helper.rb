@@ -25,6 +25,8 @@ module PlannerShoppingListHelper
 					unit_id = portion_from_ing.unit_id
 				elsif ingredient_unit_type_match(stock_from_ing, portion_from_ing) && ingredient_metric_check(stock_from_ing) && ingredient_metric_check(portion_from_ing)
 					unit_id = default_unit_id(portion_from_ing)
+				else
+					unit_id = portion_from_ing.unit_id
 				end
 
 				if ingredient_plus_diff_amount
@@ -63,7 +65,7 @@ module PlannerShoppingListHelper
 						}
 
 						stock_from_ing.update_attributes(
-							unit_id: default_unit_id_output,
+							unit_id: unit_id,
 							amount: ingredient_plus_diff_amount
 						)
 
@@ -131,13 +133,21 @@ module PlannerShoppingListHelper
 			stock_partner = stock.cupboard.stocks.where.not(id: stock.id).find_by(ingredient_id: stock.ingredient_id, use_by_date: stock.use_by_date)
 			return unless stock_partner.present?
 			stock_group = [stock_partner, stock]
-			stock_amount = ingredient_plus_addition(stock_group)[:amount]
-			stock_unit_id = ingredient_plus_addition(stock_group)[:unit_id]
-			stock_partner.update_attributes(
-				amount: stock_amount,
-				unit_id: stock_unit_id
-			)
-			stock.delete
+			if ingredient_plus_addition(stock_group)
+				stock_addition_hash = ingredient_plus_addition(stock_group)
+				stock_amount = stock_addition_hash[:amount]
+				stock_unit_id = stock_addition_hash[:unit_id]
+				stock_partner.update_attributes(
+					amount: stock_amount,
+					unit_id: stock_unit_id
+				)
+				stock.delete
+			else
+				stock.update_attributes(
+					planner_recipe_id: nil
+				)
+			end
+
 		end
 	end
 end
