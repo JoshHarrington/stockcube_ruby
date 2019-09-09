@@ -159,7 +159,7 @@ class StocksController < ApplicationController
 	end
 
 	def add_shopping_list_portion
-		return unless params.has_key?(:shopping_list_portion_id) && current_user && params.has_key?(:portion_type) && params.has_key?(:date)
+		return unless params.has_key?(:shopping_list_portion_id) && current_user && params.has_key?(:portion_type)
 		planner_portion_id_hash = Hashids.new(ENV['PLANNER_PORTIONS_SALT'])
 		if params[:portion_type] == 'combi_portion'
 			combi_portion = current_user.combi_planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
@@ -179,6 +179,29 @@ class StocksController < ApplicationController
 			individual_portion.destroy
 		end
 
+	end
+
+	def add_shopping_list
+		return unless current_user
+		shopping_list = current_user.planner_shopping_lists.first
+		portions = current_user.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}}.flatten
+		combi_portions = shopping_list.combi_planner_shopping_list_portions.select{|c|c.date > Date.current - 6.hours && c.date < Date.current + 7.day}
+		if combi_portions.length > 0
+			combi_portions.each do |combi_portion|
+				combi_portion.planner_shopping_list_portions.each do |portion|
+					add_individual_portion_as_stock(portion)
+					portion.destroy
+				end
+				combi_portion.destroy
+			end
+		end
+
+		if portions.length > 0
+			portions.each do |individual_portion|
+				add_individual_portion_as_stock(individual_portion)
+				individual_portion.destroy
+			end
+		end
 	end
 
 	def delete_stock
