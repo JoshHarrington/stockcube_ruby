@@ -49,7 +49,6 @@ const showAlert = (message) => {
 	const alertWrapper = document.createElement('div')
 	alertWrapper.classList.add('alert_wrapper', 'alert_hide')
 	alertGroup.appendChild(alertWrapper)
-	console.log('wrapper added to page', alertWrapper)
 	const alertNotice = document.createElement('div')
 	alertNotice.classList.add('alert', 'alert-notice')
 	alertNotice.innerHTML = message
