@@ -1,38 +1,42 @@
 <%
-	planner_recipe_portions = current_user.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}}.flatten
-	combi_portions = current_user.planner_shopping_lists.first.combi_planner_shopping_list_portions.select{|c|c.date > Date.current - 6.hours && c.date < Date.current + 7.day}
-	@shopping_list_portions = planner_recipe_portions + combi_portions
-	if @shopping_list_portions.length > 0
-		@shopping_list_portions.sort_by!{|p| p.ingredient.name}
+	if current_user
+		planner_recipe_portions = current_user.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}}.flatten
+		combi_portions = current_user.planner_shopping_lists.first.combi_planner_shopping_list_portions.select{|c|c.date > Date.current - 6.hours && c.date < Date.current + 7.day}
+		@shopping_list_portions = planner_recipe_portions + combi_portions
+		if @shopping_list_portions.length > 0
+			@shopping_list_portions.sort_by!{|p| p.ingredient.name}
+		end
+		planner_portion_id_hash = Hashids.new(ENV['PLANNER_PORTIONS_SALT'])
 	end
-	planner_portion_id_hash = Hashids.new(ENV['PLANNER_PORTIONS_SALT'])
 %>
 
-<aside id="planner_shopping_list">
-	<h2>Shopping List</h2>
-	<button class="list_toggle"><span class="cross icon_char" title="Close shopping list">&#735;</span><span class="chevron_left icon_char" title="Open shopping list">&#706;</span></button>
-	<% if @shopping_list_portions.length == 0 %>
-		<ul><p>Shopping List is currently empty, move some recipes to your planner to get items added to this list</p></ul>
-	<% else %>
-		<ul class="planner_sl-recipe_list">
-			<% @shopping_list_portions.each do |portion| %>
-				<li id="<%= planner_portion_id_hash.encode(portion.id) %>" class="shopping_list_portion <%= portion.class.name == "CombiPlannerShoppingListPortion" ? 'combi_portion' : 'individual_portion' %>">
-					<p>
-						<label>
-							<%= check_box_tag "planner_shopping_list_portions_add[#{planner_portion_id_hash.encode(portion.id)}]", "planner_shopping_list_portions_add", false, class: "" %>
-							<%= portion.amount %> <%= portion.unit.name %> <%= portion.ingredient.name %>
-						</label>
-					</p>
-					<hr />
-				</li>
-			<% end %>
-		</ul>
-	<% end %>
-	<div class="shop_online_block">
+<% if current_user %>
+	<aside id="planner_shopping_list">
+		<h2>Shopping List</h2>
+		<button class="list_toggle"><span class="cross icon_char" title="Close shopping list">&#735;</span><span class="chevron_left icon_char" title="Open shopping list">&#706;</span></button>
 		<% if @shopping_list_portions.length == 0 %>
-			<button id="view-whisk-list" class="list_block--collection--action">Open online shopping list</button>
+			<ul><p>Shopping List is currently empty, move some recipes to your planner to get items added to this list</p></ul>
 		<% else %>
-			<button id="whisk-add-products" class="list_block--collection--action">Add to online shopping list</button>
+			<ul class="planner_sl-recipe_list">
+				<% @shopping_list_portions.each do |portion| %>
+					<li id="<%= planner_portion_id_hash.encode(portion.id) %>" class="shopping_list_portion <%= portion.class.name == "CombiPlannerShoppingListPortion" ? 'combi_portion' : 'individual_portion' %>">
+						<p>
+							<label>
+								<%= check_box_tag "planner_shopping_list_portions_add[#{planner_portion_id_hash.encode(portion.id)}]", "planner_shopping_list_portions_add", false, class: "" %>
+								<%= portion.amount %> <%= portion.unit.name %> <%= portion.ingredient.name %>
+							</label>
+						</p>
+						<hr />
+					</li>
+				<% end %>
+			</ul>
 		<% end %>
-	</div>
-</aside>
+		<div class="shop_online_block">
+			<% if @shopping_list_portions.length == 0 %>
+				<button id="view-whisk-list" class="list_block--collection--action">Open online shopping list</button>
+			<% else %>
+				<button id="whisk-add-products" class="list_block--collection--action">Add to online shopping list</button>
+			<% end %>
+		</div>
+	</aside>
+<% end %>
