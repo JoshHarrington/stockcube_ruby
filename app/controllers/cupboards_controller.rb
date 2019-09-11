@@ -7,7 +7,7 @@ class CupboardsController < ApplicationController
 	before_action :correct_user,   only: [:show, :edit, :update]
 	def index
 		@cupboards = current_user.cupboard_users.where(accepted: true).select{|cu| cu.cupboard.setup == false && cu.cupboard.hidden == false }.map{|cu| cu.cupboard }.sort_by{|c| c.created_at}.reverse!
-		@planner_recipes = current_user.planner_recipes.where(user_id: current_user.id).select{|pr| pr.date > Date.current - 4.days}.reject{|pr| planner_stocks(pr.id).length == 0}
+		@planner_recipes = current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.days}.reject{|pr| planner_stocks(pr.id).length == 0}
 		@user_fav_stocks = current_user.user_fav_stocks.order('updated_at desc')
 		@cupboard_users_hashids = Hashids.new(ENV['CUPBOARD_USER_ID_SALT'])
 		@quick_add_hashids = Hashids.new(ENV['QUICK_ADD_STOCK_ID_SALT'])
