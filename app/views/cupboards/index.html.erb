@@ -9,7 +9,7 @@
     </div>
     <div class="list_block--collection">
       <% @planner_recipes.select{|pr| planner_stocks(pr.id).length > 0}.each do |p_recipe| %>
-        <div class="cupboard list_block">
+        <div class="cupboard list_block <%= @planner_recipes.length == 1 && 'list_block-wide' %>">
           <div class="list_block--content">
             <div class="list_block--title non_sortable">
               <h3><%= link_to p_recipe.recipe.title, recipe_path(p_recipe.recipe) %> (<%= p_recipe.date.to_s(:short) %>)</h3>
