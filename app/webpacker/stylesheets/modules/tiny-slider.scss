@@ -19,6 +19,8 @@
 	min-height: em(250, 10);
 	.list_block--item--action--btn {
 		padding: em(6, 15);
+		min-width: em(30, 15);
+    margin-top: em(4, 15);
 	}
 	&.yesterday {
 		cursor: no-drop;
@@ -44,12 +46,11 @@
 			left: 0;
 			z-index: 2;
 		}
-		.list_block--item button.delete {
+		.list_block--item
+		button.delete,
+		.list_block--item--tracking_bar {
 			display: none;
 		}
-	}
-	.list_block--item .list_block--item--tracking_bar {
-		display: none;
 	}
 }
 
