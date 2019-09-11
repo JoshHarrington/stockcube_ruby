@@ -161,7 +161,6 @@ const addPlannerRecipe = (e) => {
 
 	const parentId = e.item.parentNode.id
 	e.item.setAttribute('data-parent-id', parentId)
-	e.item.classList.remove('list_block--item--with-bar')
 
 	e.item.appendChild(deleteBtn)
 	deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
@@ -188,13 +187,15 @@ const deletePlannerRecipe = (deleteBtn) => {
 	const dateId = buttonParent.dataset.parentId
 	const recipeId = buttonParent.id
 	const deleteString = "recipe_id=" + recipeId + "&date=" + dateId
-	ajaxRequest(deleteString, '/planner/recipe_delete')
+	if (window.confirm("Deleting this recipe will remove it from your planner, all your associated stock will stay in your cupboards")) {
+		ajaxRequest(deleteString, '/planner/recipe_delete')
 
-	buttonParent.style.display = 'none'
+		buttonParent.style.display = 'none'
 
-	checkForUpdates(function(shoppingListPortions) {
-	  renderShoppingList(shoppingListPortions)
-	})
+		checkForUpdates(function(shoppingListPortions) {
+			renderShoppingList(shoppingListPortions)
+		})
+	}
 }
 
 const plannerFn = () => {
