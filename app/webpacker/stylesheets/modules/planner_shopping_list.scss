@@ -25,6 +25,7 @@
 	}
 	.list_toggle {
 		position: fixed;
+		padding: em(1, 11);
     right: 11px;
     top: 83px;
     height: 34px;
@@ -41,6 +42,7 @@
 			background-color: $teal-120;
 		}
 		.shopping_list_open & {
+			padding: em(8, 11);
 			right: 308px;
 		}
 	}
@@ -54,15 +56,6 @@
 		left: 100%;
 		.cross {
 			display: none;
-		}
-	}
-	.icon_char {
-		line-height: 139%;
-		&.cross {
-			font-size: 3.9em;
-		}
-		&.chevron_left {
-			font-size: 3.4em;
 		}
 	}
 	hr {
