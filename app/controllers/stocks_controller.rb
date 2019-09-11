@@ -160,6 +160,9 @@ class StocksController < ApplicationController
 
 	def add_shopping_list_portion
 		return unless params.has_key?(:shopping_list_portion_id) && current_user && params.has_key?(:portion_type)
+		current_user.planner_shopping_lists.first.update_attributes(
+			ready: false
+		)
 		planner_portion_id_hash = Hashids.new(ENV['PLANNER_PORTIONS_SALT'])
 		if params[:portion_type] == 'combi_portion'
 			combi_portion = current_user.combi_planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
@@ -167,24 +170,48 @@ class StocksController < ApplicationController
 			individual_portion = current_user.planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
 		end
 
+		recipe_ids = []
+		ingredient_ids = []
+
 		if combi_portion.present?
 			combi_portion.planner_shopping_list_portions.each do |portion|
+				if portion.planner_recipe.recipe_id
+					recipe_ids.push(portion.planner_recipe.recipe_id)
+				else
+					ingredient_ids.push(combi_portion.ingredient_id)
+				end
 				add_individual_portion_as_stock(portion)
 				portion.destroy
 			end
-			update_recipe_stock_matches_core(combi_portion.ingredient_id, current_user.id)
 			combi_portion.destroy
 		end
 		if individual_portion.present?
+			if individual_portion.planner_recipe.recipe_id
+				recipe_ids.push(individual_portion.planner_recipe.recipe_id)
+			else
+				ingredient_ids.push(individual_portion.ingredient_id)
+			end
 			add_individual_portion_as_stock(individual_portion)
-			update_recipe_stock_matches_core(individual_portion.ingredient_id, current_user.id)
 			individual_portion.destroy
+
+			if recipe_ids.length > 0
+				update_recipe_stock_matches_core(nil, current_user.id, recipe_ids)
+			elsif ingredient_ids.length > 0
+				update_recipe_stock_matches_core(ingredient_ids, current_user.id)
+			end
 		end
+
+		current_user.planner_shopping_lists.first.update_attributes(
+			ready: true
+		)
 
 	end
 
 	def add_shopping_list
 		return unless current_user
+		current_user.planner_shopping_lists.first.update_attributes(
+			ready: false
+		)
 		shopping_list = current_user.planner_shopping_lists.first
 		portions = current_user.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}}.flatten
 		combi_portions = shopping_list.combi_planner_shopping_list_portions.select{|c|c.date > Date.current - 6.hours && c.date < Date.current + 7.day}
@@ -209,6 +236,9 @@ class StocksController < ApplicationController
 		all_portion_ids = all_portions.map(&:ingredient_id)
 
 		update_recipe_stock_matches_core(all_portion_ids, current_user.id)
+		current_user.planner_shopping_lists.first.update_attributes(
+			ready: true
+		)
 	end
 
 	def delete_stock
