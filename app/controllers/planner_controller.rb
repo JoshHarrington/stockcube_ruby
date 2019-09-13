@@ -99,12 +99,11 @@ class PlannerController < ApplicationController
 			date: date
 		)
 
-		if planner_recipe
+		if planner_recipe.present?
 			combine_divided_stock_after_planner_recipe_delete(planner_recipe)
 			planner_recipe.destroy
+			update_planner_shopping_list_portions
 		end
-
-		update_planner_shopping_list_portions
 
 		current_user.planner_shopping_lists.first.update_attributes(
 			ready: true
@@ -121,7 +120,7 @@ class PlannerController < ApplicationController
 
 			shopping_list_portions = planner_recipe_portions + combi_portions
 			if shopping_list_portions.length > 0
-				shopping_list_portions = shopping_list_portions.sort_by!{|p| p.ingredient.name}.map{|p| { "portion_type": (p.class.name == "CombiPlannerShoppingListPortion" ? 'combi' : 'individual'), "shopping_list_portion_id": planner_portion_id_hash.encode(p.id), "portion_description": p.amount.to_f.to_s + ' ' + p.unit.name + ' ' + p.ingredient.name, "max_date": (Date.current + 2.weeks).strftime("%Y-%m-%d"), "min_date": Date.current.strftime("%Y-%m-%d")} }
+				shopping_list_portions = shopping_list_portions.sort_by!{|p| p.ingredient.name}.map{|p| { "portion_type": (p.class.name == "CombiPlannerShoppingListPortion" ? 'combi' : 'individual'), "shopping_list_portion_id": planner_portion_id_hash.encode(p.id), "portion_description": p.amount.to_f.to_s + ' ' + p.unit.name + ' ' + p.ingredient.name, "max_date": (Date.current + 2.weeks).strftime("%Y-%m-%d"), "min_date": Date.current.strftime("%Y-%m-%d"), "recipe_title": p.has_attribute?(:planner_recipe_id) && p.planner_recipe.recipe.present? ? p.planner_recipe.recipe.title.to_s : "null" } }
 			else
 				shopping_list_portions = []
 			end
