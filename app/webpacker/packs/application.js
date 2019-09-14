@@ -16,7 +16,6 @@ import '../functions/global';
 import '../functions/general';
 import '../functions/alert';
 
-//// will need to include jquery ui - sortable to get sorting to work
 import '../functions/cupboard';
 import '../functions/list_block';
 import '../functions/navigation';
