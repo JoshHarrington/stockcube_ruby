@@ -180,9 +180,8 @@ class StocksController < ApplicationController
 				else
 					ingredient_ids.push(combi_portion.ingredient_id)
 				end
-				add_individual_portion_as_stock(portion)
-				portion.destroy
 			end
+			add_individual_portion_as_stock(combi_portion.planner_shopping_list_portions)
 			combi_portion.destroy
 		end
 		if individual_portion.present?
@@ -192,7 +191,6 @@ class StocksController < ApplicationController
 				ingredient_ids.push(individual_portion.ingredient_id)
 			end
 			add_individual_portion_as_stock(individual_portion)
-			individual_portion.destroy
 
 			if recipe_ids.length > 0
 				update_recipe_stock_matches_core(nil, current_user.id, recipe_ids)
@@ -217,25 +215,20 @@ class StocksController < ApplicationController
 		combi_portions = shopping_list.combi_planner_shopping_list_portions.select{|c|c.date > Date.current - 6.hours && c.date < Date.current + 7.day}
 		if combi_portions.length > 0
 			combi_portions.each do |combi_portion|
-				combi_portion.planner_shopping_list_portions.each do |portion|
-					add_individual_portion_as_stock(portion)
-					portion.destroy
-				end
+				add_individual_portion_as_stock(combi_portion.planner_shopping_list_portions)
 				combi_portion.destroy
 			end
 		end
 
 		if portions.length > 0
-			portions.each do |individual_portion|
-				add_individual_portion_as_stock(individual_portion)
-				individual_portion.destroy
-			end
+			add_individual_portion_as_stock(portions)
 		end
 
 		all_portions = combi_portions + portions
 		all_portion_ids = all_portions.map(&:ingredient_id)
 
 		update_recipe_stock_matches_core(all_portion_ids, current_user.id)
+
 		current_user.planner_shopping_lists.first.update_attributes(
 			ready: true
 		)
