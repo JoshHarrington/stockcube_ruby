@@ -86,13 +86,17 @@ const renderShoppingList = (shoppingListPortions) => {
 			const RecipePortionLi = document.createElement('li')
 			RecipePortionLi.setAttribute('id', portion["shopping_list_portion_id"])
 			RecipePortionLi.classList.add('shopping_list_portion')
+			let RecipePortionLiTag
 			if (portion["portion_type"] == "combi") {
 				RecipePortionLi.classList.add('combi_portion')
+				RecipePortionLiTag = '<h6 class="mb-2">Combi portion</h6>'
 			} else {
 				RecipePortionLi.classList.add('individual_portion')
+				RecipePortionLiTag = '<h6 class="mb-2">Recipe portion - ' + portion["recipe_title"] + '</h6>'
 			}
+			const RecipePortionLiP = '<p><label><input type="checkbox"> ' + portion["portion_description"] + '</label></p><hr />'
 			// <h5>Use by date:</h5><p><input type="date" value="' + portion["max_date"] + '" min="' + portion["min_date"] + '"></p>
-			RecipePortionLi.innerHTML = '<p><label><input type="checkbox"> ' + portion["portion_description"] + '</label></p><hr />'
+			RecipePortionLi.innerHTML = RecipePortionLiTag + RecipePortionLiP
 			ListTopUl.appendChild(RecipePortionLi)
 
 			whiskShoppingListPortions.push(portion["portion_description"])
@@ -190,7 +194,10 @@ const deletePlannerRecipe = (deleteBtn) => {
 	if (window.confirm("Deleting this recipe will remove it from your planner, all your associated stock will stay in your cupboards")) {
 		ajaxRequest(deleteString, '/planner/recipe_delete')
 
-		buttonParent.style.display = 'none'
+		const recipeList = document.querySelector('[data-recipe-list]')
+		const recipeAllLink = recipeList.querySelector('a.list_block--item.list_block--item_new')
+		deleteBtn.remove()
+		recipeList.insertBefore(buttonParent, recipeAllLink)
 
 		checkForUpdates(function(shoppingListPortions) {
 			renderShoppingList(shoppingListPortions)
@@ -233,9 +240,9 @@ const plannerFn = () => {
 		new Sortable.create(recipeList, {
 			group: {
 				name: 'recipe-sharing',
-				pull: 'clone',
 				put: false,
 			},
+			filter: '.non_sortable',
 			sort: false,
 			onEnd: function(e) {
 				if (e.item.parentNode.classList.contains('tiny-drop')){
