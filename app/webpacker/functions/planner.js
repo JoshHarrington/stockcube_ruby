@@ -30,8 +30,8 @@ const addToWhiskList = (whiskListPortions) => {
 		})
 	});
 	ajaxRequest('Add Shopping list', '/stocks/add_shopping_list')
-	setTimeout(() => checkForUpdates(function(shoppingListPortions) {
-		renderShoppingList(shoppingListPortions)
+	setTimeout(() => checkForUpdates(function(shoppingList) {
+		renderShoppingList(shoppingList)
 		showAlert(`Shopping List items added to your <a href="/cupboards">cupboards</a>`)
 	}), 2000)
 }
@@ -65,9 +65,10 @@ function checkForUpdates(onSuccess) {
   }), 400)
 }
 
-const renderShoppingList = (shoppingListPortions) => {
+const renderShoppingList = (shoppingList) => {
 
 	const ShoppingList = document.querySelector('#planner_shopping_list')
+	const ShoppingListTitle = ShoppingList.querySelector('h2')
 
 	const ListTopUl = document.createElement('ul')
 	ListTopUl.classList.add('planner_sl-recipe_list')
@@ -75,14 +76,17 @@ const renderShoppingList = (shoppingListPortions) => {
 	const OldShoppingListContent = document.querySelector('#planner_shopping_list > ul')
 	const shopOnlineBlock = document.querySelector('.shop_online_block')
 
-	if (shoppingListPortions.length === 0 ){
+	if (shoppingList.length === 0 ){
+		ShoppingListTitle.innerText = 'Shopping List'
 		shopOnlineBlock.innerHTML = `<button id="view-whisk-list" class="list_block--collection--action">Open online shopping list</button>`
 		hideShoppingList()
 		ListTopUl.innerHTML = '<p>Shopping List is currently empty, move some recipes to your planner to get items added to this list</p>'
 		setupViewWhiskShoppingListButton()
 	} else {
 		const whiskShoppingListPortions = []
-		shoppingListPortions.forEach(function(portion) {
+		const ShoppingListTitleContent = 'Shopping List (' + shoppingList[0]["stats"]["checked_portions"] + '/' + shoppingList[0]["stats"]["total_portions"] + ')'
+		ShoppingListTitle.innerText = ShoppingListTitleContent
+		shoppingList[1]["portions"].forEach(function(portion) {
 			const RecipePortionLi = document.createElement('li')
 			RecipePortionLi.setAttribute('id', portion["shopping_list_portion_id"])
 			RecipePortionLi.classList.add('shopping_list_portion')
@@ -92,7 +96,7 @@ const renderShoppingList = (shoppingListPortions) => {
 			let RecipePortionLiTag
 			if (portion["portion_type"] == "combi") {
 				RecipePortionLi.classList.add('combi_portion')
-				RecipePortionLiTag = '<h6 class="mb-2">Combi portion</h6>'
+				RecipePortionLiTag = '<h6 class="mb-2">Combi portion (' + portion["num_assoc_recipes"] + ' recipes)</h6>'
 			} else {
 				RecipePortionLi.classList.add('individual_portion')
 				RecipePortionLiTag = '<h6 class="mb-2">Recipe portion - ' + portion["recipe_title"] + '</h6>'
@@ -106,7 +110,11 @@ const renderShoppingList = (shoppingListPortions) => {
 
 		})
 
-		showShoppingList()
+		if (shoppingList[0]["stats"]["checked_portions"] === shoppingList[0]["stats"]["total_portions"]) {
+			hideShoppingList()
+		} else {
+			showShoppingList()
+		}
 
 		shopOnlineBlock.innerHTML = `<button id="whisk-add-products" class="list_block--collection--action">Add to online shopping list</button>`
 		setupAddToWhiskShoppingListButton(whiskShoppingListPortions)
@@ -155,8 +163,8 @@ const setupShoppingListCheckingOff = () => {
 			} else {
 				ajaxRequest(portionData, '/stocks/remove_portion')
 			}
-			checkForUpdates(function(shoppingListPortions) {
-				renderShoppingList(shoppingListPortions)
+			checkForUpdates(function(shoppingList) {
+				renderShoppingList(shoppingList)
 			})
 		})
 	})
@@ -176,8 +184,8 @@ const addPlannerRecipe = (e) => {
 	e.item.appendChild(deleteBtn)
 	deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
 
-	checkForUpdates(function(shoppingListPortions) {
-	  renderShoppingList(shoppingListPortions)
+	checkForUpdates(function(shoppingList) {
+	  renderShoppingList(shoppingList)
 	})
 
 }
@@ -188,8 +196,8 @@ const updatePlannerRecipe = (e) => {
 	const parentId = e.item.parentNode.id
 	e.item.setAttribute('data-parent-id', parentId)
 
-	checkForUpdates(function(shoppingListPortions) {
-	  renderShoppingList(shoppingListPortions)
+	checkForUpdates(function(shoppingList) {
+	  renderShoppingList(shoppingList)
 	})
 }
 
@@ -206,8 +214,8 @@ const deletePlannerRecipe = (deleteBtn) => {
 		deleteBtn.remove()
 		recipeList.insertBefore(buttonParent, recipeAllLink)
 
-		checkForUpdates(function(shoppingListPortions) {
-			renderShoppingList(shoppingListPortions)
+		checkForUpdates(function(shoppingList) {
+			renderShoppingList(shoppingList)
 		})
 	}
 }
@@ -285,8 +293,8 @@ const plannerFn = () => {
 			addBtn.addEventListener("click", function(){
 				ajaxRequest(plannerRecipeAddData(recipeId, date), '/planner/recipe_add')
 				addBtn.style.display = 'none'
-				checkForUpdates(function(shoppingListPortions) {
-					renderShoppingList(shoppingListPortions)
+				checkForUpdates(function(shoppingList) {
+					renderShoppingList(shoppingList)
 				})
 				showAlert(`Recipe added to your <a href="/planner">planner</a><br />Your shopping list is now updating`)
 			})
@@ -300,8 +308,8 @@ const plannerFn = () => {
 			recipeAddToPlannerButton.addEventListener("click", function(){
 				ajaxRequest(plannerRecipeAddData(recipeId, date), '/planner/recipe_add')
 				recipeAddToPlannerButton.style.display = 'none'
-				checkForUpdates(function(shoppingListPortions) {
-					renderShoppingList(shoppingListPortions)
+				checkForUpdates(function(shoppingList) {
+					renderShoppingList(shoppingList)
 				})
 				showAlert(`Recipe added to your <a href="/planner">planner</a><br />Your shopping list is now updating`)
 			})
@@ -311,8 +319,8 @@ const plannerFn = () => {
 
 	if (document.querySelector('#planner_shopping_list')) {
 		setupShoppingListButton()
-		checkForUpdates(function(shoppingListPortions) {
-			renderShoppingList(shoppingListPortions)
+		checkForUpdates(function(shoppingList) {
+			renderShoppingList(shoppingList)
 		})
 		setupViewWhiskShoppingListButton()
 	}

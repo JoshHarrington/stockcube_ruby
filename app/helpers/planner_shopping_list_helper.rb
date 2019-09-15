@@ -94,15 +94,17 @@ module PlannerShoppingListHelper
 		planner_shopping_list = PlannerShoppingList.find_or_create_by(user_id: current_user.id)
 		planner_shopping_list_portions = planner_shopping_list.planner_shopping_list_portions.select{|p|p.planner_recipe.date >= Date.current}.sort_by{|p|p.planner_recipe.date}
 		ingredients_from_planner_shopping_list = planner_shopping_list_portions.map(&:ingredient_id)
-		planner_shopping_list.combi_planner_shopping_list_portions.destroy_all
 
 		matching_ingredients = ingredients_from_planner_shopping_list.select{ |e| ingredients_from_planner_shopping_list.count(e) > 1 }.uniq
 		if matching_ingredients.length > 0
 			matching_ingredients.each do |m_ing|
 				matching_sl_portions = planner_shopping_list_portions.select{|p| p.ingredient_id == m_ing}
 
-				if ingredient_plus_addition(matching_sl_portions) == false
+				if ingredient_plus_addition(matching_sl_portions) == false || matching_sl_portions.map(&:checked).uniq.length != 1
 					next
+				end
+				planner_shopping_list.combi_planner_shopping_list_portions.select{|cp| cp.ingredient_id == m_ing}.each do |cp|
+					cp.destroy
 				end
 
 				combi_addition_object = ingredient_plus_addition(matching_sl_portions)
@@ -115,7 +117,8 @@ module PlannerShoppingListHelper
 					ingredient_id: m_ing,
 					amount: combi_amount,
 					unit_id: combi_unit_id,
-					date: matching_sl_portions.last.planner_recipe.date
+					date: matching_sl_portions.last.planner_recipe.date,
+					checked: matching_sl_portions.first.checked
 				)
 
 				PlannerShoppingListPortion.where(id: matching_sl_portions.map(&:id)).update_all(
@@ -168,6 +171,13 @@ module PlannerShoppingListHelper
 
 		shopping_list_portions = combi_portions + planner_recipe_portions
 		return shopping_list_portions.sort_by!{|p| p.ingredient.name}
+	end
+
+	def unchecked_portions
+		return shopping_list_portions.count{|p|p.checked == false}
+	end
+	def checked_portions
+		return shopping_list_portions.count{|p|p.checked == true}
 	end
 
 	def planner_portion_id_hash

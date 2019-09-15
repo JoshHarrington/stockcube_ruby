@@ -89,7 +89,11 @@ module StockHelper
 				end
 			end
 			convert_portions_to_stock(combi_portion.planner_shopping_list_portions, processing_type)
-			combi_portion.update_attributes(checked: !combi_portion.checked)
+			if processing_type && processing_type == 'add_portion'
+				combi_portion.update_attributes(checked: true)
+			elsif processing_type && processing_type == 'remove_portion'
+				combi_portion.update_attributes(checked: false)
+			end
 		end
 		if individual_portion.present?
 			if individual_portion.planner_recipe.recipe_id
@@ -109,8 +113,6 @@ module StockHelper
 		current_user.planner_shopping_lists.first.update_attributes(
 			ready: true
 		)
-
-
 	end
 
 	def convert_portions_to_stock(portions, processing_type)
@@ -131,11 +133,14 @@ module StockHelper
 			current_user.stocks << recipe_stock
 			if processing_type && processing_type == 'remove_portion'
 				recipe_stock.update_attributes(hidden: true)
-			end
-			if processing_type && processing_type == 'add_portion'
+			elsif processing_type && processing_type == 'add_portion'
 				recipe_stock.update_attributes(hidden: false)
 			end
-			portion.update_attributes(checked: !portion.checked)
+			if processing_type && processing_type == 'add_portion'
+				portion.update_attributes(checked: true)
+			elsif processing_type && processing_type == 'remove_portion'
+				portion.update_attributes(checked: false)
+			end
 		end
 
 	end

@@ -114,13 +114,14 @@ class PlannerController < ApplicationController
 		if current_user.planner_shopping_lists.first.ready == true
 
 			if shopping_list_portions.length > 0
-				formatted_shopping_list_portions = shopping_list_portions.sort_by!{|p| p.ingredient.name}.map{|p| { "portion_type": (p.class.name == "CombiPlannerShoppingListPortion" ? 'combi' : 'individual'), "shopping_list_portion_id": planner_portion_id_hash.encode(p.id), "portion_description": p.amount.to_f.to_s + ' ' + p.unit.name + ' ' + p.ingredient.name, "max_date": (Date.current + 2.weeks).strftime("%Y-%m-%d"), "min_date": Date.current.strftime("%Y-%m-%d"), "recipe_title": p.has_attribute?(:planner_recipe_id) && p.planner_recipe.recipe.present? ? p.planner_recipe.recipe.title.to_s : "null", "checked": p.checked.to_s } }
+				formatted_shopping_list_portions = shopping_list_portions.sort_by!{|p| p.ingredient.name}.map{|p| { "portion_type": (p.class.name == "CombiPlannerShoppingListPortion" ? 'combi' : 'individual'), "shopping_list_portion_id": planner_portion_id_hash.encode(p.id), "portion_description": p.amount.to_f.to_s + ' ' + p.unit.name + ' ' + p.ingredient.name, "max_date": (Date.current + 2.weeks).strftime("%Y-%m-%d"), "min_date": Date.current.strftime("%Y-%m-%d"), "recipe_title": p.has_attribute?(:planner_recipe_id) && p.planner_recipe.recipe.present? ? p.planner_recipe.recipe.title.to_s : "null", "checked": p.checked.to_s, "num_assoc_recipes": (p.class.name == "CombiPlannerShoppingListPortion" ? p.planner_shopping_list_portions.length : '1') } }
+				shopping_list = [{"stats": {"checked_portions": checked_portions, "total_portions": shopping_list_portions.length}}, {"portions": formatted_shopping_list_portions }]
 			else
-				formatted_shopping_list_portions = []
+				shopping_list = []
 			end
 
 			respond_to do |format|
-				format.json { render json: formatted_shopping_list_portions.as_json}
+				format.json { render json: shopping_list.as_json}
 				format.html { redirect_to planner_path }
 			end
 

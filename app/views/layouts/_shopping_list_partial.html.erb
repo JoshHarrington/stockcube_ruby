@@ -1,5 +1,5 @@
 <aside id="planner_shopping_list">
-	<h2>Shopping List</h2>
+	<h2>Shopping List <% if shopping_list_portions.length > 0 %>(<%= checked_portions %>/<%= shopping_list_portions.length %>)<% end %></h2>
 	<button class="list_toggle">
 		<span class="cross icon_char" title="Close shopping list">
 			<%= icomoon('close') %>
@@ -14,7 +14,7 @@
 		<ul class="planner_sl-recipe_list">
 			<% shopping_list_portions.each do |portion| %>
 				<li id="<%= planner_portion_id_hash.encode(portion.id) %>" class="shopping_list_portion <%= portion.class.name == "CombiPlannerShoppingListPortion" ? 'combi_portion' : 'individual_portion' %> <%= portion.checked ? 'portion_checked' : '' %>">
-					<h6 class="mb-2"><%= portion.class.name == "CombiPlannerShoppingListPortion" ? "Combi portion" : (portion.planner_recipe ? "Recipe portion - #{portion.planner_recipe.recipe.title}" : "Recipe portion") %></h6>
+					<h6 class="mb-2"><%= portion.class.name == "CombiPlannerShoppingListPortion" ? "Combi portion (#{portion.planner_shopping_list_portions.length} recipes)" : (portion.planner_recipe ? "Recipe portion - #{portion.planner_recipe.recipe.title}" : "Recipe portion") %></h6>
 					<p>
 						<label>
 							<%= check_box_tag "planner_shopping_list_portions_add[#{planner_portion_id_hash.encode(portion.id)}]", "planner_shopping_list_portions_add", false, class: "" %>
