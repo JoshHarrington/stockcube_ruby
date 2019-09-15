@@ -1,7 +1,7 @@
 module StockHelper
+	include PlannerShoppingListHelper
 	# if updating one or more ingredients (stock addition) - ingredient_id should be defined
 	# if no ingredient_id defined then use all of current users stock to search for matching recipes
-
 
 	def update_recipe_stock_matches_core(ingredient_ids = nil, user_id = nil, recipe_ids = nil)
 
@@ -70,7 +70,7 @@ module StockHelper
 		current_user.planner_shopping_lists.first.update_attributes(
 			ready: false
 		)
-		planner_portion_id_hash = Hashids.new(ENV['PLANNER_PORTIONS_SALT'])
+
 		if params[:portion_type] == 'combi_portion'
 			combi_portion = current_user.combi_planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
 		elsif params[:portion_type] == 'individual_portion'

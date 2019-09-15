@@ -150,4 +150,27 @@ module PlannerShoppingListHelper
 
 		end
 	end
+
+	def shopping_list_portions
+		if !current_user || (current_user && current_user.planner_shopping_lists.length == 0)
+			return []
+		end
+
+		planner_recipe_portions = []
+		if current_user.planner_recipes.length > 0
+			planner_recipe_portions = current_user.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}.reject{|p| p.checked == true && p.updated_at < Time.current - 1.day}}.flatten
+		end
+
+		combi_portions = []
+		if current_user.planner_shopping_lists.first.combi_planner_shopping_list_portions.length > 0
+			combi_portions = current_user.planner_shopping_lists.first.combi_planner_shopping_list_portions.select{|c|c.date > Date.current - 6.hours && c.date < Date.current + 7.day}.reject{|cp| cp.checked == true && cp.updated_at < Time.current - 1.day}
+		end
+
+		shopping_list_portions = combi_portions + planner_recipe_portions
+		return shopping_list_portions.sort_by!{|p| p.ingredient.name}
+	end
+
+	def planner_portion_id_hash
+		return Hashids.new(ENV['PLANNER_PORTIONS_SALT'])
+	end
 end

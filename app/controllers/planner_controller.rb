@@ -113,21 +113,14 @@ class PlannerController < ApplicationController
 	def get_shopping_list_content
 		if current_user.planner_shopping_lists.first.ready == true
 
-			planner_recipe_portions = current_user.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}}.flatten
-			combi_portions = current_user.planner_shopping_lists.first.combi_planner_shopping_list_portions.select{|c|c.date > Date.current - 6.hours && c.date < Date.current + 7.day}
-
-			planner_portion_id_hash = Hashids.new(ENV['PLANNER_PORTIONS_SALT'])
-
-			shopping_list_portions = planner_recipe_portions + combi_portions
 			if shopping_list_portions.length > 0
-				shopping_list_portions = shopping_list_portions.sort_by!{|p| p.ingredient.name}.map{|p| { "portion_type": (p.class.name == "CombiPlannerShoppingListPortion" ? 'combi' : 'individual'), "shopping_list_portion_id": planner_portion_id_hash.encode(p.id), "portion_description": p.amount.to_f.to_s + ' ' + p.unit.name + ' ' + p.ingredient.name, "max_date": (Date.current + 2.weeks).strftime("%Y-%m-%d"), "min_date": Date.current.strftime("%Y-%m-%d"), "recipe_title": p.has_attribute?(:planner_recipe_id) && p.planner_recipe.recipe.present? ? p.planner_recipe.recipe.title.to_s : "null", "checked": p.checked.to_s } }
+				formatted_shopping_list_portions = shopping_list_portions.sort_by!{|p| p.ingredient.name}.map{|p| { "portion_type": (p.class.name == "CombiPlannerShoppingListPortion" ? 'combi' : 'individual'), "shopping_list_portion_id": planner_portion_id_hash.encode(p.id), "portion_description": p.amount.to_f.to_s + ' ' + p.unit.name + ' ' + p.ingredient.name, "max_date": (Date.current + 2.weeks).strftime("%Y-%m-%d"), "min_date": Date.current.strftime("%Y-%m-%d"), "recipe_title": p.has_attribute?(:planner_recipe_id) && p.planner_recipe.recipe.present? ? p.planner_recipe.recipe.title.to_s : "null", "checked": p.checked.to_s } }
 			else
-				shopping_list_portions = []
+				formatted_shopping_list_portions = []
 			end
 
-
 			respond_to do |format|
-				format.json { render json: shopping_list_portions.as_json}
+				format.json { render json: formatted_shopping_list_portions.as_json}
 				format.html { redirect_to planner_path }
 			end
 
