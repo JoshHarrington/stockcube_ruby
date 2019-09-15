@@ -1,49 +1,51 @@
-var user_function = function() {
-	var $select = $('select.selectize').selectize({
-    copyClassesToDropdown: true
-	});
-	$('#notifications input[type="checkbox"], #notifications #day_pick').change(function(){
-		var notifications = false;
-		var notification_status = $('#notifications input[type="checkbox"]').prop('checked');
-		if($(this).is('#notifications input[type="checkbox"]')){
-			$('.selectize_flex_container').toggleClass('faded_out')
-		}
-		if(notification_status) {
-			notifications = true;
-		}
-		var day_pick = $('#day_pick').val();
-		var weekdays = [0,1,2,3,4,5,6];
-		if (weekdays.includes(parseInt(day_pick))){
-			$.ajax({
-				type: "POST",
-				beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-				url: "/users/notifications",
-				data: "notifications[" + notifications + "]&weekday[" + day_pick + "]",
-				dataType: "script"
-			});
-		} else {
-			if($(this).is('#notifications input[type="checkbox"]') && !notification_status ) {
-				$select[0].selectize.setValue(weekdays[0]);
-			}
-		}
-	});
+import { ajaxRequest, ready } from "./utils";
+
+const notificationsData = (notificationsWanted, notificationDay) => (
+	"notifications[" + notificationsWanted + "]&weekday[" + notificationDay + "]"
+)
+
+const notificationFunction = () => {
+	const notifications = document.querySelector('#notifications')
+	const notificationsUserPickRow = notifications.querySelector('#notifications_user_pick_row')
+	const notificationsCheckbox = notifications.querySelector('input[type="checkbox"]')
+	const notificationDayPick = notifications.querySelector('#day_pick')
+
+
+	let notificationsWanted = notificationsCheckbox.checked
+	let notificationDay = notificationDayPick.value
+
+	notificationsCheckbox.addEventListener('change', () => {
+		notificationsWanted = notificationsCheckbox.checked
+		notificationsUserPickRow.classList.toggle('faded_out')
+		ajaxRequest(notificationsData(notificationsWanted, notificationDay), "/users/notifications")
+	})
+
+	notificationDayPick.addEventListener('change', (event) => {
+		notificationDay = event.target.value
+		ajaxRequest(notificationsData(notificationsWanted, notificationDay), "/users/notifications")
+	})
+
+
 }
 
-var pass_user_email = function() {
-	$('#forgotten_password_link').click(function(e){
-		if ($('#session_email').val() != '') {
-			var user_email = $('#session_email').val()
-			e.preventDefault();
-			window.location.replace('/password_resets/new?email=' + encodeURIComponent(user_email));
+var passUserEmail = function() {
+	const forgottenPasswordLink = document.querySelector('#forgotten_password_link')
+	const emailField = document.querySelector('#session_email')
+	forgottenPasswordLink.addEventListener('click', (e) => {
+		if (emailField.value !== '') {
+			e.preventDefault()
+			window.location.assign('/password_resets/new?email=' + encodeURIComponent(emailField.value));
 		}
-	});
+	})
 }
 
-$(document).ready(function() {
-	if ($('#notifications').length > 0) {
-		user_function();
+const userPageFunctions = () => {
+	if (document.querySelector('#notifications')) {
+		notificationFunction();
 	}
-	if ($('#forgotten_password_link').length > 0) {
-		pass_user_email();
+	if (document.querySelector('#forgotten_password_link')) {
+		passUserEmail();
 	}
-});
+}
+
+ready(userPageFunctions)

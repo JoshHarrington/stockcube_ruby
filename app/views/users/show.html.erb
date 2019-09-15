@@ -69,7 +69,7 @@
       class: "reminder_pick--label" %>
 
     <br />
-    <p class="selectize_flex_container <%= current_user.user_setting.notify ? '' : 'faded_out' %>"><span>Pick the day you want to receive the notification:</span><%= select_tag 'day_pick', options_for_select(@weekdays, (@weekday_pick ? @weekday_pick : @weekday_current_id)), class: "selectize fit_width" %></p>
+    <p id="notifications_user_pick_row" <%= current_user.user_setting.notify ? '' : 'faded_out' %>"><span class="choices_select--sibling">Pick the day you want to receive the notification:</span><%= select_tag 'day_pick', options_for_select(@weekdays, (@weekday_pick ? @weekday_pick : @weekday_current_id)), class: "choices--basis fit_width" %></p>
 
   </div>
 
