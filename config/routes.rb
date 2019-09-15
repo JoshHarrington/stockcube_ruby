@@ -54,6 +54,7 @@ Rails.application.routes.draw do
   patch '/stocks/:id' => 'stocks#update'
   post '/stocks' => 'stocks#create'
   post '/stocks/add_portion' => 'stocks#add_shopping_list_portion'
+  post '/stocks/remove_portion' => 'stocks#remove_shopping_list_portion'
   post '/stocks/add_shopping_list' => 'stocks#add_shopping_list'
   post '/stocks/new/:cupboard_id' => 'stocks#create'
   post '/stocks/delete/:id' => 'stocks#delete_stock', as: :delete_stock_post

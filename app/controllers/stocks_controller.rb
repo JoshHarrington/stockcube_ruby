@@ -158,50 +158,11 @@ class StocksController < ApplicationController
 	end
 
 	def add_shopping_list_portion
-		return unless params.has_key?(:shopping_list_portion_id) && current_user && params.has_key?(:portion_type)
-		current_user.planner_shopping_lists.first.update_attributes(
-			ready: false
-		)
-		planner_portion_id_hash = Hashids.new(ENV['PLANNER_PORTIONS_SALT'])
-		if params[:portion_type] == 'combi_portion'
-			combi_portion = current_user.combi_planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
-		elsif params[:portion_type] == 'individual_portion'
-			individual_portion = current_user.planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
-		end
+		toggle_stock_on_portion_check(params, 'add_portion')
+	end
 
-		recipe_ids = []
-		ingredient_ids = []
-
-		if combi_portion.present?
-			combi_portion.planner_shopping_list_portions.each do |portion|
-				if portion.planner_recipe.recipe_id
-					recipe_ids.push(portion.planner_recipe.recipe_id)
-				else
-					ingredient_ids.push(combi_portion.ingredient_id)
-				end
-			end
-			add_individual_portion_as_stock(combi_portion.planner_shopping_list_portions)
-			combi_portion.destroy
-		end
-		if individual_portion.present?
-			if individual_portion.planner_recipe.recipe_id
-				recipe_ids.push(individual_portion.planner_recipe.recipe_id)
-			else
-				ingredient_ids.push(individual_portion.ingredient_id)
-			end
-			add_individual_portion_as_stock(individual_portion)
-
-			if recipe_ids.length > 0
-				update_recipe_stock_matches_core(nil, current_user.id, recipe_ids)
-			elsif ingredient_ids.length > 0
-				update_recipe_stock_matches_core(ingredient_ids, current_user.id)
-			end
-		end
-
-		current_user.planner_shopping_lists.first.update_attributes(
-			ready: true
-		)
-
+	def remove_shopping_list_portion
+		toggle_stock_on_portion_check(params, 'remove_portion')
 	end
 
 	def add_shopping_list

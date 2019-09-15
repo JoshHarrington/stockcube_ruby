@@ -71,20 +71,32 @@
 }
 
 
-.planner_sl-recipe_list li {
-	p:first-child {
-		margin-bottom: 10px;
-	}
-	p label {
-		font-size: 1em;
-	}
-	padding-left: 10px;
-	input[type="date"]{
-		font-size: 1em;
-		margin-top: 4px;
-	}
-	input[type="checkbox"] {
-		margin-left: 0;
+.planner_sl-recipe_list {
+	display: flex;
+	flex-direction: column;
+	li {
+		order: 1;
+		p:first-child {
+			margin-bottom: 10px;
+		}
+		p label {
+			font-size: 1em;
+		}
+		padding-left: 10px;
+		input[type="date"]{
+			font-size: 1em;
+			margin-top: 4px;
+		}
+		input[type="checkbox"] {
+			margin-left: 0;
+		}
+		&.portion_checked {
+			order: 2;
+			color: $black-40;
+			p {
+				text-decoration: line-through;
+			}
+		}
 	}
 }
 

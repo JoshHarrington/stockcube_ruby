@@ -86,6 +86,9 @@ const renderShoppingList = (shoppingListPortions) => {
 			const RecipePortionLi = document.createElement('li')
 			RecipePortionLi.setAttribute('id', portion["shopping_list_portion_id"])
 			RecipePortionLi.classList.add('shopping_list_portion')
+			if (portion["checked"] === "true"){
+				RecipePortionLi.classList.add('portion_checked')
+			}
 			let RecipePortionLiTag
 			if (portion["portion_type"] == "combi") {
 				RecipePortionLi.classList.add('combi_portion')
@@ -94,7 +97,7 @@ const renderShoppingList = (shoppingListPortions) => {
 				RecipePortionLi.classList.add('individual_portion')
 				RecipePortionLiTag = '<h6 class="mb-2">Recipe portion - ' + portion["recipe_title"] + '</h6>'
 			}
-			const RecipePortionLiP = '<p><label><input type="checkbox"> ' + portion["portion_description"] + '</label></p><hr />'
+			const RecipePortionLiP = '<p><label><input type="checkbox" ' + (portion["checked"] === "true" && 'checked') + '> ' + portion["portion_description"] + '</label></p><hr />'
 			// <h5>Use by date:</h5><p><input type="date" value="' + portion["max_date"] + '" min="' + portion["min_date"] + '"></p>
 			RecipePortionLi.innerHTML = RecipePortionLiTag + RecipePortionLiP
 			ListTopUl.appendChild(RecipePortionLi)
@@ -146,8 +149,12 @@ const setupShoppingListCheckingOff = () => {
 			// const date = portionLi.querySelector('input[type="date"]').value
 
 			const portionData = "shopping_list_portion_id=" + portionId + "&portion_type=" + portionType
-			ajaxRequest(portionData, '/stocks/add_portion')
-			portionLi.style.display = 'none'
+			portionLi.classList.toggle('portion_checked')
+			if (portionCheckbox.checked) {
+				ajaxRequest(portionData, '/stocks/add_portion')
+			} else {
+				ajaxRequest(portionData, '/stocks/remove_portion')
+			}
 			checkForUpdates(function(shoppingListPortions) {
 				renderShoppingList(shoppingListPortions)
 			})

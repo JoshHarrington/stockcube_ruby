@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190908091758) do
+ActiveRecord::Schema.define(version: 20190915135612) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 20190908091758) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.date "date"
+    t.boolean "checked", default: false, null: false
     t.index ["ingredient_id"], name: "index_combi_planner_shopping_list_portions_on_ingredient_id"
     t.index ["planner_shopping_list_id"], name: "index_combi_planner_shopping_list_portions"
     t.index ["unit_id"], name: "index_combi_planner_shopping_list_portions_on_unit_id"
@@ -96,6 +97,7 @@ ActiveRecord::Schema.define(version: 20190908091758) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "combi_planner_shopping_list_portion_id"
+    t.boolean "checked", default: false, null: false
     t.index ["combi_planner_shopping_list_portion_id"], name: "index_planner_shopping_list_portion_to_combi"
     t.index ["ingredient_id"], name: "index_planner_shopping_list_portions_on_ingredient_id"
     t.index ["planner_recipe_id"], name: "index_planner_shopping_list_portions_on_planner_recipe_id"
@@ -196,9 +198,11 @@ ActiveRecord::Schema.define(version: 20190908091758) do
     t.boolean "hidden", default: false
     t.boolean "always_available", default: false, null: false
     t.bigint "planner_recipe_id"
+    t.bigint "planner_shopping_list_portion_id"
     t.index ["cupboard_id"], name: "index_stocks_on_cupboard_id"
     t.index ["ingredient_id"], name: "index_stocks_on_ingredient_id"
     t.index ["planner_recipe_id"], name: "index_stocks_on_planner_recipe_id"
+    t.index ["planner_shopping_list_portion_id"], name: "index_stocks_on_planner_shopping_list_portion_id"
   end
 
   create_table "units", force: :cascade do |t|
@@ -272,4 +276,5 @@ ActiveRecord::Schema.define(version: 20190908091758) do
   add_foreign_key "planner_shopping_lists", "users"
   add_foreign_key "shopping_lists", "users"
   add_foreign_key "stocks", "planner_recipes"
+  add_foreign_key "stocks", "planner_shopping_list_portions"
 end

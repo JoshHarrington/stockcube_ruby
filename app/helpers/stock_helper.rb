@@ -64,24 +64,78 @@ module StockHelper
 		)
 	end
 
-	def add_individual_portion_as_stock(portions)
+	def toggle_stock_on_portion_check(portion, processing_type)
 
+		return unless params.has_key?(:shopping_list_portion_id) && current_user && params.has_key?(:portion_type)
+		current_user.planner_shopping_lists.first.update_attributes(
+			ready: false
+		)
+		planner_portion_id_hash = Hashids.new(ENV['PLANNER_PORTIONS_SALT'])
+		if params[:portion_type] == 'combi_portion'
+			combi_portion = current_user.combi_planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
+		elsif params[:portion_type] == 'individual_portion'
+			individual_portion = current_user.planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
+		end
+
+		recipe_ids = []
+		ingredient_ids = []
+
+		if combi_portion.present?
+			combi_portion.planner_shopping_list_portions.each do |portion|
+				if portion.planner_recipe.recipe_id
+					recipe_ids.push(portion.planner_recipe.recipe_id)
+				else
+					ingredient_ids.push(combi_portion.ingredient_id)
+				end
+			end
+			convert_portions_to_stock(combi_portion.planner_shopping_list_portions, processing_type)
+			combi_portion.update_attributes(checked: !combi_portion.checked)
+		end
+		if individual_portion.present?
+			if individual_portion.planner_recipe.recipe_id
+				recipe_ids.push(individual_portion.planner_recipe.recipe_id)
+			else
+				ingredient_ids.push(individual_portion.ingredient_id)
+			end
+			convert_portions_to_stock(individual_portion, processing_type)
+
+			if recipe_ids.length > 0
+				update_recipe_stock_matches_core(nil, current_user.id, recipe_ids)
+			elsif ingredient_ids.length > 0
+				update_recipe_stock_matches_core(ingredient_ids, current_user.id)
+			end
+		end
+
+		current_user.planner_shopping_lists.first.update_attributes(
+			ready: true
+		)
+
+
+	end
+
+	def convert_portions_to_stock(portions, processing_type)
 		portions_array = [].push(portions).flatten
 
 		cupboard_id = current_user.cupboard_users.where(accepted: true).select{|cu| cu.cupboard.setup == false && cu.cupboard.hidden == false }.map{|cu| cu.cupboard }.sort_by{|c| c.updated_at}.first.id
 		portions_array.each do |portion|
-			recipe_stock = Stock.create(
+			recipe_stock = Stock.find_or_create_by(
 				ingredient_id: portion.ingredient_id,
 				amount: portion.amount,
 				planner_recipe_id: portion.planner_recipe_id,
 				unit_id: portion.unit_id,
 				use_by_date: Date.current + 2.weeks,
 				cupboard_id: cupboard_id,
-				hidden: false,
-				always_available: false
+				always_available: false,
+				planner_shopping_list_portion_id: portion.id
 			)
 			current_user.stocks << recipe_stock
-			portion.destroy
+			if processing_type && processing_type == 'remove_portion'
+				recipe_stock.update_attributes(hidden: true)
+			end
+			if processing_type && processing_type == 'add_portion'
+				recipe_stock.update_attributes(hidden: false)
+			end
+			portion.update_attributes(checked: !portion.checked)
 		end
 
 	end
