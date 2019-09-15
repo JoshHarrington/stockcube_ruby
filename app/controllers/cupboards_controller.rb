@@ -11,7 +11,7 @@ class CupboardsController < ApplicationController
 		@user_fav_stocks = current_user.user_fav_stocks.order('updated_at desc')
 		@cupboard_users_hashids = Hashids.new(ENV['CUPBOARD_USER_ID_SALT'])
 		@quick_add_hashids = Hashids.new(ENV['QUICK_ADD_STOCK_ID_SALT'])
-		@stock_hashids = Hashids.new(ENV['CUPBOARD_STOCK_ID_SALT'])
+		@delete_stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
 		@cupboard_sharing_hashids = Hashids.new(ENV['CUPBOARD_SHARING_ID_SALT'])
 		@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 	end
@@ -188,6 +188,7 @@ class CupboardsController < ApplicationController
 			# 	flash[:warning] = "Don't delete that cupboard! It's the last one you have :O"
 		end
 	end
+
 	def autosave_sorting
 		return unless current_user && params.has_key?(:stock_id) && params.has_key?(:cupboard_id) && params.has_key?(:old_cupboard_id) && params[:stock_id].to_s != '' && params[:cupboard_id].to_s != '' && params[:old_cupboard_id].to_s != ''
 		@stock_to_edit = Stock.where(id: params[:stock_id]).first
@@ -195,25 +196,7 @@ class CupboardsController < ApplicationController
 			cupboard_id: params[:cupboard_id]
 		)
 	end
-	def delete_cupboard_stock
-		if params.has_key?(:cupboard_stock_id) && params[:cupboard_stock_id].to_s != ''
-			stock_hashids = Hashids.new(ENV['CUPBOARD_STOCK_ID_SALT'])
-			decrypted_stock_id = stock_hashids.decode(params[:cupboard_stock_id])
 
-			## this only works if you've edited some stock
-			## need to check if stock is alternatively inside a cupboard you have access to
-			## should you be able to delete someone else's stock?
-			## or should the site tell you why you can't delete
-
-			### currently the user becomes able to delete as soon as they edit
-			if current_user && current_user.stocks.find(decrypted_stock_id).length
-				current_user.stocks.find(decrypted_stock_id.class == Array ? decrypted_stock_id.first : decrypted_stock_id).delete
-			else
-				Rails.logger.debug "No stock found with that id for that user"
-				flash[:warning] = %Q[Something went wrong! Please email <a href="mailto:help@getstockcubes.com">mailto:help@getstockcubes.com</a> for support."]
-			end
-		end
-	end
 	def delete_quick_add_stock
 		if params.has_key?(:quick_add_stock_id) && params[:quick_add_stock_id].to_s != ''
 			quick_add_hashids = Hashids.new(ENV['QUICK_ADD_STOCK_ID_SALT'])

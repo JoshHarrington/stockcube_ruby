@@ -1,4 +1,5 @@
 import Sortable from 'sortablejs';
+import { ajaxRequest } from './utils';
 
 var cupboard = function() {
 
@@ -54,48 +55,38 @@ var cupboard = function() {
 		btn.addEventListener('click', function(){deleteQuickAddStock(hashedId)}, false)
 	})
 
-	function deleteCupboardStock(hashedId, event) {
+	function deleteCupboardStock(btn, hashedId, event) {
 		const confirmed = confirm("Are you sure you want to delete this ingredient from your cupboard?\nThis can't be undone :O");
-		if (confirmed == true) {
-			const data = "cupboard_stock_id=" + hashedId
-			const request = new XMLHttpRequest()
-			request.open('POST', '/cupboards/delete_cupboard_stock', true)
-			request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
-			request.setRequestHeader('X-CSRF-Token', csrfToken)
-			request.send(data)
-			document.getElementById(hashedId).parentNode.style.display = 'none'
-		}
 		event.preventDefault()
+		if (confirmed == true) {
+			ajaxRequest('type=post', '/stocks/delete/' + hashedId)
+			btn.parentNode.style.display = 'none'
+		}
 	}
 
 	const cupboardStockDeleteBtns = document.querySelectorAll('.cupboard_stock_delete_btn')
 	cupboardStockDeleteBtns.forEach(function(btn) {
 		const hashedId = btn.getAttribute('id')
-		btn.addEventListener('click', function(e){
-			deleteCupboardStock(hashedId, event)
+		btn.addEventListener('click', function(event){
+			deleteCupboardStock(btn, hashedId, event)
 		}, false)
 	})
 }
 
 var cupboardShareDelete = function() {
-	const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-	function deleteCupboardUser(hashedId) {
-		const confirmed = confirm("Are you sure you want to delete this ingredient from your cupboard?\nThis can't be undone :O");
+	function deleteCupboardUser(deleteEl, hashedId) {
+		const confirmed = confirm("Are you sure you want to remove this user from your cupboard?");
 		if (confirmed == true) {
 			const data = "user_id=" + hashedId
-			const request = new XMLHttpRequest()
-			request.open('POST', '/cupboards/delete_cupboard_user', true)
-			request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
-			request.setRequestHeader('X-CSRF-Token', csrfToken)
-			request.send(data)
-			document.getElementById(hashedId).parentNode.style.display = 'none'
+			ajaxRequest(data, '/cupboards/delete_cupboard_user')
+			deleteEl.parentNode.style.display = 'none'
 		}
 		// event.preventDefault()
 	}
 	const deleteUsersEls = document.querySelectorAll('.delete_cupboard_user')
 	deleteUsersEls.forEach(function(deleteEl) {
 		const hashedId = deleteEl.getAttribute('id')
-		deleteEl.addEventListener('click', function(){deleteCupboardUser(hashedId)}, false)
+		deleteEl.addEventListener('click', function(){deleteCupboardUser(deleteEl, hashedId)}, false)
 	})
 }
 

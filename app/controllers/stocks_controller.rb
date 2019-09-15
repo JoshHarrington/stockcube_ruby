@@ -58,7 +58,6 @@ class StocksController < ApplicationController
 	end
 	def create
 		@stock = Stock.new(stock_params)
-		Rails.logger.debug params
 
 		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 
@@ -235,14 +234,16 @@ class StocksController < ApplicationController
 	end
 
 	def delete_stock
-		if params.has_key?(:stock_id) && params[:stock_id].to_s != ''
-			stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
-			decrypted_stock_id = stock_hashids.decode(params[:stock_id])
-			if current_user && current_user.stocks.find(decrypted_stock_id).length
-				current_user.stocks.find(decrypted_stock_id.class == Array ? decrypted_stock_id.first : decrypted_stock_id).delete
-			else
-				Rails.logger.debug "No stock found with that id for that user"
-				flash[:warning] = %Q[Something went wrong! Please email <a href="mailto:help@getstockcubes.com">mailto:help@getstockcubes.com</a> for support."]
+		if params.has_key?(:id) && params[:id].to_s != ''
+			delete_stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
+			cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+			decrypted_stock_id = delete_stock_hashids.decode(params[:id])
+			return unless current_user && current_user.stocks.find(decrypted_stock_id).length > 0
+			stock = current_user.stocks.find(decrypted_stock_id).first
+			cupboard_id = stock.cupboard_id
+			stock.destroy
+			if !params.has_key?(:type) || (params.has_key?(:type) && params[:type].to_s != 'post')
+				redirect_to cupboards_path(anchor: cupboard_id_hashids.encode(cupboard_id))
 			end
 		end
 	end

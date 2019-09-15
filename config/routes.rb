@@ -50,12 +50,13 @@ Rails.application.routes.draw do
   get '/stocks/picks' => 'stocks#picks'
   get '/stocks/:id' => 'stocks#show', as: :stock
   get '/stocks/:id/edit' => 'stocks#edit', as: :edit_stock
+  get '/stocks/delete/:id' => 'stocks#delete_stock', as: :delete_stock
   patch '/stocks/:id' => 'stocks#update'
   post '/stocks' => 'stocks#create'
   post '/stocks/add_portion' => 'stocks#add_shopping_list_portion'
   post '/stocks/add_shopping_list' => 'stocks#add_shopping_list'
   post '/stocks/new/:cupboard_id' => 'stocks#create'
-  post '/stocks/delete_stock' => 'stocks#delete_stock'
+  post '/stocks/delete/:id' => 'stocks#delete_stock', as: :delete_stock_post
 
   get '/cupboards' => 'cupboards#index'
   get '/cupboards/new' => 'cupboards#new'

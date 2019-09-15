@@ -4,12 +4,9 @@
 	<%= form_for @stock, :html => {id: "stock_form", class: "item_form"}, :validate => true do |s| %>
 		<div class="item_form--title">
 			<h1><%= @current_ingredient.name %></h1>
-			<span
-				class="list_block--item--action list_block--item--action--btn delete_stock_btn"
-				id="<%= @delete_stock_hashids.encode(@stock.id) %>"
-				data-cupboard-id="<%= @stock.cupboard_id %>"
-				tabindex="0"
-			><%= icomoon('bin') %></span>
+			<%= link_to delete_stock_path(@delete_stock_hashids.encode(@stock.id)), class: "list_block--item--action list_block--item--action--btn delete_stock_btn", id: "stock_delete_btn" do %>
+				<%= icomoon('bin') %>
+			<% end %>
 		</div>
 		<div class="item_form--contents">
 			<div class="item_form--content_row">

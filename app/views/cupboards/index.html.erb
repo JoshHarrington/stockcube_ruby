@@ -63,7 +63,9 @@
                     <% if cupboard.communal && stock.users.length > 0 %><p> [<%= stock.users.first.name%>]</p><% end %>
                     <p><%= round_if_whole(stock.amount) %> <%= stock.unit.name %></p>
                   </span>
-                  <span class="list_block--item--action list_block--item--action--btn cupboard_stock_delete_btn" id="<%= @stock_hashids.encode(stock.id) %>"><%= icomoon('bin') %></span>
+                  <span class="list_block--item--action list_block--item--action--btn cupboard_stock_delete_btn" id="<%= @delete_stock_hashids.encode(stock.id) %>">
+                    <%= icomoon('bin') %>
+                  </span>
                   <span class="h6 list_block--item--lesser_note"><%= distance_of_time_in_words(Time.zone.now, stock.use_by_date) + (stock.use_by_date <= Time.zone.now ? ' ago': '')%></span>
                 <% end %>
             <% end %>
