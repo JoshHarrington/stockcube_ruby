@@ -9,12 +9,12 @@
 		<div class="item_form--contents">
 			<div class="item_form--content_row">
 				<%= s.label :ingredient_id, "Ingredient" %>
-				<%= s.select :ingredient_id, options_from_collection_for_select(@ingredients, "id", "name", (params.has_key?(:ingredient) ? params[:ingredient] : '')), {prompt: "Pick your ingredient"}, {class: "pretty_form--row--pretty_select wide_select", required: true} %>
+				<%= s.select :ingredient_id, options_from_collection_for_select(@ingredients, "id", "name", (params.has_key?(:ingredient) ? params[:ingredient] : '')), {prompt: "Pick your ingredient"}, {class: "choices--basis wide_select", required: true} %>
 			</div>
 			<div class="item_form--content_row">
 				<%= s.label :amount, 'Amount of stock' %>
 				<%= s.number_field(:amount, value: (params.has_key?(:stock_amount) && params[:stock_amount] != 'false' ? params[:stock_amount] : ''), placeholder: '250', class: "item_form--content_row--half_width_input", validate: true) %>
-				<%= s.select :unit_id, options_from_collection_for_select(@unit_select, "id", "name", (params.has_key?(:unit) ? params[:unit] : 8)), {}, {class: "pretty_form--row--pretty_select half_select"} %>
+				<%= s.select :unit_id, options_from_collection_for_select(@unit_select, "id", "name", (params.has_key?(:unit) ? params[:unit] : 8)), {}, {class: "choices--basis half_select"} %>
 			</div>
 			<div class="item_form--content_row">
 				<%= label_tag 'stock_use_by_date', 'Use by date'  %> <%= s.date_field(:use_by_date, min: Date.current, value: @use_by_limit, validate: true) %>
