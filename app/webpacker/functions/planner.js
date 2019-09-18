@@ -221,7 +221,7 @@ const deletePlannerRecipe = (deleteBtn) => {
 }
 
 const plannerFn = () => {
-	if (document.body.classList.contains('planner_controller', 'index_page')) {
+	if (document.body.classList.contains('planner_controller') && document.body.classList.contains('index_page')) {
 		const slider = tns({
 			container: '[data-planner]',
 			items: 1,
@@ -285,7 +285,7 @@ const plannerFn = () => {
 		})
 
 	}
-	if (document.body.classList.contains('recipes_controller', 'index_page')) {
+	if (document.body.classList.contains('recipes_controller') && document.body.classList.contains('index_page')) {
 		const recipeAddToPlannerButtons = document.querySelectorAll('.list_block--action_row .add_recipe_to_planner')
 		recipeAddToPlannerButtons.forEach(function(addBtn){
 			const recipeId = addBtn.getAttribute('data-recipe-id')
@@ -300,7 +300,7 @@ const plannerFn = () => {
 			})
 		})
 	}
-	if (document.body.classList.contains('recipes_controller', 'show_page')) {
+	if (document.body.classList.contains('recipes_controller') && document.body.classList.contains('show_page')) {
 		if (document.querySelector('#add_recipe_to_planner')) {
 			const recipeAddToPlannerButton = document.querySelector('#add_recipe_to_planner')
 			const recipeId = recipeAddToPlannerButton.getAttribute('data-recipe-id')
