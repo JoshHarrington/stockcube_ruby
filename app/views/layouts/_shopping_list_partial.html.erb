@@ -1,5 +1,8 @@
 <aside id="planner_shopping_list">
-	<h2>Shopping List <% if shopping_list_portions.length > 0 %>(<%= checked_portions %>/<%= shopping_list_portions.length %>)<% end %></h2>
+	<div class="title_block">
+		<h2>Shopping List <% if shopping_list_portions.length > 0 %>(<%= checked_portions %>/<%= shopping_list_portions.length %>)<% end %></h2>
+		<p class="h6 item_form--content_item_note"><%= icomoon('information-outline')%> Checking off ingredients adds them to <%= link_to "your cupboard", cupboards_path %> automatically</p>
+	</div>
 	<button class="list_toggle">
 		<span class="cross icon_char" title="Close shopping list">
 			<%= icomoon('close') %>
