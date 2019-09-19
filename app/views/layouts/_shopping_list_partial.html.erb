@@ -1,18 +1,30 @@
-<aside id="planner_shopping_list">
+<%
+	if defined?(shopping_list)
+		shopping_list_portions = shopping_list_portions(shopping_list)
+	else
+		shopping_list_portions = shopping_list_portions(nil)
+	end
+%>
+
+<div class="planner_shopping_list--inner">
 	<div class="title_block">
 		<h2>Shopping List <% if shopping_list_portions.length > 0 %>(<%= checked_portions %>/<%= shopping_list_portions.length %>)<% end %></h2>
-		<p class="h6 item_form--content_item_note"><%= icomoon('information-outline')%> Checking off ingredients adds them to <%= link_to "your cupboard", cupboards_path %> automatically</p>
+		<% if shopping_list_portions.length > 0 %><p class="h6 item_form--content_item_note"><%= icomoon('information-outline')%> Checking off items adds them to <%= current_user ? (link_to "your cupboard", cupboards_path) : "the cupboard" %> automatically</p><% end %>
+
+		<% if current_user && !defined?(shopping_list) %>
+			<%= link_to shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id), title: "View and share shopping list", class: "planner_shopping_list--fullscreen_btn" do %>
+				<%= icomoon('fullscreen') %>
+			<% end %>
+		<% elsif defined?(shopping_list) && params.has_key?(:gen_id) %>
+			<% page_link = "https://getstockcubes.com/list/" + params[:gen_id].to_s %>
+			<div class="planner_shopping_list--sharing_info">
+				<input type="text" readonly value="<%= page_link %>">
+				<p class="h6 item_form--content_item_note"><%= icomoon('information-outline')%> This is your sharing link, anyone who has access can tick off your shopping list items</p>
+			</div>
+		<% end %>
 	</div>
-	<button class="list_toggle">
-		<span class="cross icon_char" title="Close shopping list">
-			<%= icomoon('close') %>
-		</span>
-		<span class="chevron_left icon_char" title="Open shopping list">
-			<%= icomoon('navigate_before') %>
-		</span>
-	</button>
 	<% if shopping_list_portions.length == 0 %>
-		<ul><p>Shopping List is currently empty, move some recipes to your planner to get items added to this list</p></ul>
+		<ul><p>Shopping List is currently empty, move some recipes to <%= link_to 'your planner', planner_path %> to get items added to this list</p></ul>
 	<% else %>
 		<ul class="planner_sl-recipe_list">
 			<% shopping_list_portions.each do |portion| %>
@@ -36,4 +48,4 @@
 			<button id="whisk-add-products" class="list_block--collection--action">Add to online shopping list</button>
 		<% end %>
 	</div>
-</aside>
+</div>

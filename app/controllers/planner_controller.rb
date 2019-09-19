@@ -12,8 +12,17 @@ class PlannerController < ApplicationController
 		update_planner_shopping_list_portions
 	end
 
+	def list
+		if params.has_key?(:gen_id) && PlannerShoppingList.find_by(gen_id: params[:gen_id]) != nil
+			@shopping_list = PlannerShoppingList.find_by(gen_id: params[:gen_id])
+		else
+			redirect_to planner_path
+		end
+
+	end
+
 	def recipe_add_to_planner
-		current_user.planner_shopping_lists.first.update_attributes(
+		current_user.planner_shopping_list.update_attributes(
 			ready: false
 		)
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
@@ -29,7 +38,8 @@ class PlannerController < ApplicationController
 		planner_recipe = PlannerRecipe.create(
 			user_id: user_id,
 			recipe_id: recipe_id,
-			date: date_string
+			date: date_string,
+			planner_shopping_list_id: current_user.planner_shopping_list.id
 		)
 
 		if recipe.portions.length > 0
@@ -38,14 +48,14 @@ class PlannerController < ApplicationController
 
 		update_planner_shopping_list_portions
 
-		current_user.planner_shopping_lists.first.update_attributes(
+		current_user.planner_shopping_list.update_attributes(
 			ready: true
 		)
 
 	end
 
 	def recipe_update_in_planner
-		current_user.planner_shopping_lists.first.update_attributes(
+		current_user.planner_shopping_list.update_attributes(
 			ready: false
 		)
 
@@ -66,20 +76,21 @@ class PlannerController < ApplicationController
 		PlannerRecipe.find_or_create_by(
 			user_id: user_id,
 			recipe_id: recipe.id,
-			date: old_date
+			date: old_date,
+			planner_shopping_list_id: current_user.planner_shopping_list.id
 		).update_attributes(
 			date: new_date
 		)
 
 		update_planner_shopping_list_portions
 
-		current_user.planner_shopping_lists.first.update_attributes(
+		current_user.planner_shopping_list.update_attributes(
 			ready: true
 		)
 	end
 
 	def delete_recipe_from_planner
-		current_user.planner_shopping_lists.first.update_attributes(
+		current_user.planner_shopping_list.update_attributes(
 			ready: false
 		)
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
@@ -105,23 +116,33 @@ class PlannerController < ApplicationController
 			update_planner_shopping_list_portions
 		end
 
-		current_user.planner_shopping_lists.first.update_attributes(
+		current_user.planner_shopping_list.update_attributes(
 			ready: true
 		)
 	end
 
 	def get_shopping_list_content
-		if current_user.planner_shopping_lists.first.ready == true
+		if (current_user && current_user.planner_shopping_list.ready == true) || (params.has_key?(:gen_id) && PlannerShoppingList.find_by(gen_id: params[:gen_id]).present? && PlannerShoppingList.find_by(gen_id: params[:gen_id]).ready == true)
+
+			if current_user
+				shopping_list = current_user.planner_shopping_list
+			elsif params.has_key?(:gen_id) && PlannerShoppingList.find_by(gen_id: params[:gen_id]).present?
+				shopping_list = PlannerShoppingList.find_by(gen_id: params[:gen_id])
+			else
+				return
+			end
+
+			shopping_list_portions = shopping_list_portions(shopping_list)
 
 			if shopping_list_portions.length > 0
 				formatted_shopping_list_portions = shopping_list_portions.sort_by!{|p| p.ingredient.name}.map{|p| { "portion_type": (p.class.name == "CombiPlannerShoppingListPortion" ? 'combi' : 'individual'), "shopping_list_portion_id": planner_portion_id_hash.encode(p.id), "portion_description": p.amount.to_f.to_s + ' ' + p.unit.name + ' ' + p.ingredient.name, "max_date": (Date.current + 2.weeks).strftime("%Y-%m-%d"), "min_date": Date.current.strftime("%Y-%m-%d"), "recipe_title": p.has_attribute?(:planner_recipe_id) && p.planner_recipe.recipe.present? ? p.planner_recipe.recipe.title.to_s : "null", "checked": p.checked.to_s, "num_assoc_recipes": (p.class.name == "CombiPlannerShoppingListPortion" ? p.planner_shopping_list_portions.length : '1') } }
-				shopping_list = [{"stats": {"checked_portions": checked_portions, "total_portions": shopping_list_portions.length}}, {"portions": formatted_shopping_list_portions }]
+				shopping_list_output = [{"stats": {"checked_portions": checked_portions, "total_portions": shopping_list_portions.length}}, {"portions": formatted_shopping_list_portions }]
 			else
-				shopping_list = []
+				shopping_list_output = []
 			end
 
 			respond_to do |format|
-				format.json { render json: shopping_list.as_json}
+				format.json { render json: shopping_list_output.as_json}
 				format.html { redirect_to planner_path }
 			end
 

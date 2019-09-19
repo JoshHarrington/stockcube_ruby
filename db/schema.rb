@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190915135612) do
+ActiveRecord::Schema.define(version: 20190919194210) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -83,6 +83,8 @@ ActiveRecord::Schema.define(version: 20190915135612) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
+    t.bigint "planner_shopping_list_id"
+    t.index ["planner_shopping_list_id"], name: "index_planner_recipes_on_planner_shopping_list_id"
     t.index ["recipe_id"], name: "index_planner_recipes_on_recipe_id"
     t.index ["user_id"], name: "index_planner_recipes_on_user_id"
   end
@@ -111,6 +113,8 @@ ActiveRecord::Schema.define(version: 20190915135612) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "ready", default: true, null: false
+    t.string "gen_id"
+    t.index ["gen_id"], name: "index_planner_shopping_lists_on_gen_id", unique: true
     t.index ["user_id"], name: "index_planner_shopping_lists_on_user_id"
   end
 
@@ -265,6 +269,7 @@ ActiveRecord::Schema.define(version: 20190915135612) do
   add_foreign_key "combi_planner_shopping_list_portions", "planner_shopping_lists"
   add_foreign_key "combi_planner_shopping_list_portions", "units"
   add_foreign_key "combi_planner_shopping_list_portions", "users"
+  add_foreign_key "planner_recipes", "planner_shopping_lists"
   add_foreign_key "planner_recipes", "recipes"
   add_foreign_key "planner_recipes", "users"
   add_foreign_key "planner_shopping_list_portions", "combi_planner_shopping_list_portions"

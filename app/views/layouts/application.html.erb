@@ -119,8 +119,18 @@
           </div>
         <% end %>
         <main>
-          <% if current_user %>
-            <%= render 'layouts/shopping_list_partial' %>
+          <% if current_user && !(params[:controller] == 'planner' && params[:action] == 'list') %>
+            <aside class="planner_shopping_list--wrapper">
+            	<button class="list_toggle">
+                <span class="cross icon_char" title="Close shopping list">
+                  <%= icomoon('close') %>
+                </span>
+                <span class="chevron_left icon_char" title="Open shopping list">
+                  <%= icomoon('navigate_before') %>
+                </span>
+              </button>
+              <%= render 'layouts/shopping_list_partial' %>
+            </aside>
           <% end %>
           <%= yield %>
           <%= debug(params) if Rails.env.development? %>

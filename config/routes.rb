@@ -104,6 +104,8 @@ Rails.application.routes.draw do
 
   get '/planner', to: 'planner#index', as: :planner
   get '/planner/shopping_list', to: 'planner#get_shopping_list_content'
+  post '/planner/shopping_list', to: 'planner#get_shopping_list_content'
+  get '/list/:gen_id', to: 'planner#list', as: :shopping_list_share
   post '/planner/recipe_add', to: 'planner#recipe_add_to_planner'
   post '/planner/recipe_update', to: 'planner#recipe_update_in_planner'
   post '/planner/recipe_delete', to: 'planner#delete_recipe_from_planner'

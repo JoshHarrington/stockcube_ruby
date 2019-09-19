@@ -1,4 +1,4 @@
-#planner_shopping_list {
+.planner_shopping_list--wrapper {
 	position: fixed;
 	width: 30em;
 	height: 100vh;
@@ -9,21 +9,6 @@
 	border-left: 1px solid $teal-70;
 	transition: left .4s;
 	padding-bottom: em(55, 10);
-	>ul {
-		padding: 2em 1.2em;
-	}
-	.title_block {
-    background: $teal-10;
-    padding: em(14, 10);
-    display: flex;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    flex-direction: column;
-    justify-content: center;
-	}
-	h3 {
-		margin-bottom: 1em;
-	}
 	.list_toggle {
 		position: fixed;
 		padding: em(1, 11);
@@ -59,15 +44,62 @@
 			display: none;
 		}
 	}
+}
+
+.planner_shopping_list--inner {
+	ul {
+		padding: 2em 1.2em;
+	}
+	.title_block {
+    background: $teal-10;
+    padding: em(14, 10);
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    flex-direction: column;
+		justify-content: center;
+		min-height: em(72, 10);
+		position: relative;
+		h2 {
+			padding-right: em(40, 18);
+		}
+	}
+	h3 {
+		margin-bottom: 1em;
+	}
 	hr {
 		margin: 1.3em 0;
+	}
+	.planner_shopping_list--fullscreen_btn {
+    position: absolute;
+    align-self: flex-end;
+    width: em(28, 15);
+    height: em(28, 15);
+    top: em(11, 15);
+		right: em(10, 15);
+    color: black;
+    background-color: hsla(177, 49%, 92%, 1);
+		background-color: $teal-5;
+		&:hover {
+			background-color: $teal-70;
+			color: white;
+		}
+	}
+	.planner_shopping_list--sharing_info {
+		margin-top: em(15, 10);
+		input {
+			width: em(290, 15);
+			max-width: 100%;
+		}
 	}
 }
 
 #inner-wrap {
 	transition: width .4s;
 	.shopping_list_open & {
-		width: calc(100% - 30em);
+		@media all and (min-width: $bp-sm) {
+			width: calc(100% - 30em);
+		}
 	}
 }
 

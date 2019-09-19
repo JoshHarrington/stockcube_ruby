@@ -56,7 +56,19 @@ const setupViewWhiskShoppingListButton = () => {
 
 
 function checkForUpdates(onSuccess) {
-  setTimeout(() => fetch("/planner/shopping_list").then((response) => {
+	let data = {}
+	if (window.location.pathname.includes('/list/')){
+		data = {
+			method: 'post',
+			body: JSON.stringify({gen_id: window.location.pathname.replace('/list/','')}),
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+			},
+			credentials: 'same-origin'
+		}
+	}
+  setTimeout(() => fetch("/planner/shopping_list", data).then((response) => {
     if(response.status != 200){
       setTimeout(() => checkForUpdates(onSuccess), 200)
     } else {
@@ -67,19 +79,24 @@ function checkForUpdates(onSuccess) {
 
 const renderShoppingList = (shoppingList) => {
 
-	const ShoppingList = document.querySelector('#planner_shopping_list')
-	const ShoppingListTitle = ShoppingList.querySelector('h2')
+	const ShoppingList = document.querySelector('.planner_shopping_list--wrapper')
 
+	const ShoppingListInner = document.querySelector('.planner_shopping_list--inner')
+	const ShoppingListTitleBlock = ShoppingListInner.querySelector('.title_block')
+	const ShoppingListTitle = ShoppingListTitleBlock.querySelector('h2')
+	// const ShoppingListExpandBtn = ShoppingListTitleBlock.querySelector('.planner_shopping_list--fullscreen_btn')
 	const ListTopUl = document.createElement('ul')
 	ListTopUl.classList.add('planner_sl-recipe_list')
 
-	const OldShoppingListContent = document.querySelector('#planner_shopping_list > ul')
+	const OldShoppingListContent = ShoppingListInner.querySelector('ul')
 	const shopOnlineBlock = document.querySelector('.shop_online_block')
 
 	if (shoppingList.length === 0 ){
 		ShoppingListTitle.innerText = 'Shopping List'
 		shopOnlineBlock.innerHTML = `<button id="view-whisk-list" class="list_block--collection--action">Open online shopping list</button>`
-		hideShoppingList()
+		if (ShoppingList) {
+			hideShoppingList()
+		}
 		ListTopUl.innerHTML = '<p>Shopping List is currently empty, move some recipes to your planner to get items added to this list</p>'
 		setupViewWhiskShoppingListButton()
 	} else {
@@ -110,17 +127,24 @@ const renderShoppingList = (shoppingList) => {
 
 		})
 
-		if (shoppingList[0]["stats"]["checked_portions"] === shoppingList[0]["stats"]["total_portions"]) {
-			hideShoppingList()
-		} else {
-			showShoppingList()
+		if (ShoppingList) {
+			if (shoppingList[0]["stats"]["checked_portions"] === shoppingList[0]["stats"]["total_portions"]) {
+				hideShoppingList()
+			} else {
+				showShoppingList()
+			}
 		}
 
 		shopOnlineBlock.innerHTML = `<button id="whisk-add-products" class="list_block--collection--action">Add to online shopping list</button>`
 		setupAddToWhiskShoppingListButton(whiskShoppingListPortions)
 	}
 	OldShoppingListContent.remove()
-	ShoppingList.appendChild(ListTopUl)
+	ShoppingListInner.appendChild(ListTopUl)
+	if (ShoppingList) {
+		ShoppingList.appendChild(ShoppingListInner)
+	} else {
+		document.querySelector('main').prepend(ShoppingListInner)
+	}
 	setupShoppingListCheckingOff()
 }
 
@@ -141,14 +165,20 @@ const hideShoppingList = () => {
 
 const setupShoppingListButton = () => {
 	const html = document.querySelector('html')
-	const toggleBtn = document.querySelector('#planner_shopping_list .list_toggle')
-	toggleBtn.addEventListener("click", function(){
-		html.classList.toggle('shopping_list_open')
-	})
+	const toggleBtn = document.querySelector('.planner_shopping_list--wrapper .list_toggle')
+	if (toggleBtn) {
+		toggleBtn.addEventListener("click", function(){
+			html.classList.toggle('shopping_list_open')
+		})
+	}
 }
 
 const setupShoppingListCheckingOff = () => {
-	const shoppingListPortionsChecks = document.querySelectorAll('#planner_shopping_list .planner_sl-recipe_list li input[type="checkbox"]')
+	let genId = null
+	if (window.location.pathname.includes('/list/')){
+		genId = window.location.pathname.replace('/list/','')
+	}
+	const shoppingListPortionsChecks = document.querySelectorAll('.planner_shopping_list--inner .planner_sl-recipe_list li input[type="checkbox"]')
 	shoppingListPortionsChecks.forEach(function(portionCheckbox){
 		portionCheckbox.addEventListener("change", function(){
 			const portionLi = portionCheckbox.closest('li')
@@ -156,7 +186,7 @@ const setupShoppingListCheckingOff = () => {
 			const portionType = portionLi.classList.contains('combi_portion') ? 'combi_portion' : 'individual_portion'
 			// const date = portionLi.querySelector('input[type="date"]').value
 
-			const portionData = "shopping_list_portion_id=" + portionId + "&portion_type=" + portionType
+			const portionData = "shopping_list_portion_id=" + portionId + "&portion_type=" + portionType + (genId !== null ? "&gen_id=" + genId : "")
 			portionLi.classList.toggle('portion_checked')
 			if (portionCheckbox.checked) {
 				ajaxRequest(portionData, '/stocks/add_portion')
@@ -317,8 +347,10 @@ const plannerFn = () => {
 	}
 
 
-	if (document.querySelector('#planner_shopping_list')) {
-		setupShoppingListButton()
+	if (document.querySelector('.planner_shopping_list--inner')) {
+		if(document.querySelector('.planner_shopping_list--wrapper .list_toggle')) {
+			setupShoppingListButton()
+		}
 		checkForUpdates(function(shoppingList) {
 			renderShoppingList(shoppingList)
 		})

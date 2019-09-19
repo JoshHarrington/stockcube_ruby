@@ -64,17 +64,24 @@ module StockHelper
 		)
 	end
 
-	def toggle_stock_on_portion_check(portion, processing_type)
+	def toggle_stock_on_portion_check(params, processing_type)
+		if params.has_key?(:gen_id) && PlannerShoppingList.find_by(gen_id: params[:gen_id])
+			shopping_list = PlannerShoppingList.find_by(gen_id: params[:gen_id])
+		elsif current_user
+			shopping_list = current_user.planner_shopping_list
+		else
+			return
+		end
 
-		return unless params.has_key?(:shopping_list_portion_id) && current_user && params.has_key?(:portion_type)
-		current_user.planner_shopping_lists.first.update_attributes(
+		return unless params.has_key?(:shopping_list_portion_id) && params.has_key?(:portion_type)
+		shopping_list.update_attributes(
 			ready: false
 		)
 
 		if params[:portion_type] == 'combi_portion'
-			combi_portion = current_user.combi_planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
+			combi_portion = shopping_list.combi_planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
 		elsif params[:portion_type] == 'individual_portion'
-			individual_portion = current_user.planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
+			individual_portion = shopping_list.planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
 		end
 
 		recipe_ids = []
@@ -88,7 +95,7 @@ module StockHelper
 					ingredient_ids.push(combi_portion.ingredient_id)
 				end
 			end
-			convert_portions_to_stock(combi_portion.planner_shopping_list_portions, processing_type)
+			convert_portions_to_stock(combi_portion.planner_shopping_list_portions, processing_type, shopping_list.user_id)
 			if processing_type && processing_type == 'add_portion'
 				combi_portion.update_attributes(checked: true)
 			elsif processing_type && processing_type == 'remove_portion'
@@ -101,24 +108,31 @@ module StockHelper
 			else
 				ingredient_ids.push(individual_portion.ingredient_id)
 			end
-			convert_portions_to_stock(individual_portion, processing_type)
+			convert_portions_to_stock(individual_portion, processing_type, shopping_list.user_id)
 
 			if recipe_ids.length > 0
-				update_recipe_stock_matches_core(nil, current_user.id, recipe_ids)
+				update_recipe_stock_matches_core(nil, shopping_list.user_id, recipe_ids)
 			elsif ingredient_ids.length > 0
-				update_recipe_stock_matches_core(ingredient_ids, current_user.id)
+				update_recipe_stock_matches_core(ingredient_ids, shopping_list.user_id)
 			end
 		end
 
-		current_user.planner_shopping_lists.first.update_attributes(
+		shopping_list.update_attributes(
 			ready: true
 		)
 	end
 
-	def convert_portions_to_stock(portions, processing_type)
+	def convert_portions_to_stock(portions, processing_type, user_id = nil)
 		portions_array = [].push(portions).flatten
+		if current_user
+			shopping_list_user = current_user
+		elsif user_id != nil
+			shopping_list_user = User.find(user_id)
+		else
+			return
+		end
 
-		cupboard_id = current_user.cupboard_users.where(accepted: true).select{|cu| cu.cupboard.setup == false && cu.cupboard.hidden == false }.map{|cu| cu.cupboard }.sort_by{|c| c.updated_at}.first.id
+		cupboard_id = shopping_list_user.cupboard_users.where(accepted: true).select{|cu| cu.cupboard.setup == false && cu.cupboard.hidden == false }.map{|cu| cu.cupboard }.sort_by{|c| c.updated_at}.first.id
 		portions_array.each do |portion|
 			recipe_stock = Stock.find_or_create_by(
 				ingredient_id: portion.ingredient_id,
@@ -130,7 +144,7 @@ module StockHelper
 				always_available: false,
 				planner_shopping_list_portion_id: portion.id
 			)
-			current_user.stocks << recipe_stock
+			shopping_list_user.stocks << recipe_stock
 			if processing_type && processing_type == 'remove_portion'
 				recipe_stock.update_attributes(hidden: true)
 			elsif processing_type && processing_type == 'add_portion'

@@ -2,7 +2,7 @@ class StocksController < ApplicationController
 	helper IntegerHelper
 	include StockHelper
 	include ShoppingListsHelper
-	before_action :logged_in_user
+	before_action :logged_in_user, except: [:add_shopping_list_portion, :remove_shopping_list_portion]
 	before_action :correct_user, only: [:edit]
 	def index
 		@stocks = Stock.all
@@ -167,10 +167,10 @@ class StocksController < ApplicationController
 
 	def add_shopping_list
 		return unless current_user
-		current_user.planner_shopping_lists.first.update_attributes(
+		current_user.planner_shopping_list.update_attributes(
 			ready: false
 		)
-		shopping_list = current_user.planner_shopping_lists.first
+		shopping_list = current_user.planner_shopping_list
 		portions = current_user.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}}.flatten
 		combi_portions = shopping_list.combi_planner_shopping_list_portions.select{|c|c.date > Date.current - 6.hours && c.date < Date.current + 7.day}
 		if combi_portions.length > 0
@@ -189,7 +189,7 @@ class StocksController < ApplicationController
 
 		update_recipe_stock_matches_core(all_portion_ids, current_user.id)
 
-		current_user.planner_shopping_lists.first.update_attributes(
+		current_user.planner_shopping_list.update_attributes(
 			ready: true
 		)
 	end

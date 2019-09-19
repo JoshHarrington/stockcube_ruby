@@ -28,7 +28,7 @@ class User < ApplicationRecord
   has_many :favourite_recipes # just the 'relationships'
   has_many :favourites, through: :favourite_recipes, source: :recipe # the actual recipes a user favourites
 
-  has_many :planner_shopping_lists
+  has_one :planner_shopping_list
   has_many :planner_recipes
   has_many :planner_shopping_list_portions
   has_many :combi_planner_shopping_list_portions
