@@ -124,10 +124,10 @@ class PlannerController < ApplicationController
 	def get_shopping_list_content
 		if (current_user && current_user.planner_shopping_list.ready == true) || (params.has_key?(:gen_id) && PlannerShoppingList.find_by(gen_id: params[:gen_id]).present? && PlannerShoppingList.find_by(gen_id: params[:gen_id]).ready == true)
 
-			if current_user
-				shopping_list = current_user.planner_shopping_list
-			elsif params.has_key?(:gen_id) && PlannerShoppingList.find_by(gen_id: params[:gen_id]).present?
+			if params.has_key?(:gen_id) && PlannerShoppingList.find_by(gen_id: params[:gen_id]).present? && PlannerShoppingList.find_by(gen_id: params[:gen_id]).ready == true
 				shopping_list = PlannerShoppingList.find_by(gen_id: params[:gen_id])
+			elsif current_user && current_user.planner_shopping_list.ready == true
+				shopping_list = current_user.planner_shopping_list
 			else
 				return
 			end
