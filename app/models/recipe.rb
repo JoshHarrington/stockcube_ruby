@@ -1,6 +1,7 @@
 class Recipe < ApplicationRecord
-  has_many :portions
+  has_many :portions, dependent: :delete_all
   has_many :ingredients, through: :portions
+  has_many :planner_recipes, dependent: :delete_all
 
   belongs_to :user
 

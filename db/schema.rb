@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190919194210) do
+ActiveRecord::Schema.define(version: 20190922201039) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -203,6 +203,8 @@ ActiveRecord::Schema.define(version: 20190919194210) do
     t.boolean "always_available", default: false, null: false
     t.bigint "planner_recipe_id"
     t.bigint "planner_shopping_list_portion_id"
+    t.boolean "default", default: false, null: false
+    t.integer "use_by_date_diff", default: 14
     t.index ["cupboard_id"], name: "index_stocks_on_cupboard_id"
     t.index ["ingredient_id"], name: "index_stocks_on_ingredient_id"
     t.index ["planner_recipe_id"], name: "index_stocks_on_planner_recipe_id"
@@ -226,6 +228,7 @@ ActiveRecord::Schema.define(version: 20190919194210) do
     t.integer "standard_use_by_limit"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["ingredient_id"], name: "index_user_fav_stocks_on_ingredient_id"
   end
 
   create_table "user_recipe_stock_matches", force: :cascade do |t|
@@ -282,4 +285,5 @@ ActiveRecord::Schema.define(version: 20190919194210) do
   add_foreign_key "shopping_lists", "users"
   add_foreign_key "stocks", "planner_recipes"
   add_foreign_key "stocks", "planner_shopping_list_portions"
+  add_foreign_key "user_fav_stocks", "ingredients"
 end
