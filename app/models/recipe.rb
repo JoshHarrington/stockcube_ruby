@@ -2,8 +2,10 @@ class Recipe < ApplicationRecord
   has_many :portions, dependent: :delete_all
   has_many :ingredients, through: :portions
   has_many :planner_recipes, dependent: :delete_all
+  has_many :recipe_steps, dependent: :delete_all
+  has_many :recipe_authors, dependent: :nullify
 
-  belongs_to :user
+  belongs_to :user, optional: true
 
   # Favourited by users
   has_many :favourite_recipes # just the 'relationships'

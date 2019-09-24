@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190922201039) do
+ActiveRecord::Schema.define(version: 20190924211306) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -129,6 +129,24 @@ ActiveRecord::Schema.define(version: 20190922201039) do
     t.index ["recipe_id"], name: "index_portions_on_recipe_id"
   end
 
+  create_table "recipe_author", force: :cascade do |t|
+    t.bigint "recipe_id"
+    t.string "name"
+    t.string "link"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recipe_id"], name: "index_recipe_author_on_recipe_id"
+  end
+
+  create_table "recipe_steps", force: :cascade do |t|
+    t.bigint "recipe_id"
+    t.integer "number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "content"
+    t.index ["recipe_id"], name: "index_recipe_steps_on_recipe_id"
+  end
+
   create_table "recipes", force: :cascade do |t|
     t.string "title"
     t.string "description"
@@ -143,6 +161,7 @@ ActiveRecord::Schema.define(version: 20190922201039) do
     t.integer "user_id"
     t.boolean "public", default: true, null: false
     t.boolean "show_users_name", default: true, null: false
+    t.string "link"
   end
 
   create_table "shopping_list_portions", force: :cascade do |t|
@@ -282,6 +301,8 @@ ActiveRecord::Schema.define(version: 20190922201039) do
   add_foreign_key "planner_shopping_list_portions", "units"
   add_foreign_key "planner_shopping_list_portions", "users"
   add_foreign_key "planner_shopping_lists", "users"
+  add_foreign_key "recipe_author", "recipes"
+  add_foreign_key "recipe_steps", "recipes"
   add_foreign_key "shopping_lists", "users"
   add_foreign_key "stocks", "planner_recipes"
   add_foreign_key "stocks", "planner_shopping_list_portions"
