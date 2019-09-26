@@ -79,9 +79,11 @@ class RecipesController < ApplicationController
 
 	end
 	def favourites
+		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@fav_recipes = current_user.favourites.paginate(:page => params[:page], :per_page => 12)
 	end
 	def yours
+		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@recipes = current_user.recipes.order("updated_at desc").paginate(:page => params[:page], :per_page => 12)
 	end
 	def new
