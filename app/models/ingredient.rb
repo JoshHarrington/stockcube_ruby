@@ -7,6 +7,7 @@ class Ingredient < ApplicationRecord
 	has_many :planner_shopping_list_portions, dependent: :delete_all
 	has_many :combi_planner_shopping_list_portions, dependent: :delete_all
 	has_one :user_fav_stock, dependent: :delete
+	has_many :default_ingredient_sizes, dependent: :delete_all
 
 	searchkick
 

@@ -3,7 +3,9 @@ class Recipe < ApplicationRecord
   has_many :ingredients, through: :portions
   has_many :planner_recipes, dependent: :delete_all
   has_many :recipe_steps, dependent: :delete_all
-  has_many :recipe_authors, dependent: :nullify
+  has_many :recipe_authors, dependent: :delete_all
+  has_many :authors, through: :recipe_authors
+
 
   belongs_to :user, optional: true
 

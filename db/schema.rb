@@ -10,10 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190924211306) do
+ActiveRecord::Schema.define(version: 20190926110349) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "authors", force: :cascade do |t|
+    t.string "name"
+    t.string "link"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "combi_planner_shopping_list_portions", force: :cascade do |t|
     t.bigint "user_id"
@@ -51,6 +58,17 @@ ActiveRecord::Schema.define(version: 20190924211306) do
     t.boolean "setup", default: false
     t.boolean "communal", default: false, null: false
     t.index ["user_id"], name: "index_cupboards_on_user_id"
+  end
+
+  create_table "default_ingredient_sizes", force: :cascade do |t|
+    t.bigint "ingredient_id"
+    t.bigint "unit_id"
+    t.decimal "amount"
+    t.integer "use_by_date_diff", default: 14
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ingredient_id"], name: "index_default_ingredient_sizes_on_ingredient_id"
+    t.index ["unit_id"], name: "index_default_ingredient_sizes_on_unit_id"
   end
 
   create_table "favourite_recipes", force: :cascade do |t|
@@ -129,13 +147,15 @@ ActiveRecord::Schema.define(version: 20190924211306) do
     t.index ["recipe_id"], name: "index_portions_on_recipe_id"
   end
 
-  create_table "recipe_author", force: :cascade do |t|
+  create_table "recipe_authors", force: :cascade do |t|
     t.bigint "recipe_id"
-    t.string "name"
-    t.string "link"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["recipe_id"], name: "index_recipe_author_on_recipe_id"
+    t.bigint "author_id"
+    t.bigint "recipes_id"
+    t.bigint "authors_id"
+    t.index ["author_id"], name: "index_recipe_authors_on_author_id"
+    t.index ["authors_id"], name: "index_recipe_authors_on_authors_id"
+    t.index ["recipe_id"], name: "index_recipe_authors_on_recipe_id"
+    t.index ["recipes_id"], name: "index_recipe_authors_on_recipes_id"
   end
 
   create_table "recipe_steps", force: :cascade do |t|
@@ -222,8 +242,6 @@ ActiveRecord::Schema.define(version: 20190924211306) do
     t.boolean "always_available", default: false, null: false
     t.bigint "planner_recipe_id"
     t.bigint "planner_shopping_list_portion_id"
-    t.boolean "default", default: false, null: false
-    t.integer "use_by_date_diff", default: 14
     t.index ["cupboard_id"], name: "index_stocks_on_cupboard_id"
     t.index ["ingredient_id"], name: "index_stocks_on_ingredient_id"
     t.index ["planner_recipe_id"], name: "index_stocks_on_planner_recipe_id"
@@ -291,6 +309,8 @@ ActiveRecord::Schema.define(version: 20190924211306) do
   add_foreign_key "combi_planner_shopping_list_portions", "planner_shopping_lists"
   add_foreign_key "combi_planner_shopping_list_portions", "units"
   add_foreign_key "combi_planner_shopping_list_portions", "users"
+  add_foreign_key "default_ingredient_sizes", "ingredients"
+  add_foreign_key "default_ingredient_sizes", "units"
   add_foreign_key "planner_recipes", "planner_shopping_lists"
   add_foreign_key "planner_recipes", "recipes"
   add_foreign_key "planner_recipes", "users"
@@ -301,7 +321,8 @@ ActiveRecord::Schema.define(version: 20190924211306) do
   add_foreign_key "planner_shopping_list_portions", "units"
   add_foreign_key "planner_shopping_list_portions", "users"
   add_foreign_key "planner_shopping_lists", "users"
-  add_foreign_key "recipe_author", "recipes"
+  add_foreign_key "recipe_authors", "authors", column: "authors_id"
+  add_foreign_key "recipe_authors", "recipes", column: "recipes_id"
   add_foreign_key "recipe_steps", "recipes"
   add_foreign_key "shopping_lists", "users"
   add_foreign_key "stocks", "planner_recipes"

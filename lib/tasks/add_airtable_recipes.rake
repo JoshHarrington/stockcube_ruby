@@ -8,9 +8,13 @@ task :add_airtable_recipes => :environment do
 
 	recipe_hash.each do |row|
 		content = row[1]
-		Recipe.find_or_create_by(
-			title: content["title"].strip.titleize,
-			link: content["link"] || nil
+		recipe = Recipe.find_or_create_by(
+			title: content["title"].strip.titleize
+		)
+		admin = User.where(admin: true).first
+		recipe.update_attributes(
+			link: content["link"],
+			user_id: admin.id
 		)
 	end
 end
