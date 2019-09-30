@@ -4,7 +4,7 @@
     <div class="list_block--collection--wrap">
     <%= form_tag recipes_path, class: 'search_box--form',  method: :get do %>
         <div class="search_box">
-          <%= text_field_tag :search, params[:search], class: "bordered", placeholder: "what do you fancy? Tamales? Lancashire Hot Pot?", list: "recipe_search_autocomplete_list" %>
+          <%= text_field_tag :search, params[:search], class: "bordered", placeholder: "what do you fancy? Salsa Verde with Salmon? Stove Top Macaroni and Cheese?", list: "recipe_search_autocomplete_list" %>
           <datalist id="recipe_search_autocomplete_list">
             <% @recipe_search_autocomplete_list.each do |item| %>
               <option value="<%= item %>">
