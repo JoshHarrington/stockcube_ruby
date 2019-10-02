@@ -251,34 +251,11 @@ class RecipesController < ApplicationController
       redirect_back fallback_location: root_path, notice: 'Nothing happened.'
     end
 	end
-	def add_to_shopping_list
-		@recipe = Recipe.find(params[:id])
-
-		if @recipe.portions.length > 0
-			recipe_title = @recipe.title
-
-			shopping_list_portions_set_from_recipes(@recipe.id, nil, current_user.id, nil)
-
-			# give notice that the recipe has been added with link to shopping list
-			if current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last[:archived] === false && current_user.shopping_lists.order('updated_at asc').last.recipes.length > 0
-				@string = "Added the '#{@recipe.title}' to your #{link_to("current shopping list", shopping_lists_current_shop_path)}"
-				redirect_back fallback_location: recipes_path, notice: @string
-			end
-		else
-			@string = %Q[That recipe's not ready to be used to build a shopping list, you need to #{link_to("add some ingredients", edit_recipe_path(@recipe))}]
-			redirect_back fallback_location: recipes_path, notice: @string
-		end
-
-	end
 
 	private
 		def recipe_params
 			params.require(:recipe).permit(:user_id, :search, :live, :public, :cuisine, :search_ingredients, :title, :description, :prep_time, :cook_time, :yield, :note, portions_attributes:[:amount, :unit_id, :ingredient_id, :recipe_id, :_destroy])
 		end
-
-		def shopping_list_params
-      params.require(:shopping_list).permit(:id, :date_created, recipes_attributes:[:id, :title, :description])
-    end
 
 		# Confirms a logged-in user.
 		def logged_in_user

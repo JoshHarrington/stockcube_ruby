@@ -99,6 +99,5 @@ Rails.application.routes.draw do
   resources :password_resets,     only: [:new, :create, :edit, :update]
   resources :recipes do
     put :favourite, on: :member
-    put :add_to_shopping_list, on: :member
   end
 end

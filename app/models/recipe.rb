@@ -13,9 +13,6 @@ class Recipe < ApplicationRecord
   has_many :favourite_recipes # just the 'relationships'
   has_many :users, through: :favourite_recipes # the actual users favouriting a recipe
 
-  has_many :shopping_list_recipes
-  has_many :shopping_lists, through: :shopping_list_recipes
-
   has_many :user_recipe_stock_matches
 
   accepts_nested_attributes_for :portions,

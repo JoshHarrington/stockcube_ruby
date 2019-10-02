@@ -63,10 +63,6 @@
         --></ul><% end %><!--
       --><%= link_current_page_element(cupboards_path, 'Cupboards', 'stocks') %><!--
       --><% end %><!--
-
-      --><% if logged_in? && current_user && current_user.shopping_lists.length > 0 && (current_user.shopping_lists.order('updated_at asc').last[:archived] === false) && (current_user.shopping_lists.order('updated_at asc').last.recipes.length != 0) %><!--
-        --><%= link_current_page_element(shopping_lists_current_shop_path, 'Shopping list') %><!--
-        --><% end %><!--
     --></ul>
       <% if not logged_in? && current_user %>
         <%= link_to login_path, class: "profile_item" do %>

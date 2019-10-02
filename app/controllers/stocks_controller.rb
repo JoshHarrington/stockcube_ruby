@@ -105,7 +105,6 @@ class StocksController < ApplicationController
     if @stock.save
 			redirect_to cupboards_path(anchor: cupboard_id_hashids.encode(@stock.cupboard_id))
 			update_recipe_stock_matches(@stock[:ingredient_id])
-			shopping_list_portions_update(current_user[:id])
 			StockUser.create(
 				stock_id: @stock.id,
 				user_id: current_user[:id]
@@ -222,7 +221,6 @@ class StocksController < ApplicationController
 			cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 			redirect_to cupboards_path(anchor: cupboard_id_hashids.encode(@stock.cupboard_id))
 			update_recipe_stock_matches(@stock[:ingredient_id])
-			shopping_list_portions_update(current_user[:id])
 		else
 			flash[:danger] = %Q[Looks like there was a problem, make sure you pick an ingredient, and set a stock amount]
 			redirect_to edit_stock_path(@stock), fallback: cupboards_path

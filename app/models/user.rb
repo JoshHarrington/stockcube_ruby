@@ -16,7 +16,6 @@ class User < ApplicationRecord
   has_many :cupboard_users
   has_many :cupboards, through: :cupboard_users
 
-  has_many :shopping_lists, dependent: :destroy
   has_many :user_fav_stocks, dependent: :destroy
   has_many :user_recipe_stock_matches, dependent: :destroy
   has_one :user_setting, dependent: :destroy
@@ -97,11 +96,6 @@ class User < ApplicationRecord
   # Sends password reset email.
   def send_password_reset_email
     UserMailer.password_reset(self).deliver_now
-  end
-
-  # Sends shopping list to cupboard reminder.
-  def send_shopping_list_reminder_email
-    UserMailer.shopping_list_reminder(self).deliver_later(wait_until: 24.hours.from_now)
   end
 
   # Returns true if a password reset has expired.

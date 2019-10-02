@@ -175,7 +175,6 @@ class CupboardsController < ApplicationController
 			end
 			stock_ingredient_ids = @stock_to_delete.map(&:ingredient_id).uniq
 			update_recipe_stock_matches(stock_ingredient_ids)
-			shopping_list_portions_update(current_user[:id])
 		end
 		if params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != '' && current_user.cupboards.where(hidden: false, setup: false).length > 1 && Cupboard.find(params[:cupboard_id_delete]).cupboard_users.where(owner: true).first.user == current_user
 			@cupboard_to_delete = Cupboard.find(params[:cupboard_id_delete].to_i)
@@ -276,7 +275,6 @@ class CupboardsController < ApplicationController
 		end
 
 		redirect_to cupboards_path
-		shopping_list_portions_update(current_user[:id])
   end
 	private
 		def cupboard_params
