@@ -2,6 +2,7 @@ class UsersController < ApplicationController
   before_action :logged_in_user, only: [:index, :edit, :update, :show, :destroy]
   before_action :admin_user,     only: [:destroy, :index]
   before_action :demo_user,      only: [:index, :show, :new, :create, :edit, :update, :destroy]
+  before_action :correct_user
 
   include UsersHelper
   include ApplicationHelper
@@ -184,6 +185,12 @@ class UsersController < ApplicationController
 
     def demo_user
       redirect_to(root_url) if current_user && current_user.demo == true
+    end
+
+    def correct_user
+      if params.has_key?(:id)
+        redirect_to(root_url) if current_user.admin == false && current_user != User.find(params[:id])
+      end
     end
 
 end
