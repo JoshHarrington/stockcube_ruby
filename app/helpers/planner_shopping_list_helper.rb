@@ -68,7 +68,6 @@ module PlannerShoppingListHelper
 							unit_id: unit_id,
 							amount: ingredient_plus_diff_amount
 						)
-
 					end
 				else
 					uncommon_ingredients.push(ing)
@@ -91,6 +90,13 @@ module PlannerShoppingListHelper
 	end
 
 	def update_planner_shopping_list_portions
+		return unless current_user
+		if current_user.planner_recipes.length == 0
+			current_user.combi_planner_shopping_list_portions.destroy_all
+			return
+		end
+		current_user.combi_planner_shopping_list_portions.select{|cp|cp.planner_shopping_list_portions.length == 0 || cp.planner_shopping_list_portions.length == 1 }.map{|cp| cp.destroy}
+
 		planner_shopping_list = PlannerShoppingList.find_or_create_by(user_id: current_user.id)
 		planner_shopping_list_portions = planner_shopping_list.planner_shopping_list_portions.select{|p|p.planner_recipe.date >= Date.current}.sort_by{|p|p.planner_recipe.date}
 		ingredients_from_planner_shopping_list = planner_shopping_list_portions.map(&:ingredient_id)

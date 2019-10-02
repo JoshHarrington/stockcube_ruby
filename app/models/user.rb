@@ -28,10 +28,10 @@ class User < ApplicationRecord
   has_many :favourite_recipes # just the 'relationships'
   has_many :favourites, through: :favourite_recipes, source: :recipe # the actual recipes a user favourites
 
-  has_one :planner_shopping_list
-  has_many :planner_recipes
-  has_many :planner_shopping_list_portions
-  has_many :combi_planner_shopping_list_portions
+  has_one :planner_shopping_list, dependent: :destroy
+  has_many :planner_recipes, dependent: :delete_all
+  has_many :planner_shopping_list_portions, dependent: :delete_all
+  has_many :combi_planner_shopping_list_portions, dependent: :delete_all
 
   class << self
     # Returns the hash digest of the given string.
