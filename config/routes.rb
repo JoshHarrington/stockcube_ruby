@@ -8,23 +8,6 @@ Rails.application.routes.draw do
 
   # get '/elements' => 'static_pages#elements'
 
-  get '/shopping_lists' => 'shopping_lists#index'
-  get '/shopping_lists/new' => 'shopping_lists#new'
-  get '/shopping_lists/current' => 'shopping_lists#show_ingredients_current', as: :current_shopping_list_ingredients
-  get '/shopping_lists/current/shop' => 'shopping_lists#shop'
-  get '/shopping_lists/archive_current' => 'shopping_lists#archive_shopping_list'
-  post '/shopping_lists' => 'shopping_lists#create'
-  post '/shopping_lists/autosave' => 'shopping_lists#autosave'
-  post '/shopping_lists/autosave_checked_items' => 'shopping_lists#autosave_checked_items'
-  post '/shopping_lists/reminder_email' => 'shopping_lists#send_shopping_list_reminder', as: :shopping_list_delay__with_notification
-  post '/shopping_lists/no_reminder_email' => 'shopping_lists#delay_shopping_list_process', as: :shopping_list_delay
-  post '/shopping_lists/shopping_list_to_cupboard' => 'shopping_lists#shopping_list_to_cupboard'
-  get '/shopping_lists/:id' => 'shopping_lists#show_ingredients', as: :shopping_list_ingredients
-  get '/shopping_lists/:id/edit' => 'shopping_lists#edit', as: :edit_shopping_list
-  patch '/shopping_lists/:id' => 'shopping_lists#update'
-  delete '/shopping_lists/:id/delete' => 'shopping_lists#delete', as: :delete_shopping_list
-
-
   get 'password_resets/new'
   get 'password_resets/edit'
 

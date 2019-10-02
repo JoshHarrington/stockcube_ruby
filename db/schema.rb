@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191001214156) do
+ActiveRecord::Schema.define(version: 20191002060729) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -184,43 +184,6 @@ ActiveRecord::Schema.define(version: 20191001214156) do
     t.string "link"
   end
 
-  create_table "shopping_list_portions", force: :cascade do |t|
-    t.bigint "ingredient_id"
-    t.bigint "shopping_list_id"
-    t.integer "unit_id"
-    t.integer "recipe_number"
-    t.decimal "portion_amount"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.decimal "stock_amount"
-    t.boolean "in_cupboard", default: false
-    t.decimal "percent_in_cupboard"
-    t.boolean "enough_in_cupboard", default: false
-    t.boolean "plenty_in_cupboard", default: false
-    t.boolean "checked", default: false
-    t.string "unit_name"
-    t.index ["ingredient_id"], name: "index_shopping_list_portions_on_ingredient_id"
-    t.index ["shopping_list_id"], name: "index_shopping_list_portions_on_shopping_list_id"
-  end
-
-  create_table "shopping_list_recipes", force: :cascade do |t|
-    t.bigint "recipe_id"
-    t.bigint "shopping_list_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["recipe_id"], name: "index_shopping_list_recipes_on_recipe_id"
-    t.index ["shopping_list_id"], name: "index_shopping_list_recipes_on_shopping_list_id"
-  end
-
-  create_table "shopping_lists", force: :cascade do |t|
-    t.bigint "user_id"
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.boolean "archived", default: false
-    t.index ["user_id"], name: "index_shopping_lists_on_user_id"
-  end
-
   create_table "stock_users", force: :cascade do |t|
     t.bigint "stock_id"
     t.bigint "user_id"
@@ -324,7 +287,6 @@ ActiveRecord::Schema.define(version: 20191001214156) do
   add_foreign_key "recipe_authors", "authors", column: "authors_id"
   add_foreign_key "recipe_authors", "recipes", column: "recipes_id"
   add_foreign_key "recipe_steps", "recipes"
-  add_foreign_key "shopping_lists", "users"
   add_foreign_key "stocks", "planner_recipes"
   add_foreign_key "stocks", "planner_shopping_list_portions"
   add_foreign_key "user_fav_stocks", "ingredients"
