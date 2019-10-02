@@ -18,38 +18,44 @@ module PlannerShoppingListHelper
 			common_ingredients.each do |ing|
 				stock_from_ing = stock.select{|s| s.ingredient_id == ing}.first
 				## find the highest amount of stock
-				portion_from_ing = recipe_portions.select{|p| p.ingredient_id == ing}.first
+				portions_from_ing = recipe_portions.select{|p| p.ingredient_id == ing}
+				portions_sum_from_ing = {}
+				if portions_from_ing.length == 0
+					next
+				elsif portions_from_ing.length > 1
+					portions_sum_from_ing = serving_addition(portions_from_ing)
+				end
 
-				ingredient_plus_diff_amount = ingredient_plus_difference(stock_from_ing, portion_from_ing)
+				serving_diff_amount = serving_difference([stock_from_ing, portion_from_ing])
 				if stock_from_ing.unit_id == portion_from_ing.unit_id
 					unit_id = portion_from_ing.unit_id
-				elsif ingredient_unit_type_match(stock_from_ing, portion_from_ing) && ingredient_metric_check(stock_from_ing) && ingredient_metric_check(portion_from_ing)
+				elsif ingredient_unit_type_match([stock_from_ing, portion_from_ing]) && ingredient_metric_check(stock_from_ing) && ingredient_metric_check(portion_from_ing)
 					unit_id = default_unit_id(portion_from_ing)
 				else
 					unit_id = portion_from_ing.unit_id
 				end
 
-				if ingredient_plus_diff_amount
-					if ingredient_plus_diff_amount <= 0
+				if serving_diff_amount != false
+					if serving_diff_amount <= 0
 						stock_from_ing.update_attributes(
 							planner_recipe_id: planner_recipe.id
 						)
 						## original stock updated
-						if ingredient_plus_diff_amount < 0
+						if serving_diff_amount < 0
 							## when amount < 0 new stock is needed so shopping list portion should be created at the same time
 							PlannerShoppingListPortion.create(
 								user_id: current_user.id,
 								planner_recipe_id: planner_recipe.id,
 								ingredient_id: ing,
 								unit_id: unit_id,
-								amount: -(ingredient_plus_diff_amount),
+								amount: -(serving_diff_amount),
 								planner_shopping_list_id: planner_shopping_list.id
 							)
 						end
-					elsif ingredient_plus_diff_amount > 0
+					elsif serving_diff_amount > 0
 						recipe_stock = Stock.create(
 							ingredient_id: ing,
-							amount: ingredient_plus_converter(portion_from_ing),
+							amount: serving_converter(portion_from_ing),
 							planner_recipe_id: planner_recipe.id,
 							unit_id: unit_id,
 							use_by_date: stock_from_ing.use_by_date,
@@ -58,15 +64,15 @@ module PlannerShoppingListHelper
 							always_available: false
 						)
 						current_user.stocks << recipe_stock
-						ingredient_plus_hash = {
-							unit_metric_ratio: stock_from_ing.unit.metric_ratio,
+						serving_hash = {
+							metric_ratio: stock_from_ing.unit.metric_ratio,
 							unit_type: stock_from_ing.unit.unit_type,
-							amount: ingredient_plus_diff_amount
+							amount: serving_diff_amount
 						}
 
 						stock_from_ing.update_attributes(
 							unit_id: unit_id,
-							amount: ingredient_plus_diff_amount
+							amount: serving_diff_amount
 						)
 					end
 				else
@@ -106,14 +112,14 @@ module PlannerShoppingListHelper
 			matching_ingredients.each do |m_ing|
 				matching_sl_portions = planner_shopping_list_portions.select{|p| p.ingredient_id == m_ing}
 
-				if ingredient_plus_addition(matching_sl_portions) == false || matching_sl_portions.map(&:checked).uniq.length != 1
+				if serving_addition(matching_sl_portions) == false || matching_sl_portions.map(&:checked).uniq.length != 1
 					next
 				end
 				planner_shopping_list.combi_planner_shopping_list_portions.select{|cp| cp.ingredient_id == m_ing}.each do |cp|
 					cp.destroy
 				end
 
-				combi_addition_object = ingredient_plus_addition(matching_sl_portions)
+				combi_addition_object = serving_addition(matching_sl_portions)
 				combi_amount = combi_addition_object[:amount]
 				combi_unit_id = combi_addition_object[:unit_id]
 
@@ -142,8 +148,8 @@ module PlannerShoppingListHelper
 			stock_partner = stock.cupboard.stocks.where.not(id: stock.id).find_by(ingredient_id: stock.ingredient_id, use_by_date: stock.use_by_date)
 			return unless stock_partner.present?
 			stock_group = [stock_partner, stock]
-			if ingredient_plus_addition(stock_group)
-				stock_addition_hash = ingredient_plus_addition(stock_group)
+			if serving_addition(stock_group)
+				stock_addition_hash = serving_addition(stock_group)
 				stock_amount = stock_addition_hash[:amount]
 				stock_unit_id = stock_addition_hash[:unit_id]
 				stock_partner.update_attributes(
