@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191002060729) do
+ActiveRecord::Schema.define(version: 20191005123341) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,7 +32,9 @@ ActiveRecord::Schema.define(version: 20191002060729) do
     t.datetime "updated_at", null: false
     t.date "date"
     t.boolean "checked", default: false, null: false
+    t.bigint "planner_portion_wrapper_id"
     t.index ["ingredient_id"], name: "index_combi_planner_shopping_list_portions_on_ingredient_id"
+    t.index ["planner_portion_wrapper_id"], name: "index_combi_portion_wrapper"
     t.index ["planner_shopping_list_id"], name: "index_combi_planner_shopping_list_portions"
     t.index ["unit_id"], name: "index_combi_planner_shopping_list_portions_on_unit_id"
     t.index ["user_id"], name: "index_combi_planner_shopping_list_portions_on_user_id"
@@ -95,6 +97,23 @@ ActiveRecord::Schema.define(version: 20191002060729) do
     t.index ["unit_id"], name: "index_ingredients_on_unit_id"
   end
 
+  create_table "planner_portion_wrappers", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "planner_shopping_list_id"
+    t.bigint "ingredient_id"
+    t.bigint "unit_id"
+    t.decimal "amount"
+    t.integer "use_by_date_diff"
+    t.date "date"
+    t.boolean "checked"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ingredient_id"], name: "index_planner_portion_wrappers_on_ingredient_id"
+    t.index ["planner_shopping_list_id"], name: "index_planner_portion_wrappers_on_planner_shopping_list_id"
+    t.index ["unit_id"], name: "index_planner_portion_wrappers_on_unit_id"
+    t.index ["user_id"], name: "index_planner_portion_wrappers_on_user_id"
+  end
+
   create_table "planner_recipes", force: :cascade do |t|
     t.bigint "recipe_id"
     t.date "date"
@@ -118,8 +137,10 @@ ActiveRecord::Schema.define(version: 20191002060729) do
     t.datetime "updated_at", null: false
     t.bigint "combi_planner_shopping_list_portion_id"
     t.boolean "checked", default: false, null: false
+    t.bigint "planner_portion_wrapper_id"
     t.index ["combi_planner_shopping_list_portion_id"], name: "index_planner_shopping_list_portion_to_combi"
     t.index ["ingredient_id"], name: "index_planner_shopping_list_portions_on_ingredient_id"
+    t.index ["planner_portion_wrapper_id"], name: "index_single_portion_wrapper"
     t.index ["planner_recipe_id"], name: "index_planner_shopping_list_portions_on_planner_recipe_id"
     t.index ["planner_shopping_list_id"], name: "index_planner_shopping_list__portions"
     t.index ["unit_id"], name: "index_planner_shopping_list_portions_on_unit_id"
@@ -268,26 +289,6 @@ ActiveRecord::Schema.define(version: 20191002060729) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
-  add_foreign_key "combi_planner_shopping_list_portions", "ingredients"
-  add_foreign_key "combi_planner_shopping_list_portions", "planner_shopping_lists"
-  add_foreign_key "combi_planner_shopping_list_portions", "units"
-  add_foreign_key "combi_planner_shopping_list_portions", "users"
-  add_foreign_key "default_ingredient_sizes", "ingredients"
-  add_foreign_key "default_ingredient_sizes", "units"
-  add_foreign_key "planner_recipes", "planner_shopping_lists"
-  add_foreign_key "planner_recipes", "recipes"
-  add_foreign_key "planner_recipes", "users"
-  add_foreign_key "planner_shopping_list_portions", "combi_planner_shopping_list_portions"
-  add_foreign_key "planner_shopping_list_portions", "ingredients"
-  add_foreign_key "planner_shopping_list_portions", "planner_recipes"
-  add_foreign_key "planner_shopping_list_portions", "planner_shopping_lists"
-  add_foreign_key "planner_shopping_list_portions", "units"
-  add_foreign_key "planner_shopping_list_portions", "users"
-  add_foreign_key "planner_shopping_lists", "users"
   add_foreign_key "recipe_authors", "authors", column: "authors_id"
   add_foreign_key "recipe_authors", "recipes", column: "recipes_id"
-  add_foreign_key "recipe_steps", "recipes"
-  add_foreign_key "stocks", "planner_recipes"
-  add_foreign_key "stocks", "planner_shopping_list_portions"
-  add_foreign_key "user_fav_stocks", "ingredients"
 end

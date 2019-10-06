@@ -28,12 +28,30 @@
 	<% else %>
 		<ul class="planner_sl-recipe_list">
 			<% shopping_list_portions.each do |portion| %>
+				<%
+					if portion.class.name == 'PlannerPortionWrapper'
+						if portion.combi_planner_shopping_list_portion != nil
+							num_assoc_recipes = portion.combi_planner_shopping_list_portion.planner_shopping_list_portions.length
+							portion_title = 'Combi portion (' + num_assoc_recipes.to_s + 'recipes)'
+						else
+							portion_title = 'Recipe portion - ' + portion.planner_shopping_list_portion.planner_recipe.recipe.title
+						end
+					elsif portion.class.name == "CombiPlannerShoppingListPortion"
+						num_assoc_recipes = portion.planner_shopping_list_portions.length
+						portion_title = 'Combi portion (' + num_assoc_recipes.to_s + 'recipes)'
+					elsif portion.class.name == "PlannerShoppingListPortion"
+						portion_title = 'Recipe portion - ' + portion.planner_recipe.recipe.title
+					else
+						portion_title = 'Recipe portion'
+					end
+
+				 %>
 				<li id="<%= planner_portion_id_hash.encode(portion.id) %>" class="shopping_list_portion <%= portion.class.name == "CombiPlannerShoppingListPortion" ? 'combi_portion' : 'individual_portion' %> <%= portion.checked ? 'portion_checked' : '' %>">
-					<h6 class="mb-2"><%= portion.class.name == "CombiPlannerShoppingListPortion" ? "Combi portion (#{portion.planner_shopping_list_portions.length} recipes)" : (portion.planner_recipe ? "Recipe portion - #{portion.planner_recipe.recipe.title}" : "Recipe portion") %></h6>
+					<h6 class="mb-2"><%= portion_title %></h6>
 					<p>
 						<label>
 							<%= check_box_tag "planner_shopping_list_portions_add[#{planner_portion_id_hash.encode(portion.id)}]", "planner_shopping_list_portions_add", false, class: "" %>
-							<%= portion.amount %> <%= portion.unit.name %> <%= portion.ingredient.name %>
+							<%= standard_serving_description(portion) %>
 						</label>
 					</p>
 					<hr />

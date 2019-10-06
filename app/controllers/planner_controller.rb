@@ -1,5 +1,6 @@
 class PlannerController < ApplicationController
 	include PlannerShoppingListHelper
+	include ServingHelper
 	def index
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
@@ -135,7 +136,31 @@ class PlannerController < ApplicationController
 			shopping_list_portions = shopping_list_portions(shopping_list)
 
 			if shopping_list_portions.length > 0
-				formatted_shopping_list_portions = shopping_list_portions.sort_by!{|p| p.ingredient.name}.map{|p| { "portion_type": (p.class.name == "CombiPlannerShoppingListPortion" ? 'combi' : 'individual'), "shopping_list_portion_id": planner_portion_id_hash.encode(p.id), "portion_description": p.amount.to_f.to_s + ' ' + p.unit.name + ' ' + p.ingredient.name, "max_date": (Date.current + 2.weeks).strftime("%Y-%m-%d"), "min_date": Date.current.strftime("%Y-%m-%d"), "recipe_title": p.has_attribute?(:planner_recipe_id) && p.planner_recipe.recipe.present? ? p.planner_recipe.recipe.title.to_s : "null", "checked": p.checked.to_s, "num_assoc_recipes": (p.class.name == "CombiPlannerShoppingListPortion" ? p.planner_shopping_list_portions.length : '1') } }
+				formatted_shopping_list_portions = shopping_list_portions.sort_by{|p| p.ingredient.name}.map do |p|
+					if p.class.name == 'PlannerPortionWrapper'
+						if p.combi_planner_shopping_list_portion != nil
+							portion_type = 'combi'
+							num_assoc_recipes = p.combi_planner_shopping_list_portion.planner_shopping_list_portions.length
+						else
+							portion_type = 'individual'
+							num_assoc_recipes = '1'
+							recipe_title = p.planner_shopping_list_portion.planner_recipe.recipe.title
+						end
+					else
+						portion_type = p.class.name == "CombiPlannerShoppingListPortion" ? 'combi' : 'individual'
+						num_assoc_recipes = p.class.name == "CombiPlannerShoppingListPortion" ? p.planner_shopping_list_portions.length : '1'
+					end
+					{
+						"portion_type": portion_type,
+						"shopping_list_portion_id": planner_portion_id_hash.encode(p.id),
+						"portion_description": standard_serving_description(p),
+						"max_date": (Date.current + 2.weeks).strftime("%Y-%m-%d"),
+						"min_date": Date.current.strftime("%Y-%m-%d"),
+						"recipe_title": p.has_attribute?(:planner_recipe_id) && p.planner_recipe.recipe.present? ? p.planner_recipe.recipe.title.to_s : recipe_title.to_s,
+						"checked": p.checked.to_s,
+						"num_assoc_recipes": num_assoc_recipes
+					}
+				end
 				shopping_list_output = [{"stats": {"checked_portions": checked_portions, "total_portions": shopping_list_portions.length}}, {"portions": formatted_shopping_list_portions }]
 			else
 				shopping_list_output = []
