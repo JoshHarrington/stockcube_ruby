@@ -137,21 +137,30 @@ class PlannerController < ApplicationController
 
 			if shopping_list_portions.length > 0
 				formatted_shopping_list_portions = shopping_list_portions.sort_by{|p| p.ingredient.name}.map do |p|
+					num_assoc_recipes = '1'
 					if p.class.name == 'PlannerPortionWrapper'
 						if p.combi_planner_shopping_list_portion != nil
-							portion_type = 'combi'
+							portion_type = 'wrapper'
 							num_assoc_recipes = p.combi_planner_shopping_list_portion.planner_shopping_list_portions.length
+							portion_note = 'Combi portion (' + num_assoc_recipes.to_s + ' recipes)'
 						else
-							portion_type = 'individual'
-							num_assoc_recipes = '1'
+							portion_type = 'wrapper'
 							recipe_title = p.planner_shopping_list_portion.planner_recipe.recipe.title
+							portion_note = 'Recipe portion - ' + recipe_title
 						end
 					else
-						portion_type = p.class.name == "CombiPlannerShoppingListPortion" ? 'combi' : 'individual'
-						num_assoc_recipes = p.class.name == "CombiPlannerShoppingListPortion" ? p.planner_shopping_list_portions.length : '1'
+						if p.class.name == "CombiPlannerShoppingListPortion"
+							portion_type = 'individual'
+							num_assoc_recipes = p.planner_shopping_list_portions.length
+							portion_note = 'Combi portion (' + num_assoc_recipes.to_s + ' recipes)'
+						else
+							portion_type = 'individual'
+							portion_note = 'Recipe portion - ' + p.planner_recipe.recipe.title
+						end
 					end
 					{
 						"portion_type": portion_type,
+						"portion_note": portion_note,
 						"shopping_list_portion_id": planner_portion_id_hash.encode(p.id),
 						"portion_description": standard_serving_description(p),
 						"max_date": (Date.current + 2.weeks).strftime("%Y-%m-%d"),

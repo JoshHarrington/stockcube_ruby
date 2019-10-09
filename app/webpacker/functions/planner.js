@@ -113,11 +113,13 @@ const renderShoppingList = (shoppingList) => {
 			let RecipePortionLiTag
 			if (portion["portion_type"] == "combi") {
 				RecipePortionLi.classList.add('combi_portion')
-				RecipePortionLiTag = '<h6 class="mb-2">Combi portion (' + portion["num_assoc_recipes"] + ' recipes)</h6>'
-			} else {
+			} else if (portion["portion_type"] == "individual") {
 				RecipePortionLi.classList.add('individual_portion')
-				RecipePortionLiTag = '<h6 class="mb-2">Recipe portion - ' + portion["recipe_title"] + '</h6>'
+			} else {
+				RecipePortionLi.classList.add('wrapper_portion')
 			}
+
+			RecipePortionLiTag = '<h6 class="mb-2">' + portion["portion_note"] + '</h6>'
 			const RecipePortionLiP = '<p><label><input type="checkbox" ' + (portion["checked"] === "true" && 'checked') + '> ' + portion["portion_description"] + '</label></p><hr />'
 			// <h5>Use by date:</h5><p><input type="date" value="' + portion["max_date"] + '" min="' + portion["min_date"] + '"></p>
 			RecipePortionLi.innerHTML = RecipePortionLiTag + RecipePortionLiP
@@ -183,7 +185,14 @@ const setupShoppingListCheckingOff = () => {
 		portionCheckbox.addEventListener("change", function(){
 			const portionLi = portionCheckbox.closest('li')
 			const portionId = portionLi.getAttribute('id')
-			const portionType = portionLi.classList.contains('combi_portion') ? 'combi_portion' : 'individual_portion'
+			let portionType = ''
+			if (portionLi.classList.contains('combi_portion')) {
+				portionType = 'combi_portion'
+			} else if (portionLi.classList.contains('individual_portion')) {
+				portionType = 'individual_portion'
+			} else {
+				portionType = 'wrapper_portion'
+			}
 			// const date = portionLi.querySelector('input[type="date"]').value
 
 			const portionData = "shopping_list_portion_id=" + portionId + "&portion_type=" + portionType + (genId !== null ? "&gen_id=" + genId : "")

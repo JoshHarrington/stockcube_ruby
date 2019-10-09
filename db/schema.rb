@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191005123341) do
+ActiveRecord::Schema.define(version: 20191007212508) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -226,8 +226,10 @@ ActiveRecord::Schema.define(version: 20191005123341) do
     t.boolean "always_available", default: false, null: false
     t.bigint "planner_recipe_id"
     t.bigint "planner_shopping_list_portion_id"
+    t.bigint "planner_portion_wrapper_id"
     t.index ["cupboard_id"], name: "index_stocks_on_cupboard_id"
     t.index ["ingredient_id"], name: "index_stocks_on_ingredient_id"
+    t.index ["planner_portion_wrapper_id"], name: "index_stocks_on_planner_portion_wrapper_id"
     t.index ["planner_recipe_id"], name: "index_stocks_on_planner_recipe_id"
     t.index ["planner_shopping_list_portion_id"], name: "index_stocks_on_planner_shopping_list_portion_id"
   end
