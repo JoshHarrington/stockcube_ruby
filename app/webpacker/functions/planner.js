@@ -202,9 +202,6 @@ const setupShoppingListCheckingOff = () => {
 			} else {
 				ajaxRequest(portionData, '/stocks/remove_portion')
 			}
-			checkForUpdates(function(shoppingList) {
-				renderShoppingList(shoppingList)
-			})
 		})
 	})
 }
