@@ -225,6 +225,8 @@ module PlannerShoppingListHelper
 			shopping_list = current_user.planner_shopping_list
 		elsif shopping_list == nil && !(current_user)
 			return []
+		elsif current_user && !current_user.planner_shopping_list.present?
+			shopping_list = PlannerShoppingList.find_or_create_by(user_id: current_user.id)
 		end
 
 		planner_recipe_portions = []
