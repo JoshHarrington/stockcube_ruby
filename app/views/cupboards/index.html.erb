@@ -18,8 +18,7 @@
               <% out_of_date_sentence = 'out of date' + (stock.use_by_date > Time.zone.now ? ' in ' : ' ') + (distance_of_time_in_words(Time.zone.now, stock.use_by_date)) + (stock.use_by_date <= Time.zone.now ? ' ago': '') %>
               <%= link_to ((stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? edit_stock_path(stock.id) : ''), class: "list_block--item non_sortable list_block--item_stacked", title: "#{stock.ingredient.name} - #{out_of_date_sentence}" do %>
                 <span class="list_block--item--content list_block--item--content_left">
-                  <p><%= stock.ingredient.name %></p>
-                  <p><%= round_if_whole(stock.amount) %> <%= stock.unit.name %></p>
+                  <p><%= standard_serving_description(stock) %></p>
                 </span>
                 <span class="h6 list_block--item--lesser_note"><%= distance_of_time_in_words(Time.zone.now, stock.use_by_date) + (stock.use_by_date <= Time.zone.now ? ' ago': '')%></span>
               <% end %>
@@ -59,9 +58,8 @@
 
                 <%= link_to ((cupboard.communal == false || stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? edit_stock_path(stock.id) : ''), class: "list_block--item list_block--item_stacked list_block--item_show#{date_warning_class(stock)} stock_#{stock.id} #{(cupboard.communal == false || stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? '' : 'list_block--item-disabled'}", :data => { :cupboard_id => "#{cupboard.id}", :stock_id => "#{stock.id}" }, title: "#{stock.ingredient.name} - #{out_of_date_sentence}" do %>
                   <span class="list_block--item--content list_block--item--content_left">
-                    <p><%= stock.ingredient.name %></p>
+                    <p><%= standard_serving_description(stock) %></p>
                     <% if cupboard.communal && stock.users.length > 0 %><p> [<%= stock.users.first.name%>]</p><% end %>
-                    <p><%= round_if_whole(stock.amount) %> <%= stock.unit.name %></p>
                   </span>
                   <span class="list_block--item--action list_block--item--action--btn cupboard_stock_delete_btn" id="<%= @delete_stock_hashids.encode(stock.id) %>">
                     <%= icomoon('bin') %>
