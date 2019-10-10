@@ -3,7 +3,9 @@
 .choices_select {
 	min-width: rem(189);
 	@media all and (min-width: $bp-sm) {
-		input[class*="half_width_input"] ~ & {
+		width: 100%;
+		input[class*="half_width_input"] ~ &,
+		.choices_select--sibling ~ & {
 			width: calc(50% - 4px);
 			margin-left: 4px;
 		}
