@@ -53,7 +53,7 @@ module PlannerShoppingListHelper
 					elsif serving_diff_amount > 0
 						recipe_stock = Stock.create(
 							ingredient_id: ing,
-							amount: serving_converter(portion_from_ing),
+							amount: serving_converter(portions_sum_from_ing)[:amount],
 							planner_recipe_id: planner_recipe.id,
 							unit_id: serving_diff[:unit_id],
 							use_by_date: stock_from_ing.use_by_date,
