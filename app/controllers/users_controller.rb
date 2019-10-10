@@ -69,9 +69,9 @@ class UsersController < ApplicationController
             flash[:info] = "Looks like you might already have been added to that cupboard"
           end
         end
-        flash[:sticky] = %Q[You're all setup! Start <a href="/cupboards">adding stock</a> today]
+        flash[:sticky] = %Q[You're all setup! You can start planning meals and building a shopping list straight away]
         log_in @user
-        redirect_to root_url
+        redirect_to planner_path
       else
         render 'new'
       end
