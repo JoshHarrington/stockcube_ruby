@@ -77,6 +77,18 @@ function checkForUpdates(onSuccess) {
   }), 400)
 }
 
+const updateShoppingListCheckCount = (shoppingList) => {
+	const ShoppingListInner = document.querySelector('.planner_shopping_list--inner')
+	const ShoppingListTitleBlock = ShoppingListInner.querySelector('.title_block')
+	const ShoppingListTitle = ShoppingListTitleBlock.querySelector('h2')
+	if (shoppingList.length === 0 ){
+		ShoppingListTitle.innerText = 'Shopping List'
+	} else {
+		const ShoppingListTitleContent = 'Shopping List (' + shoppingList[0]["stats"]["checked_portions"] + '/' + shoppingList[0]["stats"]["total_portions"] + ')'
+		ShoppingListTitle.innerText = ShoppingListTitleContent
+	}
+}
+
 const renderShoppingList = (shoppingList) => {
 
 	const ShoppingList = document.querySelector('.planner_shopping_list--wrapper')
@@ -202,6 +214,9 @@ const setupShoppingListCheckingOff = () => {
 			} else {
 				ajaxRequest(portionData, '/stocks/remove_portion')
 			}
+			checkForUpdates(function(shoppingList) {
+				updateShoppingListCheckCount(shoppingList)
+			})
 		})
 	})
 }
