@@ -38,7 +38,16 @@ module StockHelper
 	end
 
 	def	update_recipe_stock_matches(ingredient_ids = nil, user_id = nil, recipe_ids = nil)
-		return unless current_user.user_recipe_stock_matches.order("updated_at desc").first.updated_at < 20.minutes.ago
+		if user_id != nil
+			user_id = user_id
+			user = User.find(user_id)
+		elsif current_user
+			user_id = current_user[:id]
+			user = current_user
+		else
+			return
+		end
+		return unless (user.user_recipe_stock_matches.present? && user.user_recipe_stock_matches.order("updated_at desc").first.updated_at < 20.minutes.ago) || !user.user_recipe_stock_matches.present?
 		update_recipe_stock_matches_core(ingredient_ids, user_id, recipe_ids)
 
 		flash[:info] = %Q[We've updated your <a href="/recipes">recipe list</a> based on your stock so you can see the quickest recipes to make]
@@ -168,7 +177,7 @@ module StockHelper
 					unit_id: portion.unit_id,
 					planner_shopping_list_portion_id: portion.id
 				)
-				if recipe_stock != nil
+				if recipe_stock != nil && portion.amount > 0
 					recipe_stock.update_attributes(
 						amount: portion.amount,
 						planner_recipe_id: portion.planner_recipe_id,
@@ -176,7 +185,7 @@ module StockHelper
 						cupboard_id: cupboard_id,
 						always_available: false
 					)
-				else
+				elsif portion.amount > 0
 					recipe_stock = Stock.create(
 						ingredient_id: portion.ingredient_id,
 						amount: portion.amount,
@@ -206,14 +215,14 @@ module StockHelper
 								unit_id: wrapper_stock_diff[:unit_id],
 								planner_portion_wrapper_id: portion.planner_portion_wrapper_id
 							)
-							if wrapper_stock != nil
+							if wrapper_stock != nil && wrapper_stock_diff[:amount] > 0
 								wrapper_stock.update_attributes(
 									amount: wrapper_stock_diff[:amount],
 									use_by_date: Date.current + 2.weeks,
 									cupboard_id: cupboard_id,
 									always_available: false
 								)
-							else
+							elsif wrapper_stock_diff[:amount] > 0
 								wrapper_stock = Stock.create(
 									ingredient_id: portion.ingredient_id,
 									amount: wrapper_stock_diff[:amount],
@@ -225,8 +234,10 @@ module StockHelper
 								)
 								shopping_list_user.stocks << wrapper_stock
 							end
-							stock_hidden = processing_type == 'add_portion' ? false : true
-							wrapper_stock.update_attributes(hidden: stock_hidden)
+							if wrapper_stock.present?
+								stock_hidden = processing_type == 'add_portion' ? false : true
+								wrapper_stock.update_attributes(hidden: stock_hidden)
+							end
 						end
 					elsif portion.combi_planner_shopping_list_portion != nil && portion.combi_planner_shopping_list_portion.checked != check_type
 						portion.combi_planner_shopping_list_portion.update_attributes(checked: check_type)
