@@ -72,6 +72,10 @@ class UsersController < ApplicationController
         flash[:sticky] = %Q[You're all setup! You can start planning meals and building a shopping list straight away]
         log_in @user
         redirect_to planner_path
+
+        # @user.send_activation_email
+        # flash[:sticky] = %Q[Thanks for signing up to Stockcubes, we're sending you an email so you can activate your account]
+        # redirect_to root_path
       else
         render 'new'
       end
@@ -106,7 +110,7 @@ class UsersController < ApplicationController
         flash[:info] = "Please update your name to finish setting up your account."
         redirect_to user_profile_edit_path(:anchor => "user_name_fix")
       end
-      redirect_to user_profile_path
+      redirect_to planner_path
     else
       flash[:notice] = %Q[That login didn't work. Maybe try it again, or <a href="/signup">sign up</a> for a Stockcubes account]
       redirect_to root_path
