@@ -1,9 +1,8 @@
-<h1>Stockcubes</h1>
-
 <p>Hi <%= @user.name %>,</p>
 
-<p>
-Thanks for signing up to the Stockcubes! We've set you up with a shared cupboard, you can click below to activate your account and checkout your new cupboard:</p>
+<p>Thanks for signing up to the Stockcubes!</p>
+
+<p>We've set you up with a shared cupboard, you can click below to activate your account and checkout your new cupboard:</p>
 
 <%= link_to "Activate account", edit_account_activation_url(@user.activation_token,
 																										email: @user.email,
