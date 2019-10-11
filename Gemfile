@@ -77,6 +77,10 @@ gem "loofah", ">= 2.2.3"
 gem 'webpacker', '~> 4.0', '>= 4.0.7'
 gem 'react-rails'
 
+gem 'inky-rb', require: 'inky'
+# Stylesheet inlining for email
+gem 'premailer-rails'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

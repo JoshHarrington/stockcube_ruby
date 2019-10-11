@@ -14,7 +14,5 @@ Rails.application.config.assets.paths << Rails.root.join('app', 'assets', 'icons
 # folder are already added.
 # Rails.application.config.assets.precompile += %w( admin.js admin.css )
 
-Rails.application.config.assets.precompile += %w( rails.validations.js )
-# Rails.application.config.assets.precompile += %w( after_body/navigation.js )
-Rails.application.config.assets.precompile += %w( vendor/tota11y.min.js )
-Rails.application.config.assets.precompile += %w( in_head/modernizr-custom.js )
+# # Rails.application.config.assets.precompile += %w( after_body/navigation.js )
+Rails.application.config.assets.precompile += %w( foundation_emails.css )

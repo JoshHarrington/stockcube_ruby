@@ -1,0 +1,42 @@
+@import "foundation-emails";
+@import url('https://fonts.googleapis.com/css?family=Lato:400,700');
+
+body * {
+	font-family: 'Lato', sans-serif;
+}
+
+.logo_banner {
+	background-color: #49a99f; //$teal-100
+	padding: 20px 15px 10px;
+}
+
+a#logo {
+	display: block;
+	text-align: center;
+	margin-bottom: -4px;
+	span {
+		font-size: 20px;
+		margin-left: 9px;
+		color: black;
+		top: -18px;
+		position: relative;
+	}
+}
+
+.icon-png {
+	display: none;
+}
+
+svg.icon-logo {
+	width: 83px;
+}
+
+.main_content {
+	background-color: white;
+	text-align: left;
+	padding: 16px 10px 45px;
+}
+
+.content_wrapper {
+	border: 1px solid rgb(218, 218, 218);
+}
