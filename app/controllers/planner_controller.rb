@@ -170,7 +170,7 @@ class PlannerController < ApplicationController
 						"num_assoc_recipes": num_assoc_recipes
 					}
 				end
-				shopping_list_output = [{"stats": {"checked_portions": checked_portions, "total_portions": shopping_list_portions.length}}, {"portions": formatted_shopping_list_portions }]
+				shopping_list_output = [{"stats": {"checked_portions": checked_portions, "total_portions": shopping_list_portions.length}}, {"portions": formatted_shopping_list_portions }, {"gen_id": shopping_list.gen_id }]
 			else
 				shopping_list_output = []
 			end

@@ -3,6 +3,9 @@ import Sortable from 'sortablejs'
 import {tns} from 'tiny-slider/src/tiny-slider'
 import SVG from '../icons/symbol-defs.svg'
 import PNGBin from '../icons/png-icons/bin.png'
+import PNGInfoOutline from '../icons/png-icons/information-outline.png'
+import PNGFullscreen from '../icons/png-icons/fullscreen.png'
+import PNGFullscreenExit from '../icons/png-icons/fullscreen_exit.png'
 
 const plannerRecipeAddData = (id, date) => (
 	"recipe_id=" + id + "&planner_date=" + date
@@ -99,6 +102,9 @@ const renderShoppingList = (shoppingList) => {
 	// const ShoppingListExpandBtn = ShoppingListTitleBlock.querySelector('.planner_shopping_list--fullscreen_btn')
 	const ListTopUl = document.createElement('ul')
 	ListTopUl.classList.add('planner_sl-recipe_list')
+	let ShoppingListTitleNote = ShoppingListTitleBlock.querySelector('p.item_form--content_item_note')
+	let ShoppingListTitleFullscreenBtn = ShoppingListTitleBlock.querySelector('a.planner_shopping_list--fullscreen_btn')
+
 
 	const OldShoppingListContent = ShoppingListInner.querySelector('ul')
 	const shopOnlineBlock = document.querySelector('.shop_online_block')
@@ -111,10 +117,45 @@ const renderShoppingList = (shoppingList) => {
 		}
 		ListTopUl.innerHTML = '<p>Shopping List is currently empty, move some recipes to your planner to get items added to this list</p>'
 		setupViewWhiskShoppingListButton()
+		if (ShoppingListTitleNote !== null) {
+			ShoppingListTitleNote.style.display = 'none'
+		}
+		if (ShoppingListTitleFullscreenBtn !== null) {
+			ShoppingListTitleFullscreenBtn.style.display = 'none'
+		}
 	} else {
+		const GenId = shoppingList[2]["gen_id"]
 		const whiskShoppingListPortions = []
 		const ShoppingListTitleContent = 'Shopping List (' + shoppingList[0]["stats"]["checked_portions"] + '/' + shoppingList[0]["stats"]["total_portions"] + ')'
 		ShoppingListTitle.innerText = ShoppingListTitleContent
+
+		if (ShoppingListTitleNote !== null) {
+			ShoppingListTitleNote.style.display = 'block'
+		} else {
+			ShoppingListTitleNote = document.createElement('p')
+			ShoppingListTitleNote.classList.add('h6','item_form--content_item_note')
+			ShoppingListTitleNote.innerHTML = `<svg class="icomoon-icon icon-information-outline"><use xlink:href="${SVG}#icon-information-outline"></use></svg><img class="icon-png" src="${PNGInfoOutline}"/> Checking off items adds them to <a href="/cupboards">your cupboard</a> automatically (once checked they'll disappear from the list in 24 hours)`
+			ShoppingListTitleBlock.appendChild(ShoppingListTitleNote)
+		}
+
+		if (ShoppingListTitleFullscreenBtn !== null) {
+			ShoppingListTitleFullscreenBtn.style.display = 'block'
+		} else {
+			ShoppingListTitleFullscreenBtn = document.createElement('a')
+			ShoppingListTitleFullscreenBtn.classList.add('planner_shopping_list--fullscreen_btn')
+			if (document.body.classList.contains('planner_controller') && document.body.classList.contains('list_page')) {
+				ShoppingListTitleFullscreenBtn.setAttribute('title', 'Close shopping list share page')
+				ShoppingListTitleFullscreenBtn.setAttribute('href', `/planner`)
+				ShoppingListTitleFullscreenBtn.innerHTML = `<svg class="icomoon-icon icon-fullscreen_exit"><use xlink:href="${SVG}#icon-fullscreen_exit"></use></svg><img class="icon-png" src="${PNGFullscreenExit}"/>`
+				ShoppingListTitleBlock.appendChild(ShoppingListTitleFullscreenBtn)
+			} else {
+				ShoppingListTitleFullscreenBtn.setAttribute('title', 'View and share shopping list')
+				ShoppingListTitleFullscreenBtn.setAttribute('href', `/list/${GenId}`)
+				ShoppingListTitleFullscreenBtn.innerHTML = `<svg class="icomoon-icon icon-fullscreen"><use xlink:href="${SVG}#icon-fullscreen"></use></svg><img class="icon-png" src="${PNGFullscreen}"/>`
+				ShoppingListTitleBlock.appendChild(ShoppingListTitleFullscreenBtn)
+			}
+		}
+
 		shoppingList[1]["portions"].forEach(function(portion) {
 			const RecipePortionLi = document.createElement('li')
 			RecipePortionLi.setAttribute('id', portion["shopping_list_portion_id"])
@@ -226,7 +267,7 @@ const addPlannerRecipe = (e) => {
 	ajaxRequest(plannerRecipeAddData(e.item.id, e.item.parentNode.id), '/planner/recipe_add')
 
 	const deleteBtn = document.createElement('button')
-	deleteBtn.innerHTML = `<svg class="icomoon-icon icon-bin"><use xlink:href="${SVG}#icon-bin"></use></svg><img class="icon-png" src="${PNGBin}"></button>`
+	deleteBtn.innerHTML = `<svg class="icomoon-icon icon-bin"><use xlink:href="${SVG}#icon-bin"></use></svg><img class="icon-png" src="${PNGBin}" />`
 	deleteBtn.classList.add('delete', 'list_block--item--action', 'list_block--item--action--btn')
 
 	const parentId = e.item.parentNode.id
