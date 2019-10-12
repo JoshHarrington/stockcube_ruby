@@ -1,4 +1,5 @@
 class PortionsController < ApplicationController
+	before_action :authenticate_user!
 	def show
 		@portion = Portion.find(params[:id])
 		@units =	@portion.units

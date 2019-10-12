@@ -6,7 +6,7 @@ class RecipesController < ApplicationController
 
 	require 'will_paginate/array'
 
-	before_action :logged_in_user, only: [:edit, :new, :index]
+	before_action :authenticate_user!, except: [:show]
 	before_action :correct_user_or_admin, 	 only: [:edit, :publish_update, :delete]
 
 	def index
@@ -67,8 +67,10 @@ class RecipesController < ApplicationController
 		# 	flash.alert = "Looks like there are similar ingredients, #{link_to('edit and combine', edit_recipe_path(@recipe))} these similar ingredients into one and delete the others"
 		# end
 
-		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
-		@cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: @cupboard_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
+		if current_user
+			@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
+			@cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: @cupboard_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
+		end
 
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
@@ -255,15 +257,6 @@ class RecipesController < ApplicationController
 	private
 		def recipe_params
 			params.require(:recipe).permit(:user_id, :search, :live, :public, :cuisine, :search_ingredients, :title, :description, :prep_time, :cook_time, :yield, :note, portions_attributes:[:amount, :unit_id, :ingredient_id, :recipe_id, :_destroy])
-		end
-
-		# Confirms a logged-in user.
-		def logged_in_user
-			unless logged_in?
-				store_location
-				flash[:danger] = "Please log in."
-				redirect_to root_url
-			end
 		end
 
 		# Confirms an correct user.

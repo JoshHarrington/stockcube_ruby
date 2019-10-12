@@ -31,12 +31,12 @@ class SessionsController < ApplicationController
   end
 
   def demo_logout
-    log_out if logged_in?
-    redirect_to signup_path
+    log_out if user_signed_in?
+    redirect_to new_user_registration_path
   end
 
   def destroy
-    log_out if logged_in?
+    log_out if user_signed_in?
     redirect_to root_url
   end
 

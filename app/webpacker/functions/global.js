@@ -13,6 +13,23 @@ const globalFn = () => {
 			})
 		})
 	}
+	catchDataConfirmAttrs()
 }
+
+const catchDataConfirmAttrs = () => {
+	const ConfirmActions = document.querySelectorAll('*[data-confirm]')
+	if (ConfirmActions.length > 0) {
+		ConfirmActions.forEach((action) => {
+			const actionMessage = action.getAttribute('data-confirm')
+			action.addEventListener('click', (e) => {
+				const confirmResult = confirm(actionMessage);
+				if (!confirmResult) {
+					e.preventDefault()
+				}
+			})
+		})
+	}
+}
+
 
 ready(globalFn)

@@ -1,9 +1,10 @@
 class CupboardsController < ApplicationController
+	before_action :authenticate_user!
 	require 'set'
 	include StockHelper
 	include ShoppingListsHelper
 	include CupboardHelper
-	before_action :logged_in_user, only: [:index, :show, :new, :create, :edit_all, :share, :share_request, :accept_cupboard_invite, :autosave, :autosave_sorting, :edit, :update]
+
 	before_action :correct_user,   only: [:show, :edit, :update]
 	def index
 		@cupboards = current_user.cupboard_users.where(accepted: true).select{|cu| cu.cupboard.setup == false && cu.cupboard.hidden == false }.map{|cu| cu.cupboard }.sort_by{|c| c.created_at}.reverse!
@@ -279,15 +280,6 @@ class CupboardsController < ApplicationController
 	private
 		def cupboard_params
 			params.require(:cupboard).permit(:location, :communal, stocks_attributes:[:id, :amount, :use_by_date, :_destroy])
-		end
-
-		# Confirms a logged-in user.
-		def logged_in_user
-			unless logged_in?
-				store_location
-				flash[:danger] = "Please log in."
-				redirect_to login_url
-			end
 		end
 
 		# Confirms the correct user.

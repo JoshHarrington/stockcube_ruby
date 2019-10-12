@@ -17,7 +17,7 @@
     <div class="content_rich--title_block">
       <div class="content_rich--title_row">
         <h1 class="recipe-title">
-        <% if current_user %>
+        <% if user_signed_in? %>
           <% current_user.favourites.include?(@recipe) ? fav_status = "unfavourite" : fav_status = "favourite" %>
           <%= link_to favourite_recipe_path(@recipe, type: fav_status), title: fav_status, class: "heart_stat_#{fav_status}", method: :put do %>
             <%= icomoon('heart') %>
@@ -25,9 +25,13 @@
               <%= @recipe.title %>
             </span>
           <% end %>
+        <% else %>
+          <span class="content_rich--title_text">
+            <%= @recipe.title %>
+          </span>
         <% end %>
         </h1>
-        <% if current_user && current_user.activated && ((@recipe[:user_id] && @recipe[:user_id] == current_user[:id]) || current_user.admin)  %>
+        <% if user_signed_in? && current_user.confirmed_at != nil && ((@recipe[:user_id] && @recipe[:user_id] == current_user[:id]) || current_user.admin)  %>
           <%= link_to edit_recipe_path(@recipe), class: "list_block--collection--action" do %>
             <span>Edit recipe</span>
             <%= icomoon('edit') %>
@@ -53,10 +57,10 @@
           <% if kosher?(@recipe) %><span class="recipe_info_tags--item">Kosher &check;</span><% end %>
         </div>
       <% end %>
-      <% if @recipe[:user_id] == current_user[:id] && @recipe.portions.length > 0 && @recipe.description.to_s != '' && @recipe.cook_time.to_s != '' %>
+      <% if user_signed_in? && @recipe[:user_id] == current_user[:id] && @recipe.portions.length > 0 && @recipe.description.to_s != '' && @recipe.cook_time.to_s != '' %>
         <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe is <%= @recipe.live ? "<strong>live</strong>".html_safe + (@recipe.public ? " and <strong>public</strong> ".html_safe : " and <strong>private</strong> to you ".html_safe)  + "on Stockcubes" : "in <strong>draft</strong> mode ".html_safe %> - <% if @recipe.live %> you can <% if @recipe.public %><%= link_to 'make the recipe <strong>private</strong>'.html_safe , publish_update_recipe_path(@recipe, type:"make_private") %> (then only you will be able to see and use it)<% else %><%= link_to 'make the recipe <strong>public</strong>'.html_safe , publish_update_recipe_path(@recipe, type: "make_public") %> (so all Stockcubes users can see and use it)<% end %>, and if you want to take it offline you can <%= link_to 'put it back to draft', publish_update_recipe_path(@recipe, type: 'make_draft') %><% else %><%= link_to 'publish it now', publish_update_recipe_path(@recipe, type: 'make_live') %><% end %>.</p>
 
-      <% elsif @recipe[:user_id] == current_user[:id] && (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '') %>
+      <% elsif user_signed_in? && @recipe[:user_id] == current_user[:id] && (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '') %>
         <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe is in draft mode, it can be made live when you've
           <% if @recipe.portions.length == 0 %>
             <%= link_to 'added some ingredients', portions_new_path(:recipe_id => params[:id]) %><!--
@@ -139,7 +143,7 @@
         <ul>
           <% @portions.each do |portion| %>
               <%
-                if @cupboard_stock_in_date_ingredient_ids.include?(portion.ingredient_id)
+                if user_signed_in? && @cupboard_stock_in_date_ingredient_ids.include?(portion.ingredient_id)
                   ingredient_in_stock = true
                 end
               %>

@@ -2,7 +2,7 @@ class StaticPagesController < ApplicationController
 	def home
 	end
 	def logo
-		unless current_user && logged_in? && current_user.admin
+		unless user_signed_in? && current_user.admin
 			redirect_to root_path
 		end
 	end

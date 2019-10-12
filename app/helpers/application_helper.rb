@@ -127,4 +127,8 @@ module ApplicationHelper
 			return 'shopping_list_open'
 		end
 	end
+
+	def logged_in?
+		user_signed_in?
+	end
 end

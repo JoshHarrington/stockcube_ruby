@@ -29,7 +29,7 @@ module TaskStockHelper
 	end
 
 	def update_recipe_stock_matches_all_users
-		User.where(activated: true).each do |user|
+		User.where.not(confirmed_at: nil).each do |user|
 			update_recipe_stock_matches_for_user(user[:id])
 		end
 	end

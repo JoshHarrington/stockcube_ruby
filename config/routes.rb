@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :users
   match '/404', :to => 'errors#not_found', :via => :all, as: :errors_not_found
   match '/500', :to => 'errors#internal_server_error', :via => :all, as: :errors_internal_server_error
   root 'static_pages#home'
@@ -67,21 +68,19 @@ Rails.application.routes.draw do
   patch '/ingredients/:id' => 'ingredients#update'
   post '/ingredients' => 'ingredients#create'
 
-  get  '/signup',  to: 'users#new', as: :users_new
-  post '/signup',  to: 'users#create'
-  get    '/login',   to: 'sessions#new'
-  post   '/login',   to: 'sessions#create'
-  delete '/logout',  to: 'sessions#destroy'
   delete '/demo_logout',   to: 'sessions#demo_logout'
 
   get '/quick_add_stock/new', to: 'user_fav_stocks#new'
   get '/quick_add_stock/:id/edit', to: 'user_fav_stocks#edit', as: :quick_add_stock_edit
 
-  get '/profile', to: 'users#show', as: :user_profile
-  get '/profile/edit', to: 'users#edit', as: :user_profile_edit
+  get '/profile', to: 'users#profile', as: :user_profile
   post '/users/notifications', to: 'users#notifications'
-  get '/google_login', to: redirect('/auth/google_oauth2')
-  get '/auth/google_oauth2/callback', to: 'users#google_auth'
+  get '/users', to: 'users#index', as: :user_list
+
+  devise_scope :user do get "/users/sign_out" => "devise/sessions#destroy" end
+
+  # get '/google_login', to: redirect('/auth/google_oauth2')
+  # get '/auth/google_oauth2/callback', to: 'users#google_auth'
 
   post '/feedback/submit' => 'feedback#submit'
 
@@ -93,7 +92,6 @@ Rails.application.routes.draw do
   post '/planner/recipe_update', to: 'planner#recipe_update_in_planner'
   post '/planner/recipe_delete', to: 'planner#delete_recipe_from_planner'
 
-  resources :users
   resources :user_fav_stocks
   resources :account_activations, only: [:edit]
   resources :password_resets,     only: [:new, :create, :edit, :update]

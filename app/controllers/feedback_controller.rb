@@ -1,6 +1,6 @@
 class FeedbackController < ApplicationController
 	def submit
-		if current_user && logged_in?
+		if user_signed_in?
 			user = {
 				user_id: current_user.id,
 				user_name: current_user.name,

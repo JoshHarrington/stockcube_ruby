@@ -1,4 +1,5 @@
 class PlannerController < ApplicationController
+	before_action :authenticate_user!
 	include PlannerShoppingListHelper
 	include ServingHelper
 	def index

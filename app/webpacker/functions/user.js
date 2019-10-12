@@ -1,4 +1,4 @@
-import { ajaxRequest, ready } from "./utils";
+import { ajaxRequest, ready, showAlert } from "./utils";
 
 const notificationsData = (notificationsWanted, notificationDay) => (
 	"notifications[" + notificationsWanted + "]&weekday[" + notificationDay + "]"
@@ -18,11 +18,13 @@ const notificationFunction = () => {
 		notificationsWanted = notificationsCheckbox.checked
 		notificationsUserPickRow.classList.toggle('faded_out')
 		ajaxRequest(notificationsData(notificationsWanted, notificationDay), "/users/notifications")
+		showAlert(`Notifications turned ${notificationsWanted ? 'on' : 'off'}`)
 	})
 
 	notificationDayPick.addEventListener('change', (event) => {
 		notificationDay = event.target.value
 		ajaxRequest(notificationsData(notificationsWanted, notificationDay), "/users/notifications")
+		showAlert('Notifications updated')
 	})
 
 

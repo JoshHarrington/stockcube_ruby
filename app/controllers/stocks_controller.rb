@@ -1,8 +1,9 @@
 class StocksController < ApplicationController
+
 	helper IntegerHelper
 	include StockHelper
 	include ShoppingListsHelper
-	before_action :logged_in_user, except: [:add_shopping_list_portion, :remove_shopping_list_portion]
+	before_action :authenticate_user!, except: [:add_shopping_list_portion, :remove_shopping_list_portion]
 	before_action :correct_user, only: [:edit]
 	def index
 		@stocks = Stock.all
@@ -231,14 +232,6 @@ class StocksController < ApplicationController
 			params.require(:stock).permit(:amount, :use_by_date, :unit_id, :ingredient_id, :cupboard_id)
 		end
 
-		# Confirms a logged-in user.
-		def logged_in_user
-			unless logged_in?
-				store_location
-				flash[:danger] = "Please log in."
-				redirect_to login_url
-			end
-		end
 
 		def correct_user
 			stock = Stock.find(params[:id])

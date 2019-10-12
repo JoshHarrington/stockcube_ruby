@@ -1,4 +1,5 @@
 class UserFavStocksController < ApplicationController
+	before_action :authenticate_user!
 	def new
 		@user_fav_stock = UserFavStock.new
 		@user = current_user
