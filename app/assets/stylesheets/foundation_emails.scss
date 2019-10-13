@@ -14,18 +14,19 @@ a#logo {
 	display: block;
 	text-align: center;
 	margin-bottom: -4px;
+	vertical-align: middle;
 	span {
 		font-size: 20px;
 		margin-left: 9px;
 		color: black;
-		top: -18px;
-		position: relative;
+		vertical-align: middle;
 	}
 }
 
 .stockcubes_logo {
 	width: 83px;
 	display: inline-block;
+	vertical-align: middle;
 }
 
 .main_content {
