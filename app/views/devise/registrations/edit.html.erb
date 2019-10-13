@@ -52,9 +52,10 @@
     <hr />
 
     <div class="pretty_form--actions">
-      <h3>Delete your account</h3>
+      <h3>Deleting your account</h3>
 
-      <p>Unhappy?</p>
+      <p>If you're unhappy with the Stockcubes system you're free to cancel your account at any point. This will delete all of your associated data (recipes, stock etc) from our servers.</p>
+      <p>Alternatively you can always <a href="mailto:feedback@getstockcubes.com">email the Stockcubes team</a> to let us know if you're having any problems, and we'll do our best to sort them out.</p>
       <br/>
       <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure? This will permanently delete your account and all associated data" }, class: "pretty_form--submit_button", method: :delete %>
     </div>
