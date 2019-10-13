@@ -9,6 +9,7 @@ class UsersController < ApplicationController
 	def profile
 		if current_user.user_setting == nil
 			UserSetting.create(user_id: current_user.id)
+			render :profile
 		end
 		@user = current_user
 		@users_recipes = @user.recipes
