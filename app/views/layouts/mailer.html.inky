@@ -17,7 +17,7 @@
               <row>
                 <columns class="logo_banner">
                   <%= link_to root_url, id: "logo" do %>
-                    <%= icomoon('logo', '0 0 38 20') %>
+                    <img src="<%= asset_pack_path('assets/images/small_logo.png') %>" alt="Stockcubes logo" class="stockcubes_logo">
                     <span>Stockcubes</span>
                   <% end %>
                 </columns>
@@ -30,6 +30,7 @@
               </row>
             </container>
           </center>
+          <spacer size="20" />
         </td>
       </tr>
     </table>
