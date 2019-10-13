@@ -1,6 +1,10 @@
+include UsersHelper
 class User < ApplicationRecord
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  after_commit :setup_user, on: :create
+
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :confirmable
 
@@ -27,4 +31,9 @@ class User < ApplicationRecord
   has_many :planner_shopping_list_portions, dependent: :delete_all
   has_many :combi_planner_shopping_list_portions, dependent: :delete_all
 
+  private
+
+    def setup_user
+      new_user(self)
+    end
 end
