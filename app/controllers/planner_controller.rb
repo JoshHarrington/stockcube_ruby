@@ -1,5 +1,5 @@
 class PlannerController < ApplicationController
-	before_action :authenticate_user!
+	before_action :authenticate_user!, except: [:list]
 	include PlannerShoppingListHelper
 	include ServingHelper
 	def index
