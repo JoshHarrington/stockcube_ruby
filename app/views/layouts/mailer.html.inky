@@ -17,7 +17,7 @@
               <row>
                 <columns class="logo_banner">
                   <%= link_to root_url, id: "logo" do %>
-                    <img src="<%= asset_pack_path('assets/images/small_logo.png') %>" alt="Stockcubes logo" class="stockcubes_logo" />
+                    <img src="<%= asset_pack_url('assets/images/small_logo.png') %>" alt="Stockcubes logo" class="stockcubes_logo" />
                     <span>Stockcubes</span>
                   <% end %>
                 </columns>
