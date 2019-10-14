@@ -115,7 +115,7 @@ const renderShoppingList = (shoppingList) => {
 		if (ShoppingList) {
 			hideShoppingList()
 		}
-		ListTopUl.innerHTML = '<p>Shopping List is currently empty, move some recipes to your planner to get items added to this list</p>'
+		ListTopUl.innerHTML = '<p>Shopping List is currently empty, move some recipes to <a href="/planner">your planner</a> to get items added to this list</p>'
 		setupViewWhiskShoppingListButton()
 		if (ShoppingListTitleNote !== null) {
 			ShoppingListTitleNote.style.display = 'none'
