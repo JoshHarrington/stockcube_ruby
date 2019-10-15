@@ -4,6 +4,7 @@
   if @recipe.title
     background_image_url = 'https://source.unsplash.com/1200x800/weekly?' + URI::encode(@recipe.title).to_s.downcase + ',food'
   end
+  user_note_when_lacking_content = 'Not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe
 %>
 
 <% provide(:title, "Recipe: #{@recipe.title}") %>
@@ -70,7 +71,7 @@
             <% end %>
           <% end %>
           <% if @recipe.description.to_s == '' %>
-            <%= link_to 'added a description', edit_recipe_path(@recipe, anchor: 'recipe_description_container') %>
+            <%= link_to 'added some steps', edit_recipe_path(@recipe, anchor: 'recipe_steps_wrapper') %>
             <% if @recipe.cook_time.to_s == '' %>
               and
             <% end %>
@@ -88,21 +89,25 @@
     <% end %>
     <% if current_user && current_user == @recipe.user %>
       <div class="content_rich--row">
-        <p class="recipe-serving">Yield: <%= (@recipe.yield.to_s == '' || !@recipe.yield) ? 'Not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe : (@recipe.yield.to_i.to_s +  ' Servings') %></p>
+        <p class="recipe-serving">Yield: <%= (@recipe.yield.to_s == '' || !@recipe.yield) ? user_note_when_lacking_content : (@recipe.yield.to_i.to_s +  ' Servings') %></p>
       </div>
       <div class="content_rich--row">
-        <p class="recipe-prep_time">Prep Time: <%= (@recipe.prep_time.to_s == '' || !@recipe.prep_time) ? 'Not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe : (@recipe.prep_time.to_i.to_s +  ' mins') %></p>
+        <p class="recipe-prep_time">Prep Time: <%= (@recipe.prep_time.to_s == '' || !@recipe.prep_time) ? user_note_when_lacking_content : (@recipe.prep_time.to_i.to_s +  ' mins') %></p>
       </div>
       <div class="content_rich--row">
-        <p class="recipe-cook_time">Cook Time: <%= (@recipe.cook_time.to_s == '' || !@recipe.cook_time) ? 'Not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe : (@recipe.cook_time.to_i.to_s +  ' mins') %></p>
+        <p class="recipe-cook_time">Cook Time: <%= (@recipe.cook_time.to_s == '' || !@recipe.cook_time) ? user_note_when_lacking_content : (@recipe.cook_time.to_i.to_s +  ' mins') %></p>
       </div>
       <div class="content_rich--row">
         <div class="recipe_description">
-          <h2>Method</h2>
-          <% if @recipe.description.to_s == '' %>
-            <p>Not yet set <span class="item_form--content_item_note">(Only you can see this)</span></p>
+          <h2>Steps</h2>
+          <% if @recipe.steps.length > 0 %>
+            <ol class="ol">
+              <% @recipe.steps.order(:number).each do |step| %>
+                <li><p><%= step.content %></p></li>
+              <% end %>
+            </ol>
           <% else %>
-            <%= simple_format(@recipe.description) %>
+            <p><%= user_note_when_lacking_content %></p>
           <% end %>
         </div>
       </div>
@@ -123,11 +128,19 @@
           <p class="recipe-cook_time">Cook Time: <%= @recipe.cook_time.to_i %> mins</p>
         </div>
       <% end %>
-      <% if @recipe.description.to_s != '' %>
+      <% if @recipe.steps.length > 0 %>
         <div class="content_rich--row">
           <div class="recipe_description">
-            <h2>Method</h2>
-            <%= simple_format(@recipe.description) %>
+            <h2>Steps</h2>
+            <% if @recipe.steps.length > 0 %>
+            <ol class="ol">
+              <% @recipe.steps.order(:number).each do |step| %>
+                <li><p><%= step.content %></p></li>
+              <% end %>
+            </ol>
+          <% else %>
+            <p><%= user_note_when_lacking_content %></p>
+          <% end %>
           </div>
         </div>
       <% end %>
@@ -147,7 +160,7 @@
                   ingredient_in_stock = true
                 end
               %>
-            <li <%= ingredient_in_stock ? 'class=in_stock' : '' %>><%= portion_amount_unit_and_ingredient(portion).html_safe %></li>
+            <li <%= ingredient_in_stock ? 'class="in_stock"' : '' %>><%= portion_amount_unit_and_ingredient(portion).html_safe %></li>
           <% end %>
         </ul>
       <% else %>

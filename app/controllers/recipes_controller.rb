@@ -96,8 +96,19 @@ class RecipesController < ApplicationController
   def create
 		@recipe = Recipe.new(recipe_params)
 		@units = Unit.all
-		@cuisines = Recipe.all.map{|r| r[:cuisine] if !(r[:cuisine].nil? || r[:cuisine].empty? )}.compact.uniq.compact.sort
 		if @recipe.save
+			if params.has_key?(:new_recipe_steps)
+				params[:new_recipe_steps].map do |content|
+					if content.to_s != ''
+						step = RecipeStep.create(
+							recipe_id: @recipe.id,
+							content: content,
+							number: @recipe.steps.length > 0 ? (@recipe.steps.where.not(number: nil).order(:number).last.number + 1) : 0
+						)
+					end
+				end
+			end
+
 			if params.has_key?(:redirect) && params[:redirect].to_s != ''
 				redirect_to portions_new_path(:recipe_id => @recipe.id)
 			else
@@ -152,6 +163,34 @@ class RecipesController < ApplicationController
 				unless portion.unit_id == values[:unit_id].to_f
 					portion.update_attributes(
 						unit_id: values[:unit_id]
+					)
+				end
+			end
+		end
+
+		if params[:recipe].has_key?(:steps)
+			params[:recipe][:steps].to_unsafe_h.map do |step_id, values|
+				if step_id != nil
+					step = RecipeStep.find_by(id: step_id.to_i, recipe_id: @recipe.id)
+				end
+				if values[:content].to_s == ''
+					step.destroy
+				elsif step.content != values[:content].to_s
+					step.update_attributes(
+						content: values[:content],
+						number: @recipe.steps.length > 0 ? (@recipe.steps.where.not(number: nil).order(:number).last.number + 1) : 0
+					)
+				end
+			end
+		end
+
+		if params.has_key?(:new_recipe_steps)
+			params[:new_recipe_steps].map do |content|
+				if content.to_s != ''
+					step = RecipeStep.create(
+						recipe_id: @recipe.id,
+						content: content,
+						number: @recipe.steps.length > 0 ? (@recipe.steps.where.not(number: nil).order(:number).last.number + 1) : 0
 					)
 				end
 			end
@@ -256,7 +295,7 @@ class RecipesController < ApplicationController
 
 	private
 		def recipe_params
-			params.require(:recipe).permit(:user_id, :search, :live, :public, :cuisine, :search_ingredients, :title, :description, :prep_time, :cook_time, :yield, :note, portions_attributes:[:amount, :unit_id, :ingredient_id, :recipe_id, :_destroy])
+			params.require(:recipe).permit(:user_id, :new_steps, :search, :live, :public, :cuisine, :search_ingredients, :title, :description, :prep_time, :cook_time, :yield, :note, portions_attributes:[:amount, :unit_id, :ingredient_id, :recipe_id, :_destroy], steps_attributes: [:content])
 		end
 
 		# Confirms an correct user.

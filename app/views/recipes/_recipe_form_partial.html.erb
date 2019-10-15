@@ -38,9 +38,27 @@
 			<p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%>Quick note: if you want to share recipes with the Stockcubes community they have to be your own (not ones you've taken from a cookbook or somewhere online). </p>
 		</div>
 
-		<div class="content_rich--row content_rich--row-full_width" id="recipe_description_container">
-			<h3>Description (Method)*:</h3>
-			<%= f.text_area :description, :value => (@recipe.description ? @recipe.description : ''), rows: 10, style: 'min-height: 300px;', :placeholder => "The steps to follow to make this meal"%>
+		<div class="content_rich--row content_rich--row-full_width" id="recipe_steps_wrapper">
+			<h3>Steps *:</h3>
+			<ol class="ol">
+				<% if @recipe.steps.length > 0 %>
+					<% @recipe.steps.order(:number).each do |step| %>
+						<li>
+							<%= f.text_area "[steps][#{step.id}][content]", :value => step.content, rows: 2, style: 'min-height: 70px;min-width:100%', :placeholder => "The next step to make this meal"%>
+						</li>
+					<% end %>
+				<% else %>
+					<li>
+						<textarea name="new_recipe_steps[]" value="" rows="2" style="min-height: 70px;min-width:100%" placeholder="The next step to make this meal"></textarea>
+					</li>
+				<% end %>
+				<div class="devise_links">
+					<button class="add_next_step" type="button">Add new step</button>
+					<% if @recipe.steps.length > 1 %>
+						<button class="delete_last_step" type="button" data-confirm="This is not a drill! Just double-checking you want to delete that recipe step?">Delete the last step</button>
+					<% end %>
+				</div>
+			</ol>
 		</div>
 		<div class="content_rich--row">
 			<h3>Notes (extra info):</h3>

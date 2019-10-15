@@ -2,7 +2,8 @@ class Recipe < ApplicationRecord
   has_many :portions, dependent: :delete_all
   has_many :ingredients, through: :portions
   has_many :planner_recipes, dependent: :delete_all
-  has_many :recipe_steps, dependent: :delete_all
+  has_many :steps, class_name: "RecipeStep", dependent: :delete_all
+  accepts_nested_attributes_for :steps
   has_many :recipe_authors, dependent: :delete_all
   has_many :authors, through: :recipe_authors
 

@@ -99,3 +99,16 @@ sub {
 strong {
 	font-weight: 700;
 }
+
+.ol {
+	list-style: decimal;
+	font-size: em(16, 10);
+	padding-left: em(16, 16);
+	p, textarea {
+		font-size: inherit;
+	}
+	textarea {
+		vertical-align: top;
+		margin-bottom: em(16, 16);
+	}
+}

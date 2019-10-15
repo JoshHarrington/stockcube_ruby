@@ -915,11 +915,15 @@ select#day_pick + .selectize {
 	flex-wrap: wrap;
 	margin-left: em(-6, 10);
 	margin-right: em(-6, 10);
-	a {
+	margin-left: rem(-6);
+	margin-right: rem(-6);
+	a, button {
 		@extend .pretty_form--submit_button;
 		margin: em(6, 15);
+		margin: rem(6);
 	}
 	.pretty_form & input[type="submit"].pretty_form--submit_button {
 		margin: em(6, 15);
+		margin: rem(6);
 	}
 }
