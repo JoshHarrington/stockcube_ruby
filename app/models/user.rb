@@ -1,4 +1,5 @@
 include UsersHelper
+include StockHelper
 class User < ApplicationRecord
 
   # Include default devise modules. Others available are:
@@ -30,6 +31,10 @@ class User < ApplicationRecord
   has_many :planner_recipes, dependent: :delete_all
   has_many :planner_shopping_list_portions, dependent: :delete_all
   has_many :combi_planner_shopping_list_portions, dependent: :delete_all
+
+  def update_recipe_matches
+    update_recipe_stock_matches_core(nil, self.id, nil)
+  end
 
   private
 
