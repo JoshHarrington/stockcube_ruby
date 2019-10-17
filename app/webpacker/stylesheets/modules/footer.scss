@@ -16,6 +16,23 @@
 	.static_pages_controller.home_page & {
 		display: none;
 	}
+	form {
+		display: flex;
+		align-items: flex-start;
+		flex-direction: column;
+    justify-content: space-between;
+		padding: 2em;
+		width: 60em;
+	}
+	label, textarea {
+		margin-bottom: 1em;
+	}
+	textarea {
+		width: 100%;
+	}
+	button {
+		align-self: flex-end;
+	}
 }
 
 #footer-feedback-form {
