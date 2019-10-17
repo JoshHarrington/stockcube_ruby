@@ -25,10 +25,10 @@ module StockHelper
 			collected_recipes = Recipe.find(filtered_recipe_ids)
 		elsif filtered_ingredient_ids.length > 0
 			ingredient_names = Ingredient.find(filtered_ingredient_ids).map(&:name)
-			search_recipes = Recipe.search(ingredient_names, operator: "or", fields: ["ingredient_names^100"]).results.uniq
+			search_recipes = Recipe.where(live: true, public: true).or(Recipe.where(user_id: user_id)).search(ingredient_names, operator: "or", fields: ["ingredient_names^100"]).results.uniq
 		end
 		if filtered_recipe_ids.length == 0 && filtered_ingredient_ids.length == 0
-			collected_recipes = Recipe.all.uniq.reject{|r| !r.portions || r.portions.length == 0}
+			collected_recipes = Recipe.where(live: true, public: true).or(Recipe.where(user_id: user_id)).uniq.reject{|r| !r.portions || r.portions.length == 0}
 		end
 
 		all_recipes = collected_recipes + search_recipes
