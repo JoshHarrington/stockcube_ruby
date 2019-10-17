@@ -14,7 +14,9 @@
 				<% @recipes.each do |r| %>
 						<%
 							recipe = r
-							user_recipe_stock_match = UserRecipeStockMatch.where(user_id: current_user.id, recipe_id: recipe.id).first
+							user_recipe_stock_matches = UserRecipeStockMatch.where(user_id: current_user.id, recipe_id: recipe.id)
+							next if user_recipe_stock_matches.length == 0
+							user_recipe_stock_match = user_recipe_stock_matches.first
 							ingredient_stock_match_decimal = user_recipe_stock_match ? user_recipe_stock_match[:ingredient_stock_match_decimal] : nil
 							num_stock_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_stock_ingredients] : nil
 							num_needed_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_needed_ingredients] : nil
@@ -33,7 +35,9 @@
 					<% @fav_recipes.each do |fr| %>
 						<%
 							recipe = fr
-							user_recipe_stock_match = UserRecipeStockMatch.where(user_id: current_user.id, recipe_id: recipe.id).first
+							user_recipe_stock_matches = UserRecipeStockMatch.where(user_id: current_user[:id], recipe_id: recipe[:id])
+							next if user_recipe_stock_matches.length == 0
+							user_recipe_stock_match = user_recipe_stock_matches.first
 							ingredient_stock_match_decimal = user_recipe_stock_match ? user_recipe_stock_match[:ingredient_stock_match_decimal] : nil
 							num_stock_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_stock_ingredients] : nil
 							num_needed_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_needed_ingredients] : nil
@@ -78,7 +82,9 @@
 					<% PlannerRecipe.where(date: date, user_id: current_user.id).each do |p_recipe| %>
 						<%
 							recipe = p_recipe.recipe
-							user_recipe_stock_match = UserRecipeStockMatch.where(user_id: current_user.id, recipe_id: recipe.id).first
+							user_recipe_stock_matches = UserRecipeStockMatch.where(user_id: current_user[:id], recipe_id: recipe[:id])
+							next if user_recipe_stock_matches.length == 0
+							user_recipe_stock_match = user_recipe_stock_matches.first
 							ingredient_stock_match_decimal = user_recipe_stock_match ? user_recipe_stock_match[:ingredient_stock_match_decimal] : nil
 							num_stock_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_stock_ingredients] : nil
 							num_needed_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_needed_ingredients] : nil
