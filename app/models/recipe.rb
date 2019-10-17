@@ -33,9 +33,6 @@ class Recipe < ApplicationRecord
 
   searchkick
 
-  def should_index?
-    live
-  end
 
   def search_data
     {
