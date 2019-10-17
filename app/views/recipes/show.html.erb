@@ -70,7 +70,7 @@
               and
             <% end %>
           <% end %>
-          <% if @recipe.description.to_s == '' %>
+          <% if @recipe.steps.length == 0 %>
             <%= link_to 'added some steps', edit_recipe_path(@recipe, anchor: 'recipe_steps_wrapper') %>
             <% if @recipe.cook_time.to_s == '' %>
               and
