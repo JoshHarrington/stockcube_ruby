@@ -67,7 +67,7 @@
 		<div class="content_rich--row content_rich--row-with_children">
 			<div class="content_rich--row--half">
 				<h3>Cuisine type:</h3>
-				<%= f.select :cuisine, options_for_select(@cuisines, (@recipe_cuisine ? @recipe_cuisine : '')), {include_blank: 'Select a cuisine'}, {class: "pretty_form--row--pretty_select"} %>
+				<%= f.select :cuisine, options_for_select(@cuisines, (@recipe_cuisine ? @recipe_cuisine : '')), {}, {class: "choices--basis pretty_form--row--pretty_select"} %>
 			</div>
 			<div class="content_rich--row--half">
 				<h3>Yield (Servings):</h3>
@@ -94,8 +94,10 @@
 							<p><%= portion.ingredient.name %></p>
 							<br />
 							<% portion_unit = portion.unit %>
-							<%= number_field_tag "recipe[portions][#{portion.id}][amount]", round_if_whole(portion.amount), aria: {label: (portion.amount != nil && portion.amount.to_s != '' ? "Portion amount for this ingredient is " + ( portion_unit ? " " + pluralize(portion.amount, portion_unit.name) : portion.amount ) : "Portion amount for this ingredient is not set" )} %>
-							<%= select_tag "recipe[portions][#{portion.id}][unit_id]", options_from_collection_for_select(@units, "id", "name", portion.unit_id),  {class: "pretty_form--row--pretty_select", id: portion.ingredient.id, aria: {label: "Choose the right units for the ingredient"}} %>
+							<div class="ingredient_row_amount_with_unit">
+								<%= number_field_tag "recipe[portions][#{portion.id}][amount]", round_if_whole(portion.amount), aria: {label: (portion.amount != nil && portion.amount.to_s != '' ? "Portion amount for this ingredient is " + ( portion_unit ? " " + pluralize(portion.amount, portion_unit.name) : portion.amount ) : "Portion amount for this ingredient is not set" )}, class: "item_form--content_row--half_width_input" %>
+								<%= select_tag "recipe[portions][#{portion.id}][unit_id]", options_from_collection_for_select(@units, "id", "name", portion.unit_id),  {class: "choices--basis pretty_form--row--pretty_select", id: portion.ingredient.id, aria: {label: "Choose the right units for the ingredient"}} %>
+							</div>
 							<br />
 							<%= check_box_tag "recipe[portion_delete_ids][]", portion.id, nil, {:id => portion.id} %>
 							<%= label_tag "recipe[portion_delete_ids][]", "Remove ingredient from recipe", {:for => portion.id, :title => "Delete this ingredient"} %>
