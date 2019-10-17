@@ -36,7 +36,7 @@ const makeUniqueId = (length) => {
   return result
 }
 
-const showAlert = (message) => {
+const showAlert = (message, hideTime = 8000) => {
 	let alertGroup
 	if (document.querySelector('.alert_group')) {
 		alertGroup = document.querySelector('.alert_group')
@@ -45,7 +45,9 @@ const showAlert = (message) => {
 		alertGroup = document.createElement('div')
 		alertGroup.classList.add('alert_group')
 		innerWrap.prepend(alertGroup)
-	}
+  }
+  const otherAlerts = document.querySelectorAll('.alert_wrapper')
+
 	const alertWrapper = document.createElement('div')
 	alertWrapper.classList.add('alert_wrapper', 'alert_hide')
 	alertGroup.appendChild(alertWrapper)
@@ -55,18 +57,38 @@ const showAlert = (message) => {
 	alertWrapper.appendChild(alertNotice)
 	setTimeout(() => {
 		alertWrapper.classList.remove('alert_hide')
-	}, 50)
+  }, 15)
+
+  if (otherAlerts.length > 0) {
+    setTimeout(() => {
+      otherAlerts.forEach(el => {
+        el.classList.add('alert_hide')
+      })
+    }, 600)
+  }
+
 
 	setTimeout(() => {
 		alertWrapper.classList.add('alert_hide')
-	}, 8000)
+	}, hideTime)
 
 }
+
+
+const qs = s => document.createDocumentFragment().querySelector(s)
+
+const isSelectorValid = selector => {
+  try { qs(selector) }
+  catch (e) { return false }
+  return true
+}
+
 
 
 export {
   ready,
   ajaxRequest,
   makeUniqueId,
-  showAlert
+  showAlert,
+  isSelectorValid
 }
