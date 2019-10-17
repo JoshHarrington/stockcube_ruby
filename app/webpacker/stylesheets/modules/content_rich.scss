@@ -240,12 +240,12 @@ form.content_rich--wrapper {
 		border: 1px solid $black-30;
 	}
 	[type="text"], [type="number"] {
-		font-size: em(20, 10);
-    min-height: em(36, 20);
-    min-width: em(140, 20);
-    padding-left: em(8, 20);
-    margin-right: em(7, 20);
-    margin-bottom: em(7, 20);
+		font-size: em(15, 10);
+    min-height: em(36, 15);
+    min-width: em(140, 15);
+    padding-left: em(8, 15);
+    margin-right: em(7, 15);
+    margin-bottom: em(7, 15);
 	}
 	h2 {
 		margin-bottom: em(13, 18);
