@@ -16,11 +16,11 @@ class RecipesController < ApplicationController
 		### setup session record with recipe ingredient cupboard match
 		###  - should also update on stock changes
 
-		@fallback_recipes_unformatted = current_user.user_recipe_stock_matches.order(ingredient_stock_match_decimal: :desc).map{|user_recipe_stock_match| user_recipe_stock_match.recipe if user_recipe_stock_match.recipe && user_recipe_stock_match.recipe.portions.length != 0 && (user_recipe_stock_match.recipe[:public] || user_recipe_stock_match.recipe[:user_id] == current_user[:id]) }.compact
+		@fallback_recipes_unformatted = current_user.user_recipe_stock_matches.order(ingredient_stock_match_decimal: :desc).map{|user_recipe_stock_match| user_recipe_stock_match.recipe if user_recipe_stock_match.recipe && user_recipe_stock_match.recipe.portions.length != 0 && ((user_recipe_stock_match.recipe[:public] && user_recipe_stock_match.recipe[:live]) || user_recipe_stock_match.recipe[:user_id] == current_user[:id]) }.compact
 		@fallback_recipes = @fallback_recipes_unformatted.paginate(:page => params[:page], :per_page => 12)
 
-		if params.has_key?(:search) && params[:search].to_s != ''
-			@recipes = Recipe.search(params[:search], operator: 'or', fields: ["ingredient_names^12", "title^4", "cuisine^3", "description^1"]).results.uniq.paginate(:page => params[:page], :per_page => 12)
+		if params.has_key?(:search) && params[:search].to_s != '' && user_signed_in?
+			@recipes = Recipe.where(live: true, public: true).or(Recipe.where(user_id: current_user[:id])).search(params[:search], operator: 'or', fields: ["ingredient_names^12", "title^4", "cuisine^3", "description^1"]).results.uniq.paginate(:page => params[:page], :per_page => 12)
 
 			@ingredient_results = Ingredient.search(params[:search],  operator: 'or').results
 
@@ -68,9 +68,15 @@ class RecipesController < ApplicationController
 		# end
 
 		if current_user
+			if (@recipe.live != true || @recipe.public != true) && current_user != @recipe.user
+				redirect_to root_path
+			end
 			@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
 			@cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: @cupboard_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
+		elsif @recipe.live != true || @recipe.public != true
+			redirect_to root_path
 		end
+
 
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
@@ -91,7 +97,7 @@ class RecipesController < ApplicationController
 	def new
 		@recipe = Recipe.new
 		@units = Unit.all
-		@cuisines = Recipe.all.map{|r| r[:cuisine] if !(r[:cuisine].nil? || r[:cuisine].empty? )}.compact.uniq.compact.sort
+		@cuisines = ["American", "British", "Caribbean", "Chinese", "French", "Greek", "Indian", "Italian", "Japanese", "Mediterranean", "Mexican", "Moroccan", "Spanish", "Thai", "Turkish", "Vietnamese"]
   end
   def create
 		@recipe = Recipe.new(recipe_params)
@@ -125,9 +131,9 @@ class RecipesController < ApplicationController
 	def edit
 		@recipe = Recipe.find(params[:id])
 		@portions = @recipe.portions.order("created_at ASC")
-		@units = Unit.all
+		@units = Unit.all.uniq{|u| u.name.downcase}
 		@recipe_cuisine = @recipe.cuisine.to_s != '' ? @recipe.cuisine : nil
-		@cuisines = Recipe.all.map{|r| r[:cuisine] if !(r[:cuisine].nil? || r[:cuisine].empty? )}.compact.uniq.compact.sort
+		@cuisines = ["American", "British", "Caribbean", "Chinese", "French", "Greek", "Indian", "Italian", "Japanese", "Mediterranean", "Mexican", "Moroccan", "Spanish", "Thai", "Turkish", "Vietnamese"]
 
 		similar_portions_count = 0
 		@portions.each do |portion|
