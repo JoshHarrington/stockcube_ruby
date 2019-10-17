@@ -36,6 +36,10 @@ class User < ApplicationRecord
     update_recipe_stock_matches_core(nil, self.id, nil)
   end
 
+  def feedback_email(user, issue_details, current_path)
+    UserMailer.admin_feedback_notification(user, issue_details, current_path).deliver_now
+  end
+
   private
 
     def setup_user
