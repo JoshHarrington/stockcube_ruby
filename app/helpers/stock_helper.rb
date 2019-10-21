@@ -181,7 +181,7 @@ module StockHelper
 					recipe_stock.update_attributes(
 						amount: portion.amount,
 						planner_recipe_id: portion.planner_recipe_id,
-						use_by_date: Date.current + 2.weeks,
+						use_by_date: portion.date,
 						cupboard_id: cupboard_id,
 						always_available: false
 					)
@@ -191,7 +191,7 @@ module StockHelper
 						amount: portion.amount,
 						planner_recipe_id: portion.planner_recipe_id,
 						unit_id: portion.unit_id,
-						use_by_date: Date.current + 2.weeks,
+						use_by_date: portion.date,
 						cupboard_id: cupboard_id,
 						always_available: false,
 						planner_shopping_list_portion_id: portion.id
@@ -218,7 +218,7 @@ module StockHelper
 							if wrapper_stock != nil && wrapper_stock_diff[:amount] > 0
 								wrapper_stock.update_attributes(
 									amount: wrapper_stock_diff[:amount],
-									use_by_date: Date.current + 2.weeks,
+									use_by_date: portion.date,
 									cupboard_id: cupboard_id,
 									always_available: false
 								)
@@ -227,7 +227,7 @@ module StockHelper
 									ingredient_id: portion.ingredient_id,
 									amount: wrapper_stock_diff[:amount],
 									unit_id: wrapper_stock_diff[:unit_id],
-									use_by_date: Date.current + 2.weeks,
+									use_by_date: portion.date,
 									cupboard_id: cupboard_id,
 									always_available: false,
 									planner_portion_wrapper_id: portion.planner_portion_wrapper_id
