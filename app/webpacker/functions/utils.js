@@ -7,7 +7,7 @@ const ready = (fn) => {
 }
 
 
-const ajaxRequest = (data, path, loop = 0) => {
+const ajaxRequest = (data, path, loop = 0, type = 'application/x-www-form-urlencoded; charset=UTF-8') => {
 	const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
   const request = new XMLHttpRequest()
 
@@ -16,7 +16,7 @@ const ajaxRequest = (data, path, loop = 0) => {
   request.onerror = function() {
     console.log('there was an error with the request')
   };
-  request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+  request.setRequestHeader('Content-Type', type)
   request.onload = function () {
     if (this.status === 500 && loop < 4) {
       setTimeout(() => ajaxRequest(data, path, loop + 1), 600)
