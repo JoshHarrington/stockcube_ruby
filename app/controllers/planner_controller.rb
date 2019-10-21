@@ -2,6 +2,7 @@ class PlannerController < ApplicationController
 	before_action :authenticate_user!, except: [:list]
 	include PlannerShoppingListHelper
 	include ServingHelper
+	include UnitsHelper
 	def index
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
@@ -171,7 +172,7 @@ class PlannerController < ApplicationController
 						"num_assoc_recipes": num_assoc_recipes
 					}
 				end
-				shopping_list_output = [{"stats": {"checked_portions": checked_portions, "total_portions": shopping_list_portions.length}}, {"portions": formatted_shopping_list_portions }, {"gen_id": shopping_list.gen_id }]
+				shopping_list_output = [{"stats": {"checked_portions": checked_portions, "total_portions": shopping_list_portions.length}}, {"portions": formatted_shopping_list_portions }, {"gen_id": shopping_list.gen_id }, {"unit_list": unit_list()}]
 			else
 				shopping_list_output = []
 			end

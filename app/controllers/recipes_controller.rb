@@ -3,6 +3,7 @@ class RecipesController < ApplicationController
 	include ActionView::Helpers::UrlHelper
 	include ShoppingListsHelper
 	include StockHelper
+	include UnitsHelper
 
 	require 'will_paginate/array'
 
@@ -96,12 +97,12 @@ class RecipesController < ApplicationController
 	end
 	def new
 		@recipe = Recipe.new
-		@units = Unit.all
+		@units = unit_list()
 		@cuisines = ["American", "British", "Caribbean", "Chinese", "French", "Greek", "Indian", "Italian", "Japanese", "Mediterranean", "Mexican", "Moroccan", "Spanish", "Thai", "Turkish", "Vietnamese"]
   end
   def create
 		@recipe = Recipe.new(recipe_params)
-		@units = Unit.all
+		@units = unit_list()
 		if @recipe.save
 			if params.has_key?(:new_recipe_steps)
 				params[:new_recipe_steps].map do |content|
@@ -131,7 +132,7 @@ class RecipesController < ApplicationController
 	def edit
 		@recipe = Recipe.find(params[:id])
 		@portions = @recipe.portions.order("created_at ASC")
-		@units = Unit.all.uniq{|u| u.name.downcase}
+		@units = unit_list()
 		@recipe_cuisine = @recipe.cuisine.to_s != '' ? @recipe.cuisine : nil
 		@cuisines = ["American", "British", "Caribbean", "Chinese", "French", "Greek", "Indian", "Italian", "Japanese", "Mediterranean", "Mexican", "Moroccan", "Spanish", "Thai", "Turkish", "Vietnamese"]
 
@@ -148,7 +149,7 @@ class RecipesController < ApplicationController
 	def update
 		@recipe = Recipe.find(params[:id])
 		@portions = @recipe.portions
-		@units = Unit.all
+		@units = unit_list()
 
 		@delete_portion_check_ids = params[:recipe][:portion_delete_ids]
 

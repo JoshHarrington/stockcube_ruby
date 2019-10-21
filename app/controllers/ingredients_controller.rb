@@ -2,6 +2,8 @@ class IngredientsController < ApplicationController
 	before_action :authenticate_user!
 	before_action :admin_user
 
+	include UnitsHelper
+
 	def index
 		@ingredients = Ingredient.all
 	end
@@ -13,11 +15,11 @@ class IngredientsController < ApplicationController
 	end
 	def new
     @ingredient = Ingredient.new
-		@units = Unit.all.reject{|u| u.name == nil }
+		@units = unit_list()
   end
   def create
 		@ingredient = Ingredient.new(ingredient_params)
-		@units = Unit.all.reject{|u| u.name == nil }
+		@units = unit_list()
     if @ingredient.save
 			redirect_to ingredients_path
 			Ingredient.reindex
@@ -28,11 +30,11 @@ class IngredientsController < ApplicationController
 	def edit
 		@ingredient = Ingredient.find(params[:id])
 		@portions = @ingredient.portions
-		@units = Unit.all.reject{|u| u.name == nil }
+		@units = unit_list()
 	end
 	def update
 		@ingredient = Ingredient.find(params[:id])
-		@units = Unit.all.reject{|u| u.name == nil }
+		@units = unit_list()
 
 		@portions = @ingredient.portions
 		if @ingredient.update(ingredient_params)
