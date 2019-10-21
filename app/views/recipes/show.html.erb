@@ -160,7 +160,7 @@
                   ingredient_in_stock = true
                 end
               %>
-            <li <%= ingredient_in_stock ? 'class="in_stock"' : '' %>><%= portion_amount_unit_and_ingredient(portion).html_safe %></li>
+            <li <%= ingredient_in_stock ? 'class="in_stock"' : '' %>><%= standard_serving_description(portion) %></li>
           <% end %>
         </ul>
       <% else %>
