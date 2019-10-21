@@ -16,49 +16,6 @@ const plannerRecipeUpdateData = (e) => (
 	"recipe_id=" + e.item.id + "&old_date=" + e.item.dataset.parentId + "&new_date=" + e.item.parentNode.id
 )
 
-
-const showWhiskList = () => {
-	whisk.queue.push(function() {
-		whisk.shoppingList.viewList({
-			styles: {
-				type: 'modal',
-			},
-		});
-	});
-}
-
-const addToWhiskList = (whiskListPortions) => {
-	whisk.queue.push(function() {
-		whisk.shoppingList.addProductsToList({
-			products: whiskListPortions
-		})
-	});
-	ajaxRequest('Add Shopping list', '/stocks/add_shopping_list')
-	setTimeout(() => checkForUpdates(function(shoppingList) {
-		renderShoppingList(shoppingList)
-		showAlert(`Shopping List items added to your <a href="/cupboards">cupboards</a>`)
-	}), 2000)
-}
-
-const setupAddToWhiskShoppingListButton = (whiskListPortions) => {
-	if (document.querySelector('#whisk-add-products')) {
-		document.querySelector('#whisk-add-products').addEventListener('click', () => addToWhiskList(whiskListPortions))
-	}
-	if (document.querySelector('#view-whisk-list')) {
-		document.querySelector('#view-whisk-list').removeEventListener('click', showWhiskList)
-	}
-}
-
-const setupViewWhiskShoppingListButton = () => {
-	if (document.querySelector('#view-whisk-list')) {
-		document.querySelector('#view-whisk-list').addEventListener('click', showWhiskList)
-	}
-	if (document.querySelector('#whisk-add-products')) {
-		document.querySelector('#whisk-add-products').removeEventListener('click', addToWhiskList)
-	}
-}
-
-
 function checkForUpdates(onSuccess) {
 	let data = {}
 	if (window.location.pathname.includes('/list/')){
@@ -106,18 +63,14 @@ const renderShoppingList = (shoppingList) => {
 	let ShoppingListTitleNote = ShoppingListTitleBlock.querySelector('p.item_form--content_item_note')
 	let ShoppingListTitleFullscreenBtn = ShoppingListTitleBlock.querySelector('a.planner_shopping_list--fullscreen_btn')
 
-
 	const OldShoppingListContent = ShoppingListInner.querySelector('ul')
-	const shopOnlineBlock = document.querySelector('.shop_online_block')
 
 	if (shoppingList.length === 0 ){
 		ShoppingListTitle.innerText = 'Shopping List'
-		shopOnlineBlock.innerHTML = `<button id="view-whisk-list" class="list_block--collection--action">Open online shopping list</button>`
 		if (ShoppingList) {
 			hideShoppingList()
 		}
 		ListTopUl.innerHTML = '<p>Shopping List is currently empty, move some recipes to <a href="/planner">your planner</a> to get items added to this list</p>'
-		setupViewWhiskShoppingListButton()
 		if (ShoppingListTitleNote !== null) {
 			ShoppingListTitleNote.style.display = 'none'
 		}
@@ -127,7 +80,6 @@ const renderShoppingList = (shoppingList) => {
 	} else {
 		const GenId = shoppingList[2]["gen_id"]
 		const UnitList = shoppingList[3]["unit_list"]
-		const whiskShoppingListPortions = []
 		const ShoppingListTitleContent = 'Shopping List (' + shoppingList[0]["stats"]["checked_portions"] + '/' + shoppingList[0]["stats"]["total_portions"] + ')'
 		ShoppingListTitle.innerText = ShoppingListTitleContent
 
@@ -194,10 +146,7 @@ const renderShoppingList = (shoppingList) => {
 
 			RecipePortionLi.innerHTML = RecipePortionLiTag + RecipePortionLiP + RecipePortionLiSizeRow + RecipePortionLiDateRow
 
-
 			ListTopUl.appendChild(RecipePortionLi)
-
-			whiskShoppingListPortions.push(portion["portion_description"])
 
 		})
 
@@ -209,8 +158,6 @@ const renderShoppingList = (shoppingList) => {
 			}
 		}
 
-		shopOnlineBlock.innerHTML = `<button id="whisk-add-products" class="list_block--collection--action">Add to online shopping list</button>`
-		setupAddToWhiskShoppingListButton(whiskShoppingListPortions)
 	}
 	OldShoppingListContent.remove()
 	ShoppingListInner.appendChild(ListTopUl)
@@ -509,7 +456,10 @@ const plannerFn = () => {
 		checkForUpdates(function(shoppingList) {
 			renderShoppingList(shoppingList)
 		})
-		setupViewWhiskShoppingListButton()
+	}
+
+	if (document.body.classList.contains('planner_controller') && document.body.classList.contains('list_page')) {
+
 	}
 
 }
