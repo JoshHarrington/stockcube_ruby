@@ -124,6 +124,10 @@ class PlannerController < ApplicationController
 		)
 	end
 
+	def update_portion
+		update_portion_details(params)
+	end
+
 	def get_shopping_list_content
 		if (current_user && current_user.planner_shopping_list.ready == true) || (params.has_key?(:gen_id) && PlannerShoppingList.find_by(gen_id: params[:gen_id]).present? && PlannerShoppingList.find_by(gen_id: params[:gen_id]).ready == true)
 
@@ -165,11 +169,14 @@ class PlannerController < ApplicationController
 						"portion_note": portion_note,
 						"shopping_list_portion_id": planner_portion_id_hash.encode(p.id),
 						"portion_description": standard_serving_description(p),
-						"max_date": (Date.current + 2.weeks).strftime("%Y-%m-%d"),
-						"min_date": Date.current.strftime("%Y-%m-%d"),
 						"recipe_title": p.has_attribute?(:planner_recipe_id) && p.planner_recipe.recipe.present? ? p.planner_recipe.recipe.title.to_s : recipe_title.to_s,
 						"checked": p.checked.to_s,
-						"num_assoc_recipes": num_assoc_recipes
+						"num_assoc_recipes": num_assoc_recipes,
+						"ingredient_name": p.ingredient.name,
+						"portion_amount": round_if_whole(p.amount),
+						"portion_unit": p.unit_id,
+						"portion_date": p.date.strftime("%Y-%m-%d"),
+						"min_date": (Date.current - 2.days).strftime("%Y-%m-%d"),
 					}
 				end
 				shopping_list_output = [{"stats": {"checked_portions": checked_portions, "total_portions": shopping_list_portions.length}}, {"portions": formatted_shopping_list_portions }, {"gen_id": shopping_list.gen_id }, {"unit_list": unit_list()}]

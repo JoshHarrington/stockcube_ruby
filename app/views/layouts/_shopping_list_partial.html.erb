@@ -20,7 +20,7 @@
 			<%= link_to (current_user ? planner_path : root_path), title: "Close shopping list share page", class: "planner_shopping_list--fullscreen_btn" do %>
 				<%= icomoon('fullscreen_exit') %>
 			<% end %>
-			<% page_link = "https://getstockcubes.com/list/" + params[:gen_id].to_s %>
+			<% page_link = root_url + params[:gen_id].to_s %>
 			<div class="planner_shopping_list--sharing_info">
 				<input type="text" readonly value="<%= page_link %>">
 				<p class="h6 item_form--content_item_note"><%= icomoon('information-outline')%> This is your sharing link, anyone who has access can tick off your shopping list items</p>
@@ -36,28 +36,36 @@
 					if portion.class.name == 'PlannerPortionWrapper'
 						if portion.combi_planner_shopping_list_portion != nil
 							num_assoc_recipes = portion.combi_planner_shopping_list_portion.planner_shopping_list_portions.length
-							portion_title = 'Combi portion (' + num_assoc_recipes.to_s + 'recipes)'
+							portion_tag = 'Combi portion (' + num_assoc_recipes.to_s + 'recipes)'
 						else
-							portion_title = 'Recipe portion - ' + portion.planner_shopping_list_portion.planner_recipe.recipe.title
+							portion_tag = 'Recipe portion - ' + portion.planner_shopping_list_portion.planner_recipe.recipe.title
 						end
 					elsif portion.class.name == "CombiPlannerShoppingListPortion"
 						num_assoc_recipes = portion.planner_shopping_list_portions.length
-						portion_title = 'Combi portion (' + num_assoc_recipes.to_s + 'recipes)'
+						portion_tag = 'Combi portion (' + num_assoc_recipes.to_s + 'recipes)'
 					elsif portion.class.name == "PlannerShoppingListPortion"
-						portion_title = 'Recipe portion - ' + portion.planner_recipe.recipe.title
+						portion_tag = 'Recipe portion - ' + portion.planner_recipe.recipe.title
 					else
-						portion_title = 'Recipe portion'
+						portion_tag = 'Recipe portion'
 					end
 
 				 %>
 				<li id="<%= planner_portion_id_hash.encode(portion.id) %>" class="shopping_list_portion <%= portion.class.name == "CombiPlannerShoppingListPortion" ? 'combi_portion' : 'individual_portion' %> <%= portion.checked ? 'portion_checked' : '' %>">
-					<h6 class="mb-2"><%= portion_title %></h6>
-					<p>
-						<label>
-							<%= check_box_tag "planner_shopping_list_portions_add[#{planner_portion_id_hash.encode(portion.id)}]", "planner_shopping_list_portions_add", false, class: "" %>
-							<%= standard_serving_description(portion) %>
-						</label>
+					<h6 class="mb-3 portion_recipe_tag"><%= portion_tag %></h6>
+					<p class="h3 portion_ingredient_name">
+						<%= check_box_tag "planner_shopping_list_portions_add[#{planner_portion_id_hash.encode(portion.id)}]", "planner_shopping_list_portions_add", portion.checked, class: "fancy_checkbox" %>
+						<%= label_tag "planner_shopping_list_portions_add[#{planner_portion_id_hash.encode(portion.id)}]", class: "fancy_checkbox_label" do %>
+							<%= portion.ingredient.name %>
+						<% end %>
 					</p>
+					<div class="shopping_list_portion-size_row">
+						<%= number_field_tag "planner_shopping_list_portions_amount[#{planner_portion_id_hash.encode(portion.id)}]", round_if_whole(portion.amount), min: round_if_whole(portion.amount) %>
+						<%= select_tag  "planner_shopping_list_portions_unit[#{planner_portion_id_hash.encode(portion.id)}]", options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }, selected: portion.unit_id),  {class: "choices--basis pretty_form--row--pretty_select", id: portion.ingredient.id, aria: {label: "Choose the right units for the ingredient"}} %>
+					</div>
+					<div class="shopping_list_portion-date_row">
+						<p class="shopping_list_portion-date_row-tag h6">Use by date:</p>
+						<%= date_field_tag "planner_shopping_list_portions_date[#{planner_portion_id_hash.encode(portion.id)}]", Date.current + 14.days, min: Date.current - 2.days, placeholder: (Date.current + 14.days).strftime("%d/%m/%Y") %>
+					</div>
 					<hr />
 				</li>
 			<% end %>

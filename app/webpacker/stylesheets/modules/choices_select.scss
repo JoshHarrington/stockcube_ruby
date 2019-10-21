@@ -21,6 +21,9 @@
 	.choices__list--single {
 		padding: 2px 16px 2px 4px;
 	}
+	&.choices_slim {
+		min-width: rem(150);
+	}
 }
 
 .choices_select--sibling {

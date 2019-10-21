@@ -1,5 +1,6 @@
 import { ready, ajaxRequest, showAlert } from './utils'
 import Sortable from 'sortablejs'
+import Choices from 'choices.js'
 import {tns} from 'tiny-slider/src/tiny-slider'
 import SVG from '../icons/symbol-defs.svg'
 import PNGBin from '../icons/png-icons/bin.png'
@@ -125,6 +126,7 @@ const renderShoppingList = (shoppingList) => {
 		}
 	} else {
 		const GenId = shoppingList[2]["gen_id"]
+		const UnitList = shoppingList[3]["unit_list"]
 		const whiskShoppingListPortions = []
 		const ShoppingListTitleContent = 'Shopping List (' + shoppingList[0]["stats"]["checked_portions"] + '/' + shoppingList[0]["stats"]["total_portions"] + ')'
 		ShoppingListTitle.innerText = ShoppingListTitleContent
@@ -172,10 +174,27 @@ const renderShoppingList = (shoppingList) => {
 				RecipePortionLi.classList.add('wrapper_portion')
 			}
 
-			RecipePortionLiTag = '<h6 class="mb-2">' + portion["portion_note"] + '</h6>'
-			const RecipePortionLiP = '<p><label><input type="checkbox" ' + (portion["checked"] === "true" && 'checked') + '> ' + portion["portion_description"] + '</label></p><hr />'
-			// <h5>Use by date:</h5><p><input type="date" value="' + portion["max_date"] + '" min="' + portion["min_date"] + '"></p>
-			RecipePortionLi.innerHTML = RecipePortionLiTag + RecipePortionLiP
+			RecipePortionLiTag = '<h6 class="mb-3 portion_recipe_tag">' + portion["portion_note"] + '</h6>'
+
+
+			const RecipePortionLiP = '<p class="h3 portion_ingredient_name"><input type="checkbox" id="planner_shopping_list_portions_add_'+ portion["shopping_list_portion_id"] + '" class="fancy_checkbox" ' + (portion["checked"] === "true" && 'checked') + '> ' + '<label for="planner_shopping_list_portions_add_'+ portion["shopping_list_portion_id"] + '" class="fancy_checkbox_label">' + portion["ingredient_name"] +'</label></p>'
+
+			const RecipePortionLiSizeRow = '<div class="shopping_list_portion-size_row"><input type="number" name="planner_shopping_list_portions_amount'+ portion["shopping_list_portion_id"] +'" value="'+ portion["portion_amount"] +'" /><select name="planner_shopping_list_portions_unit_'+ portion["shopping_list_portion_id"] +'" class="choices--basis pretty_form--row--pretty_select">'+
+			UnitList.map((u) => {
+				if (u["id"] === portion["portion_unit"]) {
+					return `<option selected value="${u["id"]}">${u["name"]}</option>`
+				}
+				return `<option value="${u["id"]}">${u["name"]}</option>`
+			})
+			+'</select></div>'
+			/// Remove min for amount until able to manage it properly
+			// min="'+ portion["portion_amount"] +'"
+
+			const RecipePortionLiDateRow = '<div class="shopping_list_portion-date_row"><p class="shopping_list_portion-date_row-tag h6">Use by date:</p><input type="date" min="' + portion["min_date"] + '" name="planner_shopping_list_portions_date_'+ portion["shopping_list_portion_id"] +'" value="' + portion["portion_date"] + '" placeholder="' + portion["portion_date"] + '" /></div><hr />'
+
+			RecipePortionLi.innerHTML = RecipePortionLiTag + RecipePortionLiP + RecipePortionLiSizeRow + RecipePortionLiDateRow
+
+
 			ListTopUl.appendChild(RecipePortionLi)
 
 			whiskShoppingListPortions.push(portion["portion_description"])
@@ -200,6 +219,20 @@ const renderShoppingList = (shoppingList) => {
 	} else {
 		document.querySelector('main').prepend(ShoppingListInner)
 	}
+
+	const selectEl = document.querySelectorAll('select.choices--basis')
+	if (selectEl){
+		selectEl.forEach(function(select){
+			const choicesSelect = new Choices(select, {
+				classNames: {
+					containerOuter: 'choices choices_select choices_slim'
+				},
+				itemSelectText: 'Select'
+			})
+		})
+	}
+
+	setupPortionUpdateWatch()
 	setupShoppingListCheckingOff()
 }
 
@@ -228,6 +261,66 @@ const setupShoppingListButton = () => {
 	}
 }
 
+const updatePortionData = (portionData) => {
+	ajaxRequest(JSON.stringify(portionData), '/planner/update_portion', 0, 'application/json')
+}
+
+const setupPortionUpdateWatch = () => {
+	let genId = null
+	if (window.location.pathname.includes('/list/')){
+		genId = window.location.pathname.replace('/list/','')
+	}
+
+	const shoppingListPortions = document.querySelectorAll('.planner_shopping_list--inner .planner_sl-recipe_list li')
+	shoppingListPortions.forEach(function(portionLi){
+		const portionId = portionLi.getAttribute('id')
+
+		let portionType
+		if (portionLi.classList.contains('combi_portion')) {
+			portionType = 'combi_portion'
+		} else if (portionLi.classList.contains('individual_portion')) {
+			portionType = 'individual_portion'
+		} else {
+			portionType = 'wrapper_portion'
+		}
+
+		const unitSelect = portionLi.querySelector('select')
+		let unitId = unitSelect.value
+
+		const amountField = portionLi.querySelector('input[type="number"]')
+		let amount = amountField.value
+
+		const dateField = portionLi.querySelector('input[type="date"]')
+		let date = dateField.value
+
+		const portionData = {	"shopping_list_portion_id": portionId,
+													"portion_type": portionType,
+													"amount": amount,
+													"unit_id": unitId,
+													"date": date }
+
+		if (genId !== null) {
+			portionData.gen_id = genId
+		}
+
+		unitSelect.addEventListener("change", (e) => {
+			unitId = e.target.value
+			portionData.unit_id = unitId
+			updatePortionData(portionData)
+		})
+		amountField.addEventListener("change", (e) => {
+			amount = e.target.value
+			portionData.amount = amount
+			updatePortionData(portionData)
+		})
+		dateField.addEventListener("change", (e) => {
+			date = e.target.value
+			portionData.date = date
+			updatePortionData(portionData)
+		})
+	})
+}
+
 const setupShoppingListCheckingOff = () => {
 	let genId = null
 	if (window.location.pathname.includes('/list/')){
@@ -238,6 +331,7 @@ const setupShoppingListCheckingOff = () => {
 		portionCheckbox.addEventListener("change", function(){
 			const portionLi = portionCheckbox.closest('li')
 			const portionId = portionLi.getAttribute('id')
+
 			let portionType = ''
 			if (portionLi.classList.contains('combi_portion')) {
 				portionType = 'combi_portion'
@@ -246,7 +340,6 @@ const setupShoppingListCheckingOff = () => {
 			} else {
 				portionType = 'wrapper_portion'
 			}
-			// const date = portionLi.querySelector('input[type="date"]').value
 
 			const portionData = "shopping_list_portion_id=" + portionId + "&portion_type=" + portionType + (genId !== null ? "&gen_id=" + genId : "")
 			portionLi.classList.toggle('portion_checked')

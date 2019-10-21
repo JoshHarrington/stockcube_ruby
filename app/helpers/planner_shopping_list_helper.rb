@@ -1,5 +1,3 @@
-require 'pry'
-
 module PlannerShoppingListHelper
 	include IngredientsHelper
 	def add_planner_recipe_to_shopping_list(planner_recipe = nil)
@@ -47,7 +45,8 @@ module PlannerShoppingListHelper
 								ingredient_id: ing,
 								unit_id: serving_diff[:unit_id],
 								amount: -(serving_diff_amount),
-								planner_shopping_list_id: planner_shopping_list.id
+								planner_shopping_list_id: planner_shopping_list.id,
+								date: planner_recipe.date + 2.weeks
 							)
 						end
 					elsif serving_diff_amount > 0
@@ -87,7 +86,8 @@ module PlannerShoppingListHelper
 					ingredient_id: portion.ingredient_id,
 					unit_id: portion.unit_id,
 					amount: portion.amount,
-					planner_shopping_list_id: planner_shopping_list.id
+					planner_shopping_list_id: planner_shopping_list.id,
+					date: planner_recipe.date + 2.weeks
 				)
 			end
 		end
@@ -137,7 +137,7 @@ module PlannerShoppingListHelper
 				combi_sl_portion.update_attributes(
 					amount: combi_amount,
 					unit_id: combi_unit_id,
-					date: matching_sl_portions.last.planner_recipe.date,
+					date: matching_sl_portions.last.date,
 					checked: matching_sl_portions.first.checked
 				)
 
@@ -171,7 +171,7 @@ module PlannerShoppingListHelper
 					ingredient_id: p.ingredient_id,
 					amount: planner_portion_size[:converted_size][:amount],
 					unit_id: planner_portion_size[:converted_size][:unit_id],
-					date: p.has_attribute?(:date) ? p.date : p.planner_recipe.date,
+					date: p.date,
 					checked: p.checked
 				)
 
@@ -265,5 +265,40 @@ module PlannerShoppingListHelper
 
 	def planner_portion_id_hash
 		return Hashids.new(ENV['PLANNER_PORTIONS_SALT'])
+	end
+
+	def update_portion_details(params)
+
+		if params.has_key?(:gen_id) && PlannerShoppingList.find_by(gen_id: params[:gen_id])
+			shopping_list = PlannerShoppingList.find_by(gen_id: params[:gen_id])
+		elsif current_user
+			shopping_list = current_user.planner_shopping_list
+		else
+			return
+		end
+
+		return unless params.has_key?(:shopping_list_portion_id) && params.has_key?(:portion_type)
+		shopping_list.update_attributes(
+			ready: false
+		)
+
+		if params[:portion_type] == 'combi_portion'
+			planner_portion = shopping_list.combi_planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
+		elsif params[:portion_type] == 'individual_portion'
+			planner_portion = shopping_list.planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
+		elsif params[:portion_type] == 'wrapper_portion'
+			planner_portion = shopping_list.planner_portion_wrappers.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
+		end
+
+		planner_portion.update_attributes(
+			amount: params[:amount],
+			unit_id: params[:unit_id],
+			date: params[:date]
+		)
+
+		shopping_list.update_attributes(
+			ready: true
+		)
+
 	end
 end

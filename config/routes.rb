@@ -90,6 +90,7 @@ Rails.application.routes.draw do
   get '/list/:gen_id', to: 'planner#list', as: :shopping_list_share
   post '/planner/recipe_add', to: 'planner#recipe_add_to_planner'
   post '/planner/recipe_update', to: 'planner#recipe_update_in_planner'
+  post '/planner/update_portion', to: 'planner#update_portion'
   post '/planner/recipe_delete', to: 'planner#delete_recipe_from_planner'
 
   resources :user_fav_stocks

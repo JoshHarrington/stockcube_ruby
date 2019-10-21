@@ -109,25 +109,39 @@
 	flex-direction: column;
 	li {
 		order: 1;
+		display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    justify-content: space-between;
 		p:first-child {
 			margin-bottom: 10px;
 		}
 		p label {
-			font-size: 1em;
-		}
-		padding-left: 10px;
-		input[type="date"]{
-			font-size: 1em;
-			margin-top: 4px;
+			font-size: 1.5rem;
 		}
 		input[type="checkbox"] {
 			margin-left: 0;
 		}
 		&.portion_checked {
 			color: $black-40;
-			p {
+			* {
+				color: inherit;
+			}
+			.fancy_checkbox_label::after {
+				color: black;
+			}
+			.portion_ingredient_name {
 				text-decoration: line-through;
 			}
+			p:not(.portion_ingredient_name), input, select, .choices.choices_select {
+				pointer-events: none;
+			}
+		}
+		.portion_recipe_tag {
+			width: 100%;
+		}
+		.portion_ingredient_name {
+			margin-right: 1em;
 		}
 	}
 }
@@ -148,4 +162,37 @@
 	html:not(.shopping_list_open) & {
 		left: 100%;
 	}
+}
+
+.shopping_list_portion-size_row {
+	display: flex;
+	margin-top: 1em;
+	input[type="number"]{
+		padding: .4em;
+		margin-right: 15px;
+	}
+	> * {
+		width: calc(50% - 8px);
+		flex-wrap: nowrap;
+	}
+	.pretty_form--row--pretty_select {
+		height: auto;
+	}
+}
+
+.shopping_list_portion-date_row {
+	margin-top: 1em;
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	input[type="date"] {
+		padding: .2em .3em;
+		min-height: 2.1em;
+	}
+}
+
+.shopping_list_portion-date_row-tag {
+	margin-bottom: .4em;
+	margin-right: 1em;
+	display: block;
 }
