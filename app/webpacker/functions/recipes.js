@@ -16,7 +16,6 @@ var togglePublicRowFade = function() {
 
 var confirmDeleteIngredient = function(){
 	$('.ingredient_row label').click(function (e) {
-		console.log('label clicked');
 		var deleteStateClass = 'delete_state';
 		var $this = $(this);
 		var el = e.target;
@@ -266,9 +265,6 @@ const stepListener = (e) => {
 		el.previousElementSibling.style.display = 'list-item'
 	} else {
 		e.preventDefault()
-		console.log(el.previousElementSibling != null , "el.previousElementSibling != null ")
-		console.log(el.previousElementSibling.querySelector('textarea') , "el.previousElementSibling.querySelector('textarea') ")
-		console.log(el.previousElementSibling.querySelector('textarea').value !== '' , "el.previousElementSibling.querySelector('textarea').value !== '' ")
 		showAlert('Make sure you\'ve filled in the previous step before moving on!')
 	}
 	const deleteLastStepEl = document.querySelector('.delete_last_step')
