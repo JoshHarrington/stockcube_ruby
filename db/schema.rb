@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191015000510) do
+ActiveRecord::Schema.define(version: 20191021103949) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -138,6 +138,7 @@ ActiveRecord::Schema.define(version: 20191015000510) do
     t.bigint "combi_planner_shopping_list_portion_id"
     t.boolean "checked", default: false, null: false
     t.bigint "planner_portion_wrapper_id"
+    t.date "date"
     t.index ["combi_planner_shopping_list_portion_id"], name: "index_planner_shopping_list_portion_to_combi"
     t.index ["ingredient_id"], name: "index_planner_shopping_list_portions_on_ingredient_id"
     t.index ["planner_portion_wrapper_id"], name: "index_single_portion_wrapper"
