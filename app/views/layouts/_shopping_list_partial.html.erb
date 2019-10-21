@@ -71,11 +71,9 @@
 			<% end %>
 		</ul>
 	<% end %>
-	<div class="shop_online_block">
-		<% if shopping_list_portions.length == 0 %>
-			<button id="view-whisk-list" class="list_block--collection--action">Open online shopping list</button>
-		<% else %>
-			<button id="whisk-add-products" class="list_block--collection--action">Add to online shopping list</button>
-		<% end %>
-	</div>
+	<% if user_signed_in? && !defined?(shopping_list) && shopping_list_portions.length > 0 %>
+		<div class="planner_shopping_list-floating_action">
+			<%= link_to "Share shopping list", shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id), class: "list_block--collection--action"  %>
+		</div>
+	<% end %>
 </div>

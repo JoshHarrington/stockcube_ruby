@@ -234,6 +234,7 @@ class RecipesController < ApplicationController
 	end
 
 	def update_recipe_matches
+		return head(:forbidden) unless user_signed_in?
 		update_recipe_stock_matches_core
 	end
 

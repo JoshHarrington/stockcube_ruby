@@ -1,5 +1,5 @@
 class PlannerController < ApplicationController
-	before_action :authenticate_user!, except: [:list]
+	before_action :authenticate_user!, except: [:list, :update_portion, :get_shopping_list_content]
 	include PlannerShoppingListHelper
 	include ServingHelper
 	include UnitsHelper
@@ -21,7 +21,6 @@ class PlannerController < ApplicationController
 		else
 			redirect_to planner_path
 		end
-
 	end
 
 	def recipe_add_to_planner
