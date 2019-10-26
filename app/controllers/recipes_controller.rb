@@ -105,12 +105,12 @@ class RecipesController < ApplicationController
 		@units = unit_list()
 		if @recipe.save
 			if params.has_key?(:new_recipe_steps)
-				params[:new_recipe_steps].map do |content|
+				params[:new_recipe_steps].each_with_index do |content, index|
 					if content.to_s != ''
 						step = RecipeStep.create(
 							recipe_id: @recipe.id,
 							content: content,
-							number: @recipe.steps.length > 0 ? (@recipe.steps.where.not(number: nil).order(:number).last.number + 1) : 0
+							number: index
 						)
 					end
 				end
