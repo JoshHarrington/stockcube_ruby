@@ -12,7 +12,7 @@
 			<div class="item_form--content_row">
 				<%= s.label :amount, 'Amount of stock' %>
 				<%= s.number_field(:amount, value: round_if_whole(@stock.amount) , placeholder: '250', class: "item_form--content_row--half_width_input", validate: true) %>
-				<%= s.select :unit_id, options_from_collection_for_select(@unit_select, "id", "name", (@preselect_unit ? @preselect_unit : 8)), {}, {class: "choices--basis half_select"} %>
+				<%= s.select :unit_id, options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }, selected: @stock.unit_id), {}, {class: "choices--basis half_select"} %>
 			</div>
 			<div class="item_form--content_row">
 				<%= s.label :use_by_date, 'Use by date'  %> <%= s.date_field(:use_by_date, min: Date.current, value: @stock.use_by_date, validate: true) %>

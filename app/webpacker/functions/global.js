@@ -7,7 +7,12 @@ const globalFn = () => {
 	}
 	const selectEl = document.querySelectorAll('select.choices--basis')
 	if (selectEl){
-		selectEl.forEach(function(select){
+		selectEl.forEach((select) => {
+			const prompt = select.querySelector('option[value=""]')
+			if (prompt !== null) {
+				prompt.setAttribute('disabled', true)
+			}
+
 			const choicesSelect = new Choices(select, {
 				classNames: {
 					containerOuter: 'choices choices_select'

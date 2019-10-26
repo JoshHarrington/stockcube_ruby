@@ -20,7 +20,7 @@
 		<br>
 		<br>
 
-		Units <%= select_tag "unit_id", options_from_collection_for_select(@units_select, "id", "name", @preselect_unit.id) %>
+		Units <%= select_tag "unit_id", options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }, selected: @portion.unit_id) %>
 
 
 	</div>

@@ -6,10 +6,8 @@ var togglePublicRowFade = function() {
 	$('#recipe_live_status_row input[type="radio"]').click(function(e){
 		if (e.target == $('#live_radio_1')[0]) {
 			publicStatusRow.removeClass('faded_out');
-			publicStatusBtns.prop('disabled', false);
 		} else {
 			publicStatusRow.addClass('faded_out');
-			publicStatusBtns.prop('disabled', true);
 		}
 	})
 }
@@ -182,7 +180,6 @@ const updatePublishableState = () => {
 		if(publishableParts[part] === false) {
 			publishableState.publishable = false
 			publishOptions.classList.add('faded_out')
-			publishBtns.setAttribute('disabled', true)
 			const alertMessage = 'Recipe is not currently publishable, you need to add ' + nonPublishableExplainerText()
 			if (alertMessage !== window.publishableAlertMessage) {
 				showAlert(alertMessage, 15000)
@@ -194,7 +191,6 @@ const updatePublishableState = () => {
 	if (publishableState.publishable !== true) {
 		publishableState.publishable = true
 		publishOptions.classList.remove('faded_out')
-		publishBtns.setAttribute('disabled', false)
 		const alertMessage = 'Recipe is now publishable!'
 		if (alertMessage !== window.publishableAlertMessage) {
 			showAlert(alertMessage)

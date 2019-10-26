@@ -21,7 +21,7 @@ class RecipesController < ApplicationController
 		@fallback_recipes = @fallback_recipes_unformatted.paginate(:page => params[:page], :per_page => 12)
 
 		if params.has_key?(:search) && params[:search].to_s != '' && user_signed_in?
-			@recipes = Recipe.where(live: true, public: true).or(Recipe.where(user_id: current_user[:id])).search(params[:search], operator: 'or', fields: ["ingredient_names^12", "title^4", "cuisine^3", "description^1"]).results.uniq.paginate(:page => params[:page], :per_page => 12)
+			@recipes = Recipe.where(live: true, public: true).or(Recipe.where(user_id: current_user[:id])).search(params[:search], operator: 'or', fields: ["ingredient_names^12", "title^4", "cuisine^3"]).results.uniq.paginate(:page => params[:page], :per_page => 12)
 
 			@ingredient_results = Ingredient.search(params[:search],  operator: 'or').results
 
@@ -205,7 +205,7 @@ class RecipesController < ApplicationController
 
 		if params.has_key?(:redirect) && params[:redirect].to_s != ''
 			@recipe.update(recipe_params.except(:user_id))
-			if @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' || @recipe.portions.length == 0
+			if @recipe.steps.length == 0 || @recipe.cook_time.to_s == '' || @recipe.portions.length == 0
 				@recipe.update_attributes(live: false)
 			end
 			redirect_to portions_new_path(:recipe_id => params[:id])
@@ -213,7 +213,7 @@ class RecipesController < ApplicationController
 			update_recipe_stock_matches(nil, nil, @recipe.id)
 		else
 			if @recipe.update(recipe_params.except(:user_id))
-				if @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' || @recipe.portions.length == 0
+				if @recipe.steps.length == 0 || @recipe.cook_time.to_s == '' || @recipe.portions.length == 0
 					@recipe.update_attributes(live: false)
 				end
 				redirect_to recipe_path(@recipe)
@@ -303,7 +303,7 @@ class RecipesController < ApplicationController
 
 	private
 		def recipe_params
-			params.require(:recipe).permit(:user_id, :new_steps, :search, :live, :public, :cuisine, :search_ingredients, :title, :description, :prep_time, :cook_time, :yield, :note, portions_attributes:[:amount, :unit_id, :ingredient_id, :recipe_id, :_destroy], steps_attributes: [:content])
+			params.require(:recipe).permit(:user_id, :steps, :portions, :search, :live, :public, :cuisine, :search_ingredients, :title, :prep_time, :cook_time, :yield, :note, portions_attributes:[:amount, :unit_id, :ingredient_id, :recipe_id, :_destroy], steps_attributes: [:content])
 		end
 
 		# Confirms an correct user.

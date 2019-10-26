@@ -54,7 +54,6 @@ class StocksController < ApplicationController
 		else
 			@use_by_limit = Date.current + 2.weeks
 		end
-		@unit_select = Unit.where.not(name: nil)
 
 	end
 	def create
@@ -149,8 +148,6 @@ class StocksController < ApplicationController
 
 		@ingredients = Ingredient.all.sort_by{|i| i.name.downcase}
 		@current_ingredient = @stock.ingredient
-
-		@unit_select = Unit.where.not(name: nil)
 
 		@preselect_unit = @stock.unit_id
 

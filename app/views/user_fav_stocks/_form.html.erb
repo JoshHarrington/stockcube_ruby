@@ -10,7 +10,7 @@
     <%= label_tag :stock_amount, 'Amount of stock' %>
     <div class="pretty_form--row--multiple_input">
       <%= f.number_field(:stock_amount, value: (@user_fav_stock.stock_amount ? @user_fav_stock.stock_amount : ''), placeholder: '250', validate: true) %>
-      <%= select_tag "user_fav_stock[unit_id]", options_from_collection_for_select(@unit_select, "id", "name", (@user_fav_stock.unit_id ? @user_fav_stock.unit_id : 8)) %>
+      <%= select_tag "user_fav_stock[unit_id]", options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }, selected: (@user_fav_stock.unit_id ? @user_fav_stock.unit_id : Unit.find_by(name: "gram").id)) %>
     </div>
   </div>
 

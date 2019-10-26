@@ -58,15 +58,15 @@
           <% if kosher?(@recipe) %><span class="recipe_info_tags--item">Kosher &check;</span><% end %>
         </div>
       <% end %>
-      <% if user_signed_in? && @recipe[:user_id] == current_user[:id] && @recipe.portions.length > 0 && @recipe.description.to_s != '' && @recipe.cook_time.to_s != '' %>
+      <% if user_signed_in? && @recipe[:user_id] == current_user[:id] && @recipe.portions.length > 0 && @recipe.steps.length > 0 && @recipe.cook_time.to_s != '' %>
         <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe is <%= @recipe.live ? "<strong>live</strong>".html_safe + (@recipe.public ? " and <strong>public</strong> ".html_safe : " and <strong>private</strong> to you ".html_safe)  + "on Stockcubes" : "in <strong>draft</strong> mode ".html_safe %> - <% if @recipe.live %> you can <% if @recipe.public %><%= link_to 'make the recipe <strong>private</strong>'.html_safe , publish_update_recipe_path(@recipe, type:"make_private") %> (then only you will be able to see and use it)<% else %><%= link_to 'make the recipe <strong>public</strong>'.html_safe , publish_update_recipe_path(@recipe, type: "make_public") %> (so all Stockcubes users can see and use it)<% end %>, and if you want to take it offline you can <%= link_to 'put it back to draft', publish_update_recipe_path(@recipe, type: 'make_draft') %><% else %><%= link_to 'publish it now', publish_update_recipe_path(@recipe, type: 'make_live') %><% end %>.</p>
 
-      <% elsif user_signed_in? && @recipe[:user_id] == current_user[:id] && (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '') %>
+      <% elsif user_signed_in? && @recipe[:user_id] == current_user[:id] && (@recipe.portions.length == 0 || @recipe.steps.length == 0 || @recipe.cook_time.to_s == '') %>
         <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe is in draft mode, it can be made live when you've
           <% if @recipe.portions.length == 0 %>
             <%= link_to 'added some ingredients', portions_new_path(:recipe_id => params[:id]) %><!--
-            --><% if @recipe.description.to_s == '' && @recipe.cook_time.to_s == '' %>,
-            <% elsif @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' %>
+            --><% if @recipe.steps.length == 0 && @recipe.cook_time.to_s == '' %>,
+            <% elsif @recipe.steps.length == 0 || @recipe.cook_time.to_s == '' %>
               and
             <% end %>
           <% end %>

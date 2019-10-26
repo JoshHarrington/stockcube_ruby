@@ -22,7 +22,7 @@
 			<div class="item_form--content_row">
 				<%= p.label :amount, 'Ingredient amount' %>
 				<%= p.number_field(:amount, value: '', placeholder: '250', validate: true, class: "item_form--content_row--half_width_input", min: "0") %>
-				<%= p.select(:unit_id, options_from_collection_for_select(@unit_select, "id", "name", 8), {}, {class: "choices--basis half_select", aria: {label: "Pick the units for the ingredient"}}) %>
+				<%= p.select(:unit_id, options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }), {}, {class: "choices--basis half_select", aria: {label: "Pick the units for the ingredient"}}) %>
 			</div>
 			<div class="item_form--content_row">
 				<p>

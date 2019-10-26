@@ -1,18 +1,18 @@
 <%
 	if defined?(shopping_list)
-		shopping_list_portions = shopping_list_portions(shopping_list)
+		fetched_shopping_list_portions = shopping_list_portions(shopping_list)
 	else
-		shopping_list_portions = shopping_list_portions(nil)
+		fetched_shopping_list_portions = shopping_list_portions(nil)
 	end
 	@units = unit_list()
 %>
 
 <div class="planner_shopping_list--inner">
 	<div class="title_block">
-		<h2>Shopping List <% if shopping_list_portions.length > 0 %>(<%= checked_portions %>/<%= shopping_list_portions.length %>)<% end %></h2>
-		<% if shopping_list_portions.length > 0 %><p class="h6 item_form--content_item_note"><%= icomoon('information-outline')%> Checking off items adds them to <%= current_user ? (link_to "your cupboard", cupboards_path) : "the cupboard" %> automatically (once checked they'll disappear from the list in 24 hours)</p><% end %>
+		<h2>Shopping List <% if fetched_shopping_list_portions.length > 0 %>(<%= checked_portions %>/<%= fetched_shopping_list_portions.length %>)<% end %></h2>
+		<% if fetched_shopping_list_portions.length > 0 %><p class="h6 item_form--content_item_note"><%= icomoon('information-outline')%> Checking off items adds them to <%= current_user ? (link_to "your cupboard", cupboards_path) : "the cupboard" %> automatically (once checked they'll disappear from the list in 24 hours)</p><% end %>
 
-		<% if current_user && !defined?(shopping_list) && shopping_list_portions.length > 0 %>
+		<% if current_user && !defined?(shopping_list) && fetched_shopping_list_portions.length > 0 %>
 			<%= link_to shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id), title: "View and share shopping list", class: "planner_shopping_list--fullscreen_btn" do %>
 				<%= icomoon('fullscreen') %>
 			<% end %>
@@ -27,11 +27,11 @@
 			</div>
 		<% end %>
 	</div>
-	<% if shopping_list_portions.length == 0 %>
+	<% if fetched_shopping_list_portions.length == 0 %>
 		<ul><p>Shopping List is currently empty, move some recipes to <%= link_to 'your planner', planner_path %> to get items added to this list</p></ul>
 	<% else %>
 		<ul class="planner_sl-recipe_list">
-			<% shopping_list_portions.each do |portion| %>
+			<% fetched_shopping_list_portions.each do |portion| %>
 				<%
 					if portion.class.name == 'PlannerPortionWrapper'
 						if portion.combi_planner_shopping_list_portion != nil
@@ -71,7 +71,7 @@
 			<% end %>
 		</ul>
 	<% end %>
-	<% if user_signed_in? && !defined?(shopping_list) && shopping_list_portions.length > 0 %>
+	<% if user_signed_in? && !defined?(shopping_list) && fetched_shopping_list_portions.length > 0 %>
 		<div class="planner_shopping_list-floating_action">
 			<%= link_to "Share shopping list", shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id), class: "list_block--collection--action"  %>
 		</div>

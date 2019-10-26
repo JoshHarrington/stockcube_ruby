@@ -17,9 +17,21 @@ class PlannerController < ApplicationController
 
 	def list
 		if params.has_key?(:gen_id) && PlannerShoppingList.find_by(gen_id: params[:gen_id]) != nil
-			@shopping_list = PlannerShoppingList.find_by(gen_id: params[:gen_id])
-		else
+			if shopping_list_portions(@shopping_list).length == 0
+				if user_signed_in?
+					redirect_to planner_path
+					flash[:notice] = "Looks like there aren't any ingredients in that shopping list"
+				else
+					redirect_to root_path
+					flash[:notice] = "Sign up or sign in to create your own sharable shopping list"
+				end
+			end
+		elsif user_signed_in?
 			redirect_to planner_path
+			flash[:notice] = "That shopping list link didn't work, sorry!"
+		else
+			redirect_to root_path
+			flash[:notice] = "Sign up or sign in to create your own sharable shopping list"
 		end
 	end
 
@@ -138,10 +150,10 @@ class PlannerController < ApplicationController
 				return
 			end
 
-			shopping_list_portions = shopping_list_portions(shopping_list)
+			fetched_shopping_list_portions = shopping_list_portions(shopping_list)
 
-			if shopping_list_portions.length > 0
-				formatted_shopping_list_portions = shopping_list_portions.sort_by{|p| p.ingredient.name}.map do |p|
+			if fetched_shopping_list_portions.length > 0
+				formatted_shopping_list_portions = fetched_shopping_list_portions.sort_by{|p| p.ingredient.name}.map do |p|
 					num_assoc_recipes = '1'
 					if p.class.name == 'PlannerPortionWrapper'
 						if p.combi_planner_shopping_list_portion != nil
@@ -178,7 +190,7 @@ class PlannerController < ApplicationController
 						"min_date": (Date.current - 2.days).strftime("%Y-%m-%d"),
 					}
 				end
-				shopping_list_output = [{"stats": {"checked_portions": checked_portions, "total_portions": shopping_list_portions.length}}, {"portions": formatted_shopping_list_portions }, {"gen_id": shopping_list.gen_id }, {"unit_list": unit_list()}]
+				shopping_list_output = [{"stats": {"checked_portions": checked_portions, "total_portions": fetched_shopping_list_portions.length}}, {"portions": formatted_shopping_list_portions }, {"gen_id": shopping_list.gen_id }, {"unit_list": unit_list()}]
 			else
 				shopping_list_output = []
 			end

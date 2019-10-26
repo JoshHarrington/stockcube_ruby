@@ -167,7 +167,7 @@ const renderShoppingList = (shoppingList) => {
 		document.querySelector('main').prepend(ShoppingListInner)
 	}
 
-	const selectEl = document.querySelectorAll('select.choices--basis')
+	const selectEl = document.querySelectorAll('.planner_sl-recipe_list select.choices--basis')
 	if (selectEl){
 		selectEl.forEach(function(select){
 			const choicesSelect = new Choices(select, {
