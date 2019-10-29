@@ -94,6 +94,36 @@ module PlannerShoppingListHelper
 
 	end
 
+	def setup_wrapper_portions(portion = nil, amount = nil, unit_id = nil, current_user = nil, planner_shopping_list_id = nil)
+		return if portion == nil || amount == nil || unit_id == nil || current_user == nil || planner_shopping_list_id == nil
+
+		wrapper_portion = PlannerPortionWrapper.find_or_create_by(
+			user_id: current_user[:id],
+			planner_shopping_list_id: planner_shopping_list_id,
+			ingredient_id: portion.ingredient_id
+		)
+		wrapper_portion.update_attributes(
+			amount: amount,
+			unit_id: unit_id,
+			checked: portion.checked,
+			date: portion.date
+		)
+
+		PlannerPortionWrapper.where(
+			user_id: current_user[:id],
+			planner_shopping_list_id: planner_shopping_list_id,
+			ingredient_id: portion.ingredient_id
+		).where.not(id: wrapper_portion[:id]).destroy_all
+
+		PlannerShoppingListPortion.where(id: portion.id).update_all(
+			planner_portion_wrapper_id: wrapper_portion[:id]
+		)
+		CombiPlannerShoppingListPortion.where(id: portion.id).update_all(
+			planner_portion_wrapper_id: wrapper_portion[:id]
+		)
+
+	end
+
 	def update_planner_shopping_list_portions
 		return unless current_user
 		if current_user.planner_recipes.length == 0
@@ -163,33 +193,12 @@ module PlannerShoppingListHelper
 
 			planner_portion_size = find_planner_portion_size(p)
 
-			if planner_portion_size != false
+			next if planner_portion_size == false
 
-				wrapper_portion = PlannerPortionWrapper.find_or_create_by(
-					user_id: current_user[:id],
-					planner_shopping_list_id: planner_shopping_list.id,
-					ingredient_id: p.ingredient_id,
-					amount: planner_portion_size[:converted_size][:amount],
-					unit_id: planner_portion_size[:converted_size][:unit_id],
-					date: p.date,
-					checked: p.checked
-				)
+			amount = planner_portion_size[:converted_size][:amount]
+			unit_id = planner_portion_size[:converted_size][:unit_id]
 
-				PlannerPortionWrapper.where(
-					user_id: current_user[:id],
-					planner_shopping_list_id: planner_shopping_list.id,
-					ingredient_id: p.ingredient_id
-				).where.not(id: wrapper_portion[:id]).destroy_all
-
-				PlannerShoppingListPortion.where(id: p.id).update_all(
-					planner_portion_wrapper_id: wrapper_portion[:id]
-				)
-				CombiPlannerShoppingListPortion.where(id: p.id).update_all(
-					planner_portion_wrapper_id: wrapper_portion[:id]
-				)
-
-
-			end
+			setup_wrapper_portions(p, amount, unit_id, current_user, planner_shopping_list.id)
 
 		end
 
@@ -282,19 +291,22 @@ module PlannerShoppingListHelper
 			ready: false
 		)
 
+		planner_portion = nil
+
 		if params[:portion_type] == 'combi_portion'
 			planner_portion = shopping_list.combi_planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
 		elsif params[:portion_type] == 'individual_portion'
 			planner_portion = shopping_list.planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
 		elsif params[:portion_type] == 'wrapper_portion'
-			planner_portion = shopping_list.planner_portion_wrappers.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
+			planner_portion = shopping_list.planner_portion_wrappers.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first.planner_shopping_list_portion
 		end
 
-		planner_portion.update_attributes(
-			amount: params[:amount],
-			unit_id: params[:unit_id],
-			date: params[:date]
-		)
+
+		if planner_portion != nil
+			planner_portion.update_attributes(date: params[:date])
+			setup_wrapper_portions(planner_portion, params[:amount], params[:unit_id], current_user, shopping_list.id)
+		end
+
 
 		shopping_list.update_attributes(
 			ready: true

@@ -54,6 +54,46 @@ module StockHelper
 
 	end
 
+	def create_stock_from_portion(portion, cupboard_id, shopping_list_user)
+
+		recipe_stock = Stock.find_by(
+			ingredient_id: portion.ingredient_id,
+			unit_id: portion.unit_id,
+			planner_shopping_list_portion_id: portion.id
+		)
+		if recipe_stock != nil && portion.amount > 0
+			recipe_stock.update_attributes(
+				amount: portion.amount,
+				use_by_date: portion.date,
+				cupboard_id: cupboard_id,
+				always_available: false
+			)
+			if portion.has_attribute?(:planner_recipe_id)
+				recipe_stock.update_attributes(
+					planner_recipe_id: portion.planner_recipe_id
+				)
+			end
+		elsif portion.amount > 0
+			recipe_stock = Stock.create(
+				ingredient_id: portion.ingredient_id,
+				amount: portion.amount,
+				unit_id: portion.unit_id,
+				use_by_date: portion.date,
+				cupboard_id: cupboard_id,
+				always_available: false,
+				planner_shopping_list_portion_id: portion.id
+			)
+			if portion.has_attribute?(:planner_recipe_id)
+				recipe_stock.update_attributes(
+					planner_recipe_id: portion.planner_recipe_id
+				)
+			end
+			shopping_list_user.stocks << recipe_stock
+		end
+
+		return recipe_stock
+	end
+
 	def recipe_stock_update(recipe, cupboard_stock_in_date_ingredient_ids, user_id)
 		recipe_ingredient_ids = recipe.portions.map(&:ingredient_id)
 		num_ingredients_total = recipe_ingredient_ids.length.to_i
@@ -170,82 +210,61 @@ module StockHelper
 
 		cupboard_id = shopping_list_user.cupboard_users.where(accepted: true).select{|cu| cu.cupboard.setup == false && cu.cupboard.hidden == false }.map{|cu| cu.cupboard }.sort_by{|c| c.updated_at}.first.id
 		portions_array.each do |portion|
-			if portion.class.name == "PlannerShoppingListPortion"
+			next if portion.class.name != "PlannerShoppingListPortion"
 
-				recipe_stock = Stock.find_by(
-					ingredient_id: portion.ingredient_id,
-					unit_id: portion.unit_id,
-					planner_shopping_list_portion_id: portion.id
-				)
-				if recipe_stock != nil && portion.amount > 0
-					recipe_stock.update_attributes(
-						amount: portion.amount,
-						planner_recipe_id: portion.planner_recipe_id,
-						use_by_date: portion.date,
-						cupboard_id: cupboard_id,
-						always_available: false
-					)
-				elsif portion.amount > 0
-					recipe_stock = Stock.create(
-						ingredient_id: portion.ingredient_id,
-						amount: portion.amount,
-						planner_recipe_id: portion.planner_recipe_id,
-						unit_id: portion.unit_id,
-						use_by_date: portion.date,
-						cupboard_id: cupboard_id,
-						always_available: false,
-						planner_shopping_list_portion_id: portion.id
-					)
-					shopping_list_user.stocks << recipe_stock
-				end
-
-				if processing_type && (processing_type == 'remove_portion' || processing_type == 'add_portion')
-					check_type = processing_type == 'remove_portion' ? true : false
-					if portion.planner_portion_wrapper != nil
-						if portion.planner_portion_wrapper.checked != check_type
-							portion.planner_portion_wrapper.update_attributes(checked: check_type)
-						end
-						## find diff between portion size and wrapper size
-						## create new stock with this leftover size
-						## add planner_portion_wrapper_id to stock
-						wrapper_stock_diff = serving_difference([portion.planner_portion_wrapper, portion])
-						if wrapper_stock_diff != false
-							wrapper_stock = Stock.find_by(
-								ingredient_id: portion.ingredient_id,
-								unit_id: wrapper_stock_diff[:unit_id],
-								planner_portion_wrapper_id: portion.planner_portion_wrapper_id
-							)
-							if wrapper_stock != nil && wrapper_stock_diff[:amount] > 0
-								wrapper_stock.update_attributes(
-									amount: wrapper_stock_diff[:amount],
-									use_by_date: portion.date,
-									cupboard_id: cupboard_id,
-									always_available: false
-								)
-							elsif wrapper_stock_diff[:amount] > 0
-								wrapper_stock = Stock.create(
-									ingredient_id: portion.ingredient_id,
-									amount: wrapper_stock_diff[:amount],
-									unit_id: wrapper_stock_diff[:unit_id],
-									use_by_date: portion.date,
-									cupboard_id: cupboard_id,
-									always_available: false,
-									planner_portion_wrapper_id: portion.planner_portion_wrapper_id
-								)
-								shopping_list_user.stocks << wrapper_stock
-							end
-							if wrapper_stock.present?
-								stock_hidden = processing_type == 'add_portion' ? false : true
-								wrapper_stock.update_attributes(hidden: stock_hidden)
-							end
-						end
-					elsif portion.combi_planner_shopping_list_portion != nil && portion.combi_planner_shopping_list_portion.checked != check_type
-						portion.combi_planner_shopping_list_portion.update_attributes(checked: check_type)
-					elsif portion.class.name == "PlannerShoppingListPortion" && portion.checked != check_type
-						portion.update_attributes(checked: check_type)
-					end
+			if processing_type && (processing_type == 'remove_portion' || processing_type == 'add_portion')
+				check_state = processing_type == 'remove_portion' ? false : true
+				if portion.planner_portion_wrapper == nil
+					recipe_stock = create_stock_from_portion(portion, cupboard_id, shopping_list_user)
 					stock_hidden = processing_type == 'add_portion' ? false : true
 					recipe_stock.update_attributes(hidden: stock_hidden)
+				else
+
+					portion.planner_portion_wrapper.update_attributes(checked: check_state)
+
+					## find diff between portion size and wrapper size
+					## create new stock with this leftover size
+					## add planner_portion_wrapper_id to stock
+					wrapper_stock_diff = serving_difference([portion.planner_portion_wrapper, portion])
+					if wrapper_stock_diff != false
+						create_stock_from_portion(portion, cupboard_id, shopping_list_user)
+
+						wrapper_stock = Stock.find_by(
+							ingredient_id: portion.ingredient_id,
+							unit_id: wrapper_stock_diff[:unit_id],
+							planner_portion_wrapper_id: portion.planner_portion_wrapper_id
+						)
+						if wrapper_stock != nil && wrapper_stock_diff[:amount] > 0
+							wrapper_stock.update_attributes(
+								amount: wrapper_stock_diff[:amount],
+								use_by_date: portion.date,
+								cupboard_id: cupboard_id,
+								always_available: false
+							)
+						elsif wrapper_stock_diff[:amount] > 0
+							wrapper_stock = Stock.create(
+								ingredient_id: portion.ingredient_id,
+								amount: wrapper_stock_diff[:amount],
+								unit_id: wrapper_stock_diff[:unit_id],
+								use_by_date: portion.date,
+								cupboard_id: cupboard_id,
+								always_available: false,
+								planner_portion_wrapper_id: portion.planner_portion_wrapper_id
+							)
+							shopping_list_user.stocks << wrapper_stock
+						end
+						if wrapper_stock.present?
+							stock_hidden = processing_type == 'add_portion' ? false : true
+							wrapper_stock.update_attributes(hidden: stock_hidden)
+						end
+					else
+						create_stock_from_portion(portion.planner_portion_wrapper, cupboard_id, shopping_list_user)
+					end
+				end
+				if portion.combi_planner_shopping_list_portion != nil && portion.combi_planner_shopping_list_portion.checked != check_type
+					portion.combi_planner_shopping_list_portion.update_attributes(checked: check_state)
+				elsif portion.class.name == "PlannerShoppingListPortion" && portion.checked != check_state
+					portion.update_attributes(checked: check_state)
 				end
 			end
 
