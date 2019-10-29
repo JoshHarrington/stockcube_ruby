@@ -54,16 +54,23 @@ module StockHelper
 
 	end
 
-	def create_stock_from_portion(portion, cupboard_id, shopping_list_user)
+	def create_stock_from_portion(portion = nil, cupboard_id = nil, shopping_list_user = nil, amount = nil)
+		return if portion == nil || cupboard_id == nil || shopping_list_user == nil
+
+		if amount != nil && amount != 0
+			stock_amount = amount
+		else
+			stock_amount = portion.amount
+		end
 
 		recipe_stock = Stock.find_by(
 			ingredient_id: portion.ingredient_id,
 			unit_id: portion.unit_id,
 			planner_shopping_list_portion_id: portion.id
 		)
-		if recipe_stock != nil && portion.amount > 0
+		if recipe_stock != nil && stock_amount > 0
 			recipe_stock.update_attributes(
-				amount: portion.amount,
+				amount: stock_amount,
 				use_by_date: portion.date,
 				cupboard_id: cupboard_id,
 				always_available: false
@@ -73,10 +80,10 @@ module StockHelper
 					planner_recipe_id: portion.planner_recipe_id
 				)
 			end
-		elsif portion.amount > 0
+		elsif stock_amount > 0
 			recipe_stock = Stock.create(
 				ingredient_id: portion.ingredient_id,
-				amount: portion.amount,
+				amount: stock_amount,
 				unit_id: portion.unit_id,
 				use_by_date: portion.date,
 				cupboard_id: cupboard_id,
@@ -257,6 +264,11 @@ module StockHelper
 							stock_hidden = processing_type == 'add_portion' ? false : true
 							wrapper_stock.update_attributes(hidden: stock_hidden)
 						end
+					elsif portion.unit_id == portion.planner_portion_wrapper.unit_id && portion.amount < portion.planner_portion_wrapper.amount
+						create_stock_from_portion(portion, cupboard_id, shopping_list_user, nil)
+
+						planner_wrapper_amount = portion.planner_portion_wrapper.amount - portion.amount
+						create_stock_from_portion(portion.planner_portion_wrapper, cupboard_id, shopping_list_user, planner_wrapper_amount)
 					else
 						create_stock_from_portion(portion.planner_portion_wrapper, cupboard_id, shopping_list_user)
 					end
