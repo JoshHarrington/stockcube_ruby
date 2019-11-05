@@ -3,10 +3,10 @@ module IngredientsHelper
 	def convert_serving_to_hash(serving)
 		return serving if serving.class == Hash
 		return {
-			amount: (serving != false && serving.has_attribute?(:amount) ? serving.amount : nil),
-			unit_type: (serving != false && serving.unit && serving.unit.has_attribute?(:unit_type) ? serving.unit.unit_type : nil),
-			unit_id: (serving != false && serving.has_attribute?(:unit_id) ? serving.unit_id : nil),
-			metric_ratio: (serving != false && serving.unit && serving.unit.has_attribute?(:metric_ratio) ? serving.unit.metric_ratio : nil)
+			amount: (serving != false && serving != nil && serving.has_attribute?(:amount) ? serving.amount : nil),
+			unit_type: (serving != false && serving != nil && serving.unit && serving.unit.has_attribute?(:unit_type) ? serving.unit.unit_type : nil),
+			unit_id: (serving != false && serving != nil && serving.has_attribute?(:unit_id) ? serving.unit_id : nil),
+			metric_ratio: (serving != false && serving != nil && serving.unit && serving.unit.has_attribute?(:metric_ratio) ? serving.unit.metric_ratio : nil)
 		}
 	end
 
@@ -135,6 +135,7 @@ module IngredientsHelper
 
 		converted_sizes = []
 		sizes = serving.ingredient.default_ingredient_sizes
+		return false if sizes.length == 0
 		sizes.map{|s| converted_sizes.push(convert_serving_to_hash(s))}
 		converted_serving = convert_serving_to_hash(serving)
 
