@@ -35,7 +35,11 @@
 
 .choices .choices__input {
 	font-size: inherit;
+	&.is-hidden {
+		display: none;
+	}
 }
+
 
 .choices__item.choices__item--choice.choices__item--disabled {
 	display: none;
