@@ -26,7 +26,7 @@
 			<%= hidden_field_tag 'cupboard_id', params[:cupboard_id] %>
 			<%= label_tag "cupboard_user_emails" do %>
 				<h3>Share it with whoever you want</h3>
-				<p class="h5">Add email addresses to share with those people. When adding multiple addresses, separate them with a comma eg:
+				<p class="h5">Add email addresses to invite people to this cupboard. When adding multiple addresses, separate them with a comma eg:
 				<strong>"h.granger@spew.org, genie@lamplife.net"</strong></p>
 			<% end %>
 			<%= text_area_tag :cupboard_user_emails, (params[:cupboard_user_emails] ? params[:cupboard_user_emails] : nil),  cols: 60, rows: 10, placeholder: "timon@hakunamatata.com" %>
@@ -43,13 +43,12 @@
 		</div>
 		<% if current_user && (current_user.admin || (CupboardUser.where(user_id: current_user[:id], cupboard_id: @cupboard.id).length > 0 && CupboardUser.where(user_id: current_user[:id], cupboard_id: @cupboard.id).first.owner)) %>
 			<div class="pretty_form--row">
-				<h3>Communal Status</h3>
-				<h4>Is this a communal cupboard?</h4>
-				<p class="item_form--content_item_note"><%= icomoon('information-outline')%> Communal means multiple people use it and showing their names with their stock would be helpful</p>
+				<h3>Show stock owners?</h3>
+				<p class="item_form--content_item_note"><%= icomoon('information-outline')%> If multiple people use this cupboard showing their names with their stock could be helpful, you can control this here:</p>
 
 				<%= hidden_field_tag "communal", 'false' %>
 				<%= check_box_tag "communal", true, @cupboard.communal, id: "communal_check" %>
-				<%= label_tag "communal_check", "Yep, definitely communal", class: "fancy_checkbox_label" %>
+				<%= label_tag "communal_check", "Show owners of stock", class: "fancy_checkbox_label" %>
 			</div>
 		<% end %>
 		<div class="pretty_form--row">

@@ -59,7 +59,10 @@ class CupboardsController < ApplicationController
 		end
 
 		@cupboard_name = @cupboard.location
-		@all_other_cupboard_users = User.where(id: current_user.cupboards.where.not(id: decrypted_cupboard_id).order(location: :asc).where(hidden: false, setup: false).map(&:users)[0].where.not(id: @cupboard.users.map(&:id)).uniq.map(&:id))
+		@all_other_cupboard_users = []
+		if current_user.cupboards.length > 1
+			@all_other_cupboard_users = User.where(id: current_user.cupboards.where.not(id: decrypted_cupboard_id).order(location: :asc).where(hidden: false, setup: false).map(&:users)[0].where.not(id: @cupboard.users.map(&:id)).uniq.map(&:id))
+		end
 
 
 
@@ -122,6 +125,14 @@ class CupboardsController < ApplicationController
 							redirect_to cupboard_share_path(params[:id], cupboard_user_emails: cupboard_user_emails_string)
 						end
 					else
+						## user does not get added to cupboard currently
+						## need new table of sharing requests to accounts that don't yet exist that gets checked on setup of new users
+						## if cupboard was shared with this user that gets created with an email in that table then cupboard should be optionally added
+
+
+						## could show as faded out cupboard on in users /cupboards view that they can add or delete
+						## would need to show notification dot on cupboards to show activity.
+
 						CupboardMailer.sharing_cupboard_request_new_account(email, current_user, encoded_cupboard_id).deliver_now
 						flash[:success] = "#{cupboard.location} shared!"
 					end
