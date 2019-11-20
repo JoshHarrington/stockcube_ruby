@@ -1,26 +1,14 @@
-require File.expand_path('../../config/environment', __FILE__)
+ENV['RAILS_ENV'] ||= 'test'
+require_relative '../config/environment'
 require 'rails/test_help'
 
 class ActiveSupport::TestCase
-  fixtures :all
+ fixtures :all
 
-  # Returns true if a test user is logged in.
-  def is_logged_in?
-    !session[:user_id].nil?
-  end
+ include Devise::Test::IntegrationHelpers
 
-  # Log in as a particular user.
-  def log_in_as(user)
-    session[:user_id] = user.id
-  end
-end
-
-class ActionDispatch::IntegrationTest
-
-  # Log in as a particular user.
-  def log_in_as(user, password: 'password', remember_me: '1')
-    post new_user_session_path, params: { session: { email: user.email,
-                                          password: password,
-                                          remember_me: remember_me } }
-  end
+ def login_user
+  user = User.create(name: "Alice Bennett", email: "alice@example.com", password: "wertyu345678sdfgh", password_confirmation: "wertyu345678sdfgh")
+  user.confirm
+ end
 end

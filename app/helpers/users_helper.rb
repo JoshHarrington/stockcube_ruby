@@ -17,24 +17,10 @@ module UsersHelper
     @onion_id = Ingredient.find_or_create_by(name: "Onion").id
     @cheese_id = Ingredient.find_or_create_by(name: "Cheese (Cheddar)").id
 
-    units_to_check = ["Each", "Loaf", "Pint", "Gram"]
-    units_to_check.each do |unit|
-      model = Unit.where('lower(name) = ?', name.downcase).first
-      model ||= Unit.create(:name => unit)
-      if unit == "Each"
-        @each_unit_id = model.id
-      end
-      if unit == "Loaf"
-        @loaf_unit_id = model.id
-      end
-      if unit == "Pint"
-        @pint_unit_id = model.id
-        model.update_attributes(metric_ratio: 568.261, unit_type: "Volume")
-      end
-      if unit == "Gram"
-        @gram_unit_id = model.id
-      end
-    end
+    @each_unit_id = Unit.find_or_create_by(name: "Each").id
+    @loaf_unit_id = Unit.find_or_create_by(name: "Loaf").id
+    @pint_unit_id = Unit.find_or_create_by(name: "Pint").id
+    @gram_unit_id = Unit.find_or_create_by(name: "Gram").id
 
     UserFavStock.create(
       ingredient_id: @tomatoe_id,

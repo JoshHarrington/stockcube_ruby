@@ -94,6 +94,7 @@ group :development, :test do
   gem 'selenium-webdriver'
   gem 'rails-controller-testing'
   gem 'faker',          '1.7.3'
+  gem 'factory_bot_rails'
 end
 
 group :development do

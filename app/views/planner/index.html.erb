@@ -89,9 +89,21 @@
 							num_stock_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_stock_ingredients] : nil
 							num_needed_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_needed_ingredients] : nil
 							percent_in_cupboards = ingredient_stock_match_decimal ? (ingredient_stock_match_decimal.to_f * 100).round : 0
+
+
+							decimal_portions_checked = p_recipe.planner_shopping_list_portions.where(checked: true).length
+							Rails.logger.debug 'decimal_portions_checked'
+							Rails.logger.debug decimal_portions_checked
+							decimal_portions_total = p_recipe.planner_shopping_list_portions.length
+							Rails.logger.debug 'decimal_portions_total'
+							Rails.logger.debug decimal_portions_total
+							percent_portions_checked = ((decimal_portions_checked / decimal_portions_total).to_f * 100).round
+							Rails.logger.debug 'percent_portions_checked'
+							Rails.logger.debug percent_portions_checked
+
 						%>
 						<div class="list_block--item list_block--item--with-bar sortable--item" data-parent-id="<%= date_id %>" id="<%= @recipe_id_hash.encode(recipe.id) %>" title="<%= user_recipe_stock_match && num_stock_ingredients.to_s + " ingredients in stock, " + num_needed_ingredients.to_s + " needed" %>" aria-label="<%= user_recipe_stock_match ? recipe.title + ": " + num_stock_ingredients.to_s + " ingredients in stock, " + num_needed_ingredients.to_s + " needed" : recipe.title %>">
-							<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards %>%"></span></span>
+							<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_portions_checked %>%"></span></span>
 							<%= link_to recipe.title, recipe_path(recipe) %>
 							<button class="delete list_block--item--action list_block--item--action--btn"><%= icomoon('bin') %></button>
 						</div>
