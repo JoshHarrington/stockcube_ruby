@@ -36,6 +36,14 @@ module UsersHelper
       end
     end
 
+    if CupboardInvitee.find_by(email: user.email).present?
+      cupboard_invitee = CupboardInvitee.find_by(email: user.email)
+      CupboardUser.create(
+        user_id: user.id,
+        cupboard_id: cupboard_invitee.cupboard_id
+      )
+    end
+
     UserFavStock.create(
       ingredient_id: @tomatoe_id,
       stock_amount: 4,

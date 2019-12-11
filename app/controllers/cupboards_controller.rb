@@ -129,6 +129,12 @@ class CupboardsController < ApplicationController
 						## need new table of sharing requests to accounts that don't yet exist that gets checked on setup of new users
 						## if cupboard was shared with this user that gets created with an email in that table then cupboard should be optionally added
 
+						unless CupboardInvitee.find_by(email: email)
+							CupboardInvitee.create(
+								email: email,
+								cupboard_id: cupboard.id
+							)
+						end
 
 						## could show as faded out cupboard on in users /cupboards view that they can add or delete
 						## would need to show notification dot on cupboards to show activity.

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191021103949) do
+ActiveRecord::Schema.define(version: 20191211232204) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -40,6 +40,15 @@ ActiveRecord::Schema.define(version: 20191021103949) do
     t.index ["user_id"], name: "index_combi_planner_shopping_list_portions_on_user_id"
   end
 
+  create_table "cupboard_invitees", force: :cascade do |t|
+    t.string "email"
+    t.bigint "cupboard_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cupboard_id"], name: "index_cupboard_invitees_on_cupboard_id"
+    t.index ["email"], name: "index_cupboard_invitees_on_email"
+  end
+
   create_table "cupboard_users", force: :cascade do |t|
     t.bigint "cupboard_id"
     t.bigint "user_id"
@@ -47,6 +56,7 @@ ActiveRecord::Schema.define(version: 20191021103949) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "accepted", default: false, null: false
+    t.index ["cupboard_id", "user_id"], name: "index_cupboard_users_on_cupboard_id_and_user_id", unique: true
     t.index ["cupboard_id"], name: "index_cupboard_users_on_cupboard_id"
     t.index ["user_id"], name: "index_cupboard_users_on_user_id"
   end
