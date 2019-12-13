@@ -2,7 +2,7 @@
     <div class="content_rich--title_block">
       <div class="content_rich--title_row" id="recipe_title_container">
         <h1 class="recipe-title">
-					<%= f.text_field :title, :placeholder => "Fancy recipe title", :required => true %>
+					<%= f.text_field :title, :placeholder => "Fancy recipe title", :value => (@recipe.title ? @recipe.title : "Amazing new recipe"), :required => true %>
 				</h1>
 				<%= f.submit "Save Recipe", class: "list_block--collection--action content_rich--title--action" %>
 			</div>
@@ -18,18 +18,18 @@
 				<h3>Ready to publish? This recipe is currently <strong><%= @recipe.live ? "live" : "in draft mode" %></strong></h3>
 			<% end %>
 			<div class="item_form--content_row" id="recipe_live_status_row">
-				<%= radio_button_tag "recipe[live]", true, @recipe.live, id: "live_radio_1", class: "fancy_radio_button", disabled: (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' ? true : false) %>
+				<%= radio_button_tag "recipe[live]", true, @recipe.live, id: "live_radio_1", class: "fancy_radio_button" %>
 				<%= label_tag "live_radio_1", "Published", class: "fancy_radio_button__label" %>
-				<%= radio_button_tag "recipe[live]", false, !@recipe.live, id: "live_radio_2", class: "fancy_radio_button", disabled: (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' ? true : false) %>
+				<%= radio_button_tag "recipe[live]", false, !@recipe.live, id: "live_radio_2", class: "fancy_radio_button" %>
 				<%= label_tag "live_radio_2", "Draft mode", class: "fancy_radio_button__label" %>
 			</div>
 		</div>
 		<div class="content_rich--row <% if !@recipe.live %>faded_out<% end %>" id="recipe_public_status_row" data-hover-title="You can only change the public settings on this recipe after it's been published">
 			<h3>For public use? Recipe is currently <strong><%= @recipe.public ? "public" : "private to you" %></strong></h3>
 			<div class="item_form--content_row">
-				<%= radio_button_tag "recipe[public]", true, @recipe.public, id: "public_radio_1", class: "fancy_radio_button", disabled: (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' ? true : false) %>
+				<%= radio_button_tag "recipe[public]", true, @recipe.public, id: "public_radio_1", class: "fancy_radio_button" %>
 				<%= label_tag "public_radio_1", "Public to all Stockcubes users", class: "fancy_radio_button__label" %>
-				<%= radio_button_tag "recipe[public]", false, !@recipe.public, id: "public_radio_2", class: "fancy_radio_button", disabled: (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' ? true : false) %>
+				<%= radio_button_tag "recipe[public]", false, !@recipe.public, id: "public_radio_2", class: "fancy_radio_button" %>
 				<%= label_tag "public_radio_2", "Private to you", class: "fancy_radio_button__label" %>
 			</div>
 		</div>
@@ -38,9 +38,27 @@
 			<p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%>Quick note: if you want to share recipes with the Stockcubes community they have to be your own (not ones you've taken from a cookbook or somewhere online). </p>
 		</div>
 
-		<div class="content_rich--row content_rich--row-full_width" id="recipe_description_container">
-			<h3>Description (Method)*:</h3>
-			<%= f.text_area :description, :value => (@recipe.description ? @recipe.description : ''), rows: 10, style: 'min-height: 300px;', :placeholder => "The steps to follow to make this meal"%>
+		<div class="content_rich--row content_rich--row-full_width" id="recipe_steps_wrapper">
+			<h3>Steps *:</h3>
+			<ol class="ol">
+				<% if @recipe.steps.length > 0 %>
+					<% @recipe.steps.order(:number).each do |step| %>
+						<li>
+							<%= f.text_area "[steps][#{step.id}][content]", :value => step.content, rows: 2, style: 'min-height: 70px;min-width:100%', :placeholder => "The next step to make this meal"%>
+						</li>
+					<% end %>
+				<% else %>
+					<li>
+						<textarea name="new_recipe_steps[]" value="" rows="2" style="min-height: 70px;min-width:100%" placeholder="The next step to make this meal"></textarea>
+					</li>
+				<% end %>
+				<div class="devise_links">
+					<button class="add_next_step" type="button">Add new step</button>
+					<% if @recipe.steps.length > 1 %>
+						<button class="delete_last_step" type="button" data-confirm="This is not a drill! Just double-checking you want to delete that recipe step?">Delete the last step</button>
+					<% end %>
+				</div>
+			</ol>
 		</div>
 		<div class="content_rich--row">
 			<h3>Notes (extra info):</h3>
@@ -49,7 +67,7 @@
 		<div class="content_rich--row content_rich--row-with_children">
 			<div class="content_rich--row--half">
 				<h3>Cuisine type:</h3>
-				<%= f.select :cuisine, options_for_select(@cuisines, (@recipe_cuisine ? @recipe_cuisine : '')), {include_blank: 'Select a cuisine'}, {class: "pretty_form--row--pretty_select"} %>
+				<%= f.select :cuisine, options_for_select(@cuisines, (@recipe_cuisine ? @recipe_cuisine : '')), {:prompt => "Select cuisine"}, {class: "choices--basis pretty_form--row--pretty_select"} %>
 			</div>
 			<div class="content_rich--row--half">
 				<h3>Yield (Servings):</h3>
@@ -76,8 +94,10 @@
 							<p><%= portion.ingredient.name %></p>
 							<br />
 							<% portion_unit = portion.unit %>
-							<%= number_field_tag "recipe[portions][#{portion.id}][amount]", round_if_whole(portion.amount), aria: {label: (portion.amount != nil && portion.amount.to_s != '' ? "Portion amount for this ingredient is " + ( portion_unit ? " " + pluralize(portion.amount, portion_unit.name) : portion.amount ) : "Portion amount for this ingredient is not set" )} %>
-							<%= select_tag "recipe[portions][#{portion.id}][unit_id]", options_from_collection_for_select(@units, "id", "name", portion.unit_id),  {class: "pretty_form--row--pretty_select", id: portion.ingredient.id, aria: {label: "Choose the right units for the ingredient"}} %>
+							<div class="ingredient_row_amount_with_unit">
+								<%= number_field_tag "recipe[portions][#{portion.id}][amount]", round_if_whole(portion.amount), aria: {label: (portion.amount != nil && portion.amount.to_s != '' ? "Portion amount for this ingredient is " + ( portion_unit ? " " + pluralize(portion.amount, portion_unit.name) : portion.amount ) : "Portion amount for this ingredient is not set" )}, class: "item_form--content_row--half_width_input" %>
+								<%= select_tag "recipe[portions][#{portion.id}][unit_id]", options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }, selected: portion.unit_id),  {class: "choices--basis pretty_form--row--pretty_select", id: portion.ingredient.id, aria: {label: "Choose the right units for the ingredient"}} %>
+							</div>
 							<br />
 							<%= check_box_tag "recipe[portion_delete_ids][]", portion.id, nil, {:id => portion.id} %>
 							<%= label_tag "recipe[portion_delete_ids][]", "Remove ingredient from recipe", {:for => portion.id, :title => "Delete this ingredient"} %>

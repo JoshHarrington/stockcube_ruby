@@ -1,15 +1,18 @@
 class Recipe < ApplicationRecord
-  has_many :portions
+  has_many :portions, dependent: :delete_all
   has_many :ingredients, through: :portions
+  has_many :planner_recipes, dependent: :delete_all
+  has_many :steps, class_name: "RecipeStep", dependent: :delete_all
+  accepts_nested_attributes_for :steps
+  has_many :recipe_authors, dependent: :delete_all
+  has_many :authors, through: :recipe_authors
 
-  belongs_to :user
+
+  belongs_to :user, optional: true
 
   # Favourited by users
   has_many :favourite_recipes # just the 'relationships'
   has_many :users, through: :favourite_recipes # the actual users favouriting a recipe
-
-  has_many :shopping_list_recipes
-  has_many :shopping_lists, through: :shopping_list_recipes
 
   has_many :user_recipe_stock_matches
 
@@ -30,9 +33,6 @@ class Recipe < ApplicationRecord
 
   searchkick
 
-  def should_index?
-    live
-  end
 
   def search_data
     {

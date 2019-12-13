@@ -28,7 +28,7 @@
 					</div>
 					<div class="item_form--content_row">
 						<%= text_field_tag "stock_items[#{stock.id}][amount]", round_if_whole(stock.amount), class: 'bordered' %>
-						<%= select_tag "stock_items[#{stock.id}][unit_id]", options_from_collection_for_select(@units, "id", "name", stock.unit_id), class: "pretty_form--row--pretty_select" %>
+						<%= select_tag "stock_items[#{stock.id}][unit_id]", options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }, selected: stock.unit_id), class: "pretty_form--row--pretty_select" %>
 					</div>
 					<div class="item_form--content_row">
 						<%= label_tag "stock_items[#{stock.id}][use_by_date]", 'Use by date'  %> <%= date_field_tag "stock_items[#{stock.id}][use_by_date]", stock.use_by_date, min: Date.current, validate: true %>

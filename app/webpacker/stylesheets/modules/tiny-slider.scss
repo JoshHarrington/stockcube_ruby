@@ -1,11 +1,95 @@
+.tiny-slider--title {
+	padding-left: em(22, 18);
+	margin-bottom: em(5, 18);
+	~ p {
+		padding-left: em(22, 15);
+		margin-bottom: em(9, 15);
+	}
+	~ .item_form--content_item_note {
+		margin-top: 0;
+	}
+}
+
 .tiny-wrapper {
 	display: flex;
 	align-items: stretch;
+}
+
+.tiny-slide {
+	min-height: em(250, 10);
+	.list_block--item--action--btn {
+		padding: em(6, 15);
+		min-width: em(30, 15);
+    margin-top: em(4, 15);
+	}
+	&.yesterday {
+		cursor: no-drop;
+		pointer-events: none;
+	}
 }
 
 .tiny-contents {
 	border: 1px solid gray;
 	padding: 10px;
 	height: 100%;
+	display: flex;
+	flex-direction: column;
+	.yesterday & {
+		position: relative;
+		&:before {
+			content: " ";
+			position: absolute;
+			height: 100%;
+			width: 100%;
+			background-color: rgba(41, 41, 41, 0.5);
+			top: 0;
+			left: 0;
+			z-index: 2;
+		}
+		.list_block--item
+		button.delete,
+		.list_block--item--tracking_bar {
+			display: none;
+		}
+	}
 }
 
+.tiny-drop {
+	flex-grow: 2;
+}
+
+.extra-tiny-wrapper {
+	margin-top: em(6, 10);
+	position: relative;
+}
+
+.tiny-control {
+	position: absolute;
+	height: em(40, 11);
+	width: em(40, 11);
+	top: 50%;
+	margin-top: em(-20, 11);
+	z-index: 3;
+	border: none;
+	background-color: $teal-80;
+	color: white;
+	&:disabled {
+		background-color: $teal-30;
+	}
+	&:not(:disabled):hover, &:not(:disabled):focus {
+		background-color: $teal-110;
+	}
+}
+
+.tiny-control--prev {
+	left: em(8, 11);
+	@media (max-width: $bp-mobile) {
+		left: 0;
+	}
+}
+.tiny-control--next {
+	right: em(8, 11);
+	@media (max-width: $bp-mobile) {
+		right: 0;
+	}
+}

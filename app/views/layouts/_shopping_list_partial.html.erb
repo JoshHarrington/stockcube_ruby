@@ -1,0 +1,79 @@
+<%
+	if defined?(shopping_list)
+		fetched_shopping_list_portions = shopping_list_portions(shopping_list)
+	else
+		fetched_shopping_list_portions = shopping_list_portions(nil)
+	end
+	@units = unit_list()
+%>
+
+<div class="planner_shopping_list--inner">
+	<div class="title_block">
+		<h2>Shopping List <% if fetched_shopping_list_portions.length > 0 %>(<%= checked_portions %>/<%= fetched_shopping_list_portions.length %>)<% end %></h2>
+		<% if fetched_shopping_list_portions.length > 0 %><p class="h6 item_form--content_item_note"><%= icomoon('information-outline')%> Checking off items adds them to <%= current_user ? (link_to "your cupboard", cupboards_path) : "the cupboard" %> automatically (once checked they'll disappear from the list in 24 hours)</p><% end %>
+
+		<% if current_user && !defined?(shopping_list) && fetched_shopping_list_portions.length > 0 %>
+			<%= link_to shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id), title: "View and share shopping list", class: "planner_shopping_list--fullscreen_btn" do %>
+				<%= icomoon('fullscreen') %>
+			<% end %>
+		<% elsif defined?(shopping_list) && params.has_key?(:gen_id) %>
+			<%= link_to (current_user ? planner_path : root_path), title: "Close shopping list share page", class: "planner_shopping_list--fullscreen_btn" do %>
+				<%= icomoon('fullscreen_exit') %>
+			<% end %>
+			<% page_link = root_url + params[:gen_id].to_s %>
+			<div class="planner_shopping_list--sharing_info">
+				<input type="text" readonly value="<%= page_link %>">
+				<p class="h6 item_form--content_item_note"><%= icomoon('information-outline')%> This is your sharing link, anyone who has access can tick off your shopping list items</p>
+			</div>
+		<% end %>
+	</div>
+	<% if fetched_shopping_list_portions.length == 0 %>
+		<ul><p>Shopping List is currently empty, move some recipes to <%= link_to 'your planner', planner_path %> to get items added to this list</p></ul>
+	<% else %>
+		<ul class="planner_sl-recipe_list">
+			<% fetched_shopping_list_portions.each do |portion| %>
+				<%
+					if portion.class.name == 'PlannerPortionWrapper'
+						if portion.combi_planner_shopping_list_portion != nil
+							num_assoc_recipes = portion.combi_planner_shopping_list_portion.planner_shopping_list_portions.length
+							portion_tag = 'Combi portion (' + num_assoc_recipes.to_s + 'recipes)'
+						else
+							portion_tag = 'Recipe portion - ' + portion.planner_shopping_list_portion.planner_recipe.recipe.title
+						end
+					elsif portion.class.name == "CombiPlannerShoppingListPortion"
+						num_assoc_recipes = portion.planner_shopping_list_portions.length
+						portion_tag = 'Combi portion (' + num_assoc_recipes.to_s + 'recipes)'
+					elsif portion.class.name == "PlannerShoppingListPortion"
+						portion_tag = 'Recipe portion - ' + portion.planner_recipe.recipe.title
+					else
+						portion_tag = 'Recipe portion'
+					end
+
+				 %>
+				<li id="<%= planner_portion_id_hash.encode(portion.id) %>" class="shopping_list_portion <%= portion.class.name == "CombiPlannerShoppingListPortion" ? 'combi_portion' : 'individual_portion' %> <%= portion.checked ? 'portion_checked' : '' %>">
+					<h6 class="mb-3 portion_recipe_tag"><%= portion_tag %></h6>
+					<p class="h3 portion_ingredient_name">
+						<%= check_box_tag "planner_shopping_list_portions_add[#{planner_portion_id_hash.encode(portion.id)}]", "planner_shopping_list_portions_add", portion.checked, class: "fancy_checkbox" %>
+						<%= label_tag "planner_shopping_list_portions_add[#{planner_portion_id_hash.encode(portion.id)}]", class: "fancy_checkbox_label" do %>
+							<%= portion.ingredient.name %>
+						<% end %>
+					</p>
+					<div class="shopping_list_portion-size_row">
+						<%= number_field_tag "planner_shopping_list_portions_amount[#{planner_portion_id_hash.encode(portion.id)}]", round_if_whole(portion.amount), min: round_if_whole(portion.amount) %>
+						<%= select_tag  "planner_shopping_list_portions_unit[#{planner_portion_id_hash.encode(portion.id)}]", options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }, selected: portion.unit_id),  {class: "choices--basis pretty_form--row--pretty_select", id: portion.ingredient.id, aria: {label: "Choose the right units for the ingredient"}} %>
+					</div>
+					<div class="shopping_list_portion-date_row">
+						<p class="shopping_list_portion-date_row-tag h6">Use by date:</p>
+						<%= date_field_tag "planner_shopping_list_portions_date[#{planner_portion_id_hash.encode(portion.id)}]", Date.current + 14.days, min: Date.current - 2.days, placeholder: (Date.current + 14.days).strftime("%d/%m/%Y") %>
+					</div>
+					<hr />
+				</li>
+			<% end %>
+		</ul>
+	<% end %>
+	<% if user_signed_in? && !defined?(shopping_list) && fetched_shopping_list_portions.length > 0 %>
+		<div class="planner_shopping_list-floating_action">
+			<%= link_to "Share shopping list", shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id), class: "list_block--collection--action"  %>
+		</div>
+	<% end %>
+</div>

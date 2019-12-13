@@ -12,19 +12,16 @@ import $ from 'jquery'
 global.$ = $
 global.jQuery = $
 
+import '../functions/global';
 import '../functions/general';
 import '../functions/alert';
 
-//// will need to include jquery ui - sortable to get sorting to work
 import '../functions/cupboard';
 import '../functions/list_block';
 import '../functions/navigation';
-import '../functions/vendor/selectize.min.js';
 import '../functions/stocks';
-import '../functions/portions';
 import '../functions/recipes';
-import '../functions/shopping_list';
 import '../functions/cupboard_share';
 import '../functions/user';
 import '../functions/feedback';
-import '../functions/dashboard';
+import '../functions/planner';

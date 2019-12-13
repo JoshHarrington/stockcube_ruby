@@ -1,4 +1,5 @@
 class UnitsController < ApplicationController
+	before_action :authenticate_user!
 	def show
 		@unit = Unit.find(params[:id])
 	end

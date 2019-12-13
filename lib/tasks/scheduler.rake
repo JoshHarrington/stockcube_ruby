@@ -4,7 +4,7 @@ task :send_check_email => :environment do
 	week_start = Time.now.beginning_of_day
 	week_end = week_start + 7.days
 	stock_going_off_array = []
-	User.where(activated: true).each do |user|
+	User.where.not(confirmed_at: nil).each do |user|
 		if user.user_setting.notify && user.user_setting.notify_day == Time.now.wday
 			user.cupboards.where(setup: false, hidden: false).each do |cupboard|
 				stock_going_off_array.push(cupboard.stocks.where("use_by_date BETWEEN ? AND ?", week_start, week_end).order(use_by_date: :desc).map(&:id))

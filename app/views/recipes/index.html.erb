@@ -4,7 +4,7 @@
     <div class="list_block--collection--wrap">
     <%= form_tag recipes_path, class: 'search_box--form',  method: :get do %>
         <div class="search_box">
-          <%= text_field_tag :search, params[:search], class: "bordered", placeholder: "what do you fancy? Tamales? Lancashire Hot Pot?", list: "recipe_search_autocomplete_list" %>
+          <%= text_field_tag :search, params[:search], class: "bordered", placeholder: "what do you fancy? Salsa Verde with Salmon? Stove Top Macaroni and Cheese?", list: "recipe_search_autocomplete_list" %>
           <datalist id="recipe_search_autocomplete_list">
             <% @recipe_search_autocomplete_list.each do |item| %>
               <option value="<%= item %>">
@@ -25,7 +25,9 @@
       <div class="list_block--collection list_block--collection__tight <% if defined? @mini_progress_on %>mini_progress<% end %>">
       <% @recipes.each do |recipe| %>
           <%
-            user_recipe_stock_match = UserRecipeStockMatch.where(user_id: current_user[:id], recipe_id: recipe[:id]).first
+            user_recipe_stock_matches = UserRecipeStockMatch.where(user_id: current_user[:id], recipe_id: recipe[:id])
+            next if user_recipe_stock_matches.length == 0
+            user_recipe_stock_match = user_recipe_stock_matches.first
             ingredient_stock_match_decimal = user_recipe_stock_match[:ingredient_stock_match_decimal]
             num_stock_ingredients = user_recipe_stock_match[:num_stock_ingredients]
             num_needed_ingredients = user_recipe_stock_match[:num_needed_ingredients]
@@ -83,7 +85,9 @@
         <div class="list_block--collection list_block--collection__tight">
           <% @fav_recipes_limit.each do |recipe| %>
             <%
-              user_recipe_stock_match = UserRecipeStockMatch.where(user_id: current_user[:id], recipe_id: recipe[:id]).first
+              user_recipe_stock_matches = UserRecipeStockMatch.where(user_id: current_user[:id], recipe_id: recipe[:id])
+              next if user_recipe_stock_matches.length == 0
+              user_recipe_stock_match = user_recipe_stock_matches.first
               ingredient_stock_match_decimal = user_recipe_stock_match[:ingredient_stock_match_decimal]
               num_stock_ingredients = user_recipe_stock_match[:num_stock_ingredients]
               num_needed_ingredients = user_recipe_stock_match[:num_needed_ingredients]

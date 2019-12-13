@@ -36,19 +36,17 @@ module CupboardHelper
 		end
 	end
 	def cupboard_empty_class(cupboard)
-		if cupboard.stocks.where(hidden: false).length == 0 || cupboard.stocks.empty? || (cupboard.stocks.length == 1 && cupboard.stocks.first.ingredient.name.downcase.to_s == "water")
+		stock_num = cupboard.stocks.select{|s| s.planner_recipe == nil && s.hidden == false && s.ingredient.name.downcase.to_s != "water" && s.use_by_date > Date.current - 4.day}.length
+		if stock_num < 1
 			return 'empty'
-		else
-			water_ingredient_id = Ingredient.where('lower(name) = ?', "water").first.id
-			stocks = cupboard.stocks.where(hidden: false).where.not(ingredient_id: water_ingredient_id).order(use_by_date: :desc)
-			days_from_now = (stocks.first.use_by_date - Date.current).to_i
-			if days_from_now <= -2
-				return 'empty all-out-of-date'
-			end
 		end
 	end
 	def cupboard_stocks_selection_in_date(cupboard)
-		@stocks = cupboard.stocks.where(hidden: false, always_available: false).where("use_by_date > ?", Date.current - 4.day).order(use_by_date: :desc)
+		@stocks = cupboard.stocks.select{|s| s.planner_recipe == nil && s.hidden == false && s.ingredient.name.downcase != 'water' && s.use_by_date > Date.current - 4.day}.sort_by{|s| s.use_by_date}
+		return @stocks
+	end
+	def planner_stocks(planner_recipe_id)
+		@stocks = PlannerRecipe.find(planner_recipe_id).stocks.select{|s| s.hidden == false && s.always_available == false && s.use_by_date > Date.current - 4.day}.sort_by{|s| s.use_by_date}
 		return @stocks
 	end
 end

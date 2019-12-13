@@ -1,29 +1,13 @@
 Rails.application.routes.draw do
-  match '/404', :to => 'errors#not_found', :via => :all
-  match '/500', :to => 'errors#internal_server_error', :via => :all
+  devise_for :users
+  match '/404', :to => 'errors#not_found', :via => :all, as: :errors_not_found
+  match '/500', :to => 'errors#internal_server_error', :via => :all, as: :errors_internal_server_error
   root 'static_pages#home'
   # get '/about' => 'static_pages#about'
 
   get '/logo', to: 'static_pages#logo'
 
   # get '/elements' => 'static_pages#elements'
-
-  get '/shopping_lists' => 'shopping_lists#index'
-  get '/shopping_lists/new' => 'shopping_lists#new'
-  get '/shopping_lists/current' => 'shopping_lists#show_ingredients_current', as: :current_shopping_list_ingredients
-  get '/shopping_lists/current/shop' => 'shopping_lists#shop'
-  get '/shopping_lists/archive_current' => 'shopping_lists#archive_shopping_list'
-  post '/shopping_lists' => 'shopping_lists#create'
-  post '/shopping_lists/autosave' => 'shopping_lists#autosave'
-  post '/shopping_lists/autosave_checked_items' => 'shopping_lists#autosave_checked_items'
-  post '/shopping_lists/reminder_email' => 'shopping_lists#send_shopping_list_reminder', as: :shopping_list_delay__with_notification
-  post '/shopping_lists/no_reminder_email' => 'shopping_lists#delay_shopping_list_process', as: :shopping_list_delay
-  post '/shopping_lists/shopping_list_to_cupboard' => 'shopping_lists#shopping_list_to_cupboard'
-  get '/shopping_lists/:id' => 'shopping_lists#show_ingredients', as: :shopping_list_ingredients
-  get '/shopping_lists/:id/edit' => 'shopping_lists#edit', as: :edit_shopping_list
-  patch '/shopping_lists/:id' => 'shopping_lists#update'
-  delete '/shopping_lists/:id/delete' => 'shopping_lists#delete', as: :delete_shopping_list
-
 
   get 'password_resets/new'
   get 'password_resets/edit'
@@ -33,8 +17,9 @@ Rails.application.routes.draw do
   get '/recipes/new' => 'recipes#new'
   get '/recipes/favourites' => 'recipes#favourites', as: :favourite_recipes
   get '/recipes/yours' => 'recipes#yours', as: :your_recipes
-  get '/recipes/update_matches' => 'recipes#update_recipe_stock_matches_method', as: :update_matches
+  post '/recipes/update_matches' => 'recipes#update_recipe_matches'
   get '/recipes/:id/add_to_shopping_list' => 'recipes#add_to_shopping_list'
+  get '/recipes/:id/favourite' => 'recipes#favourite'
   get '/recipes/:id/publish_update' => 'recipes#publish_update', as: :publish_update_recipe
   get '/recipes/:id/delete' => 'recipes#delete', as: :recipe_delete
   post '/recipes' => 'recipes#create'
@@ -49,10 +34,14 @@ Rails.application.routes.draw do
   get '/stocks/picks' => 'stocks#picks'
   get '/stocks/:id' => 'stocks#show', as: :stock
   get '/stocks/:id/edit' => 'stocks#edit', as: :edit_stock
+  get '/stocks/delete/:id' => 'stocks#delete_stock', as: :delete_stock
   patch '/stocks/:id' => 'stocks#update'
   post '/stocks' => 'stocks#create'
+  post '/stocks/add_portion' => 'stocks#add_shopping_list_portion'
+  post '/stocks/remove_portion' => 'stocks#remove_shopping_list_portion'
+  post '/stocks/add_shopping_list' => 'stocks#add_shopping_list'
   post '/stocks/new/:cupboard_id' => 'stocks#create'
-  post '/stocks/delete_stock' => 'stocks#delete_stock'
+  post '/stocks/delete/:id' => 'stocks#delete_stock', as: :delete_stock_post
 
   get '/cupboards' => 'cupboards#index'
   get '/cupboards/new' => 'cupboards#new'
@@ -79,32 +68,35 @@ Rails.application.routes.draw do
   patch '/ingredients/:id' => 'ingredients#update'
   post '/ingredients' => 'ingredients#create'
 
-  get  '/signup',  to: 'users#new', as: :users_new
-  post '/signup',  to: 'users#create'
-  get    '/login',   to: 'sessions#new'
-  post   '/login',   to: 'sessions#create'
-  delete '/logout',  to: 'sessions#destroy'
   delete '/demo_logout',   to: 'sessions#demo_logout'
 
   get '/quick_add_stock/new', to: 'user_fav_stocks#new'
   get '/quick_add_stock/:id/edit', to: 'user_fav_stocks#edit', as: :quick_add_stock_edit
 
-  get '/profile', to: 'users#show', as: :user_profile
-  get '/profile/edit', to: 'users#edit', as: :user_profile_edit
+  get '/profile', to: 'users#profile', as: :user_profile
   post '/users/notifications', to: 'users#notifications'
-  get '/google_login', to: redirect('/auth/google_oauth2')
-  get '/auth/google_oauth2/callback', to: 'users#google_auth'
+  get '/users', to: 'users#index', as: :user_list
+
+  devise_scope :user do get "/users/sign_out" => "devise/sessions#destroy" end
+
+  # get '/google_login', to: redirect('/auth/google_oauth2')
+  # get '/auth/google_oauth2/callback', to: 'users#google_auth'
 
   post '/feedback/submit' => 'feedback#submit'
 
-  get '/dashboard', to: 'dashboard#dash'
+  get '/planner', to: 'planner#index', as: :planner
+  get '/planner/shopping_list', to: 'planner#get_shopping_list_content'
+  post '/planner/shopping_list', to: 'planner#get_shopping_list_content'
+  get '/list/:gen_id', to: 'planner#list', as: :shopping_list_share
+  post '/planner/recipe_add', to: 'planner#recipe_add_to_planner'
+  post '/planner/recipe_update', to: 'planner#recipe_update_in_planner'
+  post '/planner/update_portion', to: 'planner#update_portion'
+  post '/planner/recipe_delete', to: 'planner#delete_recipe_from_planner'
 
-  resources :users
   resources :user_fav_stocks
   resources :account_activations, only: [:edit]
   resources :password_resets,     only: [:new, :create, :edit, :update]
   resources :recipes do
     put :favourite, on: :member
-    put :add_to_shopping_list, on: :member
   end
 end

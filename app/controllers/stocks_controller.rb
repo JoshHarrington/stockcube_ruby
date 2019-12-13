@@ -1,8 +1,9 @@
 class StocksController < ApplicationController
+
 	helper IntegerHelper
 	include StockHelper
 	include ShoppingListsHelper
-	before_action :logged_in_user
+	before_action :authenticate_user!, except: [:add_shopping_list_portion, :remove_shopping_list_portion]
 	before_action :correct_user, only: [:edit]
 	def index
 		@stocks = Stock.all
@@ -47,18 +48,16 @@ class StocksController < ApplicationController
 			redirect_to stocks_new_path(:cupboard_id => @cupboard_id_hashids.encode(new_cupboard[:id]))
 			flash[:warning] = %Q[Looks like you didn't have a cupboard to add stock to so we've created one for you]
 		end
-		@ingredients = Ingredient.all.sort_by{|i| i.name.downcase}
+		@ingredients = Ingredient.all.reject{|i| i.name == ''}.sort_by{|i| i.name.downcase}
 		if params.has_key?(:standard_use_by_limit) && params[:standard_use_by_limit]
 			@use_by_limit = Date.current + params[:standard_use_by_limit].to_i.days
 		else
 			@use_by_limit = Date.current + 2.weeks
 		end
-		@unit_select = Unit.where.not(name: nil)
 
 	end
 	def create
 		@stock = Stock.new(stock_params)
-		Rails.logger.debug params
 
 		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 
@@ -106,7 +105,6 @@ class StocksController < ApplicationController
     if @stock.save
 			redirect_to cupboards_path(anchor: cupboard_id_hashids.encode(@stock.cupboard_id))
 			update_recipe_stock_matches(@stock[:ingredient_id])
-			shopping_list_portions_update(current_user[:id])
 			StockUser.create(
 				stock_id: @stock.id,
 				user_id: current_user[:id]
@@ -142,26 +140,68 @@ class StocksController < ApplicationController
 		@stock = Stock.find(params[:id])
 		@current_cupboard = @stock.cupboard
 
-		@cupboards = current_user.cupboards.where(hidden: false, setup: false).order(created_at: :desc)
+		if @stock.planner_recipe_id == nil
+			@cupboards = current_user.cupboard_users.where(accepted: true).select{|cu| cu.cupboard.setup == false && cu.cupboard.hidden == false }.map{|cu| cu.cupboard }.sort_by{|c| c.updated_at}
+		else
+			@cupboards = []
+		end
 
 		@ingredients = Ingredient.all.sort_by{|i| i.name.downcase}
 		@current_ingredient = @stock.ingredient
-
-		@unit_select = Unit.where.not(name: nil)
 
 		@preselect_unit = @stock.unit_id
 
 		@delete_stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
 	end
+
+	def add_shopping_list_portion
+		toggle_stock_on_portion_check(params, 'add_portion')
+	end
+
+	def remove_shopping_list_portion
+		toggle_stock_on_portion_check(params, 'remove_portion')
+	end
+
+	def add_shopping_list
+		return unless current_user
+		current_user.planner_shopping_list.update_attributes(
+			ready: false
+		)
+		shopping_list = current_user.planner_shopping_list
+		portions = current_user.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}}.flatten
+		combi_portions = shopping_list.combi_planner_shopping_list_portions.select{|c|c.date > Date.current - 6.hours && c.date < Date.current + 7.day}
+		if combi_portions.length > 0
+			combi_portions.each do |combi_portion|
+				add_individual_portion_as_stock(combi_portion.planner_shopping_list_portions)
+				combi_portion.destroy
+			end
+		end
+
+		if portions.length > 0
+			add_individual_portion_as_stock(portions)
+		end
+
+		all_portions = combi_portions + portions
+		all_portion_ids = all_portions.map(&:ingredient_id)
+
+		update_recipe_stock_matches_core(all_portion_ids, current_user.id)
+
+		current_user.planner_shopping_list.update_attributes(
+			ready: true
+		)
+	end
+
 	def delete_stock
-		if params.has_key?(:stock_id) && params[:stock_id].to_s != ''
-			stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
-			decrypted_stock_id = stock_hashids.decode(params[:stock_id])
-			if current_user && current_user.stock.find(decrypted_stock_id).length
-				current_user.stock.find(decrypted_stock_id.class == Array ? decrypted_stock_id.first : decrypted_stock_id).delete
-			else
-				Rails.logger.debug "No stock found with that id for that user"
-				flash[:warning] = %Q[Something went wrong! Please email <a href="mailto:help@getstockcubes.com">mailto:help@getstockcubes.com</a> for support."]
+		if params.has_key?(:id) && params[:id].to_s != ''
+			delete_stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
+			cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+			decrypted_stock_id = delete_stock_hashids.decode(params[:id])
+			return unless current_user && current_user.stocks.find(decrypted_stock_id).length > 0
+			stock = current_user.stocks.find(decrypted_stock_id).first
+			cupboard_id = stock.cupboard_id
+			stock.destroy
+			if !params.has_key?(:type) || (params.has_key?(:type) && params[:type].to_s != 'post')
+				redirect_to cupboards_path(anchor: cupboard_id_hashids.encode(cupboard_id))
 			end
 		end
 	end
@@ -179,7 +219,6 @@ class StocksController < ApplicationController
 			cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 			redirect_to cupboards_path(anchor: cupboard_id_hashids.encode(@stock.cupboard_id))
 			update_recipe_stock_matches(@stock[:ingredient_id])
-			shopping_list_portions_update(current_user[:id])
 		else
 			flash[:danger] = %Q[Looks like there was a problem, make sure you pick an ingredient, and set a stock amount]
 			redirect_to edit_stock_path(@stock), fallback: cupboards_path
@@ -190,14 +229,6 @@ class StocksController < ApplicationController
 			params.require(:stock).permit(:amount, :use_by_date, :unit_id, :ingredient_id, :cupboard_id)
 		end
 
-		# Confirms a logged-in user.
-		def logged_in_user
-			unless logged_in?
-				store_location
-				flash[:danger] = "Please log in."
-				redirect_to login_url
-			end
-		end
 
 		def correct_user
 			stock = Stock.find(params[:id])

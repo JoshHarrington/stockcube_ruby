@@ -2,7 +2,9 @@ class Stock < ApplicationRecord
 	belongs_to :cupboard
 	belongs_to :ingredient
 	belongs_to :unit
-	has_many :stock_users
+	belongs_to :planner_recipe, optional: true
+	belongs_to :planner_shopping_list_portion, optional: true
+	has_many :stock_users, dependent: :delete_all
 	has_many :users, through: :stock_users
 
 	accepts_nested_attributes_for :ingredient,

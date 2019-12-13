@@ -3,10 +3,11 @@ class RecipesController < ApplicationController
 	include ActionView::Helpers::UrlHelper
 	include ShoppingListsHelper
 	include StockHelper
+	include UnitsHelper
 
 	require 'will_paginate/array'
 
-	before_action :logged_in_user, only: [:edit, :new, :index]
+	before_action :authenticate_user!, except: [:show]
 	before_action :correct_user_or_admin, 	 only: [:edit, :publish_update, :delete]
 
 	def index
@@ -16,11 +17,11 @@ class RecipesController < ApplicationController
 		### setup session record with recipe ingredient cupboard match
 		###  - should also update on stock changes
 
-		@fallback_recipes_unformatted = current_user.user_recipe_stock_matches.order(ingredient_stock_match_decimal: :desc).map{|user_recipe_stock_match| user_recipe_stock_match.recipe if user_recipe_stock_match.recipe && user_recipe_stock_match.recipe.portions.length != 0 && (user_recipe_stock_match.recipe[:public] || user_recipe_stock_match.recipe[:user_id] == current_user[:id]) }.compact
+		@fallback_recipes_unformatted = current_user.user_recipe_stock_matches.order(ingredient_stock_match_decimal: :desc).map{|user_recipe_stock_match| user_recipe_stock_match.recipe if user_recipe_stock_match.recipe && user_recipe_stock_match.recipe.portions.length != 0 && ((user_recipe_stock_match.recipe[:public] && user_recipe_stock_match.recipe[:live]) || user_recipe_stock_match.recipe[:user_id] == current_user[:id]) }.compact
 		@fallback_recipes = @fallback_recipes_unformatted.paginate(:page => params[:page], :per_page => 12)
 
-		if params.has_key?(:search) && params[:search].to_s != ''
-			@recipes = Recipe.search(params[:search], operator: 'or', fields: ["ingredient_names^12", "title^4", "cuisine^3", "description^1"]).results.uniq.paginate(:page => params[:page], :per_page => 12)
+		if params.has_key?(:search) && params[:search].to_s != '' && user_signed_in?
+			@recipes = Recipe.where(live: true, public: true).or(Recipe.where(user_id: current_user[:id])).search(params[:search], operator: 'or', fields: ["ingredient_names^12", "title^4", "cuisine^3"]).results.uniq.paginate(:page => params[:page], :per_page => 12)
 
 			@ingredient_results = Ingredient.search(params[:search],  operator: 'or').results
 
@@ -42,9 +43,12 @@ class RecipesController < ApplicationController
 
 		@recipe_search_autocomplete_list = (recipe_titles + ingredients).sort_by(&:downcase)
 
-		if UserRecipeStockMatch.where(user_id: current_user[:id]).order("updated_at desc").first.updated_at < 12.hours.ago
-			flash[:sticky_recipe] = %Q[Looks like it's been a while since your recipe list got updated based on your stock, would you like to do that now? <br/><a class="button" href="/recipes/update_matches">Yes, update!</a> <button class="button button-secondary dismiss_no_update recipe_no_update_cookie_set">No thanks</button>]
-		end
+		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
+		planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
+
+		date = Date.current + 1.days
+		date_num = date.to_formatted_s(:number)
+		@date_hashed_id = planner_recipe_date_hash.encode(date_num)
 
 	end
 
@@ -64,26 +68,54 @@ class RecipesController < ApplicationController
 		# 	flash.alert = "Looks like there are similar ingredients, #{link_to('edit and combine', edit_recipe_path(@recipe))} these similar ingredients into one and delete the others"
 		# end
 
-		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
-		@cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: @cupboard_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
+		if current_user
+			if (@recipe.live != true || @recipe.public != true) && current_user != @recipe.user
+				redirect_to root_path
+			end
+			@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
+			@cupboard_stock_in_date_ingredient_ids = Stock.where(cupboard_id: @cupboard_ids, hidden: false).where("use_by_date >= :date", date: Date.current - 2.days).uniq { |s| s.ingredient_id }.map{ |s| s.ingredient.id }.compact
+		elsif @recipe.live != true || @recipe.public != true
+			redirect_to root_path
+		end
+
+
+		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
+		planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
+
+		date = Date.current + 1.days
+		date_num = date.to_formatted_s(:number)
+		@date_hashed_id = planner_recipe_date_hash.encode(date_num)
 
 	end
 	def favourites
+		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@fav_recipes = current_user.favourites.paginate(:page => params[:page], :per_page => 12)
 	end
 	def yours
+		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@recipes = current_user.recipes.order("updated_at desc").paginate(:page => params[:page], :per_page => 12)
 	end
 	def new
 		@recipe = Recipe.new
-		@units = Unit.all
-		@cuisines = Recipe.all.map{|r| r[:cuisine] if !(r[:cuisine].nil? || r[:cuisine].empty? )}.compact.uniq.compact.sort
+		@units = unit_list()
+		@cuisines = ["American", "British", "Caribbean", "Chinese", "French", "Greek", "Indian", "Italian", "Japanese", "Mediterranean", "Mexican", "Moroccan", "Spanish", "Thai", "Turkish", "Vietnamese"]
   end
   def create
 		@recipe = Recipe.new(recipe_params)
-		@units = Unit.all
-		@cuisines = Recipe.all.map{|r| r[:cuisine] if !(r[:cuisine].nil? || r[:cuisine].empty? )}.compact.uniq.compact.sort
+		@units = unit_list()
 		if @recipe.save
+			if params.has_key?(:new_recipe_steps)
+				params[:new_recipe_steps].each_with_index do |content, index|
+					if content.to_s != ''
+						step = RecipeStep.create(
+							recipe_id: @recipe.id,
+							content: content,
+							number: index
+						)
+					end
+				end
+			end
+
 			if params.has_key?(:redirect) && params[:redirect].to_s != ''
 				redirect_to portions_new_path(:recipe_id => @recipe.id)
 			else
@@ -100,9 +132,9 @@ class RecipesController < ApplicationController
 	def edit
 		@recipe = Recipe.find(params[:id])
 		@portions = @recipe.portions.order("created_at ASC")
-		@units = Unit.all
+		@units = unit_list()
 		@recipe_cuisine = @recipe.cuisine.to_s != '' ? @recipe.cuisine : nil
-		@cuisines = Recipe.all.map{|r| r[:cuisine] if !(r[:cuisine].nil? || r[:cuisine].empty? )}.compact.uniq.compact.sort
+		@cuisines = ["American", "British", "Caribbean", "Chinese", "French", "Greek", "Indian", "Italian", "Japanese", "Mediterranean", "Mexican", "Moroccan", "Spanish", "Thai", "Turkish", "Vietnamese"]
 
 		similar_portions_count = 0
 		@portions.each do |portion|
@@ -117,7 +149,7 @@ class RecipesController < ApplicationController
 	def update
 		@recipe = Recipe.find(params[:id])
 		@portions = @recipe.portions
-		@units = Unit.all
+		@units = unit_list()
 
 		@delete_portion_check_ids = params[:recipe][:portion_delete_ids]
 
@@ -143,9 +175,37 @@ class RecipesController < ApplicationController
 			end
 		end
 
+		if params[:recipe].has_key?(:steps)
+			params[:recipe][:steps].to_unsafe_h.map do |step_id, values|
+				if step_id != nil
+					step = RecipeStep.find_by(id: step_id.to_i, recipe_id: @recipe.id)
+				end
+				if values[:content].to_s == ''
+					step.destroy
+				elsif step.content != values[:content].to_s
+					step.update_attributes(
+						content: values[:content],
+						number: @recipe.steps.length > 0 ? (@recipe.steps.where.not(number: nil).order(:number).last.number + 1) : 0
+					)
+				end
+			end
+		end
+
+		if params.has_key?(:new_recipe_steps)
+			params[:new_recipe_steps].map do |content|
+				if content.to_s != ''
+					step = RecipeStep.create(
+						recipe_id: @recipe.id,
+						content: content,
+						number: @recipe.steps.length > 0 ? (@recipe.steps.where.not(number: nil).order(:number).last.number + 1) : 0
+					)
+				end
+			end
+		end
+
 		if params.has_key?(:redirect) && params[:redirect].to_s != ''
 			@recipe.update(recipe_params.except(:user_id))
-			if @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' || @recipe.portions.length == 0
+			if @recipe.steps.length == 0 || @recipe.cook_time.to_s == '' || @recipe.portions.length == 0
 				@recipe.update_attributes(live: false)
 			end
 			redirect_to portions_new_path(:recipe_id => params[:id])
@@ -153,7 +213,7 @@ class RecipesController < ApplicationController
 			update_recipe_stock_matches(nil, nil, @recipe.id)
 		else
 			if @recipe.update(recipe_params.except(:user_id))
-				if @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' || @recipe.portions.length == 0
+				if @recipe.steps.length == 0 || @recipe.cook_time.to_s == '' || @recipe.portions.length == 0
 					@recipe.update_attributes(live: false)
 				end
 				redirect_to recipe_path(@recipe)
@@ -171,6 +231,11 @@ class RecipesController < ApplicationController
 	def update_recipe_stock_matches_method
 		update_recipe_stock_matches
 		redirect_back fallback_location: recipes_path
+	end
+
+	def update_recipe_matches
+		return head(:forbidden) unless user_signed_in?
+		update_recipe_stock_matches_core
 	end
 
 	def publish_update
@@ -235,42 +300,10 @@ class RecipesController < ApplicationController
       redirect_back fallback_location: root_path, notice: 'Nothing happened.'
     end
 	end
-	def add_to_shopping_list
-		@recipe = Recipe.find(params[:id])
-
-		if @recipe.portions.length > 0
-			recipe_title = @recipe.title
-
-			shopping_list_portions_set_from_recipes(@recipe.id, nil, current_user.id, nil)
-
-			# give notice that the recipe has been added with link to shopping list
-			if current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last[:archived] === false && current_user.shopping_lists.order('updated_at asc').last.recipes.length > 0
-				@string = "Added the '#{@recipe.title}' to your #{link_to("current shopping list", shopping_lists_current_shop_path)}"
-				redirect_back fallback_location: recipes_path, notice: @string
-			end
-		else
-			@string = %Q[That recipe's not ready to be used to build a shopping list, you need to #{link_to("add some ingredients", edit_recipe_path(@recipe))}]
-			redirect_back fallback_location: recipes_path, notice: @string
-		end
-
-	end
 
 	private
 		def recipe_params
-			params.require(:recipe).permit(:user_id, :search, :live, :public, :cuisine, :search_ingredients, :title, :description, :prep_time, :cook_time, :yield, :note, portions_attributes:[:amount, :unit_id, :ingredient_id, :recipe_id, :_destroy])
-		end
-
-		def shopping_list_params
-      params.require(:shopping_list).permit(:id, :date_created, recipes_attributes:[:id, :title, :description])
-    end
-
-		# Confirms a logged-in user.
-		def logged_in_user
-			unless logged_in?
-				store_location
-				flash[:danger] = "Please log in."
-				redirect_to root_url
-			end
+			params.require(:recipe).permit(:user_id, :steps, :portions, :search, :live, :public, :cuisine, :search_ingredients, :title, :prep_time, :cook_time, :yield, :note, portions_attributes:[:amount, :unit_id, :ingredient_id, :recipe_id, :_destroy], steps_attributes: [:content])
 		end
 
 		# Confirms an correct user.

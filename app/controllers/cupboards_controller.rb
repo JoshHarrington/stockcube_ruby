@@ -1,16 +1,18 @@
 class CupboardsController < ApplicationController
+	before_action :authenticate_user!
 	require 'set'
 	include StockHelper
 	include ShoppingListsHelper
-	before_action :logged_in_user, only: [:index, :show, :new, :create, :edit_all, :share, :share_request, :accept_cupboard_invite, :autosave, :autosave_sorting, :edit, :update]
+	include CupboardHelper
+
 	before_action :correct_user,   only: [:show, :edit, :update]
 	def index
-		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
-		@cupboards = Cupboard.where(id: @cupboard_ids).order(created_at: :desc)
+		@cupboards = current_user.cupboard_users.where(accepted: true).select{|cu| cu.cupboard.setup == false && cu.cupboard.hidden == false }.map{|cu| cu.cupboard }.sort_by{|c| c.created_at}.reverse!
+		@planner_recipes = current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.days}.reject{|pr| planner_stocks(pr.id).length == 0}
 		@user_fav_stocks = current_user.user_fav_stocks.order('updated_at desc')
 		@cupboard_users_hashids = Hashids.new(ENV['CUPBOARD_USER_ID_SALT'])
 		@quick_add_hashids = Hashids.new(ENV['QUICK_ADD_STOCK_ID_SALT'])
-		@stock_hashids = Hashids.new(ENV['CUPBOARD_STOCK_ID_SALT'])
+		@delete_stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
 		@cupboard_sharing_hashids = Hashids.new(ENV['CUPBOARD_SHARING_ID_SALT'])
 		@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 	end
@@ -57,7 +59,10 @@ class CupboardsController < ApplicationController
 		end
 
 		@cupboard_name = @cupboard.location
-		@all_other_cupboard_users = User.where(id: current_user.cupboards.where.not(id: decrypted_cupboard_id).order(location: :asc).where(hidden: false, setup: false).map(&:users)[0].where.not(id: @cupboard.users.map(&:id)).uniq.map(&:id))
+		@all_other_cupboard_users = []
+		if current_user.cupboards.length > 1
+			@all_other_cupboard_users = User.where(id: current_user.cupboards.where.not(id: decrypted_cupboard_id).order(location: :asc).where(hidden: false, setup: false).map(&:users)[0].where.not(id: @cupboard.users.map(&:id)).uniq.map(&:id))
+		end
 
 
 
@@ -120,6 +125,20 @@ class CupboardsController < ApplicationController
 							redirect_to cupboard_share_path(params[:id], cupboard_user_emails: cupboard_user_emails_string)
 						end
 					else
+						## user does not get added to cupboard currently
+						## need new table of sharing requests to accounts that don't yet exist that gets checked on setup of new users
+						## if cupboard was shared with this user that gets created with an email in that table then cupboard should be optionally added
+
+						unless CupboardInvitee.find_by(email: email)
+							CupboardInvitee.create(
+								email: email,
+								cupboard_id: cupboard.id
+							)
+						end
+
+						## could show as faded out cupboard on in users /cupboards view that they can add or delete
+						## would need to show notification dot on cupboards to show activity.
+
 						CupboardMailer.sharing_cupboard_request_new_account(email, current_user, encoded_cupboard_id).deliver_now
 						flash[:success] = "#{cupboard.location} shared!"
 					end
@@ -174,7 +193,6 @@ class CupboardsController < ApplicationController
 			end
 			stock_ingredient_ids = @stock_to_delete.map(&:ingredient_id).uniq
 			update_recipe_stock_matches(stock_ingredient_ids)
-			shopping_list_portions_update(current_user[:id])
 		end
 		if params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != '' && current_user.cupboards.where(hidden: false, setup: false).length > 1 && Cupboard.find(params[:cupboard_id_delete]).cupboard_users.where(owner: true).first.user == current_user
 			@cupboard_to_delete = Cupboard.find(params[:cupboard_id_delete].to_i)
@@ -187,26 +205,15 @@ class CupboardsController < ApplicationController
 			# 	flash[:warning] = "Don't delete that cupboard! It's the last one you have :O"
 		end
 	end
+
 	def autosave_sorting
-		if current_user && params.has_key?(:stock_id) && params.has_key?(:cupboard_id) && params.has_key?(:old_cupboard_id) && params[:stock_id].to_s != '' && params[:cupboard_id].to_s != '' && params[:old_cupboard_id].to_s != ''
-			@stock_to_edit = Stock.where(id: params[:stock_id]).first
-			@stock_to_edit.update_attributes(
-				cupboard_id: params[:cupboard_id]
-			)
-		end
+		return unless current_user && params.has_key?(:stock_id) && params.has_key?(:cupboard_id) && params.has_key?(:old_cupboard_id) && params[:stock_id].to_s != '' && params[:cupboard_id].to_s != '' && params[:old_cupboard_id].to_s != ''
+		@stock_to_edit = Stock.where(id: params[:stock_id]).first
+		@stock_to_edit.update_attributes(
+			cupboard_id: params[:cupboard_id]
+		)
 	end
-	def delete_cupboard_stock
-		if params.has_key?(:cupboard_stock_id) && params[:cupboard_stock_id].to_s != ''
-			stock_hashids = Hashids.new(ENV['CUPBOARD_STOCK_ID_SALT'])
-			decrypted_stock_id = stock_hashids.decode(params[:cupboard_stock_id])
-			if current_user && current_user.stock.find(decrypted_stock_id).length
-				current_user.stock.find(decrypted_stock_id.class == Array ? decrypted_stock_id.first : decrypted_stock_id).delete
-			else
-				Rails.logger.debug "No stock found with that id for that user"
-				flash[:warning] = %Q[Something went wrong! Please email <a href="mailto:help@getstockcubes.com">mailto:help@getstockcubes.com</a> for support."]
-			end
-		end
-	end
+
 	def delete_quick_add_stock
 		if params.has_key?(:quick_add_stock_id) && params[:quick_add_stock_id].to_s != ''
 			quick_add_hashids = Hashids.new(ENV['QUICK_ADD_STOCK_ID_SALT'])
@@ -286,20 +293,10 @@ class CupboardsController < ApplicationController
 		end
 
 		redirect_to cupboards_path
-		shopping_list_portions_update(current_user[:id])
   end
 	private
 		def cupboard_params
 			params.require(:cupboard).permit(:location, :communal, stocks_attributes:[:id, :amount, :use_by_date, :_destroy])
-		end
-
-		# Confirms a logged-in user.
-		def logged_in_user
-			unless logged_in?
-				store_location
-				flash[:danger] = "Please log in."
-				redirect_to login_url
-			end
 		end
 
 		# Confirms the correct user.

@@ -4,6 +4,7 @@
 @import "base/reset.scss";
 @import "base/font.scss";
 @import "base/layout.scss";
+@import "base/utils.scss";
 
 @import "ruby_specific/debug.scss";
 
@@ -33,6 +34,9 @@
 @import "modules/footer.scss";
 @import "modules/angel.scss";
 @import "modules/tiny-slider.scss";
+@import "modules/planner_shopping_list.scss";
 
-@import "selectize.scss";
+@import "modules/choices_select.scss";
 @import url("https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.1/tiny-slider.css");
+
+@import "section_specific/recipes.scss"

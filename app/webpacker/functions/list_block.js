@@ -87,7 +87,6 @@ var listBlockEdit = function(page) {
 		$list_block.removeClass('edit_mode delete_mode');
 
 		if (dataString != '') {
-			console.log('hi', dataString);
 			$.ajax({
 				type: "POST",
 				beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},

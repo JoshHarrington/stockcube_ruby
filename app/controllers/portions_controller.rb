@@ -1,4 +1,7 @@
 class PortionsController < ApplicationController
+	before_action :authenticate_user!
+	include UnitsHelper
+
 	def show
 		@portion = Portion.find(params[:id])
 		@units =	@portion.units
@@ -6,13 +9,11 @@ class PortionsController < ApplicationController
 	def new
 		@portion = Portion.new
 		@ingredients = Ingredient.all.order('name ASC')
-		@unit_select = Unit.all.map{|u| u if u.name != nil }.compact
 	end
 	def create
 		@portion = Portion.new(portion_params)
 		@ingredients = Ingredient.all.order('name ASC')
 		@assoc_recipe = Recipe.find(params[:portion][:recipe_id])
-		@unit_select = Unit.all.map{|u| u if u.name != nil }.compact
 		new_stuff_added = false
 
 

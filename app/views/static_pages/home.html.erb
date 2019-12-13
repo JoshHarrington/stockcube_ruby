@@ -2,13 +2,13 @@
 
 <section class="feature-banner--title">
   <div class="feature-banner--title-content">
-    <% if logged_in? && current_user %>
+    <% if user_signed_in? %>
       <span class="feature-banner--title-tagline">Hello there</span>
     <% else %>
       <span class="feature-banner--title-tagline">Say hello to</span>
     <% end %>
     <h1><span>Stockcubes</span><%= icomoon('logo', '0 0 38 20') %>
-      <% if logged_in? && current_user %>
+      <% if user_signed_in? %>
       <span class="speech_bubble speech_bubble-little">hi</span>
       <% else %>
       <span class="speech_bubble">well hello there</span>
@@ -78,7 +78,7 @@
 </section>
 
 <section class="feature-banner--sibling">
-  <% if logged_in? && current_user %>
+  <% if user_signed_in? %>
     <h2>Want to get more involved?</h2>
     <ul>
       <li><p>Check out the <%= link_to 'roadmap', 'https://trello.com/b/5mJZ882b/stockcubes-roadmap-work-in-progress', target: "_blank" %></p></li>
@@ -100,6 +100,6 @@
       <li><p>Build shopping lists with recipes</p></li>
     </ul>
 
-    <%= link_to "Get involved!", signup_path, class: "list_block--collection--action" %>
+    <%= link_to "Get involved!", new_user_registration_path, class: "list_block--collection--action" %>
   <% end %>
 </section>

@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Lato:400,700');
 
-:root, .selectize-control {
+:root {
 	font-family: 'Lato', sans-serif;
 }
 
@@ -10,6 +10,7 @@ label,
 input,
 textarea,
 .alert,
+span.p,
 .debug_dump,
 .pagination>*,
 div.list_block--item {
@@ -98,4 +99,17 @@ sub {
 
 strong {
 	font-weight: 700;
+}
+
+.ol {
+	list-style: decimal;
+	font-size: em(16, 10);
+	padding-left: em(16, 16);
+	p, textarea {
+		font-size: inherit;
+	}
+	textarea {
+		vertical-align: top;
+		margin-bottom: em(16, 16);
+	}
 }

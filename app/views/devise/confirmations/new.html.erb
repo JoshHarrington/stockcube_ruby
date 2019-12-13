@@ -1,0 +1,25 @@
+<% provide(:title, 'Resend confirmation instructions') %>
+
+<div class="pretty_form">
+  <div class="pretty_form--sibling">
+    <h1>Resend confirmation instructions</h1>
+  </div>
+
+  <%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
+    <%= render "devise/shared/error_messages", resource: resource %>
+
+    <div class="pretty_form--row">
+      <%= f.label :email %><br />
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
+    </div>
+
+    <div class="pretty_form--actions">
+      <%= f.submit "Resend confirmation instructions", class: "pretty_form--submit_button" %>
+    </div>
+  <% end %>
+
+  <div class="pretty_form--sibling">
+    <hr />
+    <%= render "devise/shared/links" %>
+  </div>
+</div>

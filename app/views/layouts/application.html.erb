@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="no-js">
+<html class="no-js <%= shopping_list_class %>">
   <head>
     <% if Rails.env.production? %>
       <% if request.host == 'demo.getstockcubes.com' %>
@@ -66,12 +66,18 @@
     <meta name="msapplication-wide310x150logo" content="<%= asset_pack_path('assets/favicons/mstile-310x150.png')%>" />
     <meta name="msapplication-square310x310logo" content="<%= asset_pack_path('assets/favicons/mstile-310x310.png')%>" />
 
+    <!-- Choices CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+
     <% if Rails.env.development? %>
       <%= javascript_pack_tag 'tota11y' %>
     <% end %>
     <%= javascript_pack_tag 'modernizr-custom' %>
     <%= stylesheet_pack_tag 'stylesheet' %>
     <%= javascript_pack_tag 'application' %>
+    <% if user_signed_in? %>
+      <script>window["user_signed_in?"] = true</script>
+    <% end %>
   </head>
 
   <body class="<%= controller_name %>_controller <%= action_name %>_page">
@@ -111,6 +117,19 @@
           </div>
         <% end %>
         <main>
+          <% if current_user && !(params[:controller] == 'planner' && params[:action] == 'list') %>
+            <aside class="planner_shopping_list--wrapper">
+            	<button class="list_toggle">
+                <span class="cross icon_char" title="Close shopping list">
+                  <%= icomoon('close') %>
+                </span>
+                <span class="chevron_left icon_char" title="Open shopping list">
+                  <%= icomoon('navigate_before') %>
+                </span>
+              </button>
+              <%= render 'layouts/shopping_list_partial' %>
+            </aside>
+          <% end %>
           <%= yield %>
           <%= debug(params) if Rails.env.development? %>
         </main>

@@ -10,17 +10,39 @@ module UsersHelper
   end
   def new_user(user)
     ### setup user with some fav stock for quick add
-    @tomatoe_id = Ingredient.where(name: "Tomatoes").first.id
-    @egg_id = Ingredient.where(name: "Egg").first.id
-    @bread_id = Ingredient.where(name: "Bread (White)").first.id  ## need to add (to production)
-    @milk_id = Ingredient.where(name: "Milk").first.id
-    @onion_id = Ingredient.where(name: "Onion").first.id
-    @cheese_id = Ingredient.where(name: "Cheese (Cheddar)").first.id
+    @tomatoe_id = Ingredient.find_or_create_by(name: "Tomatoes").id
+    @egg_id = Ingredient.find_or_create_by(name: "Egg").id
+    @bread_id = Ingredient.find_or_create_by(name: "Bread (White)").id
+    @milk_id = Ingredient.find_or_create_by(name: "Milk").id
+    @onion_id = Ingredient.find_or_create_by(name: "Onion").id
+    @cheese_id = Ingredient.find_or_create_by(name: "Cheese (Cheddar)").id
 
-    @each_unit_id = Unit.where(name: "Each").first.id
-    @loaf_unit_id = Unit.where(name: "Loaf").first.id 	## need to add (to production)
-    @pint_unit_id = Unit.where(name: "Pint").first.id
-    @gram_unit_id = Unit.where(name: "Gram").first.id
+    units_to_check = ["Each", "Loaf", "Pint", "Gram"]
+    units_to_check.each do |unit|
+      model = Unit.where('lower(name) = ?', name.downcase).first
+      model ||= Unit.create(:name => unit)
+      if unit == "Each"
+        @each_unit_id = model.id
+      end
+      if unit == "Loaf"
+        @loaf_unit_id = model.id
+      end
+      if unit == "Pint"
+        @pint_unit_id = model.id
+        model.update_attributes(metric_ratio: 568.261, unit_type: "Volume")
+      end
+      if unit == "Gram"
+        @gram_unit_id = model.id
+      end
+    end
+
+    if CupboardInvitee.find_by(email: user.email).present?
+      cupboard_invitee = CupboardInvitee.find_by(email: user.email)
+      CupboardUser.create(
+        user_id: user.id,
+        cupboard_id: cupboard_invitee.cupboard_id
+      )
+    end
 
     UserFavStock.create(
       ingredient_id: @tomatoe_id,
@@ -92,6 +114,6 @@ module UsersHelper
       use_by_date: Date.current + 100.years
     )
 
-    update_recipe_stock_matches(nil, user.id)
+    update_recipe_stock_matches_core(nil, user.id)
   end
 end

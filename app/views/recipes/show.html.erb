@@ -4,6 +4,7 @@
   if @recipe.title
     background_image_url = 'https://source.unsplash.com/1200x800/weekly?' + URI::encode(@recipe.title).to_s.downcase + ',food'
   end
+  user_note_when_lacking_content = 'Not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe
 %>
 
 <% provide(:title, "Recipe: #{@recipe.title}") %>
@@ -17,7 +18,7 @@
     <div class="content_rich--title_block">
       <div class="content_rich--title_row">
         <h1 class="recipe-title">
-        <% if current_user %>
+        <% if user_signed_in? %>
           <% current_user.favourites.include?(@recipe) ? fav_status = "unfavourite" : fav_status = "favourite" %>
           <%= link_to favourite_recipe_path(@recipe, type: fav_status), title: fav_status, class: "heart_stat_#{fav_status}", method: :put do %>
             <%= icomoon('heart') %>
@@ -25,17 +26,23 @@
               <%= @recipe.title %>
             </span>
           <% end %>
+        <% else %>
+          <span class="content_rich--title_text">
+            <%= @recipe.title %>
+          </span>
         <% end %>
         </h1>
-        <% if current_user && current_user.activated && ((@recipe[:user_id] && @recipe[:user_id] == current_user[:id]) || current_user.admin)  %>
+        <% if user_signed_in? && current_user.confirmed_at != nil && ((@recipe[:user_id] && @recipe[:user_id] == current_user[:id]) || current_user.admin)  %>
           <%= link_to edit_recipe_path(@recipe), class: "list_block--collection--action" do %>
             <span>Edit recipe</span>
             <%= icomoon('edit') %>
           <% end  %>
         <% end %>
-        <% unless (current_user.shopping_lists.length > 0 && current_user.shopping_lists.order('updated_at asc').last.archived == false && @recipe.shopping_lists.include?(current_user.shopping_lists.order('updated_at asc').last)) || @recipe.portions.length == 0 || !(@recipe.live) %>
-          <%= link_to 'Add to shopping list', add_to_shopping_list_recipe_path(@recipe), class: 'list_block--collection--action', title: 'add to shopping list', method: :put %>
-        <% end %>
+        <% if @recipe.live && @recipe.portions.length > 0 && !(current_user.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.recipe.id }.include?(@recipe.id)) %>
+						<%= button_tag class: 'list_block--collection--action', id: 'add_recipe_to_planner', title: 'Add this recipe to your planner', data: {"recipe-id": @recipe_id_hash.encode(@recipe.id), "date": @date_hashed_id } do %>
+							Add to planner
+						<% end %>
+					<% end %>
       </div>
       <% if current_user && current_user == @recipe.user %>
         <p class="recipe_cuisine"><%= (@recipe.cuisine.to_s == '' || !@recipe.cuisine) ? 'Cuisines type not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe : (@recipe.cuisine.to_s +  ' Cuisine') %></p>
@@ -51,20 +58,20 @@
           <% if kosher?(@recipe) %><span class="recipe_info_tags--item">Kosher &check;</span><% end %>
         </div>
       <% end %>
-      <% if @recipe[:user_id] == current_user[:id] && @recipe.portions.length > 0 && @recipe.description.to_s != '' && @recipe.cook_time.to_s != '' %>
+      <% if user_signed_in? && @recipe[:user_id] == current_user[:id] && @recipe.portions.length > 0 && @recipe.steps.length > 0 && @recipe.cook_time.to_s != '' %>
         <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe is <%= @recipe.live ? "<strong>live</strong>".html_safe + (@recipe.public ? " and <strong>public</strong> ".html_safe : " and <strong>private</strong> to you ".html_safe)  + "on Stockcubes" : "in <strong>draft</strong> mode ".html_safe %> - <% if @recipe.live %> you can <% if @recipe.public %><%= link_to 'make the recipe <strong>private</strong>'.html_safe , publish_update_recipe_path(@recipe, type:"make_private") %> (then only you will be able to see and use it)<% else %><%= link_to 'make the recipe <strong>public</strong>'.html_safe , publish_update_recipe_path(@recipe, type: "make_public") %> (so all Stockcubes users can see and use it)<% end %>, and if you want to take it offline you can <%= link_to 'put it back to draft', publish_update_recipe_path(@recipe, type: 'make_draft') %><% else %><%= link_to 'publish it now', publish_update_recipe_path(@recipe, type: 'make_live') %><% end %>.</p>
 
-      <% elsif @recipe[:user_id] == current_user[:id] && (@recipe.portions.length == 0 || @recipe.description.to_s == '' || @recipe.cook_time.to_s == '') %>
+      <% elsif user_signed_in? && @recipe[:user_id] == current_user[:id] && (@recipe.portions.length == 0 || @recipe.steps.length == 0 || @recipe.cook_time.to_s == '') %>
         <p class="recipe_cuisine item_form--content_item_note"><%= icomoon('information-outline')%>This recipe is in draft mode, it can be made live when you've
           <% if @recipe.portions.length == 0 %>
             <%= link_to 'added some ingredients', portions_new_path(:recipe_id => params[:id]) %><!--
-            --><% if @recipe.description.to_s == '' && @recipe.cook_time.to_s == '' %>,
-            <% elsif @recipe.description.to_s == '' || @recipe.cook_time.to_s == '' %>
+            --><% if @recipe.steps.length == 0 && @recipe.cook_time.to_s == '' %>,
+            <% elsif @recipe.steps.length == 0 || @recipe.cook_time.to_s == '' %>
               and
             <% end %>
           <% end %>
-          <% if @recipe.description.to_s == '' %>
-            <%= link_to 'added a description', edit_recipe_path(@recipe, anchor: 'recipe_description_container') %>
+          <% if @recipe.steps.length == 0 %>
+            <%= link_to 'added some steps', edit_recipe_path(@recipe, anchor: 'recipe_steps_wrapper') %>
             <% if @recipe.cook_time.to_s == '' %>
               and
             <% end %>
@@ -82,21 +89,25 @@
     <% end %>
     <% if current_user && current_user == @recipe.user %>
       <div class="content_rich--row">
-        <p class="recipe-serving">Yield: <%= (@recipe.yield.to_s == '' || !@recipe.yield) ? 'Not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe : (@recipe.yield.to_i.to_s +  ' Servings') %></p>
+        <p class="recipe-serving">Yield: <%= (@recipe.yield.to_s == '' || !@recipe.yield) ? user_note_when_lacking_content : (@recipe.yield.to_i.to_s +  ' Servings') %></p>
       </div>
       <div class="content_rich--row">
-        <p class="recipe-prep_time">Prep Time: <%= (@recipe.prep_time.to_s == '' || !@recipe.prep_time) ? 'Not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe : (@recipe.prep_time.to_i.to_s +  ' mins') %></p>
+        <p class="recipe-prep_time">Prep Time: <%= (@recipe.prep_time.to_s == '' || !@recipe.prep_time) ? user_note_when_lacking_content : (@recipe.prep_time.to_i.to_s +  ' mins') %></p>
       </div>
       <div class="content_rich--row">
-        <p class="recipe-cook_time">Cook Time: <%= (@recipe.cook_time.to_s == '' || !@recipe.cook_time) ? 'Not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe : (@recipe.cook_time.to_i.to_s +  ' mins') %></p>
+        <p class="recipe-cook_time">Cook Time: <%= (@recipe.cook_time.to_s == '' || !@recipe.cook_time) ? user_note_when_lacking_content : (@recipe.cook_time.to_i.to_s +  ' mins') %></p>
       </div>
       <div class="content_rich--row">
         <div class="recipe_description">
-          <h2>Method</h2>
-          <% if @recipe.description.to_s == '' %>
-            <p>Not yet set <span class="item_form--content_item_note">(Only you can see this)</span></p>
+          <h2>Steps</h2>
+          <% if @recipe.steps.length > 0 %>
+            <ol class="ol">
+              <% @recipe.steps.order(:number).each do |step| %>
+                <li><p><%= step.content %></p></li>
+              <% end %>
+            </ol>
           <% else %>
-            <%= simple_format(@recipe.description) %>
+            <p><%= user_note_when_lacking_content %></p>
           <% end %>
         </div>
       </div>
@@ -117,11 +128,19 @@
           <p class="recipe-cook_time">Cook Time: <%= @recipe.cook_time.to_i %> mins</p>
         </div>
       <% end %>
-      <% if @recipe.description.to_s != '' %>
+      <% if @recipe.steps.length > 0 %>
         <div class="content_rich--row">
           <div class="recipe_description">
-            <h2>Method</h2>
-            <%= simple_format(@recipe.description) %>
+            <h2>Steps</h2>
+            <% if @recipe.steps.length > 0 %>
+            <ol class="ol">
+              <% @recipe.steps.order(:number).each do |step| %>
+                <li><p><%= step.content %></p></li>
+              <% end %>
+            </ol>
+          <% else %>
+            <p><%= user_note_when_lacking_content %></p>
+          <% end %>
           </div>
         </div>
       <% end %>
@@ -137,17 +156,17 @@
         <ul>
           <% @portions.each do |portion| %>
               <%
-                if @cupboard_stock_in_date_ingredient_ids.include?(portion.ingredient_id)
+                if user_signed_in? && @cupboard_stock_in_date_ingredient_ids.include?(portion.ingredient_id)
                   ingredient_in_stock = true
                 end
               %>
-            <li <%= ingredient_in_stock ? 'class=in_stock' : '' %>><%= portion_amount_unit_and_ingredient(portion).html_safe %></li>
+            <li <%= ingredient_in_stock ? 'class="in_stock"' : '' %>><%= standard_serving_description(portion) %></li>
           <% end %>
         </ul>
       <% else %>
         <div class="pretty_form--highlight" id="ingredients">
           <h2>No ingredients added</h2>
-          <p>Make sure you <%=link_to "add some ingredients", portions_new_path(:recipe_id => params[:id])%>, if you want to start using this recipe to build a shopping list of put it live on the Stockcubes site.</p>
+          <p>Make sure you <%=link_to "add some ingredients", portions_new_path(:recipe_id => params[:id])%>, if you want to start using this recipe to build a shopping list or to have it live on the Stockcubes site.</p>
         </div>
       <% end %>
     </div>

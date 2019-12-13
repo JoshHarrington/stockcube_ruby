@@ -1,0 +1,144 @@
+<% provide(:title, 'Planner') %>
+
+<div class="list_block--collection--wrap" id="dashboard">
+	<div class="list_block--collection--sibling">
+    <h2>Recipes</h2>
+  </div>
+	<div class="list_block--collection">
+		<div class="list_block list_block-stack list_block-wide">
+			<div class="list_block--content pb-1" data-recipe-list>
+				<div class="list_block--title non_sortable list_block--title_stacked">
+					<h3>Top recipe matches</h3>
+					<p class="item_form--content_item_note"><%= icomoon('information-outline')%> Ordered by the stock you have in your cupboards</p>
+				</div>
+				<% @recipes.each do |r| %>
+						<%
+							recipe = r
+							user_recipe_stock_matches = UserRecipeStockMatch.where(user_id: current_user.id, recipe_id: recipe.id)
+							next if user_recipe_stock_matches.length == 0
+							user_recipe_stock_match = user_recipe_stock_matches.first
+							ingredient_stock_match_decimal = user_recipe_stock_match ? user_recipe_stock_match[:ingredient_stock_match_decimal] : nil
+							num_stock_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_stock_ingredients] : nil
+							num_needed_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_needed_ingredients] : nil
+							percent_in_cupboards = ingredient_stock_match_decimal ? (ingredient_stock_match_decimal.to_f * 100).round : 0
+						%>
+					<div class="list_block--item list_block--item--with-bar sortable--item" id="<%= @recipe_id_hash.encode(r.id) %>">
+						<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards %>%"></span></span>
+						<%= link_to r.title, recipe_path(r) %>
+					</div>
+				<% end %>
+				<%= link_to "See all recipes", recipes_path, class: "list_block--item list_block--item_new non_sortable no_order" %>
+				<% if @fav_recipes.length > 0 %>
+					<div class="list_block--title non_sortable">
+						<h3>Favourite recipes</h3>
+					</div>
+					<% @fav_recipes.each do |fr| %>
+						<%
+							recipe = fr
+							user_recipe_stock_matches = UserRecipeStockMatch.where(user_id: current_user[:id], recipe_id: recipe[:id])
+							next if user_recipe_stock_matches.length == 0
+							user_recipe_stock_match = user_recipe_stock_matches.first
+							ingredient_stock_match_decimal = user_recipe_stock_match ? user_recipe_stock_match[:ingredient_stock_match_decimal] : nil
+							num_stock_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_stock_ingredients] : nil
+							num_needed_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_needed_ingredients] : nil
+							percent_in_cupboards = ingredient_stock_match_decimal ? (ingredient_stock_match_decimal.to_f * 100).round : 0
+						%>
+						<div class="list_block--item list_block--item--with-bar sortable--item" id="<%= @recipe_id_hash.encode(fr.id) %>">
+							<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards %>%"></span></span>
+							<%= link_to fr.title, recipe_path(fr) %>
+						</div>
+					<% end %>
+				<% end %>
+			</div>
+		</div>
+	</div>
+	<br />
+	<hr />
+	<br />
+
+	<div class="list_block--collection--sibling list_block--collection--sibling_stack">
+		<h2 class="tiny-slider--title">Planner</h2>
+		<p class="item_form--content_item_note d-none d-block-md"><%= icomoon('information-outline')%> Use keyboard arrows to move left and right</p>
+  </div>
+	<div class="extra-tiny-wrapper">
+		<div class="tiny-controls">
+			<button class="tiny-control tiny-control--prev prev"><%= icomoon('arrow_back') %></button>
+			<button class="tiny-control tiny-control--next next"><%= icomoon('arrow_forward') %></button>
+		</div>
+		<div data-planner class="tiny-wrapper">
+			<% (-1..7).each do |d| %>
+				<% date = Date.current + d.days %>
+				<div class="tiny-slide <% if d == -1 %>yesterday<% end %>"><div class="tiny-contents"><h2>
+				<% if d == -1 %>Yesterday<% end %>
+				<% if d == 0 %>Today<% end %>
+				<% if d == 1 %>Tomorrow<% end %>
+				<%= date.to_s(:short) %>
+				<%
+					date = Date.current + d.days
+					date_num = date.to_formatted_s(:number)
+					date_id = @planner_recipe_date_hash.encode(date_num)
+				%>
+				</h2><div class="tiny-drop" id="<%= date_id %>">
+					<% PlannerRecipe.where(date: date, user_id: current_user.id).each do |p_recipe| %>
+						<%
+							recipe = p_recipe.recipe
+							user_recipe_stock_matches = UserRecipeStockMatch.where(user_id: current_user[:id], recipe_id: recipe[:id])
+							next if user_recipe_stock_matches.length == 0
+							user_recipe_stock_match = user_recipe_stock_matches.first
+							ingredient_stock_match_decimal = user_recipe_stock_match ? user_recipe_stock_match[:ingredient_stock_match_decimal] : nil
+							num_stock_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_stock_ingredients] : nil
+							num_needed_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_needed_ingredients] : nil
+							percent_in_cupboards = ingredient_stock_match_decimal ? (ingredient_stock_match_decimal.to_f * 100).round : 0
+						%>
+						<div class="list_block--item list_block--item--with-bar sortable--item" data-parent-id="<%= date_id %>" id="<%= @recipe_id_hash.encode(recipe.id) %>" title="<%= user_recipe_stock_match && num_stock_ingredients.to_s + " ingredients in stock, " + num_needed_ingredients.to_s + " needed" %>" aria-label="<%= user_recipe_stock_match ? recipe.title + ": " + num_stock_ingredients.to_s + " ingredients in stock, " + num_needed_ingredients.to_s + " needed" : recipe.title %>">
+							<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards %>%"></span></span>
+							<%= link_to recipe.title, recipe_path(recipe) %>
+							<button class="delete list_block--item--action list_block--item--action--btn"><%= icomoon('bin') %></button>
+						</div>
+					<% end %>
+				</div></div></div>
+
+			<% end %>
+		</div>
+	</div>
+
+	<br />
+	<hr />
+	<br />
+	<div class="list_block--collection--sibling">
+		<h2>Food waste info</h2>
+  </div>
+	<div class="list_block--collection">
+		<div class="list_block list_block-stack">
+			<div class="list_block--content">
+				<h3>What are the biggest wasters?</h3>
+				<hr />
+				<p>"Fresh produce, bakery, meats and dairy top the most wasted list – and have the largest energy, CO2, and water footprints – and so should be the main focus for reducing waste"</p>
+			</div>
+			<div class="list_block--content_end">
+				<div class="list_block--cuisine_bar">
+					<p>Quote from: <a href="https://theconversation.com/food-security-we-throw-away-a-third-of-the-food-we-grow-heres-what-to-do-about-waste-64854">theconversation.com</a></p>
+				</div>
+			</div>
+		</div>
+		<div class="list_block list_block-stack">
+			<div class="list_block--content">
+				<h3>For Coffee lovers</h3>
+				<hr />
+				<p>"Did you know? Coffee grounds make excellent fertilizer for plants. The grounds are high in nitrogen, phosphorus and potassium, which are nutrients that plants crave."</p>
+			</div>
+		</div>
+		<div class="list_block list_block-stack">
+			<div class="list_block--content">
+				<h3>Do you know the difference?</h3>
+				<hr />
+				<p>"<strong>Use by dates</strong> indicate when a product may no longer be safe to eat. You should not eat, cook, or freeze it after the date displayed, even if it looks or smells fine. <br/><strong>Best before dates</strong> are an indication of quality rather than safety. You can still eat food after its best before date, but its flavour and texture is most likely not as good as before the date"</p>
+			</div>
+			<div class="list_block--content_end">
+				<div class="list_block--cuisine_bar">
+					<p>Quote from: <a href="https://www.highspeedtraining.co.uk/hub/use-by-best-before-dates-difference/">highspeedtraining.co.uk</a></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

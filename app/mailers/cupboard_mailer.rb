@@ -1,4 +1,5 @@
 class CupboardMailer < ApplicationMailer
+  helper :application
 
 	def sharing_cupboard_request_new_account(sharing_email, requester, encrypted_cupboard_id)
     @sharing_email = sharing_email

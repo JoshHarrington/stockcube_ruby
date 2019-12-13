@@ -1,6 +1,8 @@
 class IngredientsController < ApplicationController
-	before_action :logged_in_user
+	before_action :authenticate_user!
 	before_action :admin_user
+
+	include UnitsHelper
 
 	def index
 		@ingredients = Ingredient.all
@@ -13,11 +15,11 @@ class IngredientsController < ApplicationController
 	end
 	def new
     @ingredient = Ingredient.new
-		@units = Unit.all
+		@units = unit_list()
   end
   def create
 		@ingredient = Ingredient.new(ingredient_params)
-		@units = Unit.all
+		@units = unit_list()
     if @ingredient.save
 			redirect_to ingredients_path
 			Ingredient.reindex
@@ -28,11 +30,11 @@ class IngredientsController < ApplicationController
 	def edit
 		@ingredient = Ingredient.find(params[:id])
 		@portions = @ingredient.portions
-		@units = Unit.all
+		@units = unit_list()
 	end
 	def update
 		@ingredient = Ingredient.find(params[:id])
-		@units = Unit.all
+		@units = unit_list()
 
 		@portions = @ingredient.portions
 		if @ingredient.update(ingredient_params)
@@ -42,18 +44,9 @@ class IngredientsController < ApplicationController
 			render 'edit'
 		end
 	end
-	private
+	protected
 		def ingredient_params
-			params.require(:ingredient).permit(:name, :searchable, :vegan, :vegetarian, :gluten_free, :dairy_free, :kosher, units_attributes:[:id, :name, :short_name, :unit_type, :_destroy])
-		end
-
-		# Confirms a logged-in user.
-		def logged_in_user
-			unless logged_in?
-				store_location
-				flash[:danger] = "Please log in."
-				redirect_to login_url
-			end
+			params.require(:ingredient).permit(:name, :searchable, :vegan, :vegetarian, :gluten_free, :dairy_free, :kosher, :unit_id)
 		end
 
 		# Confirms an admin user.

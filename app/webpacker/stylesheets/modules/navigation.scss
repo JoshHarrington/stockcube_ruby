@@ -182,13 +182,16 @@ footer[role="contentinfo"] {
   background: #ddd;
 }
 
-.header-nav-banner h1 {
-  display: flex;
-  align-items: center;
-  a {
+.header-nav-banner {
+  z-index: 1;
+  h1 {
     display: flex;
     align-items: center;
-    color: black;
+    a {
+      display: flex;
+      align-items: center;
+      color: black;
+    }
   }
 }
 

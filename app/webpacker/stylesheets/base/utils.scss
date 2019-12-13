@@ -1,0 +1,9 @@
+.d-none {
+	display: none;
+}
+
+.d-block-md {
+	@media all and (min-width: $bp-mobile){
+		display: block
+	}
+}

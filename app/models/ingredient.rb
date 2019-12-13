@@ -1,12 +1,13 @@
 class Ingredient < ApplicationRecord
 	belongs_to :unit, optional: true
-	has_many :portions, inverse_of: :ingredient
+	has_many :portions, dependent: :delete_all
 	has_many :recipes, through: :portions
-	has_many :stocks
+	has_many :stocks, dependent: :delete_all
 	has_many :cupboards, through: :stocks
-	has_many :shopping_list_portions
-	has_many :shopping_lists, through: :shopping_list_portions
-	has_one :user_fav_stock
+	has_many :planner_shopping_list_portions, dependent: :delete_all
+	has_many :combi_planner_shopping_list_portions, dependent: :delete_all
+	has_one :user_fav_stock, dependent: :delete
+	has_many :default_ingredient_sizes, dependent: :delete_all
 
 	searchkick
 

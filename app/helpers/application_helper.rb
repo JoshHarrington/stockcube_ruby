@@ -1,7 +1,13 @@
 module ApplicationHelper
+	include PlannerShoppingListHelper
+	include UnitsHelper
 	def icomoon(name, viewBox='')
 		image_png_name = name.to_s + '.png'
 		return '<svg class="icomoon-icon icon-'.html_safe + name + '"'.html_safe + (!viewBox.empty? ? ' viewBox="'.html_safe + viewBox.to_s.html_safe + '"'.html_safe : '' ) + '><use xlink:href="'.html_safe + asset_pack_path('assets/icons/symbol-defs.svg') + '#icon-'.html_safe + name + '"></use></svg>'.html_safe + '<img class="icon-png" src="'.html_safe + asset_pack_path('assets/png-icons/' + image_png_name ) +'"></img>'.html_safe
+	end
+	def icomoon_png(name)
+		image_png_name = name.to_s + '.png'
+		return '<img class="icon-png" src="'.html_safe + asset_pack_path('assets/png-icons/' + image_png_name ) +'"></img>'.html_safe
 	end
 	def large_svg(name, viewBox='')
 		return '<svg class="large-svg '.html_safe + name + '"'.html_safe + (!viewBox.empty? ? ' viewBox="'.html_safe + viewBox.to_s.html_safe + '"'.html_safe : '' )  + '><use xlink:href="'.html_safe + asset_pack_path('assets/icons/' + name + '.svg') + '#'.html_safe + name + '"></use></svg>'.html_safe
@@ -119,5 +125,15 @@ module ApplicationHelper
 		else
 			return '<li>'.html_safe + link_to(link_string, page_path) + '</li>'.html_safe
 		end
+	end
+	def shopping_list_class
+		return unless current_user && current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.day && pr.date < Date.current + 7.day} && !(params[:controller] == 'planner' && params[:action] == 'list')
+		if current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.day && pr.date < Date.current + 7.day}.length > 0 && checked_portions != shopping_list_portions.length
+			return 'shopping_list_open'
+		end
+	end
+
+	def logged_in?
+		user_signed_in?
 	end
 end

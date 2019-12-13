@@ -2,12 +2,10 @@
 
 one:
   name: MyString
-  type: 
+  unit_type: volume
   metric_ratio: 9.99
-  user: one
 
 two:
   name: MyString
-  type: 
+  unit_type:
   metric_ratio: 9.99
-  user: two
