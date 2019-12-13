@@ -7,7 +7,6 @@ class Recipe < ApplicationRecord
   has_many :recipe_authors, dependent: :delete_all
   has_many :authors, through: :recipe_authors
 
-
   belongs_to :user, optional: true
 
   # Favourited by users
@@ -33,6 +32,7 @@ class Recipe < ApplicationRecord
 
   searchkick
 
+  scope :search_import, -> { where(live: true, public: true) }
 
   def search_data
     {
