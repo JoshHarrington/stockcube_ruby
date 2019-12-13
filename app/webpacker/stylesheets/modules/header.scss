@@ -14,3 +14,11 @@ header {
 	text-align: center;
 }
 
+.beta-tag {
+	font-size: rem(9);
+	padding: rem(2) rem(3);
+	background-color: $teal-10;
+	margin-left: rem(6);
+	border-radius: rem(2);
+	margin-bottom: rem(-3);
+}
