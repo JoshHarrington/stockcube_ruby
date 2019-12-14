@@ -2,6 +2,7 @@ class StocksController < ApplicationController
 
 	helper IntegerHelper
 	include StockHelper
+	include ServingHelper
 	include ShoppingListsHelper
 	before_action :authenticate_user!, except: [:add_shopping_list_portion, :remove_shopping_list_portion]
 	before_action :correct_user, only: [:edit]
@@ -27,10 +28,9 @@ class StocksController < ApplicationController
 
 	def new_no_id
 		@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
-		@cupboards = current_user.cupboards.where(hidden: false, setup: false).order(created_at: :desc)
+		@cupboards = user_cupboards(current_user.id)
 		if @cupboards.length == 0
-			new_cupboard = Cupboard.create(location: "Kitchen")
-			CupboardUser.create(cupboard_id: new_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
+			create_cupboard_if_none
 			redirect_to stocks_new_path(:cupboard_id => @cupboard_id_hashids.encode(new_cupboard[:id]))
 			flash[:warning] = %Q[Looks like you didn't have a cupboard to add stock to so we've created one for you]
 		else
@@ -39,12 +39,28 @@ class StocksController < ApplicationController
 	end
 
 	def new
+		@stock = Stock.new
+		top_ingredients_list = ['bread', 'milk', 'egg', 'mushrooms', 'cheddar cheese', 'flour']
+		@top_ingredients = top_ingredients_list.map{|i| Ingredient.where('lower(name) = ?', i.downcase).first}.compact.select{|i| i.default_ingredient_sizes.length > 0}
+		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+		if current_user.cupboards.length == 0
+			@cupboard_id = create_cupboard_if_none(true)
+		else
+			@cupboards = user_cupboards(current_user.id)
+			if params.has_key?(:cupboard_id) && @cupboards.map(&:id).include?(cupboard_id_hashids.decode(params[:cupboard_id]).first)
+				@cupboard_id = params[:cupboard_id]
+			else
+				@cupboard_id = cupboard_id_hashids.encode(@cupboards.first.id)
+			end
+		end
+	end
+
+	def custom_new
 		@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 		@stock = Stock.new
-		@cupboards = current_user.cupboards.where(hidden: false, setup: false).order(created_at: :desc)
+		@cupboards = user_cupboards(current_user.id)
 		if @cupboards.length == 0
-			new_cupboard = Cupboard.create(location: "Kitchen")
-			CupboardUser.create(cupboard_id: new_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
+			create_cupboard_if_none
 			redirect_to stocks_new_path(:cupboard_id => @cupboard_id_hashids.encode(new_cupboard[:id]))
 			flash[:warning] = %Q[Looks like you didn't have a cupboard to add stock to so we've created one for you]
 		end
@@ -54,14 +70,14 @@ class StocksController < ApplicationController
 		else
 			@use_by_limit = Date.current + 2.weeks
 		end
-
 	end
+
 	def create
 		@stock = Stock.new(stock_params)
 
 		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 
-		@cupboards = current_user.cupboards.where(hidden: false, setup: false)
+		@cupboards = user_cupboards(current_user.id)
 
 		if (params.has_key?(:id) && @cupboards.map(&:id).include?(cupboard_id_hashids.decode(params[:id]).first))
 			@stock.update_attributes(
@@ -109,6 +125,7 @@ class StocksController < ApplicationController
 				stock_id: @stock.id,
 				user_id: current_user[:id]
 			)
+			flash[:notice] = %Q[Just added #{standard_serving_description(@stock)} to your cupboards]
 		else
 			unit_id = 8
 			if params.has_key?(:stock) && params[:stock].has_key?(:unit_id) && params[:stock][:unit_id].to_i != 0
@@ -141,7 +158,7 @@ class StocksController < ApplicationController
 		@current_cupboard = @stock.cupboard
 
 		if @stock.planner_recipe_id == nil
-			@cupboards = current_user.cupboard_users.where(accepted: true).select{|cu| cu.cupboard.setup == false && cu.cupboard.hidden == false }.map{|cu| cu.cupboard }.sort_by{|c| c.updated_at}
+			@cupboards = user_cupboards(current_user.id)
 		else
 			@cupboards = []
 		end
@@ -234,6 +251,15 @@ class StocksController < ApplicationController
 			stock = Stock.find(params[:id])
 			unless stock.cupboard.communal == false || stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])
 				redirect_to cupboards_path
+			end
+		end
+
+		def create_cupboard_if_none(output = nil)
+			@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+			new_cupboard = Cupboard.create(location: "Kitchen")
+			CupboardUser.create(cupboard_id: new_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
+			if output != nil
+				return @cupboard_id_hashids.encode(new_cupboard.id)
 			end
 		end
 end

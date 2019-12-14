@@ -285,5 +285,13 @@ module StockHelper
 
 	end
 
+	def user_cupboards(user_id = nil)
+		if user_id == nil && current_user != nil
+			return current_user.cupboard_users.select{|cu|cu.accepted == true || cu.owner == true}.map{|cu|cu.cupboard}
+		elsif user_id != nil
+			return User.find(user_id).cupboard_users.select{|cu|cu.accepted == true || cu.owner == true}.map{|cu|cu.cupboard}
+		end
+	end
+
 end
 

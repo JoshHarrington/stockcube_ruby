@@ -40,3 +40,4 @@ $(document).ready(function() {
     return $('html').addClass('input-type-date-supported');
   }
 });
+

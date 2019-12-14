@@ -44,6 +44,10 @@ class IngredientsController < ApplicationController
 			render 'edit'
 		end
 	end
+
+	def default_size_update
+	end
+
 	protected
 		def ingredient_params
 			params.require(:ingredient).permit(:name, :searchable, :vegan, :vegetarian, :gluten_free, :dairy_free, :kosher, :unit_id)

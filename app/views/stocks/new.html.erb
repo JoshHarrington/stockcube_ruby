@@ -1,48 +1,65 @@
 <% provide(:title, "Adding stock to cupboards") %>
 
-<div class="item_form--wrapper">
-
-	<%= form_for @stock, :url => "/stocks/new/" + (params.has_key?(:cupboard_id) ? params[:cupboard_id] : ''), :html => {id: "stock_form", class: "item_form"}, :validate => true do |s| %>
-		<div class="item_form--title">
-			<h1>Adding stock to cupboards</h1>
-		</div>
-		<div class="item_form--contents">
-			<div class="item_form--content_row">
-				<%= s.label :ingredient_id, "Ingredient" %>
-				<%= s.select :ingredient_id, options_from_collection_for_select(@ingredients, "id", "name", (params.has_key?(:ingredient) ? params[:ingredient] : '')), {prompt: "Pick your ingredient"}, {class: "choices--basis wide_select", required: true} %>
-			</div>
-			<div class="item_form--content_row">
-				<%= s.label :amount, 'Amount of stock' %>
-				<%= s.number_field(:amount, value: (params.has_key?(:stock_amount) && params[:stock_amount] != 'false' ? params[:stock_amount] : ''), placeholder: '250', class: "item_form--content_row--half_width_input", validate: true) %>
-				<%= s.select :unit_id, options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }, selected: (params.has_key?(:unit) ? params[:unit] : Unit.find_by(name: "gram").id)), {}, {class: "choices--basis half_select"} %>
-			</div>
-			<div class="item_form--content_row">
-				<%= label_tag 'stock_use_by_date', 'Use by date'  %> <%= s.date_field(:use_by_date, min: Date.current, value: @use_by_limit, validate: true) %>
-				<% if @cupboards.length == 1 %>
-					<%= s.hidden_field "cupboard_id", value: @cupboard_id_hashids.encode(@cupboards.last.id) %>
+<div class="main">
+  <div class="container">
+    <div class="list_block--collection--wrap">
+			<div class="list_block--collection--sibling" style="margin:2rem 0 1rem;">
+        <h1>Add ingredients to your cupboard</h1>
+      </div>
+			<div class="list_block--collection list_block--collection__tight">
+				<% @top_ingredients.each do |i| %>
+					<div class="list_block list_block__column"
+						style="background-image: url('https://source.unsplash.com/500x300/weekly?food,ingredient,<%= i.name.split(' ').join(',') %>');background-size: cover;
+							background-color: rgba(255, 255, 255, .5);
+							background-blend-mode: screen;
+							background-size: cover;
+							background-position: center;">
+						<div style="
+							width: 100%;
+							padding: 0.8rem 1.2rem;
+							background-color: #ffffffa3;
+							display: flex;
+							justify-content: space-between;
+							align-items: center;">
+							<h2><%= i.name %></h2>
+							<div style="display:flex;
+									flex-direction:column;
+									align-items:flex-end;">
+								<p style="margin-bottom: .5rem">Usually goes off in: </p>
+								<%# show date, then on 'update' click, show input field with save button %>
+								<%# <p> %> <%#= distance_of_time_in_words(i.default_ingredient_sizes.first.use_by_date_diff.days.from_now, Date.current) %> <%# <button id="show_next_form">update</button></p> %>
+								<%= form_for i, :url => default_ingredient_size_update_path do |i_s| %>
+									<p><%= i_s.number_field :date, :value => i.default_ingredient_sizes.first.use_by_date_diff, :min => 1, :style => "width:8rem;font-size:1em;margin-right:.7rem;padding:.3rem;" %>days</p>
+								<% end %>
+							</div>
+						</div>
+						<h3 style="padding:0.8rem 1.2rem;margin:2rem 1.2rem 0.7rem;background-color:#56c4bb8c;width:auto;display:inline-block;align-self:flex-start;">Select the size to add:</h3>
+						<ul style="padding:.2rem 1.2rem 1rem">
+							<% i.default_ingredient_sizes.first(3).each do |size| %>
+								<li style="margin:.3rem 0 1.2rem;">
+									<%= form_for @stock, :url => create_stock_path, :html => {:style => "display:flex;flex-direction:column;align-items:flex-start"} do |s| %>
+										<%= s.hidden_field :cupboard_id, :value => @cupboard_id %>
+										<%= s.hidden_field :amount, :value => size.amount.to_f %>
+										<%= s.hidden_field :ingredient_id, :value => size.ingredient_id %>
+										<%= s.hidden_field :unit_id, :value => size.unit_id %>
+										<%= s.hidden_field :use_by_date, :value => Date.current + 2.weeks, :min => Date.current - 2.days %>
+										<%= s.submit standard_serving_size(size), class: "list_block--collection--action" %>
+									<% end %>
+								</li>
+							<% end %>
+						</ul>
+					</div>
+				<% end %>
+				<%= link_to stocks_custom_new_path(cupboard_id: @cupboard_id), class: "list_block list_block-wide list_block--link_first link_block-large_bold link_block-centered", style: "background-image:url(https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80);
+						background-size: cover;
+						background-color: rgba(255, 255, 255, .5);
+						background-blend-mode: screen;
+						min-height: 20vw;
+						background-position: center center;" do %>
+					<p>Add other ingredients</p>
 				<% end %>
 			</div>
-			<% if @cupboards.length > 1 %>
-				<div class="item_form--content_row">
-					<%= label_tag 'cupboard_pick', 'Cupboard pick'  %>
-					<% @cupboards.each_with_index do |cupboard, index| %>
-						<%= s.radio_button "cupboard_id", @cupboard_id_hashids.encode(cupboard[:id]) , {
-							class: "fancy_radio_button", id: "cupboard_id_#{@cupboard_id_hashids.encode(cupboard[:id])}",
-							checked:
-								(params.has_key?(:id) && @cupboards.map(&:id).include?(@cupboard_id_hashids.decode(params[:id]).first) ?
-									cupboard[:id] == @cupboard_id_hashids.decode(params[:id]).first : index == 0 )} %>
-						<%= s.label "cupboard_id", {class: "fancy_radio_button__label", for: "cupboard_id_#{@cupboard_id_hashids.encode(cupboard[:id])}"} do %>
-							<% if cupboard.cupboard_users.length > 1 %>
-								<span class="list_block--title_note list_block--title_note_small">SHARED</span>
-							<% end %>
-							<%= cupboard.location %>
-						<% end %>
-					<% end %>
-				</div>
-			<% end %>
-			<div class="item_form--content_row">
-				<%= s.button "Save" %>
-			</div>
 		</div>
-	<% end %>
+	</div>
 </div>
+

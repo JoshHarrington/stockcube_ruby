@@ -30,6 +30,7 @@ Rails.application.routes.draw do
 
   get '/stocks' => 'stocks#index'
   get '/stocks/new' => 'stocks#new_no_id', as: :stocks_new_no_id
+  get '/stocks/new/:cupboard_id/custom' => 'stocks#custom_new', as: :stocks_custom_new
   get '/stocks/new/:cupboard_id' => 'stocks#new', as: :stocks_new
   get '/stocks/picks' => 'stocks#picks'
   get '/stocks/:id' => 'stocks#show', as: :stock
@@ -40,7 +41,8 @@ Rails.application.routes.draw do
   post '/stocks/add_portion' => 'stocks#add_shopping_list_portion'
   post '/stocks/remove_portion' => 'stocks#remove_shopping_list_portion'
   post '/stocks/add_shopping_list' => 'stocks#add_shopping_list'
-  post '/stocks/new/:cupboard_id' => 'stocks#create'
+  post '/stocks/new/:cupboard_id' => 'stocks#create', as: :create_stock
+  post '/stocks/new' => 'stocks#create_with_params', as: :create_stock_with_params
   post '/stocks/delete/:id' => 'stocks#delete_stock', as: :delete_stock_post
 
   get '/cupboards' => 'cupboards#index'
@@ -67,6 +69,7 @@ Rails.application.routes.draw do
   get '/ingredients/:id/edit' => 'ingredients#edit', as: :edit_ingredient
   patch '/ingredients/:id' => 'ingredients#update'
   post '/ingredients' => 'ingredients#create'
+  post '/ingredients/default_size_update' => 'ingredient#default_size_update', as: :default_ingredient_size_update
 
   delete '/demo_logout',   to: 'sessions#demo_logout'
 

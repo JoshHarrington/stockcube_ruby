@@ -14,7 +14,21 @@
               <div class="list_block--title">
                 <h3><%= link_to ingredient.name, edit_ingredient_path(ingredient) %></h3>
               </div>
-              <p>Default unit: <%= ingredient.unit ? ingredient.unit.name : 'No unit set' %></p>
+              <div style="width:100%;height:1em"></div>
+              <h4>Default sizes</h4>
+              <% if ingredient.default_ingredient_sizes.length > 0 %>
+                <ul style="width: 100%;list-style: circle;padding-left: 2em;">
+                  <% ingredient.default_ingredient_sizes.each do |size| %>
+                    <li>
+                      <p><%= standard_serving_size(size) %></p>
+                    </li>
+                  <% end %>
+                </ul>
+              <% else %>
+                <p style="width:100%;font-style: italic;">No ingredient sizes</p>
+              <% end %>
+              <div style="width:100%;height:1em"></div>
+              <h4>Dietary details</h4>
               <p style="width:100%">[<%= ingredient.vegan == true ? 'Vegan, ' : '' %><%= ingredient.vegetarian == true ? 'Vegetarian, ' : '' %><%= ingredient.dairy_free == true ? 'Dairy free, ' : '' %> <%= ingredient.gluten_free == true ? 'Gluten free, ' : '' %><%= ingredient.kosher == true ? 'Kosher' : '' %>]</p>
             </div>
           </div>
