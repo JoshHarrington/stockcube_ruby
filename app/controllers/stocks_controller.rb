@@ -115,6 +115,10 @@ class StocksController < ApplicationController
 			)
 			flash[:notice] = %Q[Just added #{standard_serving_description(@stock)} to your cupboards]
 		else
+			cupboard_id = @cupboards.first.id
+			if params.has_key?(:cupboard_id) && @cupboards.map(&:id).include?(cupboard_id_hashids.decode(params[:cupboard_id]).first)
+				cupboard_id = cupboard_id_hashids.decode(params[:id])
+			end
 			flash[:danger] = %Q[Make sure you pick an ingredient, and set a stock amount]
 			encoded_cupboard_id = cupboard_id_hashids.encode(cupboard_id)
 			redirect_to stocks_new_path(cupboard_id: encoded_cupboard_id)
