@@ -61,7 +61,7 @@ class StocksController < ApplicationController
 		@cupboards = user_cupboards(current_user.id)
 		if @cupboards.length == 0
 			create_cupboard_if_none
-			redirect_to stocks_new_path(:cupboard_id => @cupboard_id_hashids.encode(new_cupboard[:id]))
+			redirect_to stocks_custom_new_path(:cupboard_id => @cupboard_id_hashids.encode(new_cupboard[:id]))
 			flash[:warning] = %Q[Looks like you didn't have a cupboard to add stock to so we've created one for you]
 		end
 		@ingredients = Ingredient.all.reject{|i| i.name == ''}.sort_by{|i| i.name.downcase}
@@ -93,18 +93,6 @@ class StocksController < ApplicationController
 			)
 		end
 
-
-		# if params[:portion].has_key?(:ingredient_id) && params[:portion][:ingredient_id].present?
-		# 	if params[:portion][:ingredient_id].to_i == 0
-		# 		new_ingredient_from_portion = Ingredient.find_or_create_by(name: params[:portion][:ingredient_id], unit_id: (@portion_unit || 8))
-		# 		selected_ingredient_id = new_ingredient_from_portion.id
-		# 		new_stuff_added = true
-		# 	else
-		# 		selected_ingredient_id = params[:portion][:ingredient_id]
-		# 	end
-		# else
-		# 	flash[:danger] = "Make sure you select an ingredient"
-		# end
 		if params.has_key?(:stock) && params[:stock].has_key?(:ingredient_id) && params[:stock][:ingredient_id].to_i == 0 && params[:stock][:ingredient_id].class == String
 			if params[:stock].has_key?(:unit_id) && params[:stock][:unit_id].to_i != 0
 				unit_id = params[:stock][:unit_id]
@@ -127,29 +115,9 @@ class StocksController < ApplicationController
 			)
 			flash[:notice] = %Q[Just added #{standard_serving_description(@stock)} to your cupboards]
 		else
-			unit_id = 8
-			if params.has_key?(:stock) && params[:stock].has_key?(:unit_id) && params[:stock][:unit_id].to_i != 0
-				unit_id = params[:stock][:unit_id]
-			end
-			ingredient_id = false
-			if params.has_key?(:stock) && params[:stock].has_key?(:ingredient_id) && params[:stock][:ingredient_id].to_i != 0
-				ingredient_id = params[:stock][:ingredient_id]
-				### if ingredient name instead of id is given, create new ingredient
-			end
-			cupboard_id = @cupboards.first.id
-			if params.has_key?(:cupboard_id) && @cupboards.map(&:id).include?(cupboard_id_hashids.decode(params[:cupboard_id]).first)
-				cupboard_id = cupboard_id_hashids.decode(params[:id])
-			elsif params.has_key?(:stock) && params[:stock].has_key?(:cupboard_id) && params[:stock][:cupboard_id].to_i != 0
-				cupboard_id = params[:stock][:cupboard_id]
-			end
-			amount = false
-			if params.has_key?(:stock) && params[:stock].has_key?(:amount) && params[:stock][:amount].to_i != 0
-				amount = params[:stock][:amount]
-			end
-
 			flash[:danger] = %Q[Make sure you pick an ingredient, and set a stock amount]
 			encoded_cupboard_id = cupboard_id_hashids.encode(cupboard_id)
-			redirect_to stocks_new_path(cupboard_id: encoded_cupboard_id, ingredient: (ingredient_id || false),  unit: (unit_id || false), stock_amount: (amount || false))
+			redirect_to stocks_new_path(cupboard_id: encoded_cupboard_id)
 
     end
 	end
