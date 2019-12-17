@@ -28,22 +28,21 @@ Rails.application.routes.draw do
   get '/portions/:id' => 'portions#show', as: :portion
   post '/portions' => 'portions#create'
 
-  get '/stocks' => 'stocks#index'
-  get '/stocks/new' => 'stocks#new_no_id', as: :stocks_new_no_id
-  get '/stocks/new/:cupboard_id/custom' => 'stocks#custom_new', as: :stocks_custom_new
-  get '/stocks/new/:cupboard_id' => 'stocks#new', as: :stocks_new
-  get '/stocks/picks' => 'stocks#picks'
-  get '/stocks/:id' => 'stocks#show', as: :stock
-  get '/stocks/:id/edit' => 'stocks#edit', as: :edit_stock
-  get '/stocks/delete/:id' => 'stocks#delete_stock', as: :delete_stock
-  patch '/stocks/:id' => 'stocks#update'
-  post '/stocks' => 'stocks#create'
-  post '/stocks/add_portion' => 'stocks#add_shopping_list_portion'
-  post '/stocks/remove_portion' => 'stocks#remove_shopping_list_portion'
-  post '/stocks/add_shopping_list' => 'stocks#add_shopping_list'
-  post '/stocks/new/:cupboard_id' => 'stocks#create', as: :create_stock
-  post '/stocks/new' => 'stocks#create_with_params', as: :create_stock_with_params
-  post '/stocks/delete/:id' => 'stocks#delete_stock', as: :delete_stock_post
+  get '/stock/new' => 'stocks#new_no_id', as: :stocks_new_no_id
+  get '/stock/new/:cupboard_id/custom' => 'stocks#custom_new', as: :stocks_custom_new
+  get '/stock/new/:cupboard_id' => 'stocks#new', as: :stocks_new
+  get '/stock/picks' => 'stocks#picks'
+  get '/stock/:id' => 'stocks#show', as: :stock
+  get '/stock/:id/edit' => 'stocks#edit', as: :edit_stock
+  get '/stock/delete/:id' => 'stocks#delete_stock', as: :delete_stock
+  patch '/stock/:id' => 'stocks#update'
+  post '/stock' => 'stocks#create'
+  post '/stock/add_portion' => 'stocks#add_shopping_list_portion'
+  post '/stock/remove_portion' => 'stocks#remove_shopping_list_portion'
+  post '/stock/add_shopping_list' => 'stocks#add_shopping_list'
+  post '/stock/new/:cupboard_id' => 'stocks#create', as: :create_stock
+  post '/stock/new' => 'stocks#create_with_params', as: :create_stock_with_params
+  post '/stock/delete/:id' => 'stocks#delete_stock', as: :delete_stock_post
 
   get '/cupboards' => 'cupboards#index'
   get '/cupboards/new' => 'cupboards#new'

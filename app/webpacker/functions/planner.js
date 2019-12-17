@@ -291,9 +291,9 @@ const setupShoppingListCheckingOff = () => {
 			const portionData = "shopping_list_portion_id=" + portionId + "&portion_type=" + portionType + (genId !== null ? "&gen_id=" + genId : "")
 			portionLi.classList.toggle('portion_checked')
 			if (portionCheckbox.checked) {
-				ajaxRequest(portionData, '/stocks/add_portion')
+				ajaxRequest(portionData, '/stock/add_portion')
 			} else {
-				ajaxRequest(portionData, '/stocks/remove_portion')
+				ajaxRequest(portionData, '/stock/remove_portion')
 			}
 			checkForUpdates(function(shoppingList) {
 				updateShoppingListCheckCount(shoppingList)

@@ -59,7 +59,7 @@ var cupboard = function() {
 		const confirmed = confirm("Are you sure you want to delete this ingredient from your cupboard?\nThis can't be undone :O");
 		event.preventDefault()
 		if (confirmed == true) {
-			ajaxRequest('type=post', '/stocks/delete/' + hashedId)
+			ajaxRequest('type=post', '/stock/delete/' + hashedId)
 			btn.parentNode.style.display = 'none'
 		}
 	}
