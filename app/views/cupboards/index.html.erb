@@ -98,28 +98,5 @@
     <%= link_to cupboards_new_path, class: "list_block" do %>
       <span>Add a new cupboard / storage location</span>
     <% end %>
-    </div>
-    <br />
-    <hr>
-    <br />
-    <div class="list_block--collection--sibling list_block--collection--sibling_stack" id="quick_add_stock">
-      <h2>"Quick add stock" picks</h2>
-      <p>Use these to create new stock in your cupboards quickly, you can customise them and add your own!</p>
-    </div>
-    <div class="list_block--collection">
-      <div class="list_block list_block-overflow">
-        <div class="list_block--content">
-          <%= link_to "Create new \"Quick add stock\" template", quick_add_stock_new_path, class: "list_block--item list_block--item_new" %>
-          <% @user_fav_stocks.each do |fav_stock| %>
-            <div class="list_block--item">
-              <span class="list_block--item--content list_block--item--content_left"><%= fav_stock.unit.name == 'Each' ? pluralize(fav_stock.stock_amount, fav_stock.ingredient.name) : pluralize(fav_stock.stock_amount, fav_stock.unit.name) + (fav_stock.unit.name.to_s == 'Loaf' || fav_stock.unit.name.to_s == 'Pint' ? ' of ' : ' ') + fav_stock.ingredient.name %></span>
-              <span class="list_block--item--action list_block--item--action--btn quick_add_stock_delete_btn" id="<%= @quick_add_hashids.encode(fav_stock.id) %>"><%= icomoon('bin') %></span>
-              <%= link_to 'Use', stocks_new_path(cupboard_id: @cupboard_id_hashids.encode(@cupboards.first.id), ingredient: fav_stock.ingredient_id, stock_amount: fav_stock.stock_amount, unit: fav_stock.unit_id, standard_use_by_limit: fav_stock.standard_use_by_limit), class: "list_block--item--action pretty_form--submit_button"%>
-              <%= link_to 'Edit', quick_add_stock_edit_path(fav_stock.id), class: "list_block--item--action pretty_form--submit_button"%>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
