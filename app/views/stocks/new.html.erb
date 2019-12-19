@@ -3,6 +3,17 @@
 <div class="main">
   <div class="container">
     <div class="list_block--collection--wrap">
+			<div class="list_block--collection--sibling">
+			<%= link_to cupboards_path, style: "padding: 0.5rem .5rem;
+																					border: 1px solid #56c4bb;
+																					border-radius: 0.2rem;
+																					display: flex;
+																					align-items: center;
+																					text-decoration:none" do %>
+				<span style="width:1.3rem;margin-right: 0.3rem;display: inline-block;height: 1.3rem;"><%= icomoon('arrow_back') %></span>
+				Back to cupboards
+			<% end %>
+			</div>
 			<div class="list_block--collection--sibling" style="margin:2rem 0 1rem;">
         <h1>Add top ingredients to your cupboard</h1>
 				<%= link_to "Add your own ingredients", stocks_custom_new_path(cupboard_id: @cupboard_id) %>
@@ -21,18 +32,10 @@
 							background-color: #ffffffa3;
 							display: flex;
 							justify-content: space-between;
-							align-items: center;">
+							align-items: center;
+							min-height: 5rem">
 							<h2><%= i.name %></h2>
-							<div style="display:flex;
-									flex-direction:column;
-									align-items:flex-end;">
-								<p style="margin-bottom: .5rem">Usually goes off in: </p>
-								<%# show date, then on 'update' click, show input field with save button %>
-								<%# <p> %> <%#= distance_of_time_in_words(i.default_ingredient_sizes.first.use_by_date_diff.days.from_now, Date.current) %> <%# <button id="show_next_form">update</button></p> %>
-								<%= form_for i, :url => default_ingredient_size_update_path do |i_s| %>
-									<p><%= i_s.number_field :date, :value => i.default_ingredient_sizes.first.use_by_date_diff, :min => 1, :style => "width:8rem;font-size:1em;margin-right:.7rem;padding:.3rem;" %>days</p>
-								<% end %>
-							</div>
+							<%#= render "stocks/partials/new_stock_set_date", i: i %>
 						</div>
 						<h3 style="padding:0.8rem 1.2rem;margin:2rem 1.2rem 0.7rem;background-color:#56c4bb8c;width:auto;display:inline-block;align-self:flex-start;">Select the size to add:</h3>
 						<ul style="padding:.2rem 1.2rem 1rem">

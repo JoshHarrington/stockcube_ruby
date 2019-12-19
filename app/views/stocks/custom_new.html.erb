@@ -2,7 +2,7 @@
 
 <div class="item_form--wrapper">
 
-	<%= form_for @stock, :url => stocks_new_path(cupboard_id: (params.has_key?(:cupboard_id) ? params[:cupboard_id] : '')), :html => {id: "stock_form", class: "item_form"}, :validate => true do |s| %>
+	<%= form_for @stock, :url => create_custom_stock_path(cupboard_id: (params.has_key?(:cupboard_id) ? params[:cupboard_id] : '')), :html => {id: "stock_form", class: "item_form"}, :validate => true do |s| %>
 		<div class="item_form--title">
 			<h1>Adding stock to cupboards</h1>
 		</div>

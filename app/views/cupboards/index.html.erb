@@ -68,7 +68,10 @@
                 <% end %>
             <% end %>
           <% end %>
-          <%= link_to "Add more stock", stocks_new_path(:cupboard_id => @cupboard_id_hashids.encode(cupboard.id)), class: "list_block--item list_block--item_new non_sortable" %>
+          <div class="list_block--item non_sortable" style="flex-wrap:wrap;background-color:white;">
+            <%= link_to "Add multiple ingredients", stocks_new_path(:cupboard_id => @cupboard_id_hashids.encode(cupboard.id)), class: "list_block--item non_sortable", style: "flex-basis:100%;" %>
+            <%= link_to "Add a custom ingredient", stocks_custom_new_path(:cupboard_id => @cupboard_id_hashids.encode(cupboard.id)), class: "list_block--item list_block--item_new non_sortable", style: "flex-basis:100%" %>
+          </div>
         </div>
         <div class="list_block--content_end">
           <% if cupboard.users.length < 2 %>

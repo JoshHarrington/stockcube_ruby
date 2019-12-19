@@ -1,0 +1,8 @@
+<div style="display:flex;
+		flex-direction:column;
+		align-items:flex-end;">
+	<p style="margin-bottom: .5rem">Usually goes off in: </p>
+	<%= form_for i, :url => default_ingredient_size_update_path do |i_s| %>
+		<p><%= i_s.number_field :date, :value => i.default_ingredient_sizes.first.use_by_date_diff, :min => 1, :style => "width:8rem;font-size:1em;margin-right:.7rem;padding:.3rem;" %>days</p>
+	<% end %>
+</div>

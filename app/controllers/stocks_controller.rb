@@ -73,58 +73,37 @@ class StocksController < ApplicationController
 	end
 
 	def create
-		@stock = Stock.new(stock_params)
 
-		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+		create_stock(current_user.id, stock_params)
 
 		@cupboards = user_cupboards(current_user.id)
 
-		if (params.has_key?(:id) && @cupboards.map(&:id).include?(cupboard_id_hashids.decode(params[:id]).first))
-			@stock.update_attributes(
-				cupboard_id: cupboard_id_hashids.decode(params[:id]).first
-			)
-		elsif @cupboards.map(&:id).include?(cupboard_id_hashids.decode(params[:stock][:cupboard_id]).first)
-			@stock.update_attributes(
-				cupboard_id: cupboard_id_hashids.decode(params[:stock][:cupboard_id]).first
-			)
-		else
-			@stock.update_attributes(
-				cupboard_id: @cupboards.first
-			)
-		end
-
-		if params.has_key?(:stock) && params[:stock].has_key?(:ingredient_id) && params[:stock][:ingredient_id].to_i == 0 && params[:stock][:ingredient_id].class == String
-			if params[:stock].has_key?(:unit_id) && params[:stock][:unit_id].to_i != 0
-				unit_id = params[:stock][:unit_id]
-			else
-				unit_id = 8
-			end
-			new_ingredient = Ingredient.find_or_create_by(name: params[:stock][:ingredient_id], unit_id: unit_id)
-			@stock.update_attributes(
-				ingredient_id: new_ingredient[:id]
-			)
-			Ingredient.reindex
-		end
+		validated_cupboard_ids = validate_cupboard_id(current_user.id, params[:cupboard_id])
 
     if @stock.save
-			redirect_to cupboards_path(anchor: cupboard_id_hashids.encode(@stock.cupboard_id))
-			update_recipe_stock_matches(@stock[:ingredient_id])
-			StockUser.create(
-				stock_id: @stock.id,
-				user_id: current_user[:id]
-			)
-			flash[:notice] = %Q[Just added #{standard_serving_description(@stock)} to your cupboards]
+			redirect_to stocks_new_path(cupboard_id: validated_cupboard_ids[:encoded])
 		else
-			cupboard_id = @cupboards.first.id
-			if params.has_key?(:cupboard_id) && @cupboards.map(&:id).include?(cupboard_id_hashids.decode(params[:cupboard_id]).first)
-				cupboard_id = cupboard_id_hashids.decode(params[:id])
-			end
-			flash[:danger] = %Q[Make sure you pick an ingredient, and set a stock amount]
-			encoded_cupboard_id = cupboard_id_hashids.encode(cupboard_id)
-			redirect_to stocks_new_path(cupboard_id: encoded_cupboard_id)
-
+			flash[:danger] = %Q[Something went wrong! Sorry about that]
+			redirect_to stocks_new_path(cupboard_id: validated_cupboard_ids[:encoded])
     end
 	end
+
+	def create_custom
+		@stock = create_stock(current_user.id, stock_params)
+
+		@cupboards = user_cupboards(current_user.id)
+
+		validated_cupboard_ids = validate_cupboard_id(current_user.id, params[:cupboard_id])
+
+    if @stock != nil
+			redirect_to cupboards_path(anchor: validated_cupboard_ids[:encoded])
+		else
+			flash[:danger] = %Q[Make sure you pick an ingredient, and set a stock amount]
+			redirect_to stocks_custom_new_path(cupboard_id: validated_cupboard_ids[:encoded])
+    end
+
+	end
+
 	def edit
 		@stock = Stock.find(params[:id])
 		@current_cupboard = @stock.cupboard

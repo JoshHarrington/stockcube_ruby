@@ -293,5 +293,91 @@ module StockHelper
 		end
 	end
 
+	def create_stock(user_id = nil, stock_params = nil)
+		return unless (current_user != nil || user_id != nil) && stock_params != nil
+
+		if user_id == nil && current_user != nil
+			user_id = current_user.id
+		end
+
+		updated_ingredient_id = nil
+
+		if params.has_key?(:stock) && params[:stock].has_key?(:ingredient_id) && params[:stock][:ingredient_id].to_i == 0 && params[:stock][:ingredient_id].class == String
+			if params[:stock].has_key?(:unit_id) && params[:stock][:unit_id].to_i != 0
+				unit_id = params[:stock][:unit_id]
+			else
+				unit_id = Unit.find_by(name: "gram").id
+			end
+
+			ingredient = Ingredient.where('lower(name) = ?', params[:stock][:ingredient_id].downcase).first
+			if ingredient == nil
+				ingredient = Ingredient.create(name: params[:stock][:ingredient_id].humanize, unit_id: unit_id)
+				Ingredient.reindex
+			end
+
+			updated_ingredient_id = ingredient.id
+
+		end
+
+		@stock = Stock.new(stock_params)
+
+		if params.has_key?(:stock) && params[:stock].has_key?(:ingredient_id) && params[:stock][:ingredient_id].to_i == 0 && params[:stock][:ingredient_id].class == String
+			if updated_ingredient_id != nil
+				@stock.update_attributes(
+					ingredient_id: updated_ingredient_id
+				)
+			end
+		end
+
+		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+
+		@cupboards = user_cupboards(user_id)
+
+		if (params.has_key?(:id) && @cupboards.map(&:id).include?(cupboard_id_hashids.decode(params[:id]).first))
+			@stock.update_attributes(
+				cupboard_id: cupboard_id_hashids.decode(params[:id]).first
+			)
+		elsif @cupboards.map(&:id).include?(cupboard_id_hashids.decode(params[:stock][:cupboard_id]).first)
+			@stock.update_attributes(
+				cupboard_id: cupboard_id_hashids.decode(params[:stock][:cupboard_id]).first
+			)
+		else
+			@stock.update_attributes(
+				cupboard_id: @cupboards.first
+			)
+		end
+
+		if @stock.save
+			update_recipe_stock_matches(@stock[:ingredient_id])
+			StockUser.create(
+				stock_id: @stock.id,
+				user_id: current_user[:id]
+			)
+			flash[:notice] = %Q[Just added #{standard_serving_description(@stock)} to <a href="#{cupboards_path}">your cupboards</a>]
+			return @stock
+		else
+			return nil
+		end
+	end
+
+	def validate_cupboard_id(user_id = nil, encoded_cupboard_id = nil)
+		return unless (current_user != nil || user_id != nil)
+
+		if user_id == nil && current_user != nil
+			user_id = current_user.id
+		end
+
+		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+		@cupboards = user_cupboards(user_id)
+
+		cupboard_id = @cupboards.first.id
+		if encoded_cupboard_id != nil && @cupboards.map(&:id).include?(cupboard_id_hashids.decode(encoded_cupboard_id).first)
+			cupboard_id = cupboard_id_hashids.decode(encoded_cupboard_id)
+		end
+
+		validated_encoded_cupboard_id = cupboard_id_hashids.encode(cupboard_id)
+		return {original: cupboard_id, encoded: validated_encoded_cupboard_id}
+	end
+
 end
 

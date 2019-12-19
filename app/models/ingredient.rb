@@ -10,6 +10,7 @@ class Ingredient < ApplicationRecord
 	has_many :default_ingredient_sizes, dependent: :delete_all
 
 	validates :name, presence: true, allow_blank: false
+	validates_uniqueness_of :name, :case_sensitive => false
 
 	searchkick
 
