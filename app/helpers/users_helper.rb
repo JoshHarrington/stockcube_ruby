@@ -94,7 +94,7 @@ module UsersHelper
     )
 
     ### setup user with default cupboard
-    new_cupboard = Cupboard.create(location: "Kitchen")
+    new_cupboard = Cupboard.create(location: "Your first cupboard")
     CupboardUser.create(
       cupboard_id: new_cupboard.id,
       user_id: user.id,

@@ -12,7 +12,7 @@ task :add_water_for_all_users => :environment do
 			new_cupboard = Cupboard.create(
 				hidden: false,
 				setup: false,
-				location: "Kitchen"
+				location: "Your first cupboard"
 			)
 			new_cupboard_id = new_cupboard[:id]
 			CupboardUser.create(

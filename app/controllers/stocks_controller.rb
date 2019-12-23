@@ -207,7 +207,7 @@ class StocksController < ApplicationController
 
 		def create_cupboard_if_none(output = nil)
 			@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
-			new_cupboard = Cupboard.create(location: "Kitchen")
+			new_cupboard = Cupboard.create(location: "Your first cupboard")
 			CupboardUser.create(cupboard_id: new_cupboard.id, user_id: current_user.id, accepted: true, owner: true)
 			if output != nil
 				return @cupboard_id_hashids.encode(new_cupboard.id)
