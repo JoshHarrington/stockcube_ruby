@@ -1,0 +1,19 @@
+<div class="no-js-modal">
+	<a href=<%= cupboards_path %> id="js-modal-overlay" class="modal-overlay" data-background-click="enabled" title="Close modal">
+		<span class="invisible">Close modal</span>
+	</a>
+	<dialog id="js-modal" class="modal" role="dialog" open="" aria-labelledby="modal-title">
+		<div role="document" class="modal__wrapper">
+			<a href=<%= cupboards_path %> class="modal-close" title="Close modal">
+				<img src=<%= png_icon_path('close') %> alt="Close modal" class="modal__closeimg">
+			</a>
+			<div class="modal__content">
+				<h1 id="modal-title" class="modal-title">
+				Quick demo on how to add ingredients
+				</h1>
+				<div id="demo" class="hidden">
+					<%= render "cupboards/partials/modal_content" %>
+			</div>
+		</div>
+	</dialog>
+</div>

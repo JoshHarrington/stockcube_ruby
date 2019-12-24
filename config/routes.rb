@@ -46,6 +46,7 @@ Rails.application.routes.draw do
   post '/stock/delete/:id' => 'stocks#delete_stock', as: :delete_stock_post
 
   get '/cupboards' => 'cupboards#index'
+  get '/cupboards/demo' => 'cupboards#demo'
   get '/cupboards/new' => 'cupboards#new'
   # get '/cupboards/edit_all' => 'cupboards#edit_all', as: :edit_all_cupboard
   get '/cupboards/share/:id' => 'cupboards#share', as: :cupboard_share

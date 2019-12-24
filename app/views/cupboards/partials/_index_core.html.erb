@@ -1,0 +1,106 @@
+<% if planner_recipes.length > 0 %>
+  <div class="list_block--collection--wrap">
+    <div class="list_block--collection--sibling list_block--collection--sibling_stack">
+      <h2>Planner Ingredients</h2>
+      <p class="item_form--content_item_note"><%= icomoon('information-outline')%> These are reserved ingredients, that we think you're going to be using in recipes soon</p>
+    </div>
+    <div class="list_block--collection">
+      <% planner_recipes.select{|pr| planner_stocks(pr.id).length > 0}.each do |p_recipe| %>
+        <div class="cupboard list_block <%= planner_recipes.length == 1 && 'list_block-wide' %>">
+          <div class="list_block--content">
+            <div class="list_block--title non_sortable">
+              <h3><%= link_to p_recipe.recipe.title, recipe_path(p_recipe.recipe) %> (<%= p_recipe.date.to_s(:short) %>)</h3>
+            </div>
+            <% planner_stocks(p_recipe.id).length > 0 && planner_stocks(p_recipe.id).each do |stock| %>
+              <% out_of_date_sentence = 'out of date' + (stock.use_by_date > Time.zone.now ? ' in ' : ' ') + (distance_of_time_in_words(Time.zone.now, stock.use_by_date)) + (stock.use_by_date <= Time.zone.now ? ' ago': '') %>
+              <%= link_to ((stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? edit_stock_path(stock.id) : ''), class: "list_block--item non_sortable list_block--item_stacked", title: "#{stock.ingredient.name} - #{out_of_date_sentence}" do %>
+                <span class="list_block--item--content list_block--item--content_left">
+                  <p><%= standard_serving_description(stock) %></p>
+                </span>
+                <span class="h6 list_block--item--lesser_note"><%= distance_of_time_in_words(Time.zone.now, stock.use_by_date) + (stock.use_by_date <= Time.zone.now ? ' ago': '')%></span>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+<div class="list_block--collection--wrap">
+  <div class="list_block--collection--sibling">
+    <h2>Your Cupboards <button class="js-modal" data-modal-content-id="demo" data-modal-title="Quick demo on how to add ingredients" data-modal-close-img=<%= png_icon_path('close') %>>Show the demo</button> <a href=<%= cupboards_demo_path%> class="no-js-modal-link">Show the demo</a></h2>
+  </div>
+  <div id="cupboard-list" class="list_block--collection">
+    <% cupboards.each do |cupboard| %>
+      <div class="cupboard list_block <%= cupboard_empty_class(cupboard) %> list_block-stack <%= cupboard_shared_class(cupboard) %><%= cupboards.length == 1 ? 'list_block-wide' : nil %>" id="<%= cupboard_id_hashids.encode(cupboard.id) %>">
+        <div class="list_block--content" data-cupboard-id="<%= cupboard.id %>" data-cupboard-users="<%= cupboard_users_hashids.encode(cupboard.cupboard_users.map(&:user_id).sort!) %>">
+          <% if cupboard.cupboard_users.length > 1 %>
+            <div class="list_block--title_note">SHARED CUPBOARD</div>
+          <% end %>
+          <div class="list_block--title non_sortable">
+            <% if cupboard_stocks_selection_in_date(cupboard).length == 0 && cupboards.length > 1 && cupboard.cupboard_users.where(owner: true).first.user == current_user %>
+              <span class="delete_list_block_button list_block--action">
+                <%= icomoon('bin') %>
+                <%= hidden_field_tag "cupboard_id_delete", cupboard.id %>
+              </span>
+            <% end %>
+            <h3>
+              <%= hidden_field_tag "cupboard_id", cupboard.id %>
+              <%= text_field_tag "cupboard_location", cupboard.location, {readonly: cupboard.cupboard_users.where(owner: true).first.user != current_user, title: cupboard.cupboard_users.where(owner: true).first.user != current_user ? "Only the owner can edit a cupboard's name" : nil} %>
+            </h3>
+          </div>
+          <% if cupboard.stocks.first %>
+            <% cupboard_stocks_selection_in_date(cupboard).each do |stock| %>
+                <% out_of_date_sentence = 'out of date' + (stock.use_by_date > Time.zone.now ? ' in ' : ' ') + (distance_of_time_in_words(Time.zone.now, stock.use_by_date)) + (stock.use_by_date <= Time.zone.now ? ' ago': '') %>
+
+                <%= link_to ((cupboard.communal == false || stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? edit_stock_path(stock.id) : ''), class: "list_block--item list_block--item_stacked list_block--item_show#{date_warning_class(stock)} stock_#{stock.id} #{(cupboard.communal == false || stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? '' : 'list_block--item-disabled'}", :data => { :cupboard_id => "#{cupboard.id}", :stock_id => "#{stock.id}" }, title: "#{stock.ingredient.name} - #{out_of_date_sentence}" do %>
+                  <span class="list_block--item--content list_block--item--content_left">
+                    <p><%= standard_serving_description(stock) %></p>
+                    <% if cupboard.communal && stock.users.length > 0 %><p> [<%= stock.users.first.name%>]</p><% end %>
+                  </span>
+                  <span class="list_block--item--action list_block--item--action--btn cupboard_stock_delete_btn" id="<%= delete_stock_hashids.encode(stock.id) %>">
+                    <%= icomoon('bin') %>
+                  </span>
+                  <span class="h6 list_block--item--lesser_note"><%= distance_of_time_in_words(Time.zone.now, stock.use_by_date) + (stock.use_by_date <= Time.zone.now ? ' ago': '')%></span>
+                <% end %>
+            <% end %>
+          <% end %>
+          <div class="list_block--item non_sortable" style="flex-wrap:wrap;background-color:white;">
+            <%= link_to "Add multiple ingredients", stocks_new_path(:cupboard_id => cupboard_id_hashids.encode(cupboard.id)), class: "list_block--item non_sortable", style: "flex-basis:100%;" %>
+            <%= link_to "Add a custom ingredient", stocks_custom_new_path(:cupboard_id => cupboard_id_hashids.encode(cupboard.id)), class: "list_block--item list_block--item_new non_sortable", style: "flex-basis:100%" %>
+          </div>
+        </div>
+        <div class="list_block--content_end">
+          <% if cupboard.users.length < 2 %>
+            <%= link_to "Cupboard sharing settings", cupboard_share_path(cupboard_sharing_hashids.encode(cupboard.id)), class: "list_block--info_bar list_block--info_bar--sharing_active", title: "Start sharing this cupboard" %>
+          <% else %>
+            <%= link_to cupboard_share_path(cupboard_sharing_hashids.encode(cupboard.id)), class: "list_block--info_bar", title: "Sharing settings" do %>
+              <div class="list_block--info_bar-content">
+                <p>
+                  Shared with
+                </p>
+                <% cupboard.cupboard_users.each do |cupboard_user| %>
+                  <% if cupboard_user.user && cupboard_user.user != current_user %>
+                    <div class="people_marker<%= cupboard_user.accepted == false ? ' not_accepted' : '' %>" title="<%= cupboard_user.user.name.to_s %>" tabindex="0">
+                      <span>
+                        <%= cupboard_user.user.name[0, 1] %>
+                      </span>
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+              <span class="list_block--info_bar-action">+</span>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+    <%= link_to cupboards_new_path, class: "list_block" do %>
+      <span>Add a new cupboard / storage location</span>
+    <% end %>
+  </div>
+</div>
+
+<div id="demo" hidden>
+	<%= render "cupboards/partials/modal_content" %>
+</div>

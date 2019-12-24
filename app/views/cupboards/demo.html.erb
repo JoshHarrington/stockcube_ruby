@@ -1,4 +1,4 @@
-<% provide(:title, 'Your cupboards') %>
+<% provide(:title, 'Your cupboards: demo') %>
 
 <%= render "cupboards/partials/index_core",
     planner_recipes: @planner_recipes,
@@ -9,3 +9,6 @@
     cupboard_sharing_hashids: @cupboard_sharing_hashids
 %>
 
+<noscript>
+	<%= render "cupboards/partials/no_js_modal" %>
+</noscript>
