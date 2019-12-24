@@ -22,7 +22,7 @@ dialog {
   position: fixed;
   left: 15%;
   right: auto;
-  top: 10%;
+  top: 5%;
   width: 70%;
   background: #fff;
   z-index: 667;
@@ -36,20 +36,21 @@ dialog {
   visibility: hidden;
 }
 
-.modal button.modal-close {
+.modal .modal-close {
   background-color: white;
   border: 1px solid #49a99f;
   padding: 0.4rem 0.5rem;
   border-radius: 0.4rem;
   margin-left: auto;
   display: block;
+  width: 3.2rem;
 }
 
 
 .no-js {
   .no-js-modal-link,
   #demo.hidden {
-    display: block;
+    display: inline-block;
   }
 }
 .js {
@@ -62,7 +63,8 @@ dialog {
   display: none;
 }
 .js .js-modal {
-  display: block;
+  display: inline-block;
+  cursor: pointer;
 }
 
 .modal-title {

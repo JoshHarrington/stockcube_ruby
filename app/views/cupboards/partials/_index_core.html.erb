@@ -28,7 +28,29 @@
 <% end %>
 <div class="list_block--collection--wrap">
   <div class="list_block--collection--sibling">
-    <h2>Your Cupboards <button class="js-modal" data-modal-content-id="demo" data-modal-title="Quick demo on how to add ingredients" data-modal-close-img=<%= png_icon_path('close') %>>Show the demo</button> <a href=<%= cupboards_demo_path%> class="no-js-modal-link">Show the demo</a></h2>
+    <h2>Your Cupboards
+      <button class="js-modal"
+        data-modal-content-id="demo"
+        data-modal-title="Quick demo on how to add ingredients"
+        data-modal-close-img=<%= png_icon_path('close') %>
+        style="font-size: 1.4rem;
+          border: 1px solid teal;
+          margin-left: 0.9rem;
+          padding: 0.3rem 0.6rem;
+          text-decoration: none;
+          color: black;
+          border-radius: 0.3rem;
+          background-color: white;
+          font-family: Lato">Open demo</button>
+      <%= link_to "Open demo", cupboards_demo_path, class: "no-js-modal-link",
+        style: "font-size: 1.4rem;
+          border: 1px solid teal;
+          margin-left: 0.9rem;
+          padding: 0.3rem 0.6rem;
+          text-decoration: none;
+          color: black;
+          border-radius: 0.3rem;"%>
+    </h2>
   </div>
   <div id="cupboard-list" class="list_block--collection">
     <% cupboards.each do |cupboard| %>

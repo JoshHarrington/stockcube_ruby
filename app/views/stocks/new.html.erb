@@ -4,12 +4,15 @@
   <div class="container">
     <div class="list_block--collection--wrap">
 			<div class="list_block--collection--sibling">
-			<%= link_to cupboards_path, style: "padding: 0.5rem .5rem;
-																					border: 1px solid #56c4bb;
-																					border-radius: 0.2rem;
-																					display: flex;
-																					align-items: center;
-																					text-decoration:none" do %>
+			<%= link_to cupboards_path,
+				style: "font-size: 1.4rem;
+								border: 1px solid teal;
+								display: inline-block;
+								margin-left: 0.9rem;
+								padding: 0.3rem 0.6rem;
+								text-decoration: none;
+								color: black;
+								border-radius: 0.3rem;" do %>
 				<span style="width:1.3rem;margin-right: 0.3rem;display: inline-block;height: 1.3rem;"><%= icomoon('arrow_back') %></span>
 				Back to cupboards
 			<% end %>
