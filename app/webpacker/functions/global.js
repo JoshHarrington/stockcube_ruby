@@ -93,7 +93,7 @@ const openDemoModalOnDemoPages = () => {
 		timeoutId = window.setTimeout(() => openDemoModalOnDemoPages(), 300)
 	} else {
 		window.clearTimeout(timeoutId)
-		if (document.body.classList.contains('demo_page') && document.body.classList.contains('no-scroll') === false) {
+		if (document.body.classList.contains('demo_page') && document.querySelector('dialog#js-modal.modal') === null) {
 			if (document.querySelector('button[data-modal-content-id="demo"]')) {
 				timeoutId = window.setTimeout(() => {
 					document.querySelector('button[data-modal-content-id="demo"]').click()
