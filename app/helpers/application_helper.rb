@@ -5,6 +5,13 @@ module ApplicationHelper
 		image_png_name = name.to_s + '.png'
 		return '<svg class="icomoon-icon icon-'.html_safe + name + '"'.html_safe + (!viewBox.empty? ? ' viewBox="'.html_safe + viewBox.to_s.html_safe + '"'.html_safe : '' ) + '><use xlink:href="'.html_safe + asset_pack_path('assets/icons/symbol-defs.svg') + '#icon-'.html_safe + name + '"></use></svg>'.html_safe + '<img class="icon-png" src="'.html_safe + asset_pack_path('assets/png-icons/' + image_png_name ) +'"></img>'.html_safe
 	end
+	def svg_icon_path(name)
+		return asset_pack_path('assets/icons/symbol-defs.svg') + '#icon-'.html_safe + name
+	end
+	def png_icon_path(name)
+		image_png_name = name.to_s + '.png'
+		return asset_pack_path('assets/png-icons/' + image_png_name)
+	end
 	def icomoon_png(name)
 		image_png_name = name.to_s + '.png'
 		return '<img class="icon-png" src="'.html_safe + asset_pack_path('assets/png-icons/' + image_png_name ) +'"></img>'.html_safe
