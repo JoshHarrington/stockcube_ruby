@@ -1,0 +1,76 @@
+/* needed for old browsers */
+dialog {
+  display: block;
+  border: 0;
+}
+/* removes scroll when modal is opened */
+.no-scroll {
+  overflow: hidden;
+}
+/* overlay covers everything */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 666;
+  background-color: #0202027a;
+}
+/* modal */
+.modal {
+  position: fixed;
+  left: 15%;
+  right: auto;
+  top: 10%;
+  width: 70%;
+  background: #fff;
+  z-index: 667;
+  @media screen and (max-width:70rem) {
+    width: 90%;
+    left: 5%;
+  }
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.modal button.modal-close {
+  background-color: white;
+  border: 1px solid #49a99f;
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.4rem;
+  margin-left: auto;
+  display: block;
+}
+
+
+.no-js {
+  .no-js-modal-link,
+  #demo.hidden {
+    display: block;
+  }
+}
+.js {
+  .no-js-modal,
+  .no-js-modal-link {
+    display: none;
+  }
+}
+.no-js .js-modal {
+  display: none;
+}
+.js .js-modal {
+  display: block;
+}
+
+.modal-title {
+  margin-bottom: 1rem;
+}
+
+.modal__content {
+  video {
+    max-width: 100%;
+  }
+}

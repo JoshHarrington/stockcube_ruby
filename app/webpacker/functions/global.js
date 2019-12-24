@@ -22,6 +22,7 @@ const globalFn = () => {
 		onSearchShowIngredientInputSwitch()
 	}
 	catchDataConfirmAttrs()
+	openDemoModalOnDemoPages()
 }
 
 
@@ -86,6 +87,23 @@ const deleteIngredientChoicesSelect = (choicesStockIngredientSelect, stockIngred
 	}
 }
 
+let timeoutId
+const openDemoModalOnDemoPages = () => {
+	if (window.van11yAccessibleModalWindowAria === undefined) {
+		timeoutId = window.setTimeout(() => openDemoModalOnDemoPages(), 300)
+	} else {
+		window.clearTimeout(timeoutId)
+		if (document.body.classList.contains('demo_page') && document.body.classList.contains('no-scroll') === false) {
+			if (document.querySelector('button[data-modal-content-id="demo"]')) {
+				timeoutId = window.setTimeout(() => {
+					document.querySelector('button[data-modal-content-id="demo"]').click()
+					window.clearTimeout(timeoutId)
+				}, 0.01)
+			}
+		}
+	}
+
+}
 
 const catchDataConfirmAttrs = () => {
 	const ConfirmActions = document.querySelectorAll('*[data-confirm]')
