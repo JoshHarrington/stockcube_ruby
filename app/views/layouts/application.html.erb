@@ -80,7 +80,7 @@
     <% end %>
   </head>
 
-  <body class="<%= controller_name %>_controller <%= action_name %>_page">
+  <body class="<%= controller_name %>_controller <%= action_name %>_page <%= !yield(:body_classes).to_s.blank? ? (yield(:body_classes).to_s) : '' %>">
     <% if Rails.env.production? %>
       <% if request.host == 'demo.getstockcubes.com' %>
         <!-- Google Tag Manager (noscript) -->
