@@ -23,6 +23,7 @@
       </div>
 			<div class="list_block--collection list_block--collection__tight">
 				<% @top_ingredients.each do |i| %>
+					<% ingredient_default_use_by_date_diff = ordered_typical_ingredients().select{|ti| ti[:name] == i.name.downcase}.first[:use_by_date_diff] %>
 					<div class="list_block list_block__column"
 						style="background-image: url('https://source.unsplash.com/500x300/weekly?food,ingredient,<%= i.name.split(' ').join(',') %>');background-size: cover;
 							background-color: rgba(255, 255, 255, .5);
@@ -38,7 +39,7 @@
 							align-items: center;
 							min-height: 5rem">
 							<h2><%= i.name %></h2>
-							<%#= render "stocks/partials/new_stock_set_date", i: i %>
+							<%= render "stocks/partials/new_stock_set_date", i: i, use_by_date_diff: ingredient_default_use_by_date_diff.to_i %>
 						</div>
 						<h3 style="padding:0.8rem 1.2rem;margin:2rem 1.2rem 0.7rem;background-color:#56c4bb8c;width:auto;display:inline-block;align-self:flex-start;">Select the size to add:</h3>
 						<ul style="padding:.2rem 1.2rem 1rem">
@@ -49,7 +50,7 @@
 										<%= s.hidden_field :amount, :value => size.amount.to_f %>
 										<%= s.hidden_field :ingredient_id, :value => size.ingredient_id %>
 										<%= s.hidden_field :unit_id, :value => size.unit_id %>
-										<%= s.hidden_field :use_by_date, :value => Date.current + 2.weeks, :min => Date.current - 2.days %>
+										<%= s.hidden_field :use_by_date, :value => Date.current + ingredient_default_use_by_date_diff.to_i.days, :min => Date.current - 2.days %>
 										<%= s.submit standard_serving_size(size), class: "list_block--collection--action" %>
 									<% end %>
 								</li>
