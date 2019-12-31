@@ -18,8 +18,8 @@
 			<% end %>
 			</div>
 			<div class="list_block--collection--sibling" style="margin:2rem 0 1rem;">
-        <h1>Add top ingredients to your cupboard</h1>
-				<%= link_to "Add your own ingredients", stocks_custom_new_path(cupboard_id: @cupboard_id) %>
+        <h1>Add some typical ingredients to your cupboard</h1>
+				<%= link_to "Add other ingredient", stocks_custom_new_path(cupboard_id: @cupboard_id) %>
       </div>
 			<div class="list_block--collection list_block--collection__tight">
 				<% @top_ingredients.each do |i| %>
@@ -63,7 +63,7 @@
 						background-blend-mode: screen;
 						min-height: 20vw;
 						background-position: center center;" do %>
-					<p>Add other ingredients</p>
+					<p>Add other ingredient</p>
 				<% end %>
 			</div>
 		</div>
