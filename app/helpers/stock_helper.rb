@@ -1,5 +1,6 @@
 module StockHelper
 	include PlannerShoppingListHelper
+	include CupboardHelper
 	# if updating one or more ingredients (stock addition) - ingredient_id should be defined
 	# if no ingredient_id defined then use all of current users stock to search for matching recipes
 
@@ -286,11 +287,128 @@ module StockHelper
 	end
 
 	def user_cupboards(user_id = nil)
+		user = nil
 		if user_id == nil && current_user != nil
-			return current_user.cupboard_users.select{|cu|cu.accepted == true || cu.owner == true}.map{|cu|cu.cupboard}
+			user = current_user
 		elsif user_id != nil
-			return User.find(user_id).cupboard_users.select{|cu|cu.accepted == true || cu.owner == true}.map{|cu|cu.cupboard}
+			user = User.find(user_id)
 		end
+
+		if user != nil
+			return user.cupboard_users.select{|cu|cu.accepted == true || cu.owner == true}.map{|cu|cu.cupboard}
+		end
+	end
+
+	def user_stock(user_id = nil)
+		user = nil
+		if user_id == nil && current_user != nil
+			user = current_user
+		elsif user_id != nil
+			user = User.find(user_id)
+		end
+
+		if user != nil
+			all_stock = []
+
+			cupboards = user_cupboards(user.id)
+			cupboards.each do |c|
+				stock = cupboard_stocks_selection_in_date(c)
+				all_stock.push(stock)
+			end
+
+			return all_stock.flatten.compact
+		end
+	end
+
+	def user_unique_ingredients(user_id = nil)
+		user = nil
+		if user_id == nil && current_user != nil
+			user = current_user
+		elsif user_id != nil
+			user = User.find(user_id)
+		end
+
+		if user != nil
+			stock = user_stock(user.id)
+			return stock.map{|s|s.ingredient}.uniq
+		end
+	end
+
+	def initial_typical_ingredients
+		return [{
+			name: 'milk',
+			use_by_date_diff: 7
+		},{
+			name: 'egg',
+			use_by_date_diff: 28
+		},{
+			name: 'bread',
+			use_by_date_diff: 7
+		},{
+			name: 'tomato',
+			use_by_date_diff: 7
+		},{
+			name: 'onion',
+			use_by_date_diff: 42
+		},{
+			name: 'cheddar cheese',
+			use_by_date_diff: 42
+		},{
+			name: 'carrot',
+			use_by_date_diff: 28
+		},{
+			name: 'chicken breast',
+			use_by_date_diff: 3
+		},{
+			name: 'rice',
+			use_by_date_diff: 730
+		},{
+			name: 'pasta',
+			use_by_date_diff: 365
+		},{
+			name: 'olive oil',
+			use_by_date_diff: 730
+		},{
+			name: 'greek yogurt',
+			use_by_date_diff: 14
+		},{
+			name: 'potato',
+			use_by_date_diff: 21
+		},{
+			name: 'flour',
+			use_by_date_diff: 182
+		},{
+			name: 'frozen peas',
+			use_by_date_diff: '273'
+		}]
+	end
+
+	def ordered_typical_ingredients(user_id = nil)
+		user = nil
+		if user_id == nil && current_user != nil
+			user = current_user
+		elsif user_id != nil
+			user = User.find(user_id)
+		end
+
+
+		if user != nil
+			uniq_ingredients = user_unique_ingredients(user.id)
+			initial_typical_ingredients
+
+			ordered_typical_ingredients = initial_typical_ingredients
+
+			initial_typical_ingredients.each do |ti|
+				next if uniq_ingredients.select{|i|i.name.downcase == ti[:name]}.length == 0
+				ordered_typical_ingredients.reject!{|oti| oti[:name] == ti[:name]}
+				ordered_typical_ingredients.push(ti)
+			end
+
+			return ordered_typical_ingredients
+
+		end
+
+
 	end
 
 	def create_stock(user_id = nil, stock_params = nil)

@@ -40,8 +40,8 @@ class StocksController < ApplicationController
 
 	def new
 		@stock = Stock.new
-		top_ingredients_list = ['bread', 'milk', 'egg', 'mushrooms', 'cheddar cheese', 'flour']
-		@top_ingredients = top_ingredients_list.map{|i| Ingredient.where('lower(name) = ?', i.downcase).first}.compact.select{|i| i.default_ingredient_sizes.length > 0}
+
+		@top_ingredients = ordered_typical_ingredients().map{|i| Ingredient.where('lower(name) = ?', i[:name].downcase).first}.compact.select{|new_i| new_i.default_ingredient_sizes.length > 0}
 		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 		if current_user.cupboards.length == 0
 			@cupboard_id = create_cupboard_if_none(true)
@@ -53,6 +53,7 @@ class StocksController < ApplicationController
 				@cupboard_id = cupboard_id_hashids.encode(@cupboards.first.id)
 			end
 		end
+
 	end
 
 	def custom_new
