@@ -143,4 +143,8 @@ module ApplicationHelper
 	def logged_in?
 		user_signed_in?
 	end
+
+	def sustainability_percentage()
+		return 77
+	end
 end

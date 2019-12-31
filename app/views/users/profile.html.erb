@@ -12,6 +12,21 @@
     <%= link_to "Edit details", edit_user_registration_path, class: "list_block--item--action" %>
   </div>
 
+  <div class="pretty_form--sibling">
+    <h2 style="margin-bottom: .8rem">Your food sustainability score</h2>
+    <%#= render 'components/progress' %>
+    <p>This is a feature that we're thinking about at the moment, if you're interested click the button below and we'll record<p>
+
+    <p>Based on our calculations your sustainability score is <%= sustainability_percentage() %>%</p>
+    <h3>What's a sustainability score?</h3>
+    <p>This is our best guess at how sustainable your diet is, accounting for how much food you throw away. We're not here to judge you, this score is meant to be a rough guide to let you know if you could do a bit more to make yourself
+
+
+     want to make this as accurate as possible,
+    so that you can get a quick view on your sustainability
+    We've figured out based on your diet and how much food you throw away how sustainable your lifestyle is.</p>
+  </div>
+
   <div class="fake_form">
     <div class="pretty_form--row">
       <p class="info">Name:</p>

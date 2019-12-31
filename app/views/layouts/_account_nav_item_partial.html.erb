@@ -1,10 +1,75 @@
-<% notifications && notifications.class == Integer ? data_notifications = notifications : 'null' %>
-<% if notifications %>
-	<%= link_to user_profile_path(anchor: "todos"), class: "account-btn signed_in_btn notifcations #{(current_section == 'users') || (current_section == 'sessions') ? ' current_section' : ''}", data: {notifications: data_notifications, turbolinks: false} do %>
-		<%= icomoon('user') %>
-	<% end %>
-<% else %>
-	<%= link_to user_profile_path, class: "account-btn signed_in_btn#{(current_section == 'users') || (current_section == 'sessions') ? ' current_section' : ''}", data: {notifications: data_notifications} do %>
-		<%= icomoon('user') %>
-	<% end %>
+<%
+	notifications && notifications.class == Integer ? data_notifications = notifications : 'null'
+%>
+
+<style>
+	@keyframes fillup {
+		to { stroke-dasharray: 158 158; }
+	}
+	svg.account-stat-pie {
+		--pie-bg-color: white;
+		--pie-segment-color: #5cd611;
+		--pie-segment-percentage: <%= sustainability_percentage() %>;
+		--pie-size: 5.6rem;
+		width: var(--pie-size);
+		height: var(--pie-size);
+		transform: rotate(-90deg);
+		background: var(--pie-bg-color);
+		border-radius: 50%;
+		border: 1px solid #c8e4e2;
+		position: absolute;
+    right: .3rem;
+    top: .3rem;
+	}
+	@media screen and (max-width: 45em) {
+		svg.account-stat-pie {
+			--pie-size: 4.5rem;
+			right: -.7rem;
+		}
+	}
+	svg.account-stat-pie circle {
+		fill: var(--pie-bg-color);
+		stroke: var(--pie-segment-color);
+		stroke-width: 32;
+		stroke-dasharray: var(--pie-segment-percentage) 100;
+	}
+
+	.account-stat-expand {
+		position: absolute;
+		right: -1.2rem;
+		top: -1.1rem;
+		z-index: -1;
+		display: flex;
+		flex-wrap: wrap;
+		width: 24rem;
+		background: white;
+		padding: .9rem 6.7rem .9rem .9rem;
+		border-radius: .2rem;
+		border: 1px solid #49a99f;
+	}
+
+	.account-btn.signed_in_btn:not(:hover) .account-stat-expand {
+		height: 6.4rem;
+		overflow: hidden;
+		background-color: transparent;
+		pointer-events: none;
+	}
+
+	.account-btn.signed_in_btn:not(:hover) .account-stat-expand .show-me {
+		visibility: hidden;
+		width: 0;
+		height: 0;
+	}
+</style>
+<%= link_to user_profile_path(anchor: notifications ? "todos" : nil), class: "account-btn signed_in_btn #{notifications && "notifcations"} #{((current_section == 'users') || (current_section == 'sessions')) && "current_section"}", data: {notifications: data_notifications} do %>
+	<%= icomoon('user') %>
+	<div class="account-stat-expand">
+		<svg viewBox="0 0 32 32" class="account-stat-pie">
+			<circle r="16" cx="16" cy="16" />
+		</svg>
+		<h3 class="show-me" style="margin-bottom: .3rem;">Food sustainability score</h3>
+		<p class="show-me" style="font-size: 1.3rem;">Stockcubes is designed to help you become more sustainable. Let us help you figure out what steps you could take to improve your sustainability score.</p>
+	</div>
 <% end %>
+
+

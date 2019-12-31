@@ -364,7 +364,7 @@ footer[role="contentinfo"] {
     align-items: stretch;
     .account-btn {
       height: em(32, 15);
-      svg {
+      svg.icon-user {
         width: em(20, 15);
         height: em(20, 15);
       }
