@@ -87,7 +87,7 @@
                 <% end %>
             <% end %>
           <% end %>
-          <div class="list_block--item non_sortable" style="flex-wrap:wrap;background-color:white;">
+          <div class="list_block--item non_sortable" style="flex-wrap:wrap;background-color:white;order:3">
             <%= link_to "Add typical ingredients", stocks_new_path(:cupboard_id => cupboard_id_hashids.encode(cupboard.id)), class: "list_block--item non_sortable", style: "flex-basis:100%;" %>
             <%= link_to "Add other ingredient", stocks_custom_new_path(:cupboard_id => cupboard_id_hashids.encode(cupboard.id)), class: "list_block--item list_block--item_new non_sortable", style: "flex-basis:100%" %>
           </div>
