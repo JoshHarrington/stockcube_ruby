@@ -1,9 +1,49 @@
-<%= form_for(@ingredient) do |i| %>
-	<h3>Ingredient Edit</h3>
-	<br />
-	<br />
-	<%= render 'form_partial', i: i, ingredient: @ingredient %>
-	<div class="actions">
-		<%= i.submit "Save" %>
-	</div>
-<% end %>
+<% provide(:title, "Editing #{@ingredient.name}") %>
+
+<div class="item_form--wrapper">
+	<%= form_for @ingredient, :html => {id: "ingredient_form", class: "item_form"} do |i| %>
+		<div class="item_form--title">
+			<h1 style="padding-right:0"><%= i.text_field :name, value: @ingredient.name, style: "width:100%" %></h1>
+		</div>
+		<div class="item_form--contents">
+
+			<div class="item_form--content_row">
+				<h3>Dietary details</h3>
+
+				<%= i.check_box :vegan, {id: "vegan_check", style: "display:none", checked: @ingredient.vegan}, "true", "false" %>
+				<%= label_tag "vegan_check", "Vegan", class: "fancy_checkbox_label" %>
+
+				<%= i.check_box :vegetarian, {id: "vegetarian_check", style: "display:none", checked: @ingredient.vegetarian}, "true", "false" %>
+				<%= label_tag "vegetarian_check", "Vegetarian", class: "fancy_checkbox_label" %>
+
+				<%= i.check_box :gluten_free, {id: "gluten_free_check", style: "display:none", checked: @ingredient.gluten_free}, "true", "false" %>
+				<%= label_tag "gluten_free_check", "Gluten Free", class: "fancy_checkbox_label" %>
+
+				<%= i.check_box :dairy_free, {id: "dairy_free_check", style: "display:none", checked: @ingredient.dairy_free}, "true", "false" %>
+				<%= label_tag "dairy_free_check", "Dairy Free", class: "fancy_checkbox_label" %>
+
+				<%= i.check_box :kosher, {id: "kosher_check", style: "display:none", checked: @ingredient.kosher}, "true", "false" %>
+				<%= label_tag "kosher_check", "Kosher", class: "fancy_checkbox_label" %>
+
+			</div>
+			<div class="item_form--content_row">
+				<h3>Default sizes</h3>
+				<% if @ingredient.default_ingredient_sizes.length > 0 %>
+					<ul style="width: 100%;list-style: circle;padding-left: 2em;">
+						<% @ingredient.default_ingredient_sizes.each do |size| %>
+							<li>
+								<p><%= standard_serving_size(size) %></p>
+							</li>
+						<% end %>
+					</ul>
+				<% else %>
+					<p style="width:100%;font-style: italic;">No ingredient sizes</p>
+				<% end %>
+			</div>
+
+			<div class="item_form--content_row">
+				<%= i.button "Save" %>
+			</div>
+		</div>
+	<% end %>
+</div>
