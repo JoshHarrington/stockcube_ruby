@@ -3,7 +3,7 @@
 <div class="item_form--wrapper">
 	<%= form_for @ingredient, :html => {id: "ingredient_form", class: "item_form"} do |i| %>
 		<div class="item_form--title">
-			<h1 style="padding-right:0"><%= i.text_field :name, value: @ingredient.name, style: "width:100%" %></h1>
+			<h1 style="padding-right:0"><%= i.text_field :name, value: @ingredient.name, style: "width:100%;padding-left:.5rem" %></h1>
 		</div>
 		<div class="item_form--contents">
 
@@ -28,17 +28,35 @@
 			</div>
 			<div class="item_form--content_row">
 				<h3>Default sizes</h3>
-				<% if @ingredient.default_ingredient_sizes.length > 0 %>
-					<ul style="width: 100%;list-style: circle;padding-left: 2em;">
+
+				<ul style="width: 100%;">
+					<% if @ingredient.default_ingredient_sizes.length > 0 %>
 						<% @ingredient.default_ingredient_sizes.each do |size| %>
-							<li>
-								<p><%= standard_serving_size(size) %></p>
+							<li style="display:flex;margin-bottom:1.2rem;">
+								<%= number_field_tag "default_ingredient_sizes[#{size.id}][amount]", size.amount, style: "padding-left:.5rem" %>
+								<div style="flex-grow:1; margin-left:.9rem">
+									<%= select_tag "default_ingredient_sizes[#{size.id}][unit_id]", options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }, selected: (size.unit_id ? size.unit_id : nil)), class: "choices--basis half_width" %>
+								</div>
 							</li>
 						<% end %>
-					</ul>
-				<% else %>
-					<p style="width:100%;font-style: italic;">No ingredient sizes</p>
-				<% end %>
+					<% end %>
+					<li style="display:none;margin-bottom:1.2rem;" class="row_for_cloning" data-id-start=<%= @ingredient.default_ingredient_sizes.length > 0 ? @ingredient.default_ingredient_sizes.last.id * 123 : 123 %>>
+						<%= number_field_tag "default_ingredient_sizes[new][][amount]", nil, style: "padding-left:.5rem" %>
+						<div style="flex-grow:1; margin-left:.9rem">
+							<%= select_tag "default_ingredient_sizes[new][][unit_id]", options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }), class: "half_width" %>
+						</div>
+					</li>
+					<li style="display:flex;margin-bottom:1.2rem;justify-content:flex-end" class="new_size_button_row">
+						<span id="new_size_button"
+								style="background: white;
+											border: 1px solid #93dbd7;
+											font-size: 1.4rem;
+											font-family: Lato;
+											padding: 1rem 1rem;
+											border-radius: .3rem;
+											cursor:pointer;">Add new default ingredient size</span>
+					</li>
+				</ul>
 			</div>
 
 			<div class="item_form--content_row">
