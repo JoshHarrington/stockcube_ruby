@@ -1,12 +1,90 @@
-	<div class="field">
-		<p>Ingredient Name</p> <%= i.text_field :name %><br>
-		<br />
-		<p>Unit</p>
-		<%= i.select :unit_id, options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }, selected: (ingredient && ingredient.unit_id ? ingredient.unit_id : Unit.find_by(name: "gram").id)), prompt: "Please select" %><br />
-		<br />
-		<p>Vegan <%= i.check_box "vegan" %></p><br	/>
-		<p>Vegetarian <%= i.check_box "vegetarian" %></p><br	/>
-		<p>Gluten Free <%= i.check_box "gluten_free" %></p><br	/>
-		<p>Dairy Free <%= i.check_box "dairy_free" %></p><br	/>
-		<p>Kosher <%= i.check_box "kosher" %></p><br	/>
-	</div>
+
+<div class="item_form--wrapper">
+	<%= form_for ingredient, :html => {id: "ingredient_form", class: "item_form"} do |i| %>
+		<div class="item_form--title">
+			<h1 style="padding-right:0"><%= i.text_field :name, value: ingredient.name, style: "width:100%;padding-left:.5rem" %></h1>
+		</div>
+		<div class="item_form--contents">
+
+			<div class="item_form--content_row">
+				<h3>Dietary details</h3>
+
+				<%= i.check_box :vegan, {id: "vegan_check", style: "display:none", checked: ingredient.vegan}, "true", "false" %>
+				<%= label_tag "vegan_check", "Vegan", class: "fancy_checkbox_label" %>
+
+				<%= i.check_box :vegetarian, {id: "vegetarian_check", style: "display:none", checked: ingredient.vegetarian}, "true", "false" %>
+				<%= label_tag "vegetarian_check", "Vegetarian", class: "fancy_checkbox_label" %>
+
+				<%= i.check_box :gluten_free, {id: "gluten_free_check", style: "display:none", checked: ingredient.gluten_free}, "true", "false" %>
+				<%= label_tag "gluten_free_check", "Gluten Free", class: "fancy_checkbox_label" %>
+
+				<%= i.check_box :dairy_free, {id: "dairy_free_check", style: "display:none", checked: ingredient.dairy_free}, "true", "false" %>
+				<%= label_tag "dairy_free_check", "Dairy Free", class: "fancy_checkbox_label" %>
+
+				<%= i.check_box :kosher, {id: "kosher_check", style: "display:none", checked: ingredient.kosher}, "true", "false" %>
+				<%= label_tag "kosher_check", "Kosher", class: "fancy_checkbox_label" %>
+
+			</div>
+			<div class="item_form--content_row">
+				<h3>Default sizes</h3>
+
+				<ul style="width: 100%;">
+					<% if ingredient.default_ingredient_sizes.length > 0 %>
+						<% ingredient.default_ingredient_sizes.each do |size| %>
+							<li style="display:flex;margin-bottom:1.2rem;" id="<%= size.id %>">
+								<%= number_field_tag "default_ingredient_sizes[#{size.id}][amount]", size.amount, style: "padding-left:.5rem" %>
+								<div style="flex-grow:1; margin-left:.9rem">
+									<%= select_tag "default_ingredient_sizes[#{size.id}][unit_id]", options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }, selected: (size.unit_id ? size.unit_id : nil)), class: "choices--basis half_width" %>
+								</div>
+								<span class="ingredient_size_delete_btn"
+									style="padding: 1rem;
+												display: flex;
+												align-items: center;
+												justify-content: center;
+												position: relative;
+												margin-left: 0.7rem;
+												background-color: white;
+												border: 1px solid #49a99f;
+												cursor: pointer;
+												border-radius: 3px;"
+								><svg style="height: 1.4rem;width: 1.4rem;fill: currentColor;margin:0;"><use xlink:href="<%= svg_icon_path("close") %>"></use></svg></span>
+							</li>
+						<% end %>
+					<% end %>
+					<li style="display:none;margin-bottom:1.2rem;" class="row_for_cloning">
+						<%= number_field_tag "default_ingredient_sizes[new][][amount]", nil, style: "padding-left:.5rem" %>
+						<div style="flex-grow:1; margin-left:.9rem">
+							<%= select_tag "default_ingredient_sizes[new][][unit_id]", options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }), class: "half_width" %>
+						</div>
+						<span class="cloned_ingredient_size_delete_btn"
+									style="padding: 1rem;
+												display: flex;
+												align-items: center;
+												justify-content: center;
+												position: relative;
+												margin-left: 0.9rem;
+												background-color: white;
+												border: 1px solid #49a99f;
+												cursor: pointer;
+												border-radius: 3px;"
+								><svg style="height: 1.4rem;width: 1.4rem;fill: currentColor;margin:0;"><use xlink:href="<%= svg_icon_path("close") %>"></use></svg></span>
+					</li>
+					<li style="display:flex;margin-bottom:1.2rem;justify-content:flex-end" class="new_size_button_row">
+						<span id="new_size_button"
+								style="background: white;
+											border: 1px solid #93dbd7;
+											font-size: 1.4rem;
+											font-family: Lato;
+											padding: 1rem 1rem;
+											border-radius: .3rem;
+											cursor:pointer;">Add new default ingredient size</span>
+					</li>
+				</ul>
+			</div>
+
+			<div class="item_form--content_row">
+				<%= i.button "Save" %>
+			</div>
+		</div>
+	<% end %>
+</div>

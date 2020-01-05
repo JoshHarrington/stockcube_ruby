@@ -7,9 +7,9 @@
         <%= link_to 'New Ingredient', ingredients_new_path %>
       </div>
       <div class="list_block--collection list_block--collection__tight">
-        <% @ingredients.sort_by {|ingredient| ingredient.recipes.length}.reverse.each do |ingredient| %>
+        <% @ingredients.order(updated_at: :desc).each do |ingredient| %>
 
-          <div class="list_block list_block__column">
+          <div class="list_block list_block__column" id="<%= ingredient.id %>">
             <div class="list_block--content">
               <div class="list_block--title">
                 <h3><%= link_to ingredient.name, edit_ingredient_path(ingredient) %></h3>

@@ -18,10 +18,26 @@ class IngredientsController < ApplicationController
 		@units = unit_list()
   end
   def create
-		@ingredient = Ingredient.new(ingredient_params)
-		@units = unit_list()
-    if @ingredient.save
-			redirect_to ingredients_path
+		ingredient = Ingredient.new(ingredient_params)
+
+
+    if ingredient.save
+			if params.has_key?(:default_ingredient_sizes)
+				sizes_hash = params[:default_ingredient_sizes].to_unsafe_h
+				sizes_hash.map do |size_id, values|
+					if size_id === "new"
+						values.each do |value|
+							if value["amount"].to_f != 0.0
+								ingredient.default_ingredient_sizes.create(
+									amount: value["amount"],
+									unit_id: value["unit_id"]
+								)
+							end
+						end
+					end
+				end
+			end
+			redirect_to ingredients_path(anchor: ingredient.id)
 			Ingredient.reindex
     else
       render 'new'
@@ -49,17 +65,21 @@ class IngredientsController < ApplicationController
 					end
 				else
 					if ingredient.default_ingredient_sizes.where(id: size_id).length > 0
-						ingredient.default_ingredient_sizes.where(id: size_id).first.update_attributes(
-							amount: values["amount"],
-							unit_id: values["unit_id"]
-						)
+						if values.has_key?("delete") && values["delete"] == "true"
+							ingredient.default_ingredient_sizes.where(id: size_id).first.destroy
+						else
+							ingredient.default_ingredient_sizes.where(id: size_id).first.update_attributes(
+								amount: values["amount"],
+								unit_id: values["unit_id"]
+							)
+						end
 					end
 				end
 			end
 		end
 
 		if ingredient.update(ingredient_params)
-			redirect_to ingredients_path
+			redirect_to ingredients_path(anchor: ingredient.id)
 			Ingredient.reindex
 		else
 			render 'edit'

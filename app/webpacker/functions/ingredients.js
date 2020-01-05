@@ -29,8 +29,6 @@ const InsertNewSizeRow = (e) => {
 		CloneRow.classList.remove('row_for_cloning')
 		CloneRow.classList.add('cloned_row')
 
-		// CloneRow.getAttribute('data-id-start')
-
 		const CloneRowSelect = CloneRow.querySelector('select')
 		const choicesSelect = new Choices(CloneRowSelect, {
 			classNames: {
@@ -42,6 +40,9 @@ const InsertNewSizeRow = (e) => {
 		const SizesUL = RowForCloning.parentNode
 		SizesUL.insertBefore(CloneRow, NewSizeButtonRow)
 		WatchForInputNumberChange(CloneRow, NewSizeBtn)
+
+		const DeleteIngredientSizeBtnsForClone = CloneRow.querySelector('.cloned_ingredient_size_delete_btn')
+		DeleteIngredientSizeBtnsForClone.addEventListener('click', DeleteClonedIngredientSize)
 	}
 }
 
@@ -77,6 +78,29 @@ const FocusLastClonedInput = () => {
 	}
 }
 
+const SetupDeleteIngredientSizeBtns = () => {
+	const DeleteIngredientSizeBtns = document.querySelectorAll('.ingredient_size_delete_btn')
+	DeleteIngredientSizeBtns.forEach(button => {
+		button.addEventListener('click', DeleteIngredientSize)
+	})
+}
+
+const DeleteIngredientSize = (e) => {
+	const IngredientSizeRow = e.target.closest('li')
+	const IngredientSizeId = IngredientSizeRow.id
+	const DeleteInput = document.createElement('input')
+	DeleteInput.setAttribute('type', 'hidden')
+	DeleteInput.setAttribute('name', 'default_ingredient_sizes[' + IngredientSizeId + '][delete]')
+	DeleteInput.setAttribute('value', 'true')
+	IngredientSizeRow.appendChild(DeleteInput)
+	IngredientSizeRow.style.display = "none"
+}
+
+const DeleteClonedIngredientSize = (e) => {
+	const IngredientSizeRow = e.target.closest('li')
+	IngredientSizeRow.remove()
+}
+
 const DateUpdate = () => {
 	const ShowButtons = document.querySelectorAll('#show_next_form')
 	if (ShowButtons.length > 0) {
@@ -93,6 +117,7 @@ const DateUpdate = () => {
 const IngredientsFn = () => {
 	// DateUpdate()
 	WatchForAddNewSizeBtnClick()
+	SetupDeleteIngredientSizeBtns()
 }
 
 ready(IngredientsFn)
