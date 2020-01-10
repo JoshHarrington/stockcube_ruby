@@ -5,7 +5,15 @@ class UsersController < ApplicationController
 	require 'will_paginate/array'
 
 	def index
-		@users = User.all.paginate(:page => params[:page], :per_page => 10)
+		users = User.all.order("created_at ASC")
+		if params.has_key?(:confirmed)
+			if params[:confirmed].to_s == 'true'
+				users = users.filter{|u| u if u.confirmed? == true}
+			elsif params[:confirmed].to_s == 'false'
+				users = users.filter{|u| u if u.confirmed? == false}
+			end
+		end
+		@users = users.paginate(:page => params[:page], :per_page => 10)
 	end
 
 	def profile
