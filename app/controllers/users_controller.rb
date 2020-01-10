@@ -8,9 +8,9 @@ class UsersController < ApplicationController
 		users = User.all.order("created_at ASC")
 		if params.has_key?(:confirmed)
 			if params[:confirmed].to_s == 'true'
-				users = users.filter{|u| u if u.confirmed? == true}
+				users = users.map{|u| u if u.confirmed? == true}.compact
 			elsif params[:confirmed].to_s == 'false'
-				users = users.filter{|u| u if u.confirmed? == false}
+				users = users.map{|u| u if u.confirmed? == false}.compact
 			end
 		end
 		@users = users.paginate(:page => params[:page], :per_page => 10)
