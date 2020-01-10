@@ -54,5 +54,13 @@
         <br />
       </div>
     <% end %>
+
+    <% if will_paginate(@users) %>
+      <br />
+      <hr />
+      <br />
+      <%= will_paginate(@users) %>
+    <% end %>
+
   </div>
 </div>
