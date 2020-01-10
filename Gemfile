@@ -83,6 +83,8 @@ gem 'premailer-rails'
 
 gem 'devise'
 
+gem "recaptcha"
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

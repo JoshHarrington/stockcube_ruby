@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, controllers: { registrations: "users/registrations" }
   match '/404', :to => 'errors#not_found', :via => :all, as: :errors_not_found
   match '/500', :to => 'errors#internal_server_error', :via => :all, as: :errors_internal_server_error
   root 'static_pages#home'
