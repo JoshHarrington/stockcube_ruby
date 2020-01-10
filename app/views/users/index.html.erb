@@ -10,10 +10,10 @@
         <%= params[:confirmed].to_s == "true" ? "Confirmed users" : "Unconfirmed users" %>
         <% else %>All users<% end %>
         </h1>
-        <% if params[:confirmed].to_s == "true" %>
+        <% if params.has_key?(:confirmed) && params[:confirmed].to_s == "true" %>
           <%= link_to "See unconfirmed users", user_list_path(confirmed: "false") %>
         <% else %>
-          <%= link_to "See confirmed users", user_list_path(confirmed: "true") %>
+          <%= link_to "See just confirmed users", user_list_path(confirmed: "true") %>
         <% end %>
       </div>
     </div>
