@@ -4,7 +4,6 @@
     <h1>Sign up</h1>
   </div>
   <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-    <%= recaptcha_tags %>
     <%= render "devise/shared/error_messages", resource: resource %>
 
     <div class="pretty_form--row">
@@ -29,6 +28,8 @@
       <%= f.label :password_confirmation %><br />
       <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control" %>
     </div>
+
+    <%= recaptcha_tags %>
 
     <div class="pretty_form--actions">
       <%= f.submit "Sign up", class: "pretty_form--submit_button" %>
