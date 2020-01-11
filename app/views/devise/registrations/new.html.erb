@@ -1,7 +1,7 @@
 <% provide(:title, 'Sign up') %>
 <div class="pretty_form">
   <div class="pretty_form--sibling">
-    <h1>Sign up</h1>
+    <h1>Sign up to Stockcubes</h1>
   </div>
   <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
     <%= render "devise/shared/error_messages", resource: resource %>
@@ -29,7 +29,9 @@
       <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control" %>
     </div>
 
-    <%= recaptcha_tags %>
+    <div class="pretty_form--row" style="margin-top: 3rem;">
+      <%= recaptcha_tags %>
+    </div>
 
     <div class="pretty_form--actions">
       <%= f.submit "Sign up", class: "pretty_form--submit_button" %>
