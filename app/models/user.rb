@@ -7,7 +7,7 @@ class User < ApplicationRecord
   after_commit :setup_user, on: :create
 
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :confirmable
+         :recoverable, :rememberable, :validatable, :confirmable, :trackable
 
   validates_presence_of :name
 

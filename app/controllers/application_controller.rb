@@ -36,4 +36,12 @@ class ApplicationController < ActionController::Base
     def configure_permitted_parameters
       devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
     end
+
+    def after_sign_in_path_for(resource)
+      if current_user.sign_in_count == 1
+        cupboards_demo_path
+      else
+        cupboards_path
+      end
+    end
 end
