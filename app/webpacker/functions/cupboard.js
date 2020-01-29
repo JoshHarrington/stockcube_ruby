@@ -12,6 +12,7 @@ var cupboard = function() {
 			animation: 150,
 			draggable: '.list_block--item:not(.non_sortable)',
 			ghostClass: 'list_block--item_placeholder',
+			touchStartThreshold: 10,
 			onStart: function() {
 				document.querySelectorAll('.cupboard.list_block .list_block--content:not([data-cupboard-users="' + cupboardUsersHash + '"]').forEach(function(non_matching_cupboard) {
 					non_matching_cupboard.parentNode.classList.add('sortable_not_allowed')
