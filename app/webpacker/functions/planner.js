@@ -38,19 +38,35 @@ function checkForUpdates(onSuccess) {
   }), 400)
 }
 
+const updateButtonFractionSpan = (fraction) => {
+	const ButtonFractionSpan = document.querySelector('#button__shopping_list_fraction')
+	if (ButtonFractionSpan) {
+		if (fraction != null) {
+			ButtonFractionSpan.style.display = 'block'
+			ButtonFractionSpan.innerText = fraction
+
+		} else {
+			ButtonFractionSpan.style.display = 'none'
+		}
+	}
+}
+
 const updateShoppingListCheckCount = (shoppingList) => {
 	const ShoppingListInner = document.querySelector('.planner_shopping_list--inner')
 	const ShoppingListTitleBlock = ShoppingListInner.querySelector('.title_block')
 	const ShoppingListTitle = ShoppingListTitleBlock.querySelector('h2')
+
 	if (shoppingList.length === 0 ){
 		ShoppingListTitle.innerText = 'Shopping List'
+		updateButtonFractionSpan()
 	} else {
 		const ShoppingListTitleContent = 'Shopping List (' + shoppingList[0]["stats"]["checked_portions"] + '/' + shoppingList[0]["stats"]["total_portions"] + ')'
 		ShoppingListTitle.innerText = ShoppingListTitleContent
+		updateButtonFractionSpan(shoppingList[0]["stats"]["checked_portions"] + '/' + shoppingList[0]["stats"]["total_portions"])
 	}
 }
 
-const renderShoppingList = (shoppingList) => {
+const renderShoppingList = (shoppingList, animated = false) => {
 
 	const ShoppingList = document.querySelector('.planner_shopping_list--wrapper')
 
@@ -70,6 +86,7 @@ const renderShoppingList = (shoppingList) => {
 		if (ShoppingList) {
 			hideShoppingList()
 		}
+		updateButtonFractionSpan()
 		ListTopUl.innerHTML = '<p>Shopping List is currently empty, move some recipes to <a href="/planner">your planner</a> to get items added to this list</p>'
 		if (ShoppingListTitleNote !== null) {
 			ShoppingListTitleNote.style.display = 'none'
@@ -153,7 +170,8 @@ const renderShoppingList = (shoppingList) => {
 		if (ShoppingList) {
 			if (shoppingList[0]["stats"]["checked_portions"] === shoppingList[0]["stats"]["total_portions"]) {
 				hideShoppingList()
-			} else {
+				updateButtonFractionSpan()
+			} else if (animated) {
 				showShoppingList()
 			}
 		}
@@ -202,6 +220,7 @@ const setupShoppingListButton = () => {
 	const html = document.querySelector('html')
 	const toggleBtn = document.querySelector('.planner_shopping_list--wrapper .list_toggle')
 	if (toggleBtn) {
+		toggleBtn.style.display = 'flex'
 		toggleBtn.addEventListener("click", function(){
 			html.classList.toggle('shopping_list_open')
 		})
@@ -317,7 +336,7 @@ const addPlannerRecipe = (e) => {
 	deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
 
 	checkForUpdates(function(shoppingList) {
-	  renderShoppingList(shoppingList)
+	  renderShoppingList(shoppingList, true)
 	})
 
 }
@@ -329,7 +348,7 @@ const updatePlannerRecipe = (e) => {
 	e.item.setAttribute('data-parent-id', parentId)
 
 	checkForUpdates(function(shoppingList) {
-	  renderShoppingList(shoppingList)
+	  renderShoppingList(shoppingList, true)
 	})
 }
 
@@ -347,7 +366,7 @@ const deletePlannerRecipe = (deleteBtn) => {
 		recipeList.insertBefore(buttonParent, recipeAllLink)
 
 		checkForUpdates(function(shoppingList) {
-			renderShoppingList(shoppingList)
+			renderShoppingList(shoppingList, true)
 		})
 	}
 }
@@ -426,7 +445,7 @@ const plannerFn = () => {
 				ajaxRequest(plannerRecipeAddData(recipeId, date), '/planner/recipe_add')
 				addBtn.style.display = 'none'
 				checkForUpdates(function(shoppingList) {
-					renderShoppingList(shoppingList)
+					renderShoppingList(shoppingList, true)
 				})
 				showAlert(`Recipe added to your <a href="/planner">planner</a><br />Your shopping list is now updating`)
 			})
@@ -441,7 +460,7 @@ const plannerFn = () => {
 				ajaxRequest(plannerRecipeAddData(recipeId, date), '/planner/recipe_add')
 				recipeAddToPlannerButton.style.display = 'none'
 				checkForUpdates(function(shoppingList) {
-					renderShoppingList(shoppingList)
+					renderShoppingList(shoppingList, true)
 				})
 				showAlert(`Recipe added to your <a href="/planner">planner</a><br />Your shopping list is now updating`)
 			})

@@ -140,6 +140,14 @@ module ApplicationHelper
 		end
 	end
 
+	def shopping_list_count
+		if total_portions > 0
+			return checked_portions.to_s + '/' + total_portions.to_s
+		else
+			return false
+		end
+	end
+
 	def logged_in?
 		user_signed_in?
 	end

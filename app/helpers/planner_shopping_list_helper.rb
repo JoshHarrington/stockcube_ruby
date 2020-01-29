@@ -262,14 +262,36 @@ module PlannerShoppingListHelper
 
 
 		shopping_list_portions = combi_portions + planner_recipe_portions + portion_wrappers
+		session[:sl_checked_portions_count] = shopping_list_portions.count{|p|p.checked == true}
+		session[:sl_unchecked_portions_count] = shopping_list_portions.count{|p|p.checked == false}
+		session[:sl_total_portions_count] = shopping_list_portions.count
+
 		return shopping_list_portions.sort_by!{|p| p.ingredient.name}
+
 	end
 
 	def unchecked_portions
-		return shopping_list_portions.count{|p|p.checked == false}
+		add_portion_counts_to_session
+		return session[:sl_unchecked_portions_count]
 	end
+
 	def checked_portions
-		return shopping_list_portions.count{|p|p.checked == true}
+		add_portion_counts_to_session
+		return session[:sl_checked_portions_count]
+	end
+
+	def total_portions
+		add_portion_counts_to_session
+		return session[:sl_total_portions_count]
+	end
+
+	def add_portion_counts_to_session
+		unless session.has_key?(:sl_checked_portions_count)
+			shopping_list_portions_var = shopping_list_portions
+			session[:sl_checked_portions_count] = shopping_list_portions_var.count{|p|p.checked == true}
+			session[:sl_unchecked_portions_count] = shopping_list_portions_var.count{|p|p.checked == false}
+			session[:sl_total_portions_count] = shopping_list_portions_var.count
+		end
 	end
 
 	def planner_portion_id_hash
