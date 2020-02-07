@@ -8,9 +8,13 @@ import PNGInfoOutline from '../icons/png-icons/information-outline.png'
 import PNGFullscreen from '../icons/png-icons/fullscreen.png'
 import PNGFullscreenExit from '../icons/png-icons/fullscreen_exit.png'
 
-const plannerRecipeAddData = (id, date) => (
-	"recipe_id=" + id + "&planner_date=" + date
-)
+const plannerRecipeAddData = (id, date = null) => {
+	if (date && date != null) {
+		return "recipe_id=" + id + "&planner_date=" + date
+	} else {
+		return "recipe_id=" + id
+	}
+}
 
 const plannerRecipeUpdateData = (e) => (
 	"recipe_id=" + e.item.id + "&old_date=" + e.item.dataset.parentId + "&new_date=" + e.item.parentNode.id
@@ -442,9 +446,8 @@ const plannerFn = () => {
 		const recipeAddToPlannerButtons = document.querySelectorAll('.list_block--action_row .add_recipe_to_planner')
 		recipeAddToPlannerButtons.forEach(function(addBtn){
 			const recipeId = addBtn.getAttribute('data-recipe-id')
-			const date = addBtn.getAttribute('data-date')
 			addBtn.addEventListener("click", function(){
-				ajaxRequest(plannerRecipeAddData(recipeId, date), '/planner/recipe_add')
+				ajaxRequest(plannerRecipeAddData(recipeId), '/planner/recipe_add')
 				addBtn.style.display = 'none'
 				checkForUpdates(function(shoppingList) {
 					renderShoppingList(shoppingList, true)
@@ -457,9 +460,8 @@ const plannerFn = () => {
 		if (document.querySelector('#add_recipe_to_planner')) {
 			const recipeAddToPlannerButton = document.querySelector('#add_recipe_to_planner')
 			const recipeId = recipeAddToPlannerButton.getAttribute('data-recipe-id')
-			const date = recipeAddToPlannerButton.getAttribute('data-date')
 			recipeAddToPlannerButton.addEventListener("click", function(){
-				ajaxRequest(plannerRecipeAddData(recipeId, date), '/planner/recipe_add')
+				ajaxRequest(plannerRecipeAddData(recipeId), '/planner/recipe_add')
 				recipeAddToPlannerButton.style.display = 'none'
 				checkForUpdates(function(shoppingList) {
 					renderShoppingList(shoppingList, true)

@@ -12,7 +12,9 @@ class PlannerController < ApplicationController
 		recipe_id_plus_planner_recipe_ids = @recipes.map(&:id) + planner_recipe_ids
 		@fav_recipes = current_user.favourites.reject{|f| recipe_id_plus_planner_recipe_ids.include?(f.id) }.first(8)
 
-		update_planner_shopping_list_portions
+		if current_user
+			update_planner_shopping_list_portions
+		end
 	end
 
 	def list
@@ -41,13 +43,37 @@ class PlannerController < ApplicationController
 		)
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
-		return unless params.has_key?(:recipe_id) && Recipe.exists?(@recipe_id_hash.decode(params[:recipe_id]).first)
-		recipe = Recipe.find(@recipe_id_hash.decode(params[:recipe_id]).first)
+		if params.has_key?(:recipe_id) && Recipe.exists?(@recipe_id_hash.decode(params[:recipe_id]).first)
+			recipe = Recipe.find(@recipe_id_hash.decode(params[:recipe_id]).first)
+		else
+			current_user.planner_shopping_list.update_attributes(
+				ready: true
+			)
+			return
+		end
 
-		return unless recipe && params.has_key?(:planner_date) && Date.parse(@planner_recipe_date_hash.decode(params[:planner_date]).first.to_s).to_date && (recipe.public == true || recipe.user == current_user)
-		recipe_id = recipe.id
-		user_id = current_user.id
-		date_string = Date.parse(@planner_recipe_date_hash.decode(params[:planner_date]).first.to_s).to_date
+		if recipe && (recipe.public == true || recipe.user == current_user)
+			recipe_id = recipe.id
+			user_id = current_user.id
+		else
+			current_user.planner_shopping_list.update_attributes(
+				ready: true
+			)
+			return
+		end
+
+		if params.has_key?(:planner_date) && Date.parse(@planner_recipe_date_hash.decode(params[:planner_date]).first.to_s).to_date
+			date_string = Date.parse(@planner_recipe_date_hash.decode(params[:planner_date]).first.to_s).to_date
+		else
+			this_week_dates = (Date.current..Date.current+7.days).to_a
+			last_planner_recipe_dates = current_user.planner_recipes.where(date: this_week_dates).order(date: :asc).map(&:date).uniq
+			available_dates = this_week_dates - last_planner_recipe_dates
+			if available_dates.length > 0
+				date_string = available_dates.first
+			else
+				date_string = last_planner_recipe_dates.last + 1.day
+			end
+		end
 
 		planner_recipe = PlannerRecipe.create(
 			user_id: user_id,
@@ -75,17 +101,34 @@ class PlannerController < ApplicationController
 
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
-		return unless params.has_key?(:recipe_id) && Recipe.exists?(@recipe_id_hash.decode(params[:recipe_id]).first)
-		recipe = Recipe.find(@recipe_id_hash.decode(params[:recipe_id]).first)
+		if params.has_key?(:recipe_id) && Recipe.exists?(@recipe_id_hash.decode(params[:recipe_id]).first)
+			recipe = Recipe.find(@recipe_id_hash.decode(params[:recipe_id]).first)
+		else
+			current_user.planner_shopping_list.update_attributes(
+				ready: true
+			)
+			return
+		end
 
-		return unless recipe && params.has_key?(:new_date) && Date.parse(@planner_recipe_date_hash.decode(params[:new_date]).first.to_s).to_date && (recipe.public == true || recipe.user == current_user)
-		recipe_id = recipe.id
-		user_id = current_user.id
-		new_date = Date.parse(@planner_recipe_date_hash.decode(params[:new_date]).first.to_s).to_date
+		if recipe && params.has_key?(:new_date) && Date.parse(@planner_recipe_date_hash.decode(params[:new_date]).first.to_s).to_date && (recipe.public == true || recipe.user == current_user)
+			recipe_id = recipe.id
+			user_id = current_user.id
+			new_date = Date.parse(@planner_recipe_date_hash.decode(params[:new_date]).first.to_s).to_date
+		else
+			current_user.planner_shopping_list.update_attributes(
+				ready: true
+			)
+			return
+		end
 
-
-		return unless params.has_key?(:old_date) && Date.parse(@planner_recipe_date_hash.decode(params[:old_date]).first.to_s).to_date
-		old_date = Date.parse(@planner_recipe_date_hash.decode(params[:old_date]).first.to_s).to_date
+		if params.has_key?(:old_date) && Date.parse(@planner_recipe_date_hash.decode(params[:old_date]).first.to_s).to_date
+			old_date = Date.parse(@planner_recipe_date_hash.decode(params[:old_date]).first.to_s).to_date
+		else
+			current_user.planner_shopping_list.update_attributes(
+				ready: true
+			)
+			return
+		end
 
 		PlannerRecipe.find_or_create_by(
 			user_id: user_id,
@@ -109,14 +152,26 @@ class PlannerController < ApplicationController
 		)
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
-		return unless params.has_key?(:recipe_id) && Recipe.exists?(@recipe_id_hash.decode(params[:recipe_id]).first)
-		recipe = Recipe.find(@recipe_id_hash.decode(params[:recipe_id]).first)
+		if params.has_key?(:recipe_id) && Recipe.exists?(@recipe_id_hash.decode(params[:recipe_id]).first)
+			recipe = Recipe.find(@recipe_id_hash.decode(params[:recipe_id]).first)
+		else
+			current_user.planner_shopping_list.update_attributes(
+				ready: true
+			)
+			return
+		end
 
-		return unless recipe && params.has_key?(:date) && Date.parse(@planner_recipe_date_hash.decode(params[:date]).first.to_s).to_date && (recipe.public == true || recipe.user == current_user)
-		recipe_id = recipe.id
-		user_id = current_user.id
-		date = Date.parse(@planner_recipe_date_hash.decode(params[:date]).first.to_s).to_date
 
+		if recipe && params.has_key?(:date) && Date.parse(@planner_recipe_date_hash.decode(params[:date]).first.to_s).to_date && (recipe.public == true || recipe.user == current_user)
+			recipe_id = recipe.id
+			user_id = current_user.id
+			date = Date.parse(@planner_recipe_date_hash.decode(params[:date]).first.to_s).to_date
+		else
+			current_user.planner_shopping_list.update_attributes(
+				ready: true
+			)
+			return
+		end
 
 		planner_recipe = PlannerRecipe.find_by(
 			user_id: user_id,

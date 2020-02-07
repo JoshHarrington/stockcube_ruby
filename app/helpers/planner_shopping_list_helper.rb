@@ -125,9 +125,11 @@ module PlannerShoppingListHelper
 	end
 
 	def update_planner_shopping_list_portions
-		return unless current_user
 		if current_user.planner_recipes.length == 0
 			current_user.combi_planner_shopping_list_portions.destroy_all
+			current_user.planner_shopping_list.update_attributes(
+				ready: true
+			)
 			return
 		end
 		current_user.combi_planner_shopping_list_portions.select{|cp|cp.planner_shopping_list_portions.length == 0 || cp.planner_shopping_list_portions.length == 1 }.map{|cp| cp.destroy}

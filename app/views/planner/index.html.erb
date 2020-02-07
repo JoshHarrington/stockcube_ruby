@@ -66,7 +66,7 @@
 			<button class="tiny-control tiny-control--next next"><%= icomoon('arrow_forward') %></button>
 		</div>
 		<div data-planner class="tiny-wrapper">
-			<% (-1..7).each do |d| %>
+			<% (-1..12).each do |d| %>
 				<% date = Date.current + d.days %>
 				<div class="tiny-slide <% if d == -1 %>yesterday<% end %>"><div class="tiny-contents"><h2>
 				<% if d == -1 %>Yesterday<% end %>

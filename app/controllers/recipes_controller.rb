@@ -44,11 +44,6 @@ class RecipesController < ApplicationController
 		@recipe_search_autocomplete_list = (recipe_titles + ingredients).sort_by(&:downcase)
 
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
-		planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
-
-		date = Date.current + 1.days
-		date_num = date.to_formatted_s(:number)
-		@date_hashed_id = planner_recipe_date_hash.encode(date_num)
 
 	end
 
@@ -78,13 +73,7 @@ class RecipesController < ApplicationController
 			redirect_to root_path
 		end
 
-
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
-		planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
-
-		date = Date.current + 1.days
-		date_num = date.to_formatted_s(:number)
-		@date_hashed_id = planner_recipe_date_hash.encode(date_num)
 
 	end
 	def favourites
