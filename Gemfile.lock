@@ -102,6 +102,7 @@ GEM
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.25)
+    foreman (0.87.0)
     foundation_emails (2.2.1.0)
     fraction (0.3.2)
     globalid (0.4.2)
@@ -326,6 +327,7 @@ DEPENDENCIES
   dotenv-rails
   faker (= 1.7.3)
   ffi (>= 1.9.24)
+  foreman
   fraction (~> 0.3.2)
   hashid-rails (~> 1.2, >= 1.2.1)
   inky-rb
