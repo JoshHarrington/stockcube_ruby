@@ -83,6 +83,10 @@ const isSelectorValid = selector => {
   return true
 }
 
+const isMobileDevice = () => {
+  return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+};
+
 
 
 export {
@@ -90,5 +94,6 @@ export {
   ajaxRequest,
   makeUniqueId,
   showAlert,
-  isSelectorValid
+  isSelectorValid,
+  isMobileDevice
 }

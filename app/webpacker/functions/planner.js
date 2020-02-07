@@ -1,4 +1,4 @@
-import { ready, ajaxRequest, showAlert } from './utils'
+import { ready, ajaxRequest, showAlert, isMobileDevice } from './utils'
 import Sortable from 'sortablejs'
 import Choices from 'choices.js'
 import {tns} from 'tiny-slider/src/tiny-slider'
@@ -403,31 +403,33 @@ const plannerFn = () => {
 
 		const recipeList = document.querySelector('[data-recipe-list]')
 		const plannerBlocks = document.querySelectorAll('[data-planner] .tiny-slide:not(.yesterday) .tiny-drop')
-		new Sortable.create(recipeList, {
-			group: {
-				name: 'recipe-sharing',
-				put: false,
-			},
-			filter: '.non_sortable',
-			sort: false,
-			onEnd: function(e) {
-				if (e.item.parentNode.classList.contains('tiny-drop')){
-					addPlannerRecipe(e)
-				}
-			}
-		})
-		plannerBlocks.forEach(function(dayBlock){
-			new Sortable.create(dayBlock, {
+		if (isMobileDevice() === false) {
+			new Sortable.create(recipeList, {
 				group: {
 					name: 'recipe-sharing',
-					pull: true,
-					put: true
+					put: false,
 				},
+				filter: '.non_sortable',
+				sort: false,
 				onEnd: function(e) {
-					updatePlannerRecipe(e)
+					if (e.item.parentNode.classList.contains('tiny-drop')){
+						addPlannerRecipe(e)
+					}
 				}
 			})
-		})
+			plannerBlocks.forEach(function(dayBlock){
+				new Sortable.create(dayBlock, {
+					group: {
+						name: 'recipe-sharing',
+						pull: true,
+						put: true
+					},
+					onEnd: function(e) {
+						updatePlannerRecipe(e)
+					}
+				})
+			})
+		}
 
 		const plannerRecipeDeleteButtons = document.querySelectorAll('.tiny-slide .list_block--item button.delete')
 
