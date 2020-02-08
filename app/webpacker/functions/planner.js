@@ -329,6 +329,8 @@ const setupShoppingListCheckingOff = () => {
 const addPlannerRecipe = (e) => {
 	ajaxRequest(plannerRecipeAddData(e.item.id, e.item.parentNode.id), '/planner/recipe_add')
 
+	e.item.querySelector('button[data-type="add-to-planner"]').remove()
+
 	const deleteBtn = document.createElement('button')
 	deleteBtn.innerHTML = `<svg class="icomoon-icon icon-bin"><use xlink:href="${SVG}#icon-bin"></use></svg><img class="icon-png" src="${PNGBin}" />`
 	deleteBtn.classList.add('delete', 'list_block--item--action', 'list_block--item--action--btn')
@@ -439,6 +441,17 @@ const plannerFn = () => {
 
 		plannerRecipeDeleteButtons.forEach(function(deleteBtn){
 			deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
+		})
+
+		const plannerAddRecipeButtons = document.querySelectorAll('[data-type="add-to-planner"]')
+		plannerAddRecipeButtons.forEach((addBtn) => {
+			const recipeId = addBtn.getAttribute('data-recipe-id')
+			addBtn.addEventListener("click", function(){
+				ajaxRequest(plannerRecipeAddData(recipeId), '/planner/recipe_add')
+				addBtn.parentElement.style.display = 'none'
+				location.reload()
+				showAlert(`Recipe added to your planner</a><br />Your shopping list is now updating`)
+			})
 		})
 
 	}

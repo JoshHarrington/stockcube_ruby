@@ -22,10 +22,23 @@
 							num_needed_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_needed_ingredients] : nil
 							percent_in_cupboards = ingredient_stock_match_decimal ? (ingredient_stock_match_decimal.to_f * 100).round : 0
 						%>
+					<% if r.live && r.portions.length > 0 %>
 					<div class="list_block--item list_block--item--with-bar sortable--item" id="<%= @recipe_id_hash.encode(r.id) %>">
 						<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards %>%"></span></span>
 						<%= link_to r.title, recipe_path(r) %>
+							<% if !(current_user.planner_recipes.where(date: Date.current..Date.current+7.days).map(&:recipe_id).include?(r.id)) %>
+								<%= button_tag class: 'svg-btn list_block--item--action list_block--item--action--btn', title: 'Add this recipe to your planner',
+									style: "padding: 0.4em;
+													min-width: 2em;
+													margin: .4rem 0 .4rem .6rem",
+									data: {
+										"recipe-id": @recipe_id_hash.encode(r.id),
+										"type": "add-to-planner" } do %>
+									<%= icomoon('list-add') %>
+								<% end %>
+							<% end %>
 					</div>
+				<% end %>
 				<% end %>
 				<%= link_to "See all recipes", recipes_path, class: "list_block--item list_block--item_new non_sortable no_order" %>
 				<% if @fav_recipes.length > 0 %>
@@ -43,11 +56,24 @@
 							num_needed_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_needed_ingredients] : nil
 							percent_in_cupboards = ingredient_stock_match_decimal ? (ingredient_stock_match_decimal.to_f * 100).round : 0
 						%>
+						<% if fr.live && fr.portions.length > 0 %>
 						<div class="list_block--item list_block--item--with-bar sortable--item" id="<%= @recipe_id_hash.encode(fr.id) %>">
 							<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards %>%"></span></span>
 							<%= link_to fr.title, recipe_path(fr) %>
+								<% if !(current_user.planner_recipes.where(date: Date.current..Date.current+7.days).map(&:recipe_id).include?(fr.id)) %>
+									<%= button_tag class: 'svg-btn list_block--item--action list_block--item--action--btn', title: 'Add this recipe to your planner',
+										style: "padding: 0.4em;
+														min-width: 2em;
+														margin: .4rem 0 .4rem .6rem",
+										data: {
+											"recipe-id": @recipe_id_hash.encode(fr.id),
+											"type": "add-to-planner" } do %>
+										<%= icomoon('list-add') %>
+									<% end %>
+								<% end %>
 						</div>
 					<% end %>
+				<% end %>
 				<% end %>
 			</div>
 		</div>
