@@ -377,6 +377,14 @@ const deletePlannerRecipe = (deleteBtn) => {
 	}
 }
 
+const toggleDragAreaClass = (Planner, type) => {
+	if (type && type === "add") {
+		Planner.classList.add('show-drag-areas')
+	} else if (type && type === "remove") {
+		Planner.classList.remove('show-drag-areas')
+	}
+}
+
 const plannerFn = () => {
 	if (document.body.classList.contains('planner_controller') && document.body.classList.contains('index_page')) {
 		const slider = tns({
@@ -408,7 +416,8 @@ const plannerFn = () => {
 		});
 
 		const recipeList = document.querySelector('[data-recipe-list]')
-		const plannerBlocks = document.querySelectorAll('[data-planner] .tiny-slide:not(.yesterday) .tiny-drop')
+		const Planner = document.querySelector('[data-planner]')
+		const plannerBlocks = [].slice.call(document.querySelectorAll('[data-planner] .tiny-slide:not(.yesterday) .tiny-contents'))
 		if (isMobileDevice() === false) {
 			new Sortable.create(recipeList, {
 				group: {
@@ -417,24 +426,42 @@ const plannerFn = () => {
 				},
 				filter: '.non_sortable',
 				sort: false,
+				animation: 50,
+				direction: 'vertical',
+				onStart: function(e){
+					toggleDragAreaClass(Planner, "add")
+				},
 				onEnd: function(e) {
+					toggleDragAreaClass(Planner, "remove")
 					if (e.item.parentNode.classList.contains('tiny-drop')){
 						addPlannerRecipe(e)
 					}
 				}
 			})
-			plannerBlocks.forEach(function(dayBlock){
-				new Sortable.create(dayBlock, {
+
+			for (var i = 0; i < plannerBlocks.length; i++) {
+				new Sortable.create(plannerBlocks[i], {
 					group: {
 						name: 'recipe-sharing',
 						pull: true,
 						put: true
 					},
+					fallbackOnBody: true,
+					swapThreshold: 0.8,
+					filter: '.no-drag',
+					direction: 'horizontal',
+					sort: false,
+					animation: 50,
+					ghostClass: 'tiny-drop-ghost',
+					onStart: function() {
+						toggleDragAreaClass(Planner, "add")
+					},
 					onEnd: function(e) {
+						toggleDragAreaClass(Planner, "remove")
 						updatePlannerRecipe(e)
 					}
 				})
-			})
+			}
 		}
 
 		const plannerRecipeDeleteButtons = document.querySelectorAll('.tiny-slide .list_block--item button.delete')

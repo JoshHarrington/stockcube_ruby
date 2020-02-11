@@ -30,10 +30,17 @@
 
 .tiny-contents {
 	border: 1px solid gray;
-	padding: 10px;
+	padding: 45px 9px 9px 9px;
 	height: 100%;
 	display: flex;
-	flex-direction: column;
+	flex-wrap: wrap;
+	position: relative;
+	align-content: flex-start;
+	h2 {
+		position: absolute;
+		top: 11px;
+		left: 11px;
+	}
 	.yesterday & {
 		position: relative;
 		&:before {
@@ -52,10 +59,23 @@
 			display: none;
 		}
 	}
+	.list_block--item {
+		flex-basis: 100%;
+		a {
+			margin-right: 5px;
+		}
+	}
+	.show-drag-areas & {
+		background-color: $teal-10-a60;
+	}
 }
 
 .tiny-drop {
 	flex-grow: 2;
+}
+
+.tiny-drop-ghost {
+	opacity: .7;
 }
 
 .extra-tiny-wrapper {

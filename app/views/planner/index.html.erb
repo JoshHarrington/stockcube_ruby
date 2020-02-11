@@ -93,18 +93,18 @@
 		</div>
 		<div data-planner class="tiny-wrapper">
 			<% (-1..12).each do |d| %>
-				<% date = Date.current + d.days %>
-				<div class="tiny-slide <% if d == -1 %>yesterday<% end %>"><div class="tiny-contents"><h2>
-				<% if d == -1 %>Yesterday<% end %>
-				<% if d == 0 %>Today<% end %>
-				<% if d == 1 %>Tomorrow<% end %>
-				<%= date.to_s(:short) %>
 				<%
 					date = Date.current + d.days
 					date_num = date.to_formatted_s(:number)
 					date_id = @planner_recipe_date_hash.encode(date_num)
 				%>
-				</h2><div class="tiny-drop" id="<%= date_id %>">
+				<div class="tiny-slide
+					<% if d == -1 %>yesterday<% end %>"><div class="tiny-contents" id="<%= date_id %>"><h2 class="no-drag">
+					<% if d == -1 %>Yesterday<% end %>
+					<% if d == 0 %>Today<% end %>
+					<% if d == 1 %>Tomorrow<% end %>
+					<%= date.to_s(:short) %>
+					</h2>
 					<% PlannerRecipe.where(date: date, user_id: current_user.id).each do |p_recipe| %>
 						<%
 							recipe = p_recipe.recipe
@@ -122,7 +122,7 @@
 							<button class="delete list_block--item--action list_block--item--action--btn"><%= icomoon('bin') %></button>
 						</div>
 					<% end %>
-				</div></div></div>
+				</div></div>
 
 			<% end %>
 		</div>
