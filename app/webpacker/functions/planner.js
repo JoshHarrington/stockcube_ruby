@@ -385,6 +385,49 @@ const toggleDragAreaClass = (Planner, type) => {
 	}
 }
 
+window.sortableObjects = []
+const updatePlannerSliderSortable = (slides) => {
+	const Planner = document.querySelector('[data-planner]')
+	if (window.sortableObjects.length > 0) {
+		for (let i = 0; i < window.sortableObjects.length; i++) {
+			window.sortableObjects[i].destroy()
+		}
+		window.sortableObjects = []
+	}
+	for (let i = 0; i < slides.length; i++) {
+		const slide = slides[i].querySelector('.tiny-contents')
+		const sortable = new Sortable.create(slide, {
+			group: {
+				name: 'recipe-sharing',
+				pull: true,
+				put: true
+			},
+			fallbackOnBody: true,
+			swapThreshold: 0.8,
+			filter: '.no-drag',
+			direction: 'horizontal',
+			sort: false,
+			animation: 50,
+			ghostClass: 'tiny-drop-ghost',
+			onStart: function() {
+				toggleDragAreaClass(Planner, "add")
+			},
+			onEnd: function(e) {
+				toggleDragAreaClass(Planner, "remove")
+				updatePlannerRecipe(e)
+			}
+		})
+		window.sortableObjects.push(sortable)
+	}
+}
+
+const getCurrentSlideItems = (sliderInfo) => {
+	let slideIndex = sliderInfo.index
+	let slideItemsEnd = slideIndex + sliderInfo.items
+	let slideItems = sliderInfo.slideItems
+	return Array.from(slideItems).slice(slideIndex,slideItemsEnd)
+}
+
 const plannerFn = () => {
 	if (document.body.classList.contains('planner_controller') && document.body.classList.contains('index_page')) {
 		const slider = tns({
@@ -395,9 +438,13 @@ const plannerFn = () => {
 			loop: false,
 			gutter: 10,
 			edgePadding: 40,
+			speed: 600,
+			axis: 'horizontal',
 			arrowKeys: true,
 			swipeAngle: false,
-			controlsContainer: '.tiny-controls',
+			prevButton: '.tiny-control--prev',
+			nextButton: '.tiny-control--next',
+			mode: 'carousel',
 			nav: false,
 			responsive: {
 				420: {
@@ -439,29 +486,11 @@ const plannerFn = () => {
 				}
 			})
 
-			for (var i = 0; i < plannerBlocks.length; i++) {
-				new Sortable.create(plannerBlocks[i], {
-					group: {
-						name: 'recipe-sharing',
-						pull: true,
-						put: true
-					},
-					fallbackOnBody: true,
-					swapThreshold: 0.8,
-					filter: '.no-drag',
-					direction: 'horizontal',
-					sort: false,
-					animation: 50,
-					ghostClass: 'tiny-drop-ghost',
-					onStart: function() {
-						toggleDragAreaClass(Planner, "add")
-					},
-					onEnd: function(e) {
-						toggleDragAreaClass(Planner, "remove")
-						updatePlannerRecipe(e)
-					}
-				})
-			}
+			updatePlannerSliderSortable(getCurrentSlideItems(slider.getInfo()))
+			slider.events.on('indexChanged', () => {
+				updatePlannerSliderSortable(getCurrentSlideItems(slider.getInfo()))
+			})
+
 		}
 
 		const plannerRecipeDeleteButtons = document.querySelectorAll('.tiny-slide .list_block--item button.delete')

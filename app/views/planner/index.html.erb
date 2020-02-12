@@ -92,7 +92,7 @@
 			<button class="tiny-control tiny-control--next next"><%= icomoon('arrow_forward') %></button>
 		</div>
 		<div data-planner class="tiny-wrapper">
-			<% (-1..12).each do |d| %>
+			<% (-1..15).each do |d| %>
 				<%
 					date = Date.current + d.days
 					date_num = date.to_formatted_s(:number)
