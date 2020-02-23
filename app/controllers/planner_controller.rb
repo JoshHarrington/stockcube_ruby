@@ -92,8 +92,19 @@ class PlannerController < ApplicationController
 			ready: true
 		)
 
-		respond_to do |format|
-			format.json { render json: ["hi"].as_json, status: 200}
+		unless params.has_key?(:planner_date)
+			date_num = date_string.to_formatted_s(:number)
+			date_id = @planner_recipe_date_hash.encode(date_num)
+			hashed_recipe_id = @recipe_id_hash.encode(recipe_id)
+
+			respond_to do |format|
+				format.json { render json: {
+					planner_id: date_id,
+					recipe_id: hashed_recipe_id,
+					recipe_title: recipe.title,
+					recipe_href: recipe_path(recipe_id)
+				}.as_json, status: 200}
+			end
 		end
 
 	end

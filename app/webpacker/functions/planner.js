@@ -325,13 +325,54 @@ const setupShoppingListCheckingOff = () => {
 	})
 }
 
-
 const addPlannerRecipe = (el, recipeId, date = null) => {
-	ajaxRequest(plannerRecipeAddData(recipeId, date), '/planner/recipe_add')
 
-	if (el.querySelector('button[data-type="add-to-planner"]')) {
-		el.querySelector('button[data-type="add-to-planner"]').remove()
+	/// if date comes in, then the recipe has been placed in the planner
+	/// no response back from the backend is needed (except maybe if there was an error)
+
+	const dataBody = {recipe_id: recipeId}
+	if (date != null) {
+		dataBody.planner_date = date
 	}
+	const data = {
+		method: 'post',
+		body: JSON.stringify(dataBody),
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+		},
+		credentials: 'same-origin'
+	}
+	if (date != null) {
+		fetch("planner/recipe_add", data)
+
+		/// need to setup recipe moved into planner to be able to be deleted and remove add button
+
+		if (el.querySelector('button[data-type="add-to-planner"]')) {
+			el.querySelector('button[data-type="add-to-planner"]').remove()
+		}
+	} else {
+		fetch("planner/recipe_add", data).then((response) => {
+			return response.json();
+		}).then((myJson) => {
+			console.log(myJson);
+			/// need to add recipe to planner based on planner date id returned in response
+			const recipeEl = document.createElement('div')
+			recipeEl.classList.add('list_block--item', 'list_block--item--with-bar', 'sortable--item')
+			recipeEl.setAttribute('data-parent-id', 1);
+		});
+
+
+	// 	<div class="list_block--item list_block--item--with-bar sortable--item" data-parent-id="<%= date_id %>" id="<%= @recipe_id_hash.encode(recipe.id) %>" title="<%= user_recipe_stock_match && num_stock_ingredients.to_s + " ingredients in stock, " + num_needed_ingredients.to_s + " needed" %>" aria-label="<%= user_recipe_stock_match ? recipe.title + ": " + num_stock_ingredients.to_s + " ingredients in stock, " + num_needed_ingredients.to_s + " needed" : recipe.title %>">
+	// 	<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards %>%"></span></span>
+	// 	<%= link_to recipe.title, recipe_path(recipe) %>
+	// 	<button class="delete list_block--item--action list_block--item--action--btn"><%= icomoon('bin') %></button>
+	// </div>
+
+	}
+
+
+
 
 	const deleteBtn = document.createElement('button')
 	deleteBtn.innerHTML = `<svg class="icomoon-icon icon-bin"><use xlink:href="${SVG}#icon-bin"></use></svg><img class="icon-png" src="${PNGBin}" />`
