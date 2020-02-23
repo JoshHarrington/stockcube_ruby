@@ -8,11 +8,11 @@ import PNGInfoOutline from '../icons/png-icons/information-outline.png'
 import PNGFullscreen from '../icons/png-icons/fullscreen.png'
 import PNGFullscreenExit from '../icons/png-icons/fullscreen_exit.png'
 
-const plannerRecipeAddData = (id, date = null) => {
+const plannerRecipeAddData = (recipeId, date = null) => {
 	if (date && date != null) {
-		return "recipe_id=" + id + "&planner_date=" + date
+		return "recipe_id=" + recipeId + "&planner_date=" + date
 	} else {
-		return "recipe_id=" + id
+		return "recipe_id=" + recipeId
 	}
 }
 
@@ -326,19 +326,21 @@ const setupShoppingListCheckingOff = () => {
 }
 
 
-const addPlannerRecipe = (e) => {
-	ajaxRequest(plannerRecipeAddData(e.item.id, e.item.parentNode.id), '/planner/recipe_add')
+const addPlannerRecipe = (el, recipeId, date = null) => {
+	ajaxRequest(plannerRecipeAddData(recipeId, date), '/planner/recipe_add')
 
-	e.item.querySelector('button[data-type="add-to-planner"]').remove()
+	if (el.querySelector('button[data-type="add-to-planner"]')) {
+		el.querySelector('button[data-type="add-to-planner"]').remove()
+	}
 
 	const deleteBtn = document.createElement('button')
 	deleteBtn.innerHTML = `<svg class="icomoon-icon icon-bin"><use xlink:href="${SVG}#icon-bin"></use></svg><img class="icon-png" src="${PNGBin}" />`
 	deleteBtn.classList.add('delete', 'list_block--item--action', 'list_block--item--action--btn')
 
-	const parentId = e.item.parentNode.id
-	e.item.setAttribute('data-parent-id', parentId)
+	const parentId = el.parentNode.id
+	el.setAttribute('data-parent-id', parentId)
 
-	e.item.appendChild(deleteBtn)
+	el.appendChild(deleteBtn)
 	deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
 
 	checkForUpdates(function(shoppingList) {
@@ -369,6 +371,15 @@ const deletePlannerRecipe = (deleteBtn) => {
 		const recipeList = document.querySelector('[data-recipe-list]')
 		const recipeAllLink = recipeList.querySelector('a.list_block--item.list_block--item_new')
 		deleteBtn.remove()
+
+		const addBtn = document.createElement('button')
+		addBtn.innerHTML = `<svg class="icomoon-icon icon-list-add"><use xlink:href="${SVG}#icon-list-add"></use></svg>`
+		addBtn.classList.add('list_block--item--action', 'list_block--item--action--btn', 'svg-btn')
+		addBtn.style.cssText = "padding: 0.4em; min-width: 2em; margin: .4rem 0 .4rem .6rem"
+
+		buttonParent.appendChild(addBtn)
+		// addBtn.addEventListener()
+
 		recipeList.insertBefore(buttonParent, recipeAllLink)
 
 		checkForUpdates(function(shoppingList) {
@@ -464,7 +475,7 @@ const plannerFn = () => {
 
 		const recipeList = document.querySelector('[data-recipe-list]')
 		const Planner = document.querySelector('[data-planner]')
-		const plannerBlocks = [].slice.call(document.querySelectorAll('[data-planner] .tiny-slide:not(.yesterday) .tiny-contents'))
+
 		if (isMobileDevice() === false) {
 			new Sortable.create(recipeList, {
 				group: {
@@ -480,8 +491,8 @@ const plannerFn = () => {
 				},
 				onEnd: function(e) {
 					toggleDragAreaClass(Planner, "remove")
-					if (e.item.parentNode.classList.contains('tiny-drop')){
-						addPlannerRecipe(e)
+					if (e.item.parentNode.classList.contains('tiny-contents')){
+						addPlannerRecipe(e.item, e.item.id, e.item.parentNode.id)
 					}
 				}
 			})
@@ -503,10 +514,10 @@ const plannerFn = () => {
 		plannerAddRecipeButtons.forEach((addBtn) => {
 			const recipeId = addBtn.getAttribute('data-recipe-id')
 			addBtn.addEventListener("click", function(){
-				ajaxRequest(plannerRecipeAddData(recipeId), '/planner/recipe_add')
+				addPlannerRecipe(addBtn, recipeId)
 				addBtn.parentElement.style.display = 'none'
-				location.reload()
-				showAlert(`Recipe added to your planner</a><br />Your shopping list is now updating`)
+				// location.reload()
+				// showAlert(`Recipe added to your planner</a><br />Your shopping list is now updating`)
 			})
 		})
 
