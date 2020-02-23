@@ -23,6 +23,7 @@ const ajaxRequest = (data, path, loop = 0, type = 'application/x-www-form-urlenc
     }
   };
   request.send(data)
+  return request
 }
 
 

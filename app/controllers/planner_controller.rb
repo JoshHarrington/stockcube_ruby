@@ -92,6 +92,10 @@ class PlannerController < ApplicationController
 			ready: true
 		)
 
+		respond_to do |format|
+			format.json { render json: ["hi"].as_json, status: 200}
+		end
+
 	end
 
 	def recipe_update_in_planner
