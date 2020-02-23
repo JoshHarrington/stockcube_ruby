@@ -12,19 +12,9 @@
 					<p class="item_form--content_item_note"><%= icomoon('information-outline')%> Ordered by the stock you have in your cupboards</p>
 				</div>
 				<% @recipes.each do |r| %>
-						<%
-							recipe = r
-							user_recipe_stock_matches = UserRecipeStockMatch.where(user_id: current_user.id, recipe_id: recipe.id)
-							next if user_recipe_stock_matches.length == 0
-							user_recipe_stock_match = user_recipe_stock_matches.first
-							ingredient_stock_match_decimal = user_recipe_stock_match ? user_recipe_stock_match[:ingredient_stock_match_decimal] : nil
-							num_stock_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_stock_ingredients] : nil
-							num_needed_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_needed_ingredients] : nil
-							percent_in_cupboards = ingredient_stock_match_decimal ? (ingredient_stock_match_decimal.to_f * 100).round : 0
-						%>
 					<% if r.live && r.portions.length > 0 %>
 					<div class="list_block--item list_block--item--with-bar sortable--item" id="<%= @recipe_id_hash.encode(r.id) %>">
-						<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards %>%"></span></span>
+						<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards(r).to_s %>%"></span></span>
 						<%= link_to r.title, recipe_path(r) %>
 							<% if !(current_user.planner_recipes.where(date: Date.current..Date.current+7.days).map(&:recipe_id).include?(r.id)) %>
 								<%= button_tag class: 'svg-btn list_block--item--action list_block--item--action--btn', title: 'Add this recipe to your planner',
@@ -46,19 +36,9 @@
 						<h3>Favourite recipes</h3>
 					</div>
 					<% @fav_recipes.each do |fr| %>
-						<%
-							recipe = fr
-							user_recipe_stock_matches = UserRecipeStockMatch.where(user_id: current_user[:id], recipe_id: recipe[:id])
-							next if user_recipe_stock_matches.length == 0
-							user_recipe_stock_match = user_recipe_stock_matches.first
-							ingredient_stock_match_decimal = user_recipe_stock_match ? user_recipe_stock_match[:ingredient_stock_match_decimal] : nil
-							num_stock_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_stock_ingredients] : nil
-							num_needed_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_needed_ingredients] : nil
-							percent_in_cupboards = ingredient_stock_match_decimal ? (ingredient_stock_match_decimal.to_f * 100).round : 0
-						%>
 						<% if fr.live && fr.portions.length > 0 %>
 						<div class="list_block--item list_block--item--with-bar sortable--item" id="<%= @recipe_id_hash.encode(fr.id) %>">
-							<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards %>%"></span></span>
+							<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards(fr).to_s %>%"></span></span>
 							<%= link_to fr.title, recipe_path(fr) %>
 								<% if !(current_user.planner_recipes.where(date: Date.current..Date.current+7.days).map(&:recipe_id).include?(fr.id)) %>
 									<%= button_tag class: 'svg-btn list_block--item--action list_block--item--action--btn', title: 'Add this recipe to your planner',
@@ -108,16 +88,19 @@
 					<% PlannerRecipe.where(date: date, user_id: current_user.id).each do |p_recipe| %>
 						<%
 							recipe = p_recipe.recipe
-							user_recipe_stock_matches = UserRecipeStockMatch.where(user_id: current_user[:id], recipe_id: recipe[:id])
-							next if user_recipe_stock_matches.length == 0
-							user_recipe_stock_match = user_recipe_stock_matches.first
-							ingredient_stock_match_decimal = user_recipe_stock_match ? user_recipe_stock_match[:ingredient_stock_match_decimal] : nil
-							num_stock_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_stock_ingredients] : nil
-							num_needed_ingredients = user_recipe_stock_match ? user_recipe_stock_match[:num_needed_ingredients] : nil
-							percent_in_cupboards = ingredient_stock_match_decimal ? (ingredient_stock_match_decimal.to_f * 100).round : 0
+							if user_recipe_stock_match_check(recipe.id) != nil
+								message = num_stock_ingredients(recipe).to_s + " ingredients in stock, " + num_needed_ingredients(recipe).to_s + " needed"
+							else
+								message = recipe.title
+							end
 						%>
-						<div class="list_block--item list_block--item--with-bar sortable--item" data-parent-id="<%= date_id %>" id="<%= @recipe_id_hash.encode(recipe.id) %>" title="<%= user_recipe_stock_match && num_stock_ingredients.to_s + " ingredients in stock, " + num_needed_ingredients.to_s + " needed" %>" aria-label="<%= user_recipe_stock_match ? recipe.title + ": " + num_stock_ingredients.to_s + " ingredients in stock, " + num_needed_ingredients.to_s + " needed" : recipe.title %>">
-							<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards %>%"></span></span>
+						<div class="list_block--item list_block--item--with-bar sortable--item"
+								data-parent-id="<%= date_id %>"
+								id="<%= @recipe_id_hash.encode(p_recipe.recipe.id) %>"
+								title="<%= message %>"
+								aria-label="<%= message %>"
+						>
+							<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards(p_recipe.recipe) %>%"></span></span>
 							<%= link_to recipe.title, recipe_path(recipe) %>
 							<button class="delete list_block--item--action list_block--item--action--btn"><%= icomoon('bin') %></button>
 						</div>

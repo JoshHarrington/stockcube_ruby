@@ -95,7 +95,7 @@ module PlannerShoppingListHelper
 	end
 
 	def setup_wrapper_portions(portion = nil, amount = nil, unit_id = nil, current_user = nil, planner_shopping_list_id = nil)
-		return if portion == nil || amount == nil || unit_id == nil || current_user == nil || planner_shopping_list_id == nil
+		return if portion == nil || amount == nil || unit_id == nil || user_signed_in? == false || planner_shopping_list_id == nil
 
 		wrapper_portion = PlannerPortionWrapper.find_or_create_by(
 			user_id: current_user[:id],
@@ -234,9 +234,9 @@ module PlannerShoppingListHelper
 	def shopping_list_portions(shopping_list = nil)
 		if shopping_list == nil && current_user && current_user.planner_shopping_list.present?
 			shopping_list = current_user.planner_shopping_list
-		elsif shopping_list == nil && !(current_user)
+		elsif shopping_list == nil && user_signed_in? == false
 			return []
-		elsif current_user && !current_user.planner_shopping_list.present?
+		elsif user_signed_in? && current_user.planner_shopping_list.present?
 			shopping_list = PlannerShoppingList.find_or_create_by(user_id: current_user.id)
 		end
 
@@ -285,6 +285,35 @@ module PlannerShoppingListHelper
 	def total_portions
 		add_portion_counts_to_session
 		return session[:sl_total_portions_count]
+	end
+
+	def user_recipe_stock_match_check(recipe_id = nil)
+		return nil if user_signed_in? == false || recipe_id == nil
+		return UserRecipeStockMatch.find_by(user_id: current_user.id, recipe_id: recipe_id)
+	end
+
+	def retrieve_recipe_stock_match_detail(recipe = nil, key = nil)
+		return 0 if recipe == nil || key == nil || user_signed_in? == false
+
+		user_recipe_stock_match = user_recipe_stock_match_check(recipe.id)
+		return 0 if user_recipe_stock_match == nil
+
+		match_detail = user_recipe_stock_match[key]
+		return 0 if match_detail == nil
+		return match_detail
+	end
+
+	def percent_in_cupboards(recipe = nil)
+		ingredient_stock_match_decimal = retrieve_recipe_stock_match_detail(recipe, :ingredient_stock_match_decimal)
+		return ingredient_stock_match_decimal != nil ? (ingredient_stock_match_decimal.to_f * 100).round : 0
+	end
+
+	def num_stock_ingredients(recipe = nil)
+		return retrieve_recipe_stock_match_detail(recipe, :num_stock_ingredients)
+	end
+
+	def num_needed_ingredients(recipe = nil)
+		return retrieve_recipe_stock_match_detail(recipe, :num_needed_ingredients)
 	end
 
 	def add_portion_counts_to_session
