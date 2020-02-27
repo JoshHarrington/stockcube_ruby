@@ -325,7 +325,49 @@ const setupShoppingListCheckingOff = () => {
 	})
 }
 
+const newPlannerRecipeComponent = (jsonResponse) => {
+
+	const plannerId = jsonResponse["planner_id"]
+	const recipeId = jsonResponse["recipe_id"]
+	const recipeHref = jsonResponse["recipe_href"]
+	const recipeTitle = jsonResponse["recipe_title"]
+	const percentInCupboards = jsonResponse["percent_in_cupboards"]
+
+	const component = document.createElement('div')
+	component.classList.add('list_block--item', 'list_block--item--with-bar', 'sortable--item')
+	component.setAttribute('data-parent-id', plannerId)
+	component.id = recipeId
+
+	const trackingBar = document.createElement('span')
+	trackingBar.classList.add('list_block--item--tracking_bar')
+
+	const trackingBarFill = document.createElement('span')
+	trackingBarFill.classList.add('list_block--item--tracking_bar-percent')
+	trackingBarFill.style.width = percentInCupboards
+
+	trackingBar.appendChild(trackingBarFill)
+	component.appendChild(trackingBar)
+
+	const recipeLink = document.createElement('a')
+
+	recipeLink.innerText = recipeTitle
+	recipeLink.setAttribute('href', recipeHref)
+
+	component.appendChild(recipeLink)
+
+	const deleteBtn = document.createElement('button')
+	deleteBtn.innerHTML = `<svg class="icomoon-icon icon-bin"><use xlink:href="${SVG}#icon-bin"></use></svg><img class="icon-png" src="${PNGBin}" />`
+	deleteBtn.classList.add('delete', 'list_block--item--action', 'list_block--item--action--btn')
+
+	component.appendChild(deleteBtn)
+
+	deleteBtn.addEventListener("click", () => deletePlannerRecipe(deleteBtn))
+
+	return component
+}
+
 const addPlannerRecipe = (el, recipeId, date = null) => {
+
 
 	/// if date comes in, then the recipe has been placed in the planner
 	/// no response back from the backend is needed (except maybe if there was an error)
@@ -343,46 +385,40 @@ const addPlannerRecipe = (el, recipeId, date = null) => {
 		},
 		credentials: 'same-origin'
 	}
-	if (date != null) {
-		fetch("planner/recipe_add", data)
 
-		/// need to setup recipe moved into planner to be able to be deleted and remove add button
+	fetch("planner/recipe_add", data).then((response) => {
+		if(response.status != 200){
+			window.alert('Something went wrong! Maybe refresh the page and try again')
+		} else {
+			return response.json();
+		}
+	}).then((jsonResponse) => {
+		if (date === null) {
+			const plannerId = jsonResponse["planner_id"]
+			document.querySelector('div[data-planner] #' + plannerId).appendChild(
+				newPlannerRecipeComponent(jsonResponse)
+			)
+		}
+	});
 
+
+	if (date !== null) {
 		if (el.querySelector('button[data-type="add-to-planner"]')) {
 			el.querySelector('button[data-type="add-to-planner"]').remove()
 		}
+
+		const deleteBtn = document.createElement('button')
+		deleteBtn.innerHTML = `<svg class="icomoon-icon icon-bin"><use xlink:href="${SVG}#icon-bin"></use></svg><img class="icon-png" src="${PNGBin}" />`
+		deleteBtn.classList.add('delete', 'list_block--item--action', 'list_block--item--action--btn')
+
+		const parentId = el.parentNode.id
+		el.setAttribute('data-parent-id', parentId)
+
+		el.appendChild(deleteBtn)
+		deleteBtn.addEventListener("click", () => deletePlannerRecipe(deleteBtn))
 	} else {
-		fetch("planner/recipe_add", data).then((response) => {
-			return response.json();
-		}).then((myJson) => {
-			console.log(myJson);
-			/// need to add recipe to planner based on planner date id returned in response
-			const recipeEl = document.createElement('div')
-			recipeEl.classList.add('list_block--item', 'list_block--item--with-bar', 'sortable--item')
-			recipeEl.setAttribute('data-parent-id', 1);
-		});
-
-
-	// 	<div class="list_block--item list_block--item--with-bar sortable--item" data-parent-id="<%= date_id %>" id="<%= @recipe_id_hash.encode(recipe.id) %>" title="<%= user_recipe_stock_match && num_stock_ingredients.to_s + " ingredients in stock, " + num_needed_ingredients.to_s + " needed" %>" aria-label="<%= user_recipe_stock_match ? recipe.title + ": " + num_stock_ingredients.to_s + " ingredients in stock, " + num_needed_ingredients.to_s + " needed" : recipe.title %>">
-	// 	<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards %>%"></span></span>
-	// 	<%= link_to recipe.title, recipe_path(recipe) %>
-	// 	<button class="delete list_block--item--action list_block--item--action--btn"><%= icomoon('bin') %></button>
-	// </div>
-
+		el.remove()
 	}
-
-
-
-
-	const deleteBtn = document.createElement('button')
-	deleteBtn.innerHTML = `<svg class="icomoon-icon icon-bin"><use xlink:href="${SVG}#icon-bin"></use></svg><img class="icon-png" src="${PNGBin}" />`
-	deleteBtn.classList.add('delete', 'list_block--item--action', 'list_block--item--action--btn')
-
-	const parentId = el.parentNode.id
-	el.setAttribute('data-parent-id', parentId)
-
-	el.appendChild(deleteBtn)
-	deleteBtn.addEventListener("click", function(){deletePlannerRecipe(deleteBtn)})
 
 	checkForUpdates(function(shoppingList) {
 	  renderShoppingList(shoppingList, true)
@@ -417,9 +453,10 @@ const deletePlannerRecipe = (deleteBtn) => {
 		addBtn.innerHTML = `<svg class="icomoon-icon icon-list-add"><use xlink:href="${SVG}#icon-list-add"></use></svg>`
 		addBtn.classList.add('list_block--item--action', 'list_block--item--action--btn', 'svg-btn')
 		addBtn.style.cssText = "padding: 0.4em; min-width: 2em; margin: .4rem 0 .4rem .6rem"
+		addBtn.setAttribute('data-type', 'add-to-planner')
 
 		buttonParent.appendChild(addBtn)
-		// addBtn.addEventListener()
+		addBtn.addEventListener('click', () => addPlannerRecipe(buttonParent, recipeId))
 
 		recipeList.insertBefore(buttonParent, recipeAllLink)
 
@@ -555,10 +592,7 @@ const plannerFn = () => {
 		plannerAddRecipeButtons.forEach((addBtn) => {
 			const recipeId = addBtn.getAttribute('data-recipe-id')
 			addBtn.addEventListener("click", function(){
-				addPlannerRecipe(addBtn, recipeId)
-				addBtn.parentElement.style.display = 'none'
-				// location.reload()
-				// showAlert(`Recipe added to your planner</a><br />Your shopping list is now updating`)
+				addPlannerRecipe(addBtn.parentNode, recipeId)
 			})
 		})
 

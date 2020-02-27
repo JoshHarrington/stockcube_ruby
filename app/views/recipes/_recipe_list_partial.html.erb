@@ -46,7 +46,7 @@
 							<% end %>
 						<% end %>
 					<% end %>
-					<% if recipe.live && recipe.portions.length > 0 && !(current_user.planner_recipes.where(date: Date.current..Date.current+7.days).map(&:recipe_id).include?(recipe.id)) %>
+					<% if recipe.live && recipe.portions.length > 0 && !(current_planner_recipe_ids.include?(recipe.id)) %>
 						<%= button_tag class: 'svg-btn add_recipe_to_planner', title: 'Add this recipe to your planner', data: {"recipe-id": @recipe_id_hash.encode(recipe.id) } do %>
 							<%= icomoon('list-add') %>
 						<% end %>

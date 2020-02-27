@@ -329,6 +329,24 @@ module PlannerShoppingListHelper
 		return Hashids.new(ENV['PLANNER_PORTIONS_SALT'])
 	end
 
+	def current_planner_recipe_ids
+		return nil if user_signed_in? == false
+		if session.has_key?(:current_planner_recipe_ids)
+			Rails.logger.debug "session[:current_planner_recipe_ids] - "
+			Rails.logger.debug session[:current_planner_recipe_ids]
+			return session[:current_planner_recipe_ids]
+		else
+			update_current_planner_recipe_ids
+			current_planner_recipe_ids
+		end
+	end
+
+	def update_current_planner_recipe_ids
+		if user_signed_in?
+			session[:current_planner_recipe_ids] = current_user.planner_recipes.where(date: Date.current..Date.current+7.days).map(&:recipe_id)
+		end
+	end
+
 	def update_portion_details(params)
 
 		if params.has_key?(:gen_id) && PlannerShoppingList.find_by(gen_id: params[:gen_id])
