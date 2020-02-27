@@ -395,7 +395,7 @@ const addPlannerRecipe = (el, recipeId, date = null) => {
 	}).then((jsonResponse) => {
 		if (date === null) {
 			const plannerId = jsonResponse["planner_id"]
-			document.querySelector('div[data-planner] #' + plannerId).appendChild(
+			document.getElementById(plannerId).appendChild(
 				newPlannerRecipeComponent(jsonResponse)
 			)
 		}
