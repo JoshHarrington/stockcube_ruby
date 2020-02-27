@@ -176,7 +176,10 @@ const renderShoppingList = (shoppingList, animated = false) => {
 				hideShoppingList()
 				updateButtonFractionSpan()
 			} else if (animated) {
-				showShoppingList()
+				if (isMobileDevice() === false) {
+					showShoppingList()
+				}
+				showAlert("Your shopping list has been updated", 10000)
 			}
 		}
 
