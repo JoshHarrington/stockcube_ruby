@@ -64,9 +64,9 @@ class PlannerController < ApplicationController
 		if params.has_key?(:planner_date) && Date.parse(@planner_recipe_date_hash.decode(params[:planner_date]).first.to_s).to_date
 			date_string = Date.parse(@planner_recipe_date_hash.decode(params[:planner_date]).first.to_s).to_date
 		else
-			this_week_dates = (Date.current..Date.current+7.days).to_a
-			last_planner_recipe_dates = current_user.planner_recipes.where(date: this_week_dates).order(date: :asc).map(&:date).uniq
-			available_dates = this_week_dates - last_planner_recipe_dates
+			this_months_dates = (Date.current..Date.current+30.days).to_a
+			last_planner_recipe_dates = current_user.planner_recipes.where(date: this_months_dates).order(date: :asc).map(&:date).uniq
+			available_dates = this_months_dates - last_planner_recipe_dates
 			if available_dates.length > 0
 				date_string = available_dates.first
 			else

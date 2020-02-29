@@ -179,7 +179,6 @@ const renderShoppingList = (shoppingList, animated = false) => {
 				if (isMobileDevice() === false) {
 					showShoppingList()
 				}
-				showAlert("Your shopping list has been updated", 10000)
 			}
 		}
 
@@ -398,10 +397,18 @@ const addPlannerRecipe = (el, recipeId, date = null) => {
 	}).then((jsonResponse) => {
 		if (date === null) {
 			const plannerId = jsonResponse["planner_id"]
-			document.getElementById(plannerId).appendChild(
+			const plannerBlock = document.getElementById(plannerId)
+
+			plannerBlock.appendChild(
 				newPlannerRecipeComponent(jsonResponse)
 			)
+			if (window.slider) {
+				const tnsSlideId = plannerBlock.parentNode.id
+				const TrimmedTnsSlideId = tnsSlideId.replace(/tns1-item/g,'')
+				window.slider.goTo(TrimmedTnsSlideId)
+			}
 		}
+		showAlert(`${jsonResponse["recipe_title"]} has been added to your planner, shopping list is updating`, 20000)
 	});
 
 
@@ -553,6 +560,9 @@ const plannerFn = () => {
 				}
 			}
 		});
+
+		window.slider = slider
+
 
 		const recipeList = document.querySelector('[data-recipe-list]')
 		const Planner = document.querySelector('[data-planner]')
