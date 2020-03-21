@@ -1,105 +1,267 @@
 <% provide(:title, 'Home') %>
 
-<section class="feature-banner--title">
-  <div class="feature-banner--title-content">
-    <% if user_signed_in? %>
-      <span class="feature-banner--title-tagline">Hello there</span>
-    <% else %>
-      <span class="feature-banner--title-tagline">Say hello to</span>
-    <% end %>
-    <h1><span>Stockcubes</span><%= icomoon('logo', '0 0 38 20') %>
-      <% if user_signed_in? %>
-      <span class="speech_bubble speech_bubble-little">hi</span>
-      <% else %>
-      <span class="speech_bubble">well hello there</span>
-      <% end %>
-    </h1>
+<style>
+  .banner_bar {
+    background-color: #ddf4f2;
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+  .banner_bar-text {
+    margin-bottom: 3rem;
+  }
+  .banner_bar h1 {
+    font-size: 4rem;
+  }
+  .banner_bar h2 {
+    font-size: 2.3rem;
+  }
+  .bottom_banner_bar {
+    background-color: #ddf4f2;
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+    text-align: center;
+  }
+  .bottom_banner_bar p {
+    font-size: 2.6rem;
+  }
+  .bottom_banner_bar p + p {
+    margin-top: 1rem;
+  }
+  .wrapper {
+    max-width: 90rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .call_out_bar {
+    background-color: #a2d7d2;
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+  .call_out_bar h3 {
+    font-size: 2.6rem;
+  }
+  @media all and (max-width:40rem) {
+    .call_out_bar br {
+      display:none;
+    }
+  }
+
+  .q-a-block {
+    margin-bottom: 9rem;
+  }
+  .question {
+    font-size: 1.5rem;
+    margin-top: 8rem;
+  }
+  .answer {
+    font-size: 1.3rem;
+    margin-top: .5rem;
+  }
+  .answer p {
+    line-height: 1.4;
+  }
+
+  .flex {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-around;
+  }
+
+  .perspective {
+    perspective: 1500px;
+    height: 14rem;
+    width: 28rem;
+    font-size: 1.2rem;
+    margin-left: 2rem;
+    margin-right: -2rem;
+    margin-top: -5rem;
+    margin-bottom: 7rem;
+  }
+
+  .cube {
+    font-size: 4em;
+    width: 2em;
+    margin: 1.5em auto;
+    transform-style: preserve-3d;
+    transform: rotateX(-8deg) rotateY(40deg);}
+    .cube:hover .banana {
+      transform: rotate(-15deg);
+    }
+    .cube:hover .front {
+      transform: translateZ(1em) translateX(1.2em);
+    }
+
+  .side {
+    position: absolute;
+    width: 2em;
+    height: 2em;
+    color: white;
+    text-align: center;
+    line-height: 2em;
+  }
+
+  .front  {
+    transform: translateZ(1em) translateX(.3em);
+    transition: transform .3s;
+    background-color: #AAE2DE;
+  }
+  .top {
+    transform: rotateX( 90deg)  translateZ(1em);
+    background-color: #C3EBE9;
+  }
+  .right {
+    transform: rotateY( 90deg) translateZ(1em);
+    background-color: #4CB0A8;
+  }
+  .left {
+    transform: rotateY(-90deg) translateZ(1em);
+    background-color: #98DCD8;
+  }
+  .bottom {
+    transform: rotateX(-90deg) translateZ(1em);
+    background-color: #60BDB7;}
+    .bottom:before {
+      content: "";
+      width: .5em;
+      height: .4em;
+      transform: translateY(.75em) translateX(.3em);
+      background-color: rgba(0,0,0,0.15);
+      position: absolute;
+      border-radius: 50%;
+      animation: .8s infinite shrink-shadow;
+    }
+  .shadow {
+    transform: rotateX(-90deg) translateZ(1em) translateX(-2em);
+    background-color: #42948E;
+  }
+  .back {
+    transform: rotateY(-180deg) translateZ(1em);
+    background-color: #41A39B;
+  }
+
+  .banana {
+    position: absolute;
+    transition: transform .2s .2s;
+    transform: rotate(-20deg);
+    width: .9em;
+    height: 1.3em;
+    margin-left: 1.5em;
+    margin-top: .6em;
+    background-color:transparent;
+    border-radius: 50%;
+    box-shadow: -.2em 1px 0 -.05em rgba(0,0,0,0.1), -.4em 0 0 #ffd700;
+    animation: .8s infinite wiggle;}
+    .banana:before {
+      content: "";
+      position: absolute;
+      width: .1em;
+      height: .2em;
+      left: .2em;
+      top: -.1em;
+      background-color: #daa520;
+      border-radius: .01em .01em .2em .1em;
+      transform: rotate(66deg);
+    }
+
+  @keyframes wiggle {
+    0% {
+      margin-top:.6em;
+    }
+    50% {
+      margin-top: .5em;
+    }
+    100% {
+      margin-top:.6em;
+    }
+  }
+
+  @keyframes shrink-shadow {
+    0% {
+      width: .5em;
+      height: .4em;
+    }
+    50% {
+      width: .4em;
+      height: .3em;
+    }
+    100% {
+      width: .5em;
+      height: .4em;
+    }
+  }
+
+</style>
+
+<section class="banner_bar">
+  <div class="wrapper flex">
+    <div class="banner_bar-text">
+      <h1>Stockcubes</h1>
+      <h2>Fighting food waste at home</h2>
+    </div>
+
+    <div class="perspective">
+      <div class="cube">
+        <div class="side  front"></div>
+        <div class="side   back"></div>
+        <div class="side  right"></div>
+        <div class="side   left"></div>
+        <div class="side    top"></div>
+        <div class="side bottom"></div>
+        <div class="side shadow"></div>
+        <div class="banana"></div>
+      </div>
+    </div>
   </div>
 </section>
 
-<section class="features">
-  <div class="feature_row">
-    <div class="feature_row--content">
-      <h2>What is Stockcubes?</h2>
-      <p>An online record for your food, helping you throw less away</p>
-    </div>
-    <div class="browser">
-      <div class="browser--top_bar">
-        <span class="browser--top_bar--button"></span>
-        <span class="browser--top_bar--button"></span>
-        <span class="browser--top_bar--button"></span>
-      </div>
-      <div class="browser--content browser--content-fixed_ratio_overlay">
-        <img src="<%= asset_pack_path('assets/images/cupboard_stock.png') %>" alt="">
-      </div>
-    </div>
-  </div>
-
-
-  <div class="feature_row">
-    <div class="feature_row--content">
-      <h2>How does it work?</h2>
-      <p>You put in details about your food and it helps you build meals with the food you have.</p>
-      <p>It can tell you when your food's going out of date</p>
-    </div>
-    <div class="browser">
-      <div class="browser--top_bar">
-        <span class="browser--top_bar--button"></span>
-        <span class="browser--top_bar--button"></span>
-        <span class="browser--top_bar--button"></span>
-      </div>
-      <div class="browser--content">
-        <video autoplay poster="<%= asset_pack_path('assets/images/cupboard_add_stock_poster.jpg') %>" playsinline loop muted>
-          <source src="<%= asset_pack_path('assets/videos/cupboard_add_stock.mp4') %>">
-          <source src="<%= asset_pack_path('assets/videos/cupboard_add_stock.webm') %>">
-        </video>
-      </div>
-    </div>
-  </div>
-  <div class="feature_row">
-    <div class="feature_row--content">
-      <h2>Why would you want it?</h2>
-      <p>You'll want Stockcubes if you want to save money and reduce the amount of food that you throw away</p>
-    </div>
-    <div class="browser">
-      <div class="browser--top_bar">
-        <span class="browser--top_bar--button"></span>
-        <span class="browser--top_bar--button"></span>
-        <span class="browser--top_bar--button"></span>
-      </div>
-      <div class="browser--content">
-        <video autoplay poster="<%= asset_pack_path('assets/images/recipe_shopping_list_add_poster.png') %>" playsinline loop muted>
-          <source src="<%= asset_pack_path('assets/videos/recipe_shopping_list_add.mp4') %>">
-          <source src="<%= asset_pack_path('assets/videos/recipe_shopping_list_add.webm') %>">
-        </video>
-      </div>
-    </div>
+<section class="call_out_bar">
+  <div class="wrapper">
+    <h3>We're here to make it ridiculously simple to <br /><strong>plan your meals</strong> and <strong>cut your food waste</strong></h3>
   </div>
 </section>
 
-<section class="feature-banner--sibling">
-  <% if user_signed_in? %>
-    <h2>Want to get more involved?</h2>
-    <ul>
-      <li><p>Check out the <%= link_to 'roadmap', 'https://trello.com/b/5mJZ882b/stockcubes-roadmap-work-in-progress', target: "_blank" %></p></li>
-      <li><p>Chat to the <%= link_to 'team', 'mailto:team@getstockcubes.com?subject=Getting%20involved%20with%20Stockcubes', target: "_blank" %></p></li>
-      <li><p><%= link_to 'Send feedback', 'mailto:team@getstockcubes.com?subject=Feedback', target: "_blank" %> about features and bugs</p></li>
-      <li><p>Add your <%= link_to 'own recipes', new_recipe_path %></p></li>
-      <li><p><%= link_to 'Tell your friends', 'https://twitter.com/intent/tweet?text=Everyone%20needs%20to%20check%20out%20Stockcubes%2C%20it%27s%20the%20best%20way%20to%20keep%20track%20of%20all%20the%20food%20in%20your%20kitchen%21&url=https://www.getstockcubes.com/&via=stock_cubes', target: '_blank' %> about Stockcubes</p></li>
-    </ul>
 
-    <%= link_to "Start adding stock!", cupboards_path, class: "list_block--collection--action" %>
-  <% else %>
-    <h2>Sound like your sort of thing?</h2>
-    <ul>
-      <li><p>No sign up fee</p></li>
-      <li><p>Free to use</p></li>
-      <li><p>... and quick to get started ;)</p></li>
-      <li><p>A full library of recipes</p></li>
-      <li><p>You can add you own too</p></li>
-      <li><p>Build shopping lists with recipes</p></li>
-    </ul>
+<section class="wrapper q-a-block">
 
-    <%= link_to "Get involved!", new_user_registration_path, class: "list_block--collection--action" %>
-  <% end %>
+  <div class="question">
+    <p><strong>Why should you care about food waste?</strong></p>
+  </div>
+
+  <div class="answer">
+    <p>Well, it’s a big deal. No, really it’s massive, if you plot the emissions of food waste as it degrades, against the emissions of all the countries in the world - the only countries that produce more greenhouse gases are the US and China.</p>
+  </div>
+
+  <div class="question">
+    <p><strong>But, maybe this isn’t really your problem?</strong></p>
+  </div>
+
+  <div class="answer">
+    <p>Turns out that households in the UK produce 70% of the total food waste created by the country, whereas retailers produce 2%!</p>
+  </div>
+
+  <div class="question">
+    <p><strong>Right, fine, but surely it’s really difficult to solve?</strong></p>
+  </div>
+
+  <div class="answer">
+    <p>It can be difficult, if you’re keeping track of all your food on paper and planning your meals by scouring cook books, but that’s where we come in. We’ve got delicious, simple recipes, a planner that builds you a shopping list and a recommendation engine that nudges you to use up the food you’ve already got.</p>
+  </div>
+
+
+  <div class="question">
+    <p><strong>Alright, but let’s say that we might not all actually care that much about the impact of food waste on the environment…</strong></p>
+  </div>
+
+  <div class="answer">
+    <p>We get it, we’re not here to guilt-trip you. We want to empower people to stop wasting food, plus there’s another benefit we haven’t mentioned yet. The dosh. The cashola. The money that you save by using the food you have more efficiently. In the UK the average household could save £800 in a year by cutting their food waste.</p>
+  </div>
+
+</section>
+
+<section class="bottom_banner_bar">
+  <p><strong>Where do you sign up?</strong><p>
+  <p>Right here: <%= link_to "Sign up", new_user_registration_path %>
 </section>
