@@ -87,10 +87,12 @@
     margin: 1.5em auto;
     transform-style: preserve-3d;
     transform: rotateX(-8deg) rotateY(40deg);}
-    .cube:hover .banana {
+    .cube:hover .banana,
+    .cube:focus .banana {
       transform: rotate(-15deg);
     }
-    .cube:hover .front {
+    .cube:hover .front,
+    .cube:focus .front {
       transform: translateZ(1em) translateX(1.2em);
     }
 
@@ -104,7 +106,7 @@
   }
 
   .front  {
-    transform: translateZ(1em) translateX(.3em);
+    transform: translateZ(1em) translateX(.4em);
     transition: transform .3s;
     background-color: #AAE2DE;
   }
@@ -202,6 +204,13 @@
       <h2>Fighting food waste at home</h2>
     </div>
 
+    <!-- Attributions:
+
+    Banana from Lynn Fisher's brilliant https://a.singlediv.com/
+
+    Perspective cube by Hugo Giraudel. As featured on css-tricks.com
+    https://css-tricks.com/almanac/properties/p/perspective/
+    -->
     <div class="perspective">
       <div class="cube">
         <div class="side  front"></div>
