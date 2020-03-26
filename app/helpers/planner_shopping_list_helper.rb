@@ -242,7 +242,7 @@ module PlannerShoppingListHelper
 
 		planner_recipe_portions = []
 		planner_portions_with_wrap = []
-		if shopping_list.planner_recipes.length > 0
+		if shopping_list && shopping_list.planner_recipes && shopping_list.planner_recipes.length > 0
 			all_planner_recipe_portions = shopping_list.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}.reject{|p| p.checked == true && p.updated_at < Time.current - 1.day}}.flatten
 			planner_recipe_portions = all_planner_recipe_portions.reject{|p|p.planner_portion_wrapper_id != nil}
 			planner_portions_with_wrap = all_planner_recipe_portions.reject{|p|p.planner_portion_wrapper_id == nil}
@@ -250,14 +250,14 @@ module PlannerShoppingListHelper
 
 		combi_portions = []
 		combi_portions_with_wrap = []
-		if shopping_list.combi_planner_shopping_list_portions.length > 0
+		if shopping_list && shopping_list.combi_planner_shopping_list_portions && shopping_list.combi_planner_shopping_list_portions.length > 0
 			all_combi_portions = shopping_list.combi_planner_shopping_list_portions.select{|c|c.date > Date.current - 6.hours && c.date < Date.current + 7.day}.reject{|cp| cp.checked == true && cp.updated_at < Time.current - 1.day}
 			combi_portions = all_combi_portions.reject{|cp|cp.planner_portion_wrapper_id != nil}
 			combi_portions_with_wrap = all_combi_portions.reject{|cp|cp.planner_portion_wrapper_id == nil}
 		end
 
 		portion_wrappers = []
-		if shopping_list.planner_portion_wrappers.length > 0
+		if shopping_list && shopping_list.planner_portion_wrappers && shopping_list.planner_portion_wrappers.length > 0
 			wrapped_portions = combi_portions_with_wrap + planner_portions_with_wrap
 			portion_wrappers = wrapped_portions.map{|p|p.planner_portion_wrapper}
 		end
