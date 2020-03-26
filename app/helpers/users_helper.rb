@@ -113,6 +113,9 @@ module UsersHelper
       amount: 9223372036854775807,
       use_by_date: Date.current + 100.years
     )
+    PlannerShoppingList.create(
+      user_id: user.id
+    )
 
     update_recipe_stock_matches_core(nil, user.id)
   end
