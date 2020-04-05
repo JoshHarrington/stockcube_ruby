@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   # get '/about' => 'static_pages#about'
 
   get '/logo', to: 'static_pages#logo'
+  get '/cookie-policy', to: 'static_pages#cookie_policy'
 
   # get '/elements' => 'static_pages#elements'
 

@@ -4,6 +4,8 @@ class StaticPagesController < ApplicationController
 	def logo
 		render action: "logo", layout: "plain"
 	end
+	def cookie_policy
+	end
 	def about
 	end
 end
