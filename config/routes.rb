@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
   get '/logo', to: 'static_pages#logo'
   get '/cookie-policy', to: 'static_pages#cookie_policy'
+  get '/privacy-policy', to: 'static_pages#privacy_policy'
 
   # get '/elements' => 'static_pages#elements'
 
