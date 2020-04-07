@@ -23,6 +23,13 @@ const globalFn = () => {
 	}
 	catchDataConfirmAttrs()
 	openDemoModalOnDemoPages()
+
+	// hide cookie banner if cookie present
+	if (document.cookie.split(';').some(function(item) {
+		return item.trim().indexOf('cookie-policy=') == 0
+	}) && document.querySelector('.cookie-banner')) {
+		document.querySelector('.cookie-banner').classList.add('hidden')
+	}
 }
 
 

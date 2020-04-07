@@ -1,0 +1,48 @@
+<style>
+	.cookie-banner {
+		background-color: rgba(0,0,0,.75);
+		color: white;
+		position: fixed;
+		bottom: 0;
+		width: 100%;
+		padding: 1.6rem;
+		left: 0;
+		font-size: 1.5rem;
+		text-align: center;
+		line-height: 1.7;
+		z-index: 2;
+	}
+	.cookie-banner a {
+		font-size: 1.5rem;
+		color: white;
+	}
+	.cookie-banner button {
+		background: #bae8e6;
+		border: none;
+		border-radius: 2px;
+		font-size: 1.5rem;
+		margin-left: .8rem;
+		cursor: pointer;
+		padding: .5rem .6rem;
+	}
+	.cookie-banner.hidden {
+		display:none;
+	}
+	.cookie-banner .wrapper {
+		max-width: 90rem;
+		padding-left: 2rem;
+		padding-right: 2rem;
+		margin: 0 auto;
+	}
+</style>
+
+<script>
+	function setCookieBannerCookie() {
+		document.cookie = "cookie-policy=1";
+		document.querySelector('.cookie-banner').classList.add('hidden')
+	}
+</script>
+
+<div class="cookie-banner">
+	<div class="wrapper">Stockcubes uses cookies to improve your experience on our site. You can read our <a href="/cookie-policy">cookies policy here</a>. By continuing to use the site, you consent to use our cookies. <button onClick="setCookieBannerCookie()">Ok, understood</button></div>
+</div>
