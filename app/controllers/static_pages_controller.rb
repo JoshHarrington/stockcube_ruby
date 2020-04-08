@@ -8,6 +8,8 @@ class StaticPagesController < ApplicationController
 	end
 	def privacy_policy
 	end
+	def terms_of_use
+	end
 	def about
 	end
 end
