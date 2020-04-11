@@ -1,0 +1,80 @@
+<style>
+	.feedback_form {
+		display: flex;
+    flex-direction: column;
+	}
+
+	.footer_feedback_form--wrapper {
+		border-top: 1px solid var(--teal-40);
+		background-color: white;
+		display: flex;
+		justify-content: center;
+		width: 100%;
+		max-height: 0;
+		transition: max-height .3s;
+		overflow: hidden;
+	}
+
+	.static_pages_controller.home_page .footer_feedback_form--wrapper {
+		display: none;
+	}
+
+	.footer_feedback_form--wrapper form {
+		display: flex;
+		align-items: flex-start;
+		flex-direction: column;
+		justify-content: space-between;
+		padding: 2em;
+		width: 60em;
+	}
+
+	.footer_feedback_form--wrapper label,
+	.footer_feedback_form--wrapper textarea {
+		margin-bottom: 1em;
+	}
+
+	.footer_feedback_form--wrapper textarea {
+		width: 100%;
+	}
+
+	.footer_feedback_form--wrapper button {
+		align-self: flex-end;
+	}
+
+	.feedback_form_label {
+		cursor: pointer;
+		border: 1px solid var(--teal-40);
+		border-width: 1px 0 0 1px;
+		padding: 1rem;
+		margin-top: 2rem;
+		background-color: white;
+		margin-left: auto;
+	}
+
+	.static_pages_controller.home_page .feedback_form_label {
+		display: none;
+	}
+
+	.feedback_form_button:checked~.footer_feedback_form--wrapper {
+		max-height: 25rem;
+	}
+
+	.feedback_form_button:checked+.feedback_form_label {
+		background-color: var(--teal-10);
+	}
+</style>
+
+<% if user_signed_in? %>
+<div class="feedback_form">
+	<input type="checkbox" class="feedback_form_button hidden_checkbox" id="feedback_form_button" value="" />
+	<label for="feedback_form_button" class="feedback_form_label">Something wrong with this page?</label>
+	<div class="footer_feedback_form--wrapper">
+		<%= form_tag(feedback_submit_path, method: :post) do %>
+		<%= label_tag "issue_details", "Let us know the details and we'll get it sorted" %>
+		<%= text_area_tag "issue_details", nil, rows: 5, placeholder: "There was a problem when I clicked a button....", required: true %>
+		<%= hidden_field_tag "current_path", request.path %>
+		<%= button_tag "Submit", class: "list_block--collection--action" %>
+		<% end %>
+	</div>
+</div>
+<% end %>

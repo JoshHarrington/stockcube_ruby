@@ -1,30 +1,65 @@
+<style>
+	footer {
+		background-color: var(--teal-40);
+	}
+	footer ul li + li {
+		margin-top: 1rem;
+	}
+	footer a {
+		text-decoration: none;
+		color: black;
+	}
+	footer ul a:hover {
+		text-decoration: underline;
+	}
+	.footer-wrapper {
+		max-width: 90rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+		margin: 4rem auto 6rem;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+	}
+	.footer--logo-row {
+		width: 100%;
+	}
+	.footer--logo-row a {
+		display: flex;
+    width: 10rem;
+    height: 6rem;
+		margin-bottom: 1.5rem;
+	}
+	@media (min-width: 60rem) {
+		.footer--logo-row a {
+			margin-left: -3rem;
+		}
+	}
+	.footer--logo-row a svg {
+		width: 100%;
+	}
+</style>
+
 <footer>
-	<% if user_signed_in? %>
-		<input type="checkbox" class="feedback_form_button hidden_checkbox" id="feedback_form_button" value="" />
-		<label for="feedback_form_button" class="feedback_form_label">Something wrong with this page?</label>
-		<div class="footer_feedback_form--wrapper">
-			<%= form_tag(feedback_submit_path, method: :post) do %>
-				<%= label_tag "issue_details", "Let us know the details and we'll get it sorted" %>
-				<%= text_area_tag "issue_details", nil, rows: 5, placeholder: "There was a weird problem when I clicked a button....", required: true %>
-				<%= hidden_field_tag "current_path", request.path %>
-				<%= button_tag "Submit", class: "list_block--collection--action" %>
+	<div class="footer-wrapper">
+		<div class="footer--logo-row">
+			<%= link_to root_path do %>
+				<%= icomoon('logo', '0 0 38 20') %>
 			<% end %>
 		</div>
-	<% end %>
-	<div class="footer_inner">
 		<ul>
-			<li>
-				<%= link_to 'Our Roadmap 🛣', 'https://trello.com/b/5mJZ882b/stockcubes-roadmap-work-in-progress', target: "_blank" %>
-			</li>
-			<li>
-				<%= link_to 'Twitter Profile 📢', 'https://twitter.com/stock_cubes', target: "_blank" %>
-			</li>
-			<li>
-				<%= link_to 'Send us Feedback 👂', 'mailto:team@getstockcubes.com?subject=Feedback', target: "_blank" %>
-			</li>
-			<li>
-				<%= link_to 'Buy us a coffee ☕️', 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BVCUKWNAAMH5L&source=url', target: "_blank" %>
-			</li>
+			<li><%= link_to 'Home', root_path %></li>
+			<li><%= link_to 'Roadmap', 'https://trello.com/b/5mJZ882b/stockcubes-roadmap-work-in-progress', target: "_blank" %></li>
+			<li><%= link_to 'Support us', 'https://www.patreon.com/stockcubes', target: '_blank' %></li>
+		</ul>
+		<ul>
+			<li><%= link_to 'Twitter', 'https://twitter.com/stock_cubes', target: '_blank' %></li>
+			<li><%= link_to 'Email', 'mailto:team@getstockcubes.com' %></li>
+		</ul>
+		<ul>
+			<li><%= link_to 'Privacy Policy', 'privacy_policy_path' %></li>
+			<li><%= link_to 'Cookies Policy', 'cookie_policy_path' %></li>
+			<li><%= link_to 'Terms of Use', 'terms_of_use_path' %></li>
 		</ul>
 	</div>
 </footer>
