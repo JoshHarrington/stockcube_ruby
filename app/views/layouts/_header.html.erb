@@ -65,6 +65,9 @@
           --><%= link_current_page_element(your_recipes_path, 'Your Recipes') %><!--
         --></ul><% end %><!--
       --><%= link_current_page_element(cupboards_path, 'Cupboards', 'stocks') %><!--
+      --><li><span class="fake_link"
+      onClick="(function(){document.querySelector('html').classList.toggle('shopping_list_open');
+        document.querySelector('html').classList.remove('js-nav')})();">Shopping List</span></li><!--
       --><% end %><!--
     --></ul>
       <% if not user_signed_in? %>

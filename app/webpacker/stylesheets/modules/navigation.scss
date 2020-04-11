@@ -134,8 +134,10 @@
       font-size: 1.4em;
       line-height: 1.28571em;
       outline: none;
+      cursor: pointer;
     }
-    a {
+    a,
+    .fake_link {
       &:focus, &:hover {
         background-color: $teal-90;
       }
