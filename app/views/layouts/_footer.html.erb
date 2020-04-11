@@ -35,6 +35,14 @@
 			margin-left: -3rem;
 		}
 	}
+	@media (max-width: 25rem) {
+		footer ul {
+			width: 100%;
+		}
+		footer ul + ul {
+			margin-top: 2.3rem;
+		}
+	}
 	.footer--logo-row a svg {
 		width: 100%;
 	}
@@ -57,9 +65,9 @@
 			<li><%= link_to 'Email', 'mailto:team@getstockcubes.com' %></li>
 		</ul>
 		<ul>
-			<li><%= link_to 'Privacy Policy', 'privacy_policy_path' %></li>
-			<li><%= link_to 'Cookies Policy', 'cookie_policy_path' %></li>
-			<li><%= link_to 'Terms of Use', 'terms_of_use_path' %></li>
+			<li><%= link_to 'Privacy Policy', privacy_policy_path %></li>
+			<li><%= link_to 'Cookies Policy', cookie_policy_path %></li>
+			<li><%= link_to 'Terms of Use', terms_of_use_path %></li>
 		</ul>
 	</div>
 </footer>
