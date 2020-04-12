@@ -1,4 +1,4 @@
-$bp-mobile: 35rem;
+$bp-shopping-list-mobile: 35rem;
 
 .planner_shopping_list--wrapper {
 	position: fixed;
@@ -11,7 +11,7 @@ $bp-mobile: 35rem;
 	border-left: 1px solid $teal-70;
 	transition: left .4s;
 	padding-bottom: em(55, 10);
-	@media (max-width: $bp-mobile) {
+	@media (max-width: $bp-shopping-list-mobile) {
 		width: 75vw;
 	}
 	.list_toggle {
@@ -30,14 +30,14 @@ $bp-mobile: 35rem;
 		}
 		.shopping_list_open & {
 			right: 308px;
-			@media (max-width: $bp-mobile) {
+			@media (max-width: $bp-shopping-list-mobile) {
 				right: 78vw;
 			}
 		}
 	}
 	.shopping_list_open & {
 		left: calc(100% - 30em);
-		@media (max-width: $bp-mobile) {
+		@media (max-width: $bp-shopping-list-mobile) {
 			left: 25vw;
 		}
 		.chevron_left {
@@ -163,12 +163,12 @@ $bp-mobile: 35rem;
 	display: flex;
 	justify-content: center;
 	transition: left .4s;
-	@media (max-width: $bp-mobile) {
+	@media (max-width: $bp-shopping-list-mobile) {
 		width: 75vw;
 	}
 	.shopping_list_open & {
 		left: calc(100% - 30em);
-		@media (max-width: $bp-mobile) {
+		@media (max-width: $bp-shopping-list-mobile) {
 			left: 25vw;
 		}
 	}
