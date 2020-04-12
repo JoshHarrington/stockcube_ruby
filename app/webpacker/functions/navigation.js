@@ -111,6 +111,7 @@
                 }
                 addClass(doc, nav_class);
                 nav_open = true;
+                document.querySelector('html').classList.remove('shopping_list_open');
             };
 
             app.toggleNav = function(e)
