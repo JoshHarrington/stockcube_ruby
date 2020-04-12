@@ -1,6 +1,9 @@
 <% provide(:title, 'Home') %>
 
 <style>
+  html {
+    scroll-behavior: smooth;
+  }
   .banner_bar {
     background-color: #ddf4f2;
     padding-top: 6rem;
@@ -195,6 +198,58 @@
       height: .4em;
     }
   }
+  .tour_jumper {
+    background-color: var(--teal-40);
+    padding: 1.7rem 0;
+    display: block;
+    font-size: 1.2rem;
+    text-decoration: none;
+    color: black;
+    cursor: pointer;
+  }
+  .tour_jumper:hover {
+    background-color: var(--teal-70);
+  }
+  .tour_jumper * {
+    pointer-events: none;
+  }
+
+  .tour_jumper--contents {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .tour_jumper--contents p {
+    margin-bottom: .6rem;
+  }
+
+  .tour_jumper--contents .icon-arrow_forward {
+    transform: rotate(90deg);
+    width: 2rem;
+    height: 2rem;
+  }
+
+  #tour_video {
+    margin: 3rem 0 5rem;
+  }
+
+  #tour_video > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #tour_video h3 {
+    font-size: 2.3rem;
+    margin-bottom: 2rem;
+  }
+
+  #tour_video iframe {
+    max-width: 90%;
+    max-height: 55vw;
+    width: 74rem;
+    height: 45rem;
+  }
 
 </style>
 
@@ -214,11 +269,11 @@
     -->
     <div class="perspective">
       <div class="cube">
-        <div class="side  front"></div>
-        <div class="side   back"></div>
-        <div class="side  right"></div>
-        <div class="side   left"></div>
-        <div class="side    top"></div>
+        <div class="side front"></div>
+        <div class="side back"></div>
+        <div class="side right"></div>
+        <div class="side left"></div>
+        <div class="side top"></div>
         <div class="side bottom"></div>
         <div class="side shadow"></div>
         <div class="banana"></div>
@@ -230,6 +285,13 @@
 <section class="call_out_bar">
   <div class="wrapper">
     <h3>We're here to make it ridiculously simple to <br /><strong>plan your meals</strong> and <strong>cut your food waste</strong></h3>
+  </div>
+</section>
+
+<section class="tour_jumper">
+  <div class="wrapper tour_jumper--contents">
+    <p>Check out the tour</p>
+    <%= icomoon('arrow_forward') %>
   </div>
 </section>
 
@@ -273,4 +335,11 @@
 <section class="bottom_banner_bar">
   <p><strong>Where do you sign up?</strong><p>
   <p>Right here: <%= link_to "Sign up", new_user_registration_path %>
+</section>
+
+<section id="tour_video">
+  <div class="wrapper">
+    <h3>Take a tour of the Stockcubes platform</h3>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/puqc09GIO0I" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
 </section>

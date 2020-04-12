@@ -30,8 +30,17 @@ const globalFn = () => {
 	}) && document.querySelector('.cookie-banner')) {
 		document.querySelector('.cookie-banner').classList.add('hidden')
 	}
+	document.querySelectorAll('.tour_jumper, .tour_jumper *').forEach(t => {
+		t.addEventListener('click', jumpToTour)
+	})
 }
 
+const jumpToTour = (e) => {
+	e.stopPropagation();
+	document.querySelector('#tour_video').scrollIntoView({
+		behavior: 'smooth'
+	});
+}
 
 const onSearchShowIngredientInputSwitch = () => {
 	if (document.body.classList.contains('stocks_controller','custom_new_page')) {
