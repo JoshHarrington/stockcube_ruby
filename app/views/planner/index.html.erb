@@ -97,7 +97,7 @@
 								title="<%= message %>"
 								aria-label="<%= message %>"
 						>
-							<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percent_in_cupboards(p_recipe.recipe) %>%"></span></span>
+							<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= recipe_portions_in_stock_vs_total_percentage(p_recipe) %>%"></span></span>
 							<%= link_to recipe.title, recipe_path(recipe) %>
 							<button class="delete list_block--item--action list_block--item--action--btn"><%= icomoon('bin') %></button>
 						</div>

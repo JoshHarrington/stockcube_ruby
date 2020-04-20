@@ -5,16 +5,18 @@ module PlannerShoppingListHelper
 		planner_shopping_list = PlannerShoppingList.find_or_create_by(user_id: current_user.id)
 
 		recipe_portions = planner_recipe.recipe.portions.reject{|p| p.ingredient.name.downcase == 'water'}
+		puts "recipe_portions" + recipe_portions.to_s
 		ingredients_from_recipe_portions = recipe_portions.map(&:ingredient_id)
 
 		cupboards = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact.sort_by{|c| c.created_at}.reverse!
-		stock = cupboards.map{|c| c.stocks.select{|s| s.use_by_date > Date.current - 4.days && s.ingredient.name.downcase != 'water' && s.planner_recipe_id == nil }}.flatten.compact
+		stock = cupboards.map{|c| c.stocks.select{|s| s.use_by_date > Date.current - 4.days && s.ingredient.name.downcase != 'water' && s.planner_recipe_id == nil && s.hidden == false }}.flatten.compact
 		ingredients_from_stock = stock.map(&:ingredient_id)
 
 		uncommon_ingredients = ingredients_from_recipe_portions - ingredients_from_stock
 
 		if ingredients_from_recipe_portions && ingredients_from_stock.length > 0
 			common_ingredients = ingredients_from_recipe_portions & ingredients_from_stock
+
 			common_ingredients.each do |ing|
 				## find the highest amount of stock ?
 				stock_from_ing = stock.select{|s| s.ingredient_id == ing}.first
@@ -28,7 +30,12 @@ module PlannerShoppingListHelper
 					portions_sum_from_ing = serving_addition(portions_from_ing)
 				end
 
+				puts "portions_sum_from_ing"
+				puts portions_sum_from_ing
+
 				serving_diff = serving_difference([stock_from_ing, portions_sum_from_ing])
+
+				use_by_date_diff = get_ingredient_use_by_date_diff(Ingredient.find(ing))
 
 				if serving_diff != false
 					serving_diff_amount = serving_diff[:amount]
@@ -46,7 +53,7 @@ module PlannerShoppingListHelper
 								unit_id: serving_diff[:unit_id],
 								amount: -(serving_diff_amount),
 								planner_shopping_list_id: planner_shopping_list.id,
-								date: planner_recipe.date + 2.weeks
+								date: planner_recipe.date + use_by_date_diff.days
 							)
 						end
 					elsif serving_diff_amount > 0
@@ -124,7 +131,93 @@ module PlannerShoppingListHelper
 
 	end
 
+	def delete_all_planner_portions_and_create_new(planner_shopping_list = nil)
+		return if planner_shopping_list == nil
+
+		## Loop over all planner recipes
+		planner_shopping_list.planner_recipes.each do |pr|
+
+			## Ignore old planner recipes
+			next if pr.date < Date.current
+
+			## Loop over all associated recipe portions
+			pr.recipe.portions.each do |rp|
+
+				## Ignore water portions
+				next if rp.ingredient.name.downcase == 'water'
+
+				## Create new planner portions using the recipe portion as template
+				PlannerShoppingListPortion.find_or_create_by(
+					user_id: planner_shopping_list.user_id,
+					planner_recipe_id: pr.id,
+					ingredient_id: rp.ingredient_id,
+					planner_shopping_list_id: planner_shopping_list.id
+				).update_attributes(
+					unit_id: rp.unit_id,
+					amount: rp.amount,
+					date: pr.date + get_ingredient_use_by_date_diff(rp.ingredient)
+				)
+
+			end
+		end
+	end
+
+	### TODO --- to maintain check state could have separate table to see what's been checked?
+	###					 -- could instead look at what stock is current in cupboards
+	###							if stock of correct ingredient and unit exist and in high enough quantity
+	###							then portion could be checked and stock reserved for that ingredient
+	### 						eg (planner recipe/portion id added)
+
+
+	def delete_all_combi_planner_portions_and_create_new(planner_shopping_list_id = nil)
+		return if planner_shopping_list_id == nil
+
+		planner_shopping_list = PlannerShoppingList.find(planner_shopping_list_id)
+
+		Rails.logger.debug "delete_all_combi_planner_portions_and_create_new"
+		## Delete all planner combi portions
+		planner_shopping_list.combi_planner_shopping_list_portions.destroy_all
+
+		Rails.logger.debug planner_shopping_list.planner_shopping_list_portions.group_by{|p| p.ingredient_id}.select{|k,v| v.length > 1}
+
+		## Find all planner portions with same ingredient
+		planner_shopping_list.planner_shopping_list_portions.group_by{|p| p.ingredient_id}.select{|k,v| v.length > 1}.each do |ing_id, portion_group|
+
+			Rails.logger.debug "portion_group #{portion_group}"
+
+			combi_amount = serving_addition(portion_group)
+			combi_portion = CombiPlannerShoppingListPortion.create(
+				user_id: planner_shopping_list.user_id,
+				planner_shopping_list_id: planner_shopping_list.id,
+				ingredient_id: ing_id,
+				amount: combi_amount ? combi_amount[:amount] : nil,
+				unit_id: combi_amount ? combi_amount[:unit_id] : nil,
+				date: portion_group.sort_by{|p| p.planner_recipe.date}.first.date,
+				checked: portion_group.count{|p| p.checked == false} > 0 ? false : true
+			)
+
+			portion_group.each do |p|
+				p.update_attributes(
+					combi_planner_shopping_list_portion_id: combi_portion.id
+				)
+			end
+
+		end
+
+			### TODO --- instead of always trying to figure out what to items added together is for combi portion
+			### 			   could just show those two amounts grouped eg Carrots [100g + 2 small]
+			### 				 if combi portion amount is nil, output individual portion amount instead?
+			###			 --- Render combi portion as wrapper/parent to other portions
+			###					 - if combi portion amount is known then show it and hide other portions,
+			###					 other portions can be shown and checked individually
+			###							if combi portion is checked - both other portions are checked also
+			###					 - if combi portion not know, still wrapped with combi portion,
+			### 					but expanded to show other portion amounts
+
+	end
+
 	def update_planner_shopping_list_portions
+		return if user_signed_in? == false
 		planner_shopping_list = PlannerShoppingList.find_or_create_by(user_id: current_user.id)
 		if current_user.planner_recipes && current_user.planner_recipes.length == 0
 			current_user.combi_planner_shopping_list_portions.destroy_all
@@ -133,86 +226,96 @@ module PlannerShoppingListHelper
 			)
 			return
 		end
-		current_user.combi_planner_shopping_list_portions.select{|cp|cp.planner_shopping_list_portions.length == 0 || cp.planner_shopping_list_portions.length == 1 }.map{|cp| cp.destroy}
 
 
-		planner_shopping_list_portions = planner_shopping_list.planner_shopping_list_portions.select{|p|p.planner_recipe.date >= Date.current}.sort_by{|p|p.planner_recipe.date}
-		ingredients_from_planner_shopping_list = planner_shopping_list_portions.map(&:ingredient_id)
+		delete_all_planner_portions_and_create_new(planner_shopping_list)
 
-		matching_ingredients = ingredients_from_planner_shopping_list.select{ |e| ingredients_from_planner_shopping_list.count(e) > 1 }.uniq
-		if matching_ingredients.length > 0
-			matching_ingredients.each do |m_ing|
-				matching_sl_portions = planner_shopping_list_portions.select{|p| p.ingredient_id == m_ing}
-
-				if serving_addition(matching_sl_portions) == false || matching_sl_portions.map(&:checked).uniq.length != 1
-					next
-				end
-				# planner_shopping_list.combi_planner_shopping_list_portions.select{|cp| cp.ingredient_id == m_ing}.map{|cp| cp.destroy}
+		delete_all_combi_planner_portions_and_create_new(planner_shopping_list.id)
 
 
-				combi_addition_object = serving_addition(matching_sl_portions)
-				combi_amount = combi_addition_object[:amount]
-				combi_unit_id = combi_addition_object[:unit_id]
-
-				combi_sl_portion = CombiPlannerShoppingListPortion.find_or_create_by(
-					user_id: current_user[:id],
-					planner_shopping_list_id: planner_shopping_list.id,
-					ingredient_id: m_ing
-				)
-
-				CombiPlannerShoppingListPortion.where(
-					user_id: current_user[:id],
-					planner_shopping_list_id: planner_shopping_list.id,
-					ingredient_id: m_ing
-				).where.not(id: combi_sl_portion[:id]).destroy_all
+		# current_user.combi_planner_shopping_list_portions.select{|cp|cp.planner_shopping_list_portions.length == 0 || cp.planner_shopping_list_portions.length == 1 }.destroy_all
 
 
-				combi_sl_portion.update_attributes(
-					amount: combi_amount,
-					unit_id: combi_unit_id,
-					date: matching_sl_portions.last.date,
-					checked: matching_sl_portions.first.checked
-				)
+		# planner_shopping_list_portions = planner_shopping_list.planner_shopping_list_portions.select{|p|p.planner_recipe.date >= Date.current}.sort_by{|p|p.planner_recipe.date}
+		# ingredients_from_planner_shopping_list = planner_shopping_list_portions.map(&:ingredient_id)
 
-				PlannerShoppingListPortion.where(id: matching_sl_portions.map(&:id)).update_all(
-					combi_planner_shopping_list_portion_id: combi_sl_portion[:id]
-				)
+		# matching_ingredients = ingredients_from_planner_shopping_list.select{ |e| ingredients_from_planner_shopping_list.count(e) > 1 }.uniq
+		# if matching_ingredients.length > 0
+		# 	matching_ingredients.each do |m_ing|
+		# 		matching_sl_portions = planner_shopping_list_portions.select{|p| p.ingredient_id == m_ing}
 
-			end
-		end
-
-		all_shopping_list_portions = []
-		planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.map{|p| all_shopping_list_portions.push(p)}
-		current_user.combi_planner_shopping_list_portions.select{|cp|cp.date >= Date.current}.map{|cp|all_shopping_list_portions.push(cp)}
-
-		all_shopping_list_portions.each do |p|
-
-			size_diff = false
-
-			# loop over each default ingredient size to find a size bigger than the portion
-			# if no size found, double the ingredient size amounts then rerun the loop
-			# keep stepping up sizes until correct size found
+		# 		if serving_addition(matching_sl_portions) == false || matching_sl_portions.map(&:checked).uniq.length != 1
+		# 			next
+		# 		end
+		# 		# planner_shopping_list.combi_planner_shopping_list_portions.select{|cp| cp.ingredient_id == m_ing}.map{|cp| cp.destroy}
 
 
-			planner_portion_size = find_planner_portion_size(p)
+		# 		combi_addition_object = serving_addition(matching_sl_portions)
+		# 		combi_amount = combi_addition_object[:amount]
+		# 		combi_unit_id = combi_addition_object[:unit_id]
 
-			next if planner_portion_size == false
+		# 		combi_sl_portion = CombiPlannerShoppingListPortion.find_or_create_by(
+		# 			user_id: current_user[:id],
+		# 			planner_shopping_list_id: planner_shopping_list.id,
+		# 			ingredient_id: m_ing
+		# 		)
 
-			amount = planner_portion_size[:converted_size][:amount]
-			unit_id = planner_portion_size[:converted_size][:unit_id]
+		# 		CombiPlannerShoppingListPortion.where(
+		# 			user_id: current_user[:id],
+		# 			planner_shopping_list_id: planner_shopping_list.id,
+		# 			ingredient_id: m_ing
+		# 		).where.not(id: combi_sl_portion[:id]).destroy_all
 
-			setup_wrapper_portions(p, amount, unit_id, current_user, planner_shopping_list.id)
 
-		end
+		# 		combi_sl_portion.update_attributes(
+		# 			amount: combi_amount,
+		# 			unit_id: combi_unit_id,
+		# 			date: matching_sl_portions.last.date,
+		# 			checked: matching_sl_portions.first.checked
+		# 		)
+
+		# 		PlannerShoppingListPortion.where(id: matching_sl_portions.map(&:id)).update_all(
+		# 			combi_planner_shopping_list_portion_id: combi_sl_portion[:id]
+		# 		)
+
+		# 	end
+		# end
+
+		#### TODO -- figure out how wrapper portions can work alongside developed combi portions
+
+		# all_shopping_list_portions = []
+		# planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.map{|p| all_shopping_list_portions.push(p)}
+		# current_user.combi_planner_shopping_list_portions.select{|cp|cp.date >= Date.current}.map{|cp|all_shopping_list_portions.push(cp)}
+
+		# all_shopping_list_portions.each do |p|
+
+		# 	size_diff = false
+
+		# 	# loop over each default ingredient size to find a size bigger than the portion
+		# 	# if no size found, double the ingredient size amounts then rerun the loop
+		# 	# keep stepping up sizes until correct size found
+
+
+		# 	planner_portion_size = find_planner_portion_size(p)
+
+		# 	next if planner_portion_size == false
+
+		# 	amount = planner_portion_size[:converted_size][:amount]
+		# 	unit_id = planner_portion_size[:converted_size][:unit_id]
+
+		# 	setup_wrapper_portions(p, amount, unit_id, current_user, planner_shopping_list.id)
+
+		# end
 
 	end
 
 
 	def combine_divided_stock_after_planner_recipe_delete(planner_recipe = nil)
 		return if planner_recipe == nil || planner_recipe.stocks.length < 1
-		planner_recipe.stocks.where('stocks.updated_at > ?', Date.current - 1.hour).each do |stock|
+		planner_recipe.stocks.each do |stock|
 			stock_partner = stock.cupboard.stocks.where.not(id: stock.id).find_by(ingredient_id: stock.ingredient_id, use_by_date: stock.use_by_date)
 			return unless stock_partner.present?
+			return if stock_partner.updated_at > Date.current - 10.minutes
 			stock_group = [stock_partner, stock]
 			if serving_addition(stock_group)
 				stock_addition_hash = serving_addition(stock_group)
@@ -252,7 +355,8 @@ module PlannerShoppingListHelper
 		combi_portions = []
 		combi_portions_with_wrap = []
 		if shopping_list && shopping_list.combi_planner_shopping_list_portions && shopping_list.combi_planner_shopping_list_portions.length > 0
-			all_combi_portions = shopping_list.combi_planner_shopping_list_portions.select{|c|c.date > Date.current - 6.hours && c.date < Date.current + 7.day}.reject{|cp| cp.checked == true && cp.updated_at < Time.current - 1.day}
+			# all_combi_portions = shopping_list.combi_planner_shopping_list_portions.select{|c|c.date > Date.current - 6.hours && c.date < Date.current + 7.day}.reject{|cp| cp.checked == true && cp.updated_at < Time.current - 1./day}
+			all_combi_portions = shopping_list.combi_planner_shopping_list_portions
 			combi_portions = all_combi_portions.reject{|cp|cp.planner_portion_wrapper_id != nil}
 			combi_portions_with_wrap = all_combi_portions.reject{|cp|cp.planner_portion_wrapper_id == nil}
 		end
@@ -268,6 +372,9 @@ module PlannerShoppingListHelper
 		session[:sl_checked_portions_count] = shopping_list_portions.count{|p|p.checked == true}
 		session[:sl_unchecked_portions_count] = shopping_list_portions.count{|p|p.checked == false}
 		session[:sl_total_portions_count] = shopping_list_portions.count
+
+		Rails.logger.debug "combi_portions"
+		Rails.logger.debug combi_portions
 
 		return shopping_list_portions.sort_by!{|p| p.ingredient.name}
 
@@ -331,15 +438,16 @@ module PlannerShoppingListHelper
 	end
 
 	def current_planner_recipe_ids
-		return nil if user_signed_in? == false
-		if session.has_key?(:current_planner_recipe_ids)
-			Rails.logger.debug "session[:current_planner_recipe_ids] - "
-			Rails.logger.debug session[:current_planner_recipe_ids]
-			return session[:current_planner_recipe_ids]
-		else
-			update_current_planner_recipe_ids
-			current_planner_recipe_ids
-		end
+		return [] if user_signed_in? == false
+		# if session.has_key?(:current_planner_recipe_ids)
+		# 	Rails.logger.debug "session[:current_planner_recipe_ids] - "
+		# 	Rails.logger.debug session[:current_planner_recipe_ids]
+		# 	return session[:current_planner_recipe_ids]
+		# else
+		# 	update_current_planner_recipe_ids
+		# 	current_planner_recipe_ids
+		# end
+		return current_user.planner_recipes.where(date: Date.current..Date.current+7.days).map(&:recipe_id)
 	end
 
 	def update_current_planner_recipe_ids

@@ -64,6 +64,9 @@ module StockHelper
 			stock_amount = portion.amount
 		end
 
+		puts "create_stock_from_portion"
+		puts portion.id
+
 		recipe_stock = Stock.find_by(
 			ingredient_id: portion.ingredient_id,
 			unit_id: portion.unit_id,
@@ -121,90 +124,137 @@ module StockHelper
 		)
 	end
 
-	def toggle_stock_on_portion_check(params, processing_type)
-		if params.has_key?(:gen_id) && PlannerShoppingList.find_by(gen_id: params[:gen_id])
-			shopping_list = PlannerShoppingList.find_by(gen_id: params[:gen_id])
-		elsif current_user
-			shopping_list = current_user.planner_shopping_list
-		else
-			return
+	def remove_stock_after_portion_unchecked(planner_portion = nil, portion_type = nil)
+		return if planner_portion == nil
+
+		if portion_type == "combi_portion"
+			planner_portion.planner_shopping_list_portions.each do |portion|
+				portion.stock.destroy
+			end
+		elsif portion_type == "individual_portion"
+			planner_portion.stock.destroy
 		end
+	end
 
-		return unless params.has_key?(:shopping_list_portion_id) && params.has_key?(:portion_type)
-		shopping_list.update_attributes(
-			ready: false
-		)
-
-		if params[:portion_type] == 'combi_portion'
-			combi_portion = shopping_list.combi_planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
-		elsif params[:portion_type] == 'individual_portion'
-			individual_portion = shopping_list.planner_shopping_list_portions.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
-		elsif params[:portion_type] == 'wrapper_portion'
-			wrapper_portion = shopping_list.planner_portion_wrappers.find(planner_portion_id_hash.decode(params[:shopping_list_portion_id])).first
-		end
-
-		recipe_ids = []
-		ingredient_ids = []
-
-		if wrapper_portion.present?
-			if wrapper_portion.planner_shopping_list_portion.planner_recipe.recipe_id
-				recipe_ids.push(wrapper_portion.planner_shopping_list_portion.planner_recipe.recipe_id)
-			else
-				ingredient_ids.push(wrapper_portion.ingredient_id)
-			end
-			convert_portions_to_stock(wrapper_portion.planner_shopping_list_portion, processing_type, shopping_list.user_id)
-			if processing_type && processing_type == 'add_portion'
-				wrapper_portion.update_attributes(checked: true)
-				wrapper_portion.planner_shopping_list_portion.update_attributes(checked: true)
-			elsif processing_type && processing_type == 'remove_portion'
-				wrapper_portion.update_attributes(checked: false)
-				wrapper_portion.planner_shopping_list_portion.update_attributes(checked: false)
-			end
-		end
-		if combi_portion.present?
-			combi_portion.planner_shopping_list_portions.each do |portion|
-				if portion.planner_recipe.recipe_id
-					recipe_ids.push(portion.planner_recipe.recipe_id)
-				else
-					ingredient_ids.push(combi_portion.ingredient_id)
-				end
-				if processing_type && processing_type == 'add_portion'
-					portion.update_attributes(checked: true)
-				elsif processing_type && processing_type == 'remove_portion'
-					portion.update_attributes(checked: false)
-				end
-			end
-			convert_portions_to_stock(combi_portion.planner_shopping_list_portions, processing_type, shopping_list.user_id)
-			if processing_type && processing_type == 'add_portion'
-				combi_portion.update_attributes(checked: true)
-			elsif processing_type && processing_type == 'remove_portion'
-				combi_portion.update_attributes(checked: false)
-			end
-		end
-		if individual_portion.present?
-			if individual_portion.planner_recipe.recipe_id
-				recipe_ids.push(individual_portion.planner_recipe.recipe_id)
-			else
-				ingredient_ids.push(individual_portion.ingredient_id)
-			end
-			convert_portions_to_stock(individual_portion, processing_type, shopping_list.user_id)
-			if processing_type && processing_type == 'add_portion'
-				individual_portion.update_attributes(checked: true)
-			elsif processing_type && processing_type == 'remove_portion'
-				individual_portion.update_attributes(checked: false)
-			end
-
-			if recipe_ids.length > 0
-				update_recipe_stock_matches_core(nil, shopping_list.user_id, recipe_ids)
-			elsif ingredient_ids.length > 0
-				update_recipe_stock_matches_core(ingredient_ids, shopping_list.user_id)
-			end
-		end
-
-		shopping_list.update_attributes(
-			ready: true
+	def create_stock_from_portion(planner_portion = nil)
+		cupboard = first_cupboard(planner_portion.user)
+		Stock.create(
+			cupboard_id: cupboard.id,
+			ingredient_id: planner_portion.ingredient_id,
+			amount: planner_portion.amount,
+			unit_id: planner_portion.unit_id,
+			planner_recipe_id: planner_portion.planner_recipe_id,
+			planner_shopping_list_portion_id: planner_portion.id,
+			use_by_date: Date.current + 2.weeks
 		)
 	end
+
+	def add_stock_after_portion_checked(planner_portion = nil, portion_type = nil)
+		return if planner_portion == nil || portion_type == nil
+
+		if portion_type == "combi_portion"
+			planner_portion.planner_shopping_list_portions.map{|p| p.stock.destroy if p.stock }
+			planner_portion.planner_shopping_list_portions.each do |portion|
+				create_stock_from_portion(portion)
+			end
+		elsif portion_type == "individual_portion"
+			create_stock_from_portion(planner_portion)
+		end
+
+	end
+
+	# def toggle_stock_on_portion_check(params, processing_type)
+	# 	if params.has_key?(:gen_id) && PlannerShoppingList.find_by(gen_id: params[:gen_id])
+	# 		shopping_list = PlannerShoppingList.find_by(gen_id: params[:gen_id])
+	# 	elsif current_user
+	# 		shopping_list = current_user.planner_shopping_list
+	# 	else
+	# 		return
+	# 	end
+
+	# 	return unless params.has_key?(:shopping_list_portion_id) && params.has_key?(:portion_type)
+	# 	shopping_list.update_attributes(
+	# 		ready: false
+	# 	)
+
+	# 	decoded_shopping_list_portion_id = planner_portion_id_hash.decode(params[:shopping_list_portion_id])
+
+	# 	if params[:portion_type] == 'combi_portion'
+	# 		combi_portion = shopping_list.combi_planner_shopping_list_portions.find(decoded_shopping_list_portion_id).first
+	# 	elsif params[:portion_type] == 'individual_portion'
+	# 		individual_portion = shopping_list.planner_shopping_list_portions.find(decoded_shopping_list_portion_id).first
+	# 	elsif params[:portion_type] == 'wrapper_portion'
+	# 		wrapper_portion = shopping_list.planner_portion_wrappers.find(decoded_shopping_list_portion_id).first
+	# 	end
+
+	# 	recipe_ids = []
+	# 	ingredient_ids = []
+
+	# 	if wrapper_portion.present?
+	# 		if wrapper_portion.planner_shopping_list_portion.planner_recipe.recipe_id
+	# 			recipe_ids.push(wrapper_portion.planner_shopping_list_portion.planner_recipe.recipe_id)
+	# 		else
+	# 			ingredient_ids.push(wrapper_portion.ingredient_id)
+	# 		end
+	# 		convert_portions_to_stock(wrapper_portion.planner_shopping_list_portion, processing_type, shopping_list.user_id)
+	# 		if processing_type && processing_type == 'add_portion'
+	# 			wrapper_portion.update_attributes(checked: true)
+	# 			wrapper_portion.planner_shopping_list_portion.update_attributes(checked: true)
+	# 		elsif processing_type && processing_type == 'remove_portion'
+	# 			wrapper_portion.update_attributes(checked: false)
+	# 			wrapper_portion.planner_shopping_list_portion.update_attributes(checked: false)
+	# 		end
+	# 	end
+	# 	if combi_portion.present?
+	# 		combi_portion.planner_shopping_list_portions.each do |portion|
+	# 			if portion.planner_recipe.recipe_id
+	# 				recipe_ids.push(portion.planner_recipe.recipe_id)
+	# 			else
+	# 				ingredient_ids.push(combi_portion.ingredient_id)
+	# 			end
+	# 			if processing_type && processing_type == 'add_portion'
+	# 				portion.update_attributes(checked: true)
+	# 			elsif processing_type && processing_type == 'remove_portion'
+	# 				portion.update_attributes(checked: false)
+	# 			end
+	# 		end
+	# 		convert_portions_to_stock(combi_portion.planner_shopping_list_portions, processing_type, shopping_list.user_id)
+	# 		if processing_type && processing_type == 'add_portion'
+	# 			combi_portion.update_attributes(checked: true)
+	# 		elsif processing_type && processing_type == 'remove_portion'
+	# 			combi_portion.update_attributes(checked: false)
+	# 		end
+	# 	end
+	# 	if individual_portion.present?
+	# 		if individual_portion.planner_recipe.recipe_id
+	# 			recipe_ids.push(individual_portion.planner_recipe.recipe_id)
+	# 		else
+	# 			ingredient_ids.push(individual_portion.ingredient_id)
+	# 		end
+	# 		convert_portions_to_stock(individual_portion, processing_type, shopping_list.user_id)
+	# 		if processing_type && processing_type == 'add_portion'
+	# 			individual_portion.update_attributes(checked: true)
+	# 		elsif processing_type && processing_type == 'remove_portion'
+	# 			individual_portion.update_attributes(checked: false)
+	# 		end
+
+	# 		if recipe_ids.length > 0
+	# 			update_recipe_stock_matches_core(nil, shopping_list.user_id, recipe_ids)
+	# 		elsif ingredient_ids.length > 0
+	# 			update_recipe_stock_matches_core(ingredient_ids, shopping_list.user_id)
+	# 		end
+	# 	end
+
+	# 	shopping_list.update_attributes(
+	# 		ready: true
+	# 	)
+	# end
+
+	# def delete_planner_portions_stock(planner_shopping_list_portion_id = nil)
+	# 	return if planner_shopping_list_portion_id == nil
+
+	# 	Stock.where(planner_shopping_list_portion_id)
+	# end
 
 	def convert_portions_to_stock(portions, processing_type, user_id = nil)
 		portions_array = [].push(portions).flatten
@@ -223,6 +273,9 @@ module StockHelper
 			if processing_type && (processing_type == 'remove_portion' || processing_type == 'add_portion')
 				check_state = processing_type == 'remove_portion' ? false : true
 				if portion.planner_portion_wrapper == nil
+
+					puts "convert_portions_to_stock portion.planner_portion_wrapper == nil  #{portion.ingredient.name}"
+
 					recipe_stock = create_stock_from_portion(portion, cupboard_id, shopping_list_user)
 					stock_hidden = processing_type == 'add_portion' ? false : true
 					recipe_stock.update_attributes(hidden: stock_hidden)
@@ -230,48 +283,72 @@ module StockHelper
 
 					portion.planner_portion_wrapper.update_attributes(checked: check_state)
 
-					## find diff between portion size and wrapper size
-					## create new stock with this leftover size
-					## add planner_portion_wrapper_id to stock
-					wrapper_stock_diff = serving_difference([portion.planner_portion_wrapper, portion])
-					if wrapper_stock_diff != false
-						create_stock_from_portion(portion, cupboard_id, shopping_list_user)
 
-						wrapper_stock = Stock.find_by(
+					if processing_type == 'remove_portion'
+
+						puts "convert_portions_to_stock  processing_type == 'remove_portion' #{portion.ingredient.name}"
+
+						wrapper_stock = Stock.where(
 							ingredient_id: portion.ingredient_id,
-							unit_id: wrapper_stock_diff[:unit_id],
+							unit_id: portion.unit_id,
 							planner_portion_wrapper_id: portion.planner_portion_wrapper_id
 						)
-						if wrapper_stock != nil && wrapper_stock_diff[:amount] > 0
-							wrapper_stock.update_attributes(
-								amount: wrapper_stock_diff[:amount],
-								use_by_date: portion.date,
-								cupboard_id: cupboard_id,
-								always_available: false
-							)
-						elsif wrapper_stock_diff[:amount] > 0
-							wrapper_stock = Stock.create(
+						wrapper_stock.destroy_all
+
+						other_wrapped_stock = Stock.where(
+							ingredient_id: portion.ingredient_id,
+							unit_id: portion.unit_id,
+							planner_shopping_list_portion_id: portion.id
+						)
+						other_wrapped_stock.destroy_all
+
+					elsif processing_type == 'add_portion'
+
+						puts "convert_portions_to_stock  processing_type == 'add_portion' #{portion.ingredient.name}"
+
+						## find diff between portion size and wrapper size
+						## create new stock with this leftover size
+						## add planner_portion_wrapper_id to stock
+						wrapper_stock_diff = serving_difference([portion.planner_portion_wrapper, portion])
+						if wrapper_stock_diff != false
+							create_stock_from_portion(portion, cupboard_id, shopping_list_user)
+
+							wrapper_stock = Stock.find_by(
 								ingredient_id: portion.ingredient_id,
-								amount: wrapper_stock_diff[:amount],
 								unit_id: wrapper_stock_diff[:unit_id],
-								use_by_date: portion.date,
-								cupboard_id: cupboard_id,
-								always_available: false,
 								planner_portion_wrapper_id: portion.planner_portion_wrapper_id
 							)
-							shopping_list_user.stocks << wrapper_stock
-						end
-						if wrapper_stock.present?
-							stock_hidden = processing_type == 'add_portion' ? false : true
-							wrapper_stock.update_attributes(hidden: stock_hidden)
-						end
-					elsif portion.unit_id == portion.planner_portion_wrapper.unit_id && portion.amount < portion.planner_portion_wrapper.amount
-						create_stock_from_portion(portion, cupboard_id, shopping_list_user, nil)
+							if wrapper_stock != nil && wrapper_stock_diff[:amount] > 0
+								wrapper_stock.update_attributes(
+									amount: wrapper_stock_diff[:amount],
+									use_by_date: portion.date,
+									cupboard_id: cupboard_id,
+									always_available: false
+								)
+							elsif wrapper_stock_diff[:amount] > 0
+								wrapper_stock = Stock.create(
+									ingredient_id: portion.ingredient_id,
+									amount: wrapper_stock_diff[:amount],
+									unit_id: wrapper_stock_diff[:unit_id],
+									use_by_date: portion.date,
+									cupboard_id: cupboard_id,
+									always_available: false,
+									planner_portion_wrapper_id: portion.planner_portion_wrapper_id
+								)
+								shopping_list_user.stocks << wrapper_stock
+							end
+							if wrapper_stock.present?
+								stock_hidden = processing_type == 'add_portion' ? false : true
+								wrapper_stock.update_attributes(hidden: stock_hidden)
+							end
+						elsif portion.unit_id == portion.planner_portion_wrapper.unit_id && portion.amount < portion.planner_portion_wrapper.amount
+							create_stock_from_portion(portion, cupboard_id, shopping_list_user, nil)
 
-						planner_wrapper_amount = portion.planner_portion_wrapper.amount - portion.amount
-						create_stock_from_portion(portion.planner_portion_wrapper, cupboard_id, shopping_list_user, planner_wrapper_amount)
-					else
-						create_stock_from_portion(portion.planner_portion_wrapper, cupboard_id, shopping_list_user)
+							planner_wrapper_amount = portion.planner_portion_wrapper.amount - portion.amount
+							create_stock_from_portion(portion.planner_portion_wrapper, cupboard_id, shopping_list_user, planner_wrapper_amount)
+						else
+							create_stock_from_portion(portion.planner_portion_wrapper, cupboard_id, shopping_list_user)
+						end
 					end
 				end
 				if portion.combi_planner_shopping_list_portion != nil && portion.combi_planner_shopping_list_portion.checked != check_type
@@ -286,19 +363,6 @@ module StockHelper
 
 	end
 
-	def user_cupboards(user_id = nil)
-		user = nil
-		if user_id == nil && current_user != nil
-			user = current_user
-		elsif user_id != nil
-			user = User.find(user_id)
-		end
-
-		if user != nil
-			return user.cupboard_users.select{|cu|cu.accepted == true || cu.owner == true}.map{|cu|cu.cupboard}
-		end
-	end
-
 	def user_stock(user_id = nil)
 		user = nil
 		if user_id == nil && current_user != nil
@@ -310,7 +374,7 @@ module StockHelper
 		if user != nil
 			all_stock = []
 
-			cupboards = user_cupboards(user.id)
+			cupboards = user_cupboards(user)
 			cupboards.each do |c|
 				stock = cupboard_stocks_selection_in_date(c)
 				all_stock.push(stock)
@@ -379,7 +443,7 @@ module StockHelper
 			use_by_date_diff: 182
 		},{
 			name: 'frozen peas',
-			use_by_date_diff: '273'
+			use_by_date_diff: 273
 		}]
 	end
 
@@ -449,7 +513,7 @@ module StockHelper
 
 		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 
-		@cupboards = user_cupboards(user_id)
+		@cupboards = user_cupboards(User.find(user_id))
 
 		if (params.has_key?(:id) && @cupboards.map(&:id).include?(cupboard_id_hashids.decode(params[:id]).first))
 			@stock.update_attributes(
@@ -486,7 +550,7 @@ module StockHelper
 		end
 
 		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
-		@cupboards = user_cupboards(user_id)
+		@cupboards = user_cupboards(User.find(user_id))
 
 		cupboard_id = @cupboards.first.id
 		if encoded_cupboard_id != nil && @cupboards.map(&:id).include?(cupboard_id_hashids.decode(encoded_cupboard_id).first)

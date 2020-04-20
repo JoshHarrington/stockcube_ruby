@@ -3,6 +3,7 @@ class PlannerController < ApplicationController
 	include PlannerShoppingListHelper
 	include ServingHelper
 	include UnitsHelper
+	include CupboardHelper
 	def index
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
@@ -11,9 +12,9 @@ class PlannerController < ApplicationController
 		recipe_id_plus_planner_recipe_ids = @recipes.map(&:id) + current_planner_recipe_ids
 		@fav_recipes = current_user.favourites.reject{|f| recipe_id_plus_planner_recipe_ids.include?(f.id) }.first(8)
 
-		if current_user
-			update_planner_shopping_list_portions
-		end
+		# if current_user
+			# update_planner_shopping_list_portions
+		# end
 	end
 
 	def list
@@ -81,9 +82,9 @@ class PlannerController < ApplicationController
 			planner_shopping_list_id: current_user.planner_shopping_list.id
 		)
 
-		if recipe.portions.length > 0
-			add_planner_recipe_to_shopping_list(planner_recipe)
-		end
+		# if recipe.portions.length > 0
+		# 	add_planner_recipe_to_shopping_list(planner_recipe)
+		# end
 
 		update_planner_shopping_list_portions
 
@@ -239,7 +240,7 @@ class PlannerController < ApplicationController
 						end
 					else
 						if p.class.name == "CombiPlannerShoppingListPortion"
-							portion_type = 'individual'
+							portion_type = 'combi'
 							num_assoc_recipes = p.planner_shopping_list_portions.length
 							portion_note = 'Combi portion (' + num_assoc_recipes.to_s + ' recipes)'
 						else
@@ -251,14 +252,26 @@ class PlannerController < ApplicationController
 						"portion_type": portion_type,
 						"portion_note": portion_note,
 						"shopping_list_portion_id": planner_portion_id_hash.encode(p.id),
-						"portion_description": standard_serving_description(p),
+						"portion_description": short_serving_description(p),
 						"recipe_title": p.has_attribute?(:planner_recipe_id) && p.planner_recipe.recipe.present? ? p.planner_recipe.recipe.title.to_s : recipe_title.to_s,
-						"checked": p.checked.to_s,
+						"checked": p.checked,
+						"child_portions": portion_type == "combi" ?
+							p.planner_shopping_list_portions.map{|child_portion| {
+								"portion_description": short_serving_description(child_portion),
+								"recipe_title": child_portion.planner_recipe.recipe.title,
+								"checked": child_portion.checked,
+								"shopping_list_portion_id": planner_portion_id_hash.encode(child_portion.id),
+								"portion_amount": round_if_whole(child_portion.amount),
+								"portion_date": child_portion.date.strftime("%Y-%m-%d"),
+								"fresh_for": (child_portion.date - Date.today).to_i,
+								"min_date": (Date.current - 2.days).strftime("%Y-%m-%d")
+							}} : nil,
 						"num_assoc_recipes": num_assoc_recipes,
 						"ingredient_name": p.ingredient.name,
 						"portion_amount": round_if_whole(p.amount),
 						"portion_unit": p.unit_id,
 						"portion_date": p.date.strftime("%Y-%m-%d"),
+						"fresh_for": (p.date - Date.today).to_i,
 						"min_date": (Date.current - 2.days).strftime("%Y-%m-%d"),
 					}
 				end
