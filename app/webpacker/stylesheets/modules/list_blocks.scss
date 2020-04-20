@@ -865,6 +865,12 @@ a.list_block--item {
 	}
 }
 
+.list_block--item_faded {
+	background-color: $teal-10;
+	color: $black-60;
+	font-size: 1.5em;
+}
+
 .list_block--item--ingredient_note {
 	font-size: em(12, 15);
 	background-color:rgba(255, 255, 255, 0.6);

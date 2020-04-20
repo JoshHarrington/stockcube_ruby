@@ -5,20 +5,27 @@
       <p class="item_form--content_item_note"><%= icomoon('information-outline')%> These are reserved ingredients, that we think you're going to be using in recipes soon</p>
     </div>
     <div class="list_block--collection">
-      <% planner_recipes.select{|pr| planner_stocks(pr.id).length > 0}.each do |p_recipe| %>
+      <% planner_recipes.each do |p_recipe| %>
         <div class="cupboard list_block <%= planner_recipes.length == 1 && 'list_block-wide' %>">
           <div class="list_block--content">
             <div class="list_block--title non_sortable">
-              <h3><%= link_to p_recipe.recipe.title, recipe_path(p_recipe.recipe) %> (<%= p_recipe.date.to_s(:short) %>)</h3>
+              <h3><%= link_to p_recipe.recipe.title, recipe_path(p_recipe.recipe) %> (<%= p_recipe.date.to_s(:short) %>) [<%= recipe_portions_checked_portions(p_recipe)[:recipe_portions_in_stock] %>/<%= recipe_portions_checked_portions(p_recipe)[:recipe_portion_total] %> in stock]</h3>
             </div>
-            <% planner_stocks(p_recipe.id).length > 0 && planner_stocks(p_recipe.id).each do |stock| %>
+            <% planner_stocks(p_recipe).each do |stock| %>
               <% out_of_date_sentence = 'out of date' + (stock.use_by_date > Time.zone.now ? ' in ' : ' ') + (distance_of_time_in_words(Time.zone.now, stock.use_by_date)) + (stock.use_by_date <= Time.zone.now ? ' ago': '') %>
               <%= link_to ((stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? edit_stock_path(stock.id) : ''), class: "list_block--item non_sortable list_block--item_stacked", title: "#{stock.ingredient.name} - #{out_of_date_sentence}" do %>
                 <span class="list_block--item--content list_block--item--content_left">
-                  <p><%= standard_serving_description(stock) %></p>
+                  <p><%= short_serving_description(stock) %></p>
                 </span>
                 <span class="h6 list_block--item--lesser_note"><%= distance_of_time_in_words(Time.zone.now, stock.use_by_date) + (stock.use_by_date <= Time.zone.now ? ' ago': '')%></span>
               <% end %>
+            <% end %>
+            <% needed_stock(p_recipe).each do |stock| %>
+              <span class="list_block--item non_sortable list_block--item_stacked list_block--item_faded" title="Not yet in cupboards">
+                <span class="list_block--item--content list_block--item--content_left">
+                  <p><%= short_serving_description(stock) %></p>
+                </span>
+              </span>
             <% end %>
           </div>
         </div>

@@ -1,4 +1,5 @@
 class PlannerShoppingListPortion < ApplicationRecord
+
   belongs_to :user
   belongs_to :ingredient
 	belongs_to :planner_shopping_list
@@ -9,6 +10,6 @@ class PlannerShoppingListPortion < ApplicationRecord
 
 	belongs_to :unit
 
-  validates :amount, presence: true
+	validates :amount, presence: true
 
 end

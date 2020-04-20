@@ -4,7 +4,7 @@ class Stock < ApplicationRecord
 	belongs_to :unit
 	belongs_to :planner_recipe, optional: true
 	belongs_to :planner_shopping_list_portion, optional: true
-	has_many :stock_users, dependent: :delete_all
+	has_many :stock_users, dependent: :destroy
 	has_many :users, through: :stock_users
 
 	accepts_nested_attributes_for :ingredient,

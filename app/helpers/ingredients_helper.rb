@@ -91,6 +91,9 @@ module IngredientsHelper
 		serving_diff = processed_serving_array.first
 		serving_diff[:amount] = serving_diff_amount
 
+		puts "serving_difference"
+		puts serving_diff
+
 		return serving_diff
 
 	end
@@ -160,5 +163,16 @@ module IngredientsHelper
 
 	end
 
+	def get_ingredient_use_by_date_diff(ing = nil)
+		return 14 if ing == nil
+
+		if ing.default_ingredient_sizes && ing.default_ingredient_sizes.length > 0
+			return ing.default_ingredient_sizes.sort{|a,b| b.use_by_date_diff <=> a.use_by_date_diff}.first.use_by_date_diff
+		elsif ing.use_by_date_diff != 0
+			return ing.use_by_date_diff
+		end
+
+		return 14
+	end
 
 end

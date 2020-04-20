@@ -56,6 +56,9 @@ $bp-shopping-list-mobile: 35rem;
 	ul {
 		padding: 2em 1.2em;
 	}
+	ul ul {
+		padding: 2em 1.2em 0;
+	}
 	.title_block {
     background: $teal-10;
     padding: em(14, 10);

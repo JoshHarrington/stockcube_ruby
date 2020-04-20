@@ -4,6 +4,8 @@ class StocksController < ApplicationController
 	include StockHelper
 	include ServingHelper
 	include ShoppingListsHelper
+	include CupboardHelper
+	include PlannerShoppingListHelper
 	before_action :authenticate_user!, except: [:add_shopping_list_portion, :remove_shopping_list_portion]
 	before_action :correct_user, only: [:edit]
 	def index
@@ -28,7 +30,7 @@ class StocksController < ApplicationController
 
 	def new_no_id
 		@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
-		@cupboards = user_cupboards(current_user.id)
+		@cupboards = user_cupboards(current_user)
 		if @cupboards.length == 0
 			create_cupboard_if_none
 			redirect_to stocks_new_path(:cupboard_id => @cupboard_id_hashids.encode(new_cupboard[:id]))
@@ -46,7 +48,7 @@ class StocksController < ApplicationController
 		if current_user.cupboards.length == 0
 			@cupboard_id = create_cupboard_if_none(true)
 		else
-			@cupboards = user_cupboards(current_user.id)
+			@cupboards = user_cupboards(current_user)
 			if params.has_key?(:cupboard_id) && @cupboards.map(&:id).include?(cupboard_id_hashids.decode(params[:cupboard_id]).first)
 				@cupboard_id = params[:cupboard_id]
 			else
@@ -59,7 +61,7 @@ class StocksController < ApplicationController
 	def custom_new
 		@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 		@stock = Stock.new
-		@cupboards = user_cupboards(current_user.id)
+		@cupboards = user_cupboards(current_user)
 		if @cupboards.length == 0
 			create_cupboard_if_none
 			redirect_to stocks_custom_new_path(:cupboard_id => @cupboard_id_hashids.encode(new_cupboard[:id]))
@@ -77,7 +79,7 @@ class StocksController < ApplicationController
 
 		create_stock(current_user.id, stock_params)
 
-		@cupboards = user_cupboards(current_user.id)
+		@cupboards = user_cupboards(current_user)
 
 		validated_cupboard_ids = validate_cupboard_id(current_user.id, params[:cupboard_id])
 
@@ -92,7 +94,7 @@ class StocksController < ApplicationController
 	def create_custom
 		@stock = create_stock(current_user.id, stock_params)
 
-		@cupboards = user_cupboards(current_user.id)
+		@cupboards = user_cupboards(current_user)
 
 		validated_cupboard_ids = validate_cupboard_id(current_user.id, params[:cupboard_id])
 
@@ -110,7 +112,7 @@ class StocksController < ApplicationController
 		@current_cupboard = @stock.cupboard
 
 		if @stock.planner_recipe_id == nil
-			@cupboards = user_cupboards(current_user.id)
+			@cupboards = user_cupboards(current_user)
 		else
 			@cupboards = []
 		end
@@ -124,11 +126,44 @@ class StocksController < ApplicationController
 	end
 
 	def add_shopping_list_portion
-		toggle_stock_on_portion_check(params, 'add_portion')
+		return unless params.has_key?(:shopping_list_portion_id) && params.has_key?(:portion_type)
+		planner_portion_id = planner_portion_id_hash.decode(params[:shopping_list_portion_id]).first
+		Rails.logger.debug "add_shopping_list_portion #{planner_portion_id}"
+		if params[:portion_type] == "individual_portion"
+			planner_portion = PlannerShoppingListPortion.find(planner_portion_id)
+		elsif params[:portion_type] == "combi_portion"
+			planner_portion = CombiPlannerShoppingListPortion.find(planner_portion_id)
+		end
+
+		planner_portion.update_attributes(
+			checked: true
+		)
+
+		add_stock_after_portion_checked(planner_portion, params[:portion_type])
 	end
 
 	def remove_shopping_list_portion
-		toggle_stock_on_portion_check(params, 'remove_portion')
+
+		return unless params.has_key?(:shopping_list_portion_id) && params.has_key?(:portion_type)
+		planner_portion_id = planner_portion_id_hash.decode(params[:shopping_list_portion_id]).first
+		Rails.logger.debug "add_shopping_list_portion #{planner_portion_id}"
+		if params[:portion_type] == "individual_portion"
+			planner_portion = PlannerShoppingListPortion.find(planner_portion_id)
+		elsif params[:portion_type] == "combi_portion"
+			planner_portion = CombiPlannerShoppingListPortion.find(planner_portion_id)
+		end
+
+		planner_portion.update_attributes(
+			checked: false
+		)
+
+		if planner_portion.combi_planner_shopping_list_portion_id != nil
+			planner_portion.combi_planner_shopping_list_portion.update_attributes(
+				checked: false
+			)
+		end
+
+		remove_stock_after_portion_unchecked(planner_portion, params[:portion_type])
 	end
 
 	def add_shopping_list
@@ -161,19 +196,20 @@ class StocksController < ApplicationController
 	end
 
 	def delete_stock
-		if params.has_key?(:id) && params[:id].to_s != ''
-			delete_stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
-			cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
-			decrypted_stock_id = delete_stock_hashids.decode(params[:id])
-			return unless current_user && current_user.stocks.find(decrypted_stock_id).length > 0
-			stock = current_user.stocks.find(decrypted_stock_id).first
-			cupboard_id = stock.cupboard_id
-			stock.destroy
-			if !params.has_key?(:type) || (params.has_key?(:type) && params[:type].to_s != 'post')
-				redirect_to cupboards_path(anchor: cupboard_id_hashids.encode(cupboard_id))
-			end
+		return unless params.has_key?(:id) && params[:id].to_s != ''
+
+		delete_stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
+		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+		decrypted_stock_id = delete_stock_hashids.decode(params[:id]).first
+		stock = Stock.find(decrypted_stock_id)
+		cupboard_id = stock.cupboard_id
+		stock.destroy
+
+		if !params.has_key?(:type) || (params.has_key?(:type) && params[:type].to_s != 'post')
+			redirect_to cupboards_path(anchor: cupboard_id_hashids.encode(cupboard_id))
 		end
 	end
+
 	def update
 		@stock = Stock.find(params[:id])
 
