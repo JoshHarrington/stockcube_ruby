@@ -139,6 +139,12 @@ class StocksController < ApplicationController
 			checked: true
 		)
 
+		if params[:portion_type] == "combi_portion"
+			planner_portion.planner_shopping_list_portions.update_all(
+				checked: true
+			)
+		end
+
 		add_stock_after_portion_checked(planner_portion, params[:portion_type])
 	end
 
@@ -157,8 +163,14 @@ class StocksController < ApplicationController
 			checked: false
 		)
 
-		if planner_portion.combi_planner_shopping_list_portion_id != nil
-			planner_portion.combi_planner_shopping_list_portion.update_attributes(
+		if params[:portion_type] == "individual_portion"
+			if planner_portion.combi_planner_shopping_list_portion_id != nil
+				planner_portion.combi_planner_shopping_list_portion.update_attributes(
+					checked: false
+				)
+			end
+		elsif params[:portion_type] == "combi_portion"
+			planner_portion.planner_shopping_list_portions.update_all(
 				checked: false
 			)
 		end
