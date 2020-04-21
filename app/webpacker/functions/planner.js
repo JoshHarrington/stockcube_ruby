@@ -159,6 +159,10 @@ const renderShoppingList = (shoppingList, animated = false) => {
 					ChildPortionLi.setAttribute('id', childPortion["shopping_list_portion_id"])
 					ChildPortionLi.classList.add('shopping_list_portion_child','mb-3', 'individual_portion')
 
+					if (childPortion["checked"] === true){
+						ChildPortionLi.classList.add('portion_checked')
+					}
+
 					const ChildPortionRecipeTag = '<h6 class="mb-2 portion_recipe_tag faded">' + childPortion["recipe_title"] + '</h6>'
 					const ChildPortionLiP = '<p class="h3 portion_ingredient_name"><input type="checkbox" id="planner_shopping_list_portions_add_'+ childPortion["shopping_list_portion_id"] + '" class="fancy_checkbox" ' + (childPortion["checked"] === true && 'checked') + '> ' + '<label for="planner_shopping_list_portions_add_'+ childPortion["shopping_list_portion_id"] + '" class="fancy_checkbox_label">' + childPortion["portion_description"] +'</label></p>'
 
