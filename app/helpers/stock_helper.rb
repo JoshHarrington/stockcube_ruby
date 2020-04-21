@@ -160,10 +160,7 @@ module StockHelper
 		elsif portion_type == "individual_portion"
 			create_stock_from_portion(planner_portion)
 			if planner_portion.combi_planner_shopping_list_portion_id != nil
-				# planner_portion.combi_planner_shopping_list_portion.planner_shopping_list_portions.count{|p|p.checked == false}
-				Rails.logger.debug "add_stock_after_portion_checked -- "
-				Rails.logger.debug "combi_planner_shopping_list_portion exists"
-				Rails.logger.debug planner_portion.combi_planner_shopping_list_portion.planner_shopping_list_portions.count{|p|p.checked == false}
+
 				combi_portion = planner_portion.combi_planner_shopping_list_portion
 				if combi_portion.planner_shopping_list_portions.count{|p|p.checked == false} == 0
 					combi_portion.update_attributes(checked: true)
