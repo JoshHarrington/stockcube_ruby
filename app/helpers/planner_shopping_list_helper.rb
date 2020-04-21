@@ -1,6 +1,92 @@
 module PlannerShoppingListHelper
 	include IngredientsHelper
-	def add_planner_recipe_to_shopping_list(planner_recipe = nil)
+
+	# def check_portion_type_and_create_stock(portion = nil, portion_type = nil)
+	# 	return if portion == nil || portion_type == nil
+	# 	if portion_type == "combi"
+	# 		portion.planner_shopping_list_portions.map {|p| create_stock_from_portion(p)}
+	# 	elsif portion_type == "individual"
+	# 		create_stock_from_portion(portion)
+	# 	end
+	# end
+
+	# def create_stock_from_portion(planner_portion = nil)
+	# 	return if planner_portion == nil
+	# 	# stock_from_portion = Stock.find_by(
+	# 	# 	ingredient_id: planner_portion.ingredient_id,
+	# 	# 	unit_id: planner_portion.unit_id,
+	# 	# 	planner_shopping_list_portion_id: nil
+	# 	# )
+
+
+
+	# end
+
+	def sort_all_planner_portions_by_date(planner_shopping_list = nil)
+		## Get all planner portions
+		all_planner_portions = planner_shopping_list.planner_shopping_list_portions
+
+		## sort by date to find portion needed soonest
+		sorted_planner_portions = all_planner_portions.sort_by{|p|p.date}
+	end
+
+	def combine_existing_similar_stock(user = nil)
+		return if user == nil
+		similar_stocks_group = user.stocks.where(planner_shopping_list_portion_id: nil, hidden: false).group_by{|s| [s.ingredient_id, s.unit.unit_type, s.cupboard_id]}
+		matching_stock_hash = similar_stocks_group.select{|(i, ut, c),v| v.length > 1 && ut != nil}
+
+		matching_stock_hash.each do |(ingredient_id, unit_type, cupboard_id), stocks|
+			stock_amount_array = stocks.map{ |s|
+				standardise_amount_with_metric_ratio(s.amount, s.unit.metric_ratio)
+			}
+			use_by_date = stocks.sort_by{|s|s.use_by_date}.first.use_by_date
+
+			new_stock = Stock.create(
+				amount: sum_stock_amounts(stock_amount_array),
+				unit_id: Unit.find_by(metric_ratio: 1, unit_type: unit_type).id,
+				cupboard_id: cupboard_id,
+				hidden: false,
+				always_available: false,
+				use_by_date: use_by_date,
+				ingredient_id: ingredient_id
+			)
+			StockUser.create(
+				stock_id: new_stock.id,
+				user_id: user.id
+			)
+
+			stocks.map{|s| s.destroy}
+		end
+
+	end
+
+	def standardise_amount_with_metric_ratio(amount = nil, metric_ratio = nil)
+		return if amount == nil || metric_ratio == nil
+
+		return amount * metric_ratio
+	end
+
+	def sum_stock_amounts(amounts_array = [])
+		return if amounts_array == [] || amounts_array.length == 0
+		return amounts_array.sum
+	end
+
+	### STEPS
+	## [/] find all portions, order by date
+	## [/] combine all similar stock in the same cupboard
+	## [ ] for each portion, check if similar stock exists
+	## [ ] if similar stock exists - is there enough of it to fill planner portion need
+	## [ ] if yes (whole amount or more), mark planner portion as checked
+	##      and create new stock with whole planner portion amount
+	##      and mark as associated to that planner portion
+	##      remove total amount of planner portion from existing stock
+	## [ ] if yes (partial amount)
+	##			update similar stock with planner portion id and planner recipe id
+	##			add note in shopping list with amount still needed for planner portion
+	##			set percentage filled amount for stock associated to planner portion
+
+
+	def _add_planner_recipe_to_shopping_list(planner_recipe = nil)
 		return if planner_recipe == nil
 		planner_shopping_list = PlannerShoppingList.find_or_create_by(user_id: current_user.id)
 
@@ -131,7 +217,7 @@ module PlannerShoppingListHelper
 
 	end
 
-	def delete_all_planner_portions_and_create_new(planner_shopping_list = nil)
+	def refresh_all_planner_portions(planner_shopping_list = nil)
 		return if planner_shopping_list == nil
 
 		## Loop over all planner recipes
@@ -158,16 +244,13 @@ module PlannerShoppingListHelper
 					date: pr.date + get_ingredient_use_by_date_diff(rp.ingredient)
 				)
 
+				#### TODO - check if stock already exists?
+				####				or can be taken from cupboards
+				####				if yes then setup planner portion with checked state
+
 			end
 		end
 	end
-
-	### TODO --- to maintain check state could have separate table to see what's been checked?
-	###					 -- could instead look at what stock is current in cupboards
-	###							if stock of correct ingredient and unit exist and in high enough quantity
-	###							then portion could be checked and stock reserved for that ingredient
-	### 						eg (planner recipe/portion id added)
-
 
 	def delete_all_combi_planner_portions_and_create_new(planner_shopping_list_id = nil)
 		return if planner_shopping_list_id == nil
@@ -228,7 +311,7 @@ module PlannerShoppingListHelper
 		end
 
 
-		delete_all_planner_portions_and_create_new(planner_shopping_list)
+		refresh_all_planner_portions(planner_shopping_list)
 
 		delete_all_combi_planner_portions_and_create_new(planner_shopping_list.id)
 
