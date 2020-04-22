@@ -42,11 +42,50 @@ module CupboardHelper
 		end
 	end
 	def cupboard_stocks_selection_in_date(cupboard)
-		@stocks = cupboard.stocks.select{|s| s.planner_recipe == nil && s.hidden == false && s.ingredient.name.downcase != 'water' && s.use_by_date > Date.current - 4.day}.sort_by{|s| s.use_by_date}
+		@stocks = cupboard.stocks.select{|s| s.planner_shopping_list_portion_id == nil && s.hidden == false && s.ingredient.name.downcase != 'water' && s.use_by_date > Date.current - 4.day}.sort_by{|s| s.use_by_date}
 		return @stocks
 	end
 	def planner_stocks(planner_recipe)
-		return planner_recipe.stocks.select{|s| s.hidden == false && s.always_available == false && s.use_by_date > Date.current - 4.day}.sort_by{|s| s.use_by_date}
+		stock_from_planner_portions = planner_recipe.planner_shopping_list_portions
+			.map{|p| p.stock}.compact
+			.select{|s|s.hidden == false && s.always_available == false && s.use_by_date > Date.current - 4.day}
+			.sort_by{|s| s.use_by_date}
+		return stock_from_planner_portions
+	end
+
+	def percentage_of_portion_in_stock(stock = nil)
+		return 0 if stock == nil
+
+		portion = stock.planner_shopping_list_portion
+		return 0 if portion == nil
+
+		return 0 if stock.ingredient_id != portion.ingredient_id
+		return 0 if stock.unit.unit_type != portion.unit.unit_type
+
+		if stock.unit.unit_type != nil
+
+			metric_stock_amount = standardise_amount_with_metric_ratio(stock.amount, stock.unit.metric_ratio)
+			metric_portion_amount = standardise_amount_with_metric_ratio(portion.amount, portion.unit.metric_ratio)
+
+			portion_in_stock_percentage = (metric_stock_amount / metric_portion_amount.to_f) * 100
+
+			if portion_in_stock_percentage > 100
+				return 100
+			else
+				return portion_in_stock_percentage.round()
+			end
+		else
+			return 0 if stock.unit_id != portion.unit_id
+
+			portion_in_stock_percentage = (stock.amount / portion.amount.to_f) * 100
+
+			if portion_in_stock_percentage > 100
+				return 100
+			else
+				return portion_in_stock_percentage.round()
+			end
+		end
+
 	end
 
 	def user_cupboards(user = nil)

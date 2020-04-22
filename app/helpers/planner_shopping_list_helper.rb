@@ -1,27 +1,6 @@
 module PlannerShoppingListHelper
 	include IngredientsHelper
 
-	# def check_portion_type_and_create_stock(portion = nil, portion_type = nil)
-	# 	return if portion == nil || portion_type == nil
-	# 	if portion_type == "combi"
-	# 		portion.planner_shopping_list_portions.map {|p| create_stock_from_portion(p)}
-	# 	elsif portion_type == "individual"
-	# 		create_stock_from_portion(portion)
-	# 	end
-	# end
-
-	# def create_stock_from_portion(planner_portion = nil)
-	# 	return if planner_portion == nil
-	# 	# stock_from_portion = Stock.find_by(
-	# 	# 	ingredient_id: planner_portion.ingredient_id,
-	# 	# 	unit_id: planner_portion.unit_id,
-	# 	# 	planner_shopping_list_portion_id: nil
-	# 	# )
-
-
-
-	# end
-
 	def sort_all_planner_portions_by_date(planner_shopping_list = nil)
 		## Get all planner portions
 		all_planner_portions = planner_shopping_list.planner_shopping_list_portions
@@ -32,32 +11,81 @@ module PlannerShoppingListHelper
 
 	def combine_existing_similar_stock(user = nil)
 		return if user == nil
-		similar_stocks_group = user.stocks.where(planner_shopping_list_portion_id: nil, hidden: false).group_by{|s| [s.ingredient_id, s.unit.unit_type, s.cupboard_id]}
-		matching_stock_hash = similar_stocks_group.select{|(i, ut, c),v| v.length > 1 && ut != nil}
 
-		matching_stock_hash.each do |(ingredient_id, unit_type, cupboard_id), stocks|
+		Rails.logger.debug "combine_existing_similar_stock"
+
+		cupboards = user_cupboards(user)
+		cupboard_id = cupboards.first.id
+
+		user_stock = user.stocks.where(cupboard_id: cupboards.map(&:id))
+			.group_by{|s|s.ingredient_id}.select{|i_id, v| v.length > 1 }.values.flatten
+
+		combine_stock_group(user_stock, user)
+
+	end
+
+	def combine_stock_group(stock_group = nil, user = nil)
+		return if stock_group == nil || user == nil
+
+		cupboard_id = user_cupboards(user).first.id
+
+		Rails.logger.debug "combine_stock_group stock_group #{stock_group.map(&:id)}"
+
+		similar_stocks_group_for_metric = stock_group
+			.select{|s|
+				s.unit.unit_type != nil && s.planner_shopping_list_portion_id == nil && s.hidden == false
+			}.group_by{|s| [s.ingredient_id, s.unit.unit_type]}
+		matching_metric_stock_hash = similar_stocks_group_for_metric.select{|(i, ut),v| v.length > 1 }
+
+		matching_metric_stock_hash.each do |(ingredient_id, unit_type), stocks|
 			stock_amount_array = stocks.map{ |s|
 				standardise_amount_with_metric_ratio(s.amount, s.unit.metric_ratio)
 			}
-			use_by_date = stocks.sort_by{|s|s.use_by_date}.first.use_by_date
+			stock_amount = sum_stock_amounts(stock_amount_array)
 
-			new_stock = Stock.create(
-				amount: sum_stock_amounts(stock_amount_array),
-				unit_id: Unit.find_by(metric_ratio: 1, unit_type: unit_type).id,
-				cupboard_id: cupboard_id,
-				hidden: false,
-				always_available: false,
-				use_by_date: use_by_date,
-				ingredient_id: ingredient_id
-			)
-			StockUser.create(
-				stock_id: new_stock.id,
-				user_id: user.id
-			)
+			use_by_date = stocks.sort_by{|s|s.use_by_date}.first.use_by_date
+			unit_id = Unit.find_by(metric_ratio: 1, unit_type: unit_type).id
+
+			new_stock_create(user, stock_amount, unit_id, use_by_date, ingredient_id, cupboard_id)
 
 			stocks.map{|s| s.destroy}
 		end
 
+		similar_stocks_group_for_non_metric = stock_group
+			.select{|s|
+				s.unit.unit_type == nil && s.planner_shopping_list_portion_id == nil && s.hidden == false
+			}.group_by{|s| [s.ingredient_id, s.unit_id]}
+		matching_non_metric_stock_hash = similar_stocks_group_for_non_metric.select{|(i, uid),v| v.length > 1}
+
+		matching_non_metric_stock_hash.each do |(ingredient_id, unit_id), stocks|
+			summed_stock_amount = stocks.map{|s|s.amount}.sum
+			use_by_date = stocks.sort_by{|s|s.use_by_date}.first.use_by_date
+
+			new_stock_create(user, summed_stock_amount, unit_id, use_by_date, ingredient_id, cupboard_id)
+
+			stocks.map{|s| s.destroy}
+		end
+
+	end
+
+	def new_stock_create(user = nil, amount = nil, unit_id = nil, use_by_date = nil, ingredient_id = nil, cupboard_id = nil, portion = nil)
+		return if user == nil || amount == nil || unit_id == nil || use_by_date == nil || ingredient_id == nil || cupboard_id == nil
+
+		new_stock = Stock.create(
+			amount: amount,
+			unit_id: unit_id,
+			cupboard_id: cupboard_id,
+			hidden: false,
+			always_available: false,
+			use_by_date: use_by_date,
+			ingredient_id: ingredient_id,
+			planner_recipe_id: portion ? portion.planner_recipe_id : nil,
+			planner_shopping_list_portion_id: portion ? portion.id : nil
+		)
+		StockUser.create(
+			stock_id: new_stock.id,
+			user_id: user.id
+		)
 	end
 
 	def standardise_amount_with_metric_ratio(amount = nil, metric_ratio = nil)
@@ -71,16 +99,155 @@ module PlannerShoppingListHelper
 		return amounts_array.sum
 	end
 
+	def find_matching_stock_for_portion(portion = nil)
+		return if portion == nil
+
+		Rails.logger.debug "find_matching_stock_for_portion"
+
+		user = portion.user
+		cupboards = user_cupboards(user)
+		user_stock = user.stocks.where(cupboard_id: cupboards.map(&:id))
+
+		## only get stock that isn't associated to a planner portion
+		available_stock = user_stock
+			.select{|s| s.hidden == false && s.planner_shopping_list_portion_id == nil &&
+				s.ingredient_id == portion.ingredient_id}
+
+		Rails.logger.debug "available_stock #{available_stock.map(&:id)}"
+
+		return if available_stock.length == 0
+
+		### check if portion is metric
+		if portion.unit.unit_type != nil
+
+			Rails.logger.debug "portion.unit.unit_type != nil"
+
+			subsection_of_available_metric_stock = available_stock.select{|s|s.unit.unit_type != nil}
+
+			if subsection_of_available_metric_stock.length > 1
+				Rails.logger.debug "subsection_of_available_metric_stock.length > 1"
+
+				combine_stock_group(subsection_of_available_metric_stock, user)
+
+				## if not passing the stock back in at this point then need to run function again
+				## this way there should only be max 1 stock to compare against
+				find_matching_stock_for_portion(portion)
+			elsif subsection_of_available_metric_stock.length == 1
+
+				Rails.logger.debug "subsection_of_available_metric_stock.length == 1"
+
+				comparable_stock = subsection_of_available_metric_stock.first
+
+				metric_stock_amount = standardise_amount_with_metric_ratio(comparable_stock.amount, comparable_stock.unit.metric_ratio)
+				metric_portion_amount = standardise_amount_with_metric_ratio(portion.amount, portion.unit.metric_ratio)
+
+				metric_unit = Unit.find_by(metric_ratio: 1, unit_type: portion.unit.unit_type)
+
+				if metric_stock_amount >= metric_portion_amount
+
+					## create new stock from portion
+					new_stock_create(user, portion.amount, portion.unit_id, comparable_stock.use_by_date, portion.ingredient_id, cupboards.first.id, portion)
+
+					if metric_stock_amount == metric_portion_amount
+						comparable_stock.destroy
+					else
+						## reduce comparable stock amount by proportional amount
+						comparable_stock.update_attributes(
+							planner_shopping_list_portion_id: portion.id,
+							unit_id: metric_unit.id,
+							amount: metric_stock_amount - metric_portion_amount
+						)
+					end
+
+					portion.update_attributes(
+						checked: true
+					)
+
+				else
+
+					Rails.logger.debug "metric_stock_amount < metric_portion_amount"
+
+					stock_amount = comparable_stock.amount / portion.unit.metric_ratio
+
+					comparable_stock.update_attributes(
+						planner_shopping_list_portion_id: portion.id,
+						amount: stock_amount,
+						unit_id: portion.unit_id,
+						planner_recipe_id: portion.planner_recipe_id
+					)
+
+					Rails.logger.debug "comparable_stock #{comparable_stock.id}"
+
+					### could add extra column to planner portion table to record amount in stock
+					### right now just need to do check on what stock associated to planner portion
+					### and report on what percentage of that planner portion amount is in stock
+
+				end
+			end
+
+
+
+		## otherwise portion not metric
+		else
+
+			subsection_of_available_stock_non_metric = available_stock.select{|s|s.unit.unit_type == nil && s.unit_id == portion.unit_id}
+
+			if subsection_of_available_stock_non_metric.length > 1
+				combine_stock_group(subsection_of_available_stock_non_metric, user)
+
+				## if not passing the stock back in at this point then need to run function again
+				## this way there should only be max 1 stock to compare against
+				find_matching_stock_for_portion(portion)
+			elsif subsection_of_available_stock_non_metric.length == 1
+
+				comparable_stock = subsection_of_available_stock_non_metric.first
+
+				stock_amount = comparable_stock.amount
+				portion_amount = portion.amount
+
+				if stock_amount >= portion_amount
+					## create new stock from portion
+					new_stock_create(user, portion.amount, portion.unit_id, comparable_stock.use_by_date, portion.ingredient_id, cupboards.first.id, portion)
+
+					if stock_amount == portion_amount
+						comparable_stock.destroy
+					else
+						## reduce comparable stock amount by proportional amount
+						comparable_stock.update_attributes(
+							amount: stock_amount - portion_amount
+						)
+					end
+
+					portion.update_attributes(
+						checked: true
+					)
+
+				else
+
+					comparable_stock.update_attributes(
+						planner_shopping_list_portion_id: portion.id,
+						planner_recipe_id: portion.planner_recipe_id
+					)
+
+					### could add extra column to planner portion table to record amount in stock
+					### right now just need to do check on what stock associated to planner portion
+					### and report on what percentage of that planner portion amount is in stock
+
+				end
+			end
+		end
+	end
+
 	### STEPS
-	## [/] find all portions, order by date
-	## [/] combine all similar stock in the same cupboard
-	## [ ] for each portion, check if similar stock exists
-	## [ ] if similar stock exists - is there enough of it to fill planner portion need
-	## [ ] if yes (whole amount or more), mark planner portion as checked
+	## [/] find all portions, order by date [sort_all_planner_portions_by_date]
+	## [/] combine all similar stock in the same cupboard [combine_existing_similar_stock]
+	## [/] for each portion, check if similar stock exists [find_matching_stock_for_portion]
+	## [/] if similar stock exists - is there enough of it to fill planner portion need
+	## [/] if yes (whole amount or more), mark planner portion as checked
 	##      and create new stock with whole planner portion amount
 	##      and mark as associated to that planner portion
 	##      remove total amount of planner portion from existing stock
-	## [ ] if yes (partial amount)
+	## [/] if yes (partial amount)
 	##			update similar stock with planner portion id and planner recipe id
 	##			add note in shopping list with amount still needed for planner portion
 	##			set percentage filled amount for stock associated to planner portion
@@ -313,56 +480,16 @@ module PlannerShoppingListHelper
 
 		refresh_all_planner_portions(planner_shopping_list)
 
+		sorted_planner_portions = sort_all_planner_portions_by_date(planner_shopping_list)
+
+		sorted_planner_portions.each do |portion|
+			find_matching_stock_for_portion(portion)
+		end
+
 		delete_all_combi_planner_portions_and_create_new(planner_shopping_list.id)
 
+		combine_existing_similar_stock(current_user)
 
-		# current_user.combi_planner_shopping_list_portions.select{|cp|cp.planner_shopping_list_portions.length == 0 || cp.planner_shopping_list_portions.length == 1 }.destroy_all
-
-
-		# planner_shopping_list_portions = planner_shopping_list.planner_shopping_list_portions.select{|p|p.planner_recipe.date >= Date.current}.sort_by{|p|p.planner_recipe.date}
-		# ingredients_from_planner_shopping_list = planner_shopping_list_portions.map(&:ingredient_id)
-
-		# matching_ingredients = ingredients_from_planner_shopping_list.select{ |e| ingredients_from_planner_shopping_list.count(e) > 1 }.uniq
-		# if matching_ingredients.length > 0
-		# 	matching_ingredients.each do |m_ing|
-		# 		matching_sl_portions = planner_shopping_list_portions.select{|p| p.ingredient_id == m_ing}
-
-		# 		if serving_addition(matching_sl_portions) == false || matching_sl_portions.map(&:checked).uniq.length != 1
-		# 			next
-		# 		end
-		# 		# planner_shopping_list.combi_planner_shopping_list_portions.select{|cp| cp.ingredient_id == m_ing}.map{|cp| cp.destroy}
-
-
-		# 		combi_addition_object = serving_addition(matching_sl_portions)
-		# 		combi_amount = combi_addition_object[:amount]
-		# 		combi_unit_id = combi_addition_object[:unit_id]
-
-		# 		combi_sl_portion = CombiPlannerShoppingListPortion.find_or_create_by(
-		# 			user_id: current_user[:id],
-		# 			planner_shopping_list_id: planner_shopping_list.id,
-		# 			ingredient_id: m_ing
-		# 		)
-
-		# 		CombiPlannerShoppingListPortion.where(
-		# 			user_id: current_user[:id],
-		# 			planner_shopping_list_id: planner_shopping_list.id,
-		# 			ingredient_id: m_ing
-		# 		).where.not(id: combi_sl_portion[:id]).destroy_all
-
-
-		# 		combi_sl_portion.update_attributes(
-		# 			amount: combi_amount,
-		# 			unit_id: combi_unit_id,
-		# 			date: matching_sl_portions.last.date,
-		# 			checked: matching_sl_portions.first.checked
-		# 		)
-
-		# 		PlannerShoppingListPortion.where(id: matching_sl_portions.map(&:id)).update_all(
-		# 			combi_planner_shopping_list_portion_id: combi_sl_portion[:id]
-		# 		)
-
-		# 	end
-		# end
 
 		#### TODO -- figure out how wrapper portions can work alongside developed combi portions
 
