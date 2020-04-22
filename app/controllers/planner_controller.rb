@@ -254,6 +254,7 @@ class PlannerController < ApplicationController
 						"shopping_list_portion_id": planner_portion_id_hash.encode(p.id),
 						"portion_description": short_serving_description(p),
 						"recipe_title": p.has_attribute?(:planner_recipe_id) && p.planner_recipe.recipe.present? ? p.planner_recipe.recipe.title.to_s : recipe_title.to_s,
+						"in_stock": portion_type == "individual" && p.stock && percentage_of_portion_in_stock(p.stock) > 2 && percentage_of_portion_in_stock(p.stock) < 100 ? percentage_of_portion_in_stock(p.stock) : 0,
 						"checked": p.checked,
 						"child_portions": portion_type == "combi" ?
 							p.planner_shopping_list_portions.map{|child_portion| {
@@ -262,6 +263,7 @@ class PlannerController < ApplicationController
 								"checked": child_portion.checked,
 								"shopping_list_portion_id": planner_portion_id_hash.encode(child_portion.id),
 								"portion_amount": round_if_whole(child_portion.amount),
+								"in_stock": child_portion.stock && percentage_of_portion_in_stock(child_portion.stock) > 2 && percentage_of_portion_in_stock(child_portion.stock) < 100 ? percentage_of_portion_in_stock(child_portion.stock) : 0,
 								"portion_date": child_portion.date.strftime("%Y-%m-%d"),
 								"fresh_for": (child_portion.date - Date.today).to_i,
 								"min_date": (Date.current - 2.days).strftime("%Y-%m-%d")

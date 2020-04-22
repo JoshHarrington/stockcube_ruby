@@ -25,7 +25,7 @@ class StocksController < ApplicationController
 		@each_unit_id = Unit.where(name: "Each").first.id
 		@loaf_unit_id = Unit.where(name: "Loaf").first.id 	## need to add (to production)
 		@pint_unit_id = Unit.where(name: "Pint").first.id
-		@gram_unit_id = Unit.where(name: "Gram").first.id
+		@gram_unit_id = Unit.where(name: "gram").first.id
 	end
 
 	def new_no_id
