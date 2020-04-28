@@ -1,5 +1,7 @@
 module PlannerShoppingListHelper
 	include IngredientsHelper
+	include PortionStockHelper
+	include UtilsHelper
 
 	def sort_all_planner_portions_by_date(planner_shopping_list = nil)
 		## Get all planner portions
@@ -9,233 +11,30 @@ module PlannerShoppingListHelper
 		sorted_planner_portions = all_planner_portions.sort_by{|p|p.date}
 	end
 
-	def combine_existing_similar_stock(user = nil)
-		return if user == nil
-
-		Rails.logger.debug "combine_existing_similar_stock"
-
-		cupboards = user_cupboards(user)
-		cupboard_id = cupboards.first.id
-
-		user_stock = user.stocks.where(cupboard_id: cupboards.map(&:id))
-			.group_by{|s|s.ingredient_id}.select{|i_id, v| v.length > 1 }.values.flatten
-
-		combine_stock_group(user_stock, user)
-
-	end
-
-	def combine_stock_group(stock_group = nil, user = nil)
-		return if stock_group == nil || user == nil
-
-		cupboard_id = user_cupboards(user).first.id
-
-		Rails.logger.debug "combine_stock_group stock_group #{stock_group.map(&:id)}"
-
-		similar_stocks_group_for_metric = stock_group
-			.select{|s|
-				s.unit.unit_type != nil && s.planner_shopping_list_portion_id == nil && s.hidden == false
-			}.group_by{|s| [s.ingredient_id, s.unit.unit_type]}
-		matching_metric_stock_hash = similar_stocks_group_for_metric.select{|(i, ut),v| v.length > 1 }
-
-		matching_metric_stock_hash.each do |(ingredient_id, unit_type), stocks|
-			stock_amount_array = stocks.map{ |s|
-				standardise_amount_with_metric_ratio(s.amount, s.unit.metric_ratio)
-			}
-			stock_amount = sum_stock_amounts(stock_amount_array)
-
-			use_by_date = stocks.sort_by{|s|s.use_by_date}.first.use_by_date
-			unit_id = Unit.find_by(metric_ratio: 1, unit_type: unit_type).id
-
-			new_stock_create(user, stock_amount, unit_id, use_by_date, ingredient_id, cupboard_id)
-
-			stocks.map{|s| s.destroy}
-		end
-
-		similar_stocks_group_for_non_metric = stock_group
-			.select{|s|
-				s.unit.unit_type == nil && s.planner_shopping_list_portion_id == nil && s.hidden == false
-			}.group_by{|s| [s.ingredient_id, s.unit_id]}
-		matching_non_metric_stock_hash = similar_stocks_group_for_non_metric.select{|(i, uid),v| v.length > 1}
-
-		matching_non_metric_stock_hash.each do |(ingredient_id, unit_id), stocks|
-			summed_stock_amount = stocks.map{|s|s.amount}.sum
-			use_by_date = stocks.sort_by{|s|s.use_by_date}.first.use_by_date
-
-			new_stock_create(user, summed_stock_amount, unit_id, use_by_date, ingredient_id, cupboard_id)
-
-			stocks.map{|s| s.destroy}
-		end
-
-	end
-
-	def new_stock_create(user = nil, amount = nil, unit_id = nil, use_by_date = nil, ingredient_id = nil, cupboard_id = nil, portion = nil)
-		return if user == nil || amount == nil || unit_id == nil || use_by_date == nil || ingredient_id == nil || cupboard_id == nil
-
-		new_stock = Stock.create(
-			amount: amount,
-			unit_id: unit_id,
-			cupboard_id: cupboard_id,
-			hidden: false,
-			always_available: false,
-			use_by_date: use_by_date,
-			ingredient_id: ingredient_id,
-			planner_recipe_id: portion ? portion.planner_recipe_id : nil,
-			planner_shopping_list_portion_id: portion ? portion.id : nil
-		)
-		StockUser.create(
-			stock_id: new_stock.id,
-			user_id: user.id
-		)
-	end
-
-	def standardise_amount_with_metric_ratio(amount = nil, metric_ratio = nil)
-		return if amount == nil || metric_ratio == nil
-
-		return amount * metric_ratio
-	end
-
 	def sum_stock_amounts(amounts_array = [])
 		return if amounts_array == [] || amounts_array.length == 0
 		return amounts_array.sum
 	end
 
-	def find_matching_stock_for_portion(portion = nil)
-		return if portion == nil
-
-		Rails.logger.debug "find_matching_stock_for_portion"
-
-		user = portion.user
-		cupboards = user_cupboards(user)
-		user_stock = user.stocks.where(cupboard_id: cupboards.map(&:id))
-
-		## only get stock that isn't associated to a planner portion
-		available_stock = user_stock
-			.select{|s| s.hidden == false && s.planner_shopping_list_portion_id == nil &&
-				s.ingredient_id == portion.ingredient_id}
-
-		Rails.logger.debug "available_stock #{available_stock.map(&:id)}"
-
-		return if available_stock.length == 0
-
-		### check if portion is metric
-		if portion.unit.unit_type != nil
-
-			Rails.logger.debug "portion.unit.unit_type != nil"
-
-			subsection_of_available_metric_stock = available_stock.select{|s|s.unit.unit_type != nil}
-
-			if subsection_of_available_metric_stock.length > 1
-				Rails.logger.debug "subsection_of_available_metric_stock.length > 1"
-
-				combine_stock_group(subsection_of_available_metric_stock, user)
-
-				## if not passing the stock back in at this point then need to run function again
-				## this way there should only be max 1 stock to compare against
-				find_matching_stock_for_portion(portion)
-			elsif subsection_of_available_metric_stock.length == 1
-
-				Rails.logger.debug "subsection_of_available_metric_stock.length == 1"
-
-				comparable_stock = subsection_of_available_metric_stock.first
-
-				metric_stock_amount = standardise_amount_with_metric_ratio(comparable_stock.amount, comparable_stock.unit.metric_ratio)
-				metric_portion_amount = standardise_amount_with_metric_ratio(portion.amount, portion.unit.metric_ratio)
-
-				metric_unit = Unit.find_by(metric_ratio: 1, unit_type: portion.unit.unit_type)
-
-				if metric_stock_amount >= metric_portion_amount
-
-					## create new stock from portion
-					new_stock_create(user, portion.amount, portion.unit_id, comparable_stock.use_by_date, portion.ingredient_id, cupboards.first.id, portion)
-
-					if metric_stock_amount == metric_portion_amount
-						comparable_stock.destroy
-					else
-						## reduce comparable stock amount by proportional amount
-						comparable_stock.update_attributes(
-							planner_shopping_list_portion_id: portion.id,
-							unit_id: metric_unit.id,
-							amount: metric_stock_amount - metric_portion_amount
-						)
-					end
-
-					portion.update_attributes(
-						checked: true
-					)
-
-				else
-
-					Rails.logger.debug "metric_stock_amount < metric_portion_amount"
-
-					stock_amount = comparable_stock.amount / portion.unit.metric_ratio
-
-					comparable_stock.update_attributes(
-						planner_shopping_list_portion_id: portion.id,
-						amount: stock_amount,
-						unit_id: portion.unit_id,
-						planner_recipe_id: portion.planner_recipe_id
-					)
-
-					Rails.logger.debug "comparable_stock #{comparable_stock.id}"
-
-					### could add extra column to planner portion table to record amount in stock
-					### right now just need to do check on what stock associated to planner portion
-					### and report on what percentage of that planner portion amount is in stock
-
-				end
-			end
-
-
-
-		## otherwise portion not metric
-		else
-
-			subsection_of_available_stock_non_metric = available_stock.select{|s|s.unit.unit_type == nil && s.unit_id == portion.unit_id}
-
-			if subsection_of_available_stock_non_metric.length > 1
-				combine_stock_group(subsection_of_available_stock_non_metric, user)
-
-				## if not passing the stock back in at this point then need to run function again
-				## this way there should only be max 1 stock to compare against
-				find_matching_stock_for_portion(portion)
-			elsif subsection_of_available_stock_non_metric.length == 1
-
-				comparable_stock = subsection_of_available_stock_non_metric.first
-
-				stock_amount = comparable_stock.amount
-				portion_amount = portion.amount
-
-				if stock_amount >= portion_amount
-					## create new stock from portion
-					new_stock_create(user, portion.amount, portion.unit_id, comparable_stock.use_by_date, portion.ingredient_id, cupboards.first.id, portion)
-
-					if stock_amount == portion_amount
-						comparable_stock.destroy
-					else
-						## reduce comparable stock amount by proportional amount
-						comparable_stock.update_attributes(
-							amount: stock_amount - portion_amount
-						)
-					end
-
-					portion.update_attributes(
-						checked: true
-					)
-
-				else
-
-					comparable_stock.update_attributes(
-						planner_shopping_list_portion_id: portion.id,
-						planner_recipe_id: portion.planner_recipe_id
-					)
-
-					### could add extra column to planner portion table to record amount in stock
-					### right now just need to do check on what stock associated to planner portion
-					### and report on what percentage of that planner portion amount is in stock
-
-				end
-			end
+	def shopping_list_class
+		return unless current_user && current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.day && pr.date < Date.current + 7.day} && !(params[:controller] == 'planner' && params[:action] == 'list')
+		if current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.day && pr.date < Date.current + 7.day}.length > 0 && checked_portions != shopping_list_portions.length
+			return 'shopping_list_open'
 		end
+	end
+
+	def shopping_list_count
+		if total_portions > 0
+			return checked_portions.to_s + '/' + total_portions.to_s
+		else
+			return false
+		end
+	end
+
+	def remove_old_planner_portion(user = nil)
+		return if user == nil
+
+		user.planner_recipes.where('date < ?', Date.current).map{|pr| pr.planner_shopping_list_portions.destroy_all}
 	end
 
 	### STEPS
@@ -440,8 +239,8 @@ module PlannerShoppingListHelper
 				user_id: planner_shopping_list.user_id,
 				planner_shopping_list_id: planner_shopping_list.id,
 				ingredient_id: ing_id,
-				amount: combi_amount ? combi_amount[:amount] : nil,
-				unit_id: combi_amount ? combi_amount[:unit_id] : nil,
+				amount: combi_amount && combi_amount[:amount] ? combi_amount[:amount] : nil,
+				unit_id: combi_amount && combi_amount[:unit_id] ? combi_amount[:unit_id] : nil,
 				date: portion_group.sort_by{|p| p.planner_recipe.date}.first.date,
 				checked: portion_group.count{|p| p.checked == false} > 0 ? false : true
 			)

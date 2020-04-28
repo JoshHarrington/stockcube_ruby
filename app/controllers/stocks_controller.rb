@@ -6,8 +6,12 @@ class StocksController < ApplicationController
 	include ShoppingListsHelper
 	include CupboardHelper
 	include PlannerShoppingListHelper
+
+	include PortionStockHelper
+
 	before_action :authenticate_user!, except: [:add_shopping_list_portion, :remove_shopping_list_portion]
 	before_action :correct_user, only: [:edit]
+
 	def index
 		@stocks = Stock.all
 	end
@@ -83,7 +87,12 @@ class StocksController < ApplicationController
 
 		validated_cupboard_ids = validate_cupboard_id(current_user.id, params[:cupboard_id])
 
-    if @stock.save
+		if @stock.save
+			StockUser.create(
+				stock_id: @stock.id,
+				user_id: current_user.id
+			)
+			combine_existing_similar_stock(current_user)
 			redirect_to stocks_new_path(cupboard_id: validated_cupboard_ids[:encoded])
 		else
 			flash[:danger] = %Q[Something went wrong! Sorry about that]
@@ -98,7 +107,12 @@ class StocksController < ApplicationController
 
 		validated_cupboard_ids = validate_cupboard_id(current_user.id, params[:cupboard_id])
 
-    if @stock != nil
+		if @stock != nil
+			StockUser.create(
+				stock_id: @stock.id,
+				user_id: current_user.id
+			)
+			combine_existing_similar_stock(current_user)
 			redirect_to cupboards_path(anchor: validated_cupboard_ids[:encoded])
 		else
 			flash[:danger] = %Q[Make sure you pick an ingredient, and set a stock amount]
@@ -225,17 +239,40 @@ class StocksController < ApplicationController
 	def update
 		@stock = Stock.find(params[:id])
 
-		if StockUser.where(stock_id: @stock[:id]).length == 0
-			StockUser.create(
-				stock_id: @stock.id,
-				user_id: current_user[:id]
-			)
-		end
+		StockUser.find_or_create_by(
+			stock_id: @stock.id,
+			user_id: current_user[:id]
+		)
 
 		if @stock.update(stock_params)
 			cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
-			redirect_to cupboards_path(anchor: cupboard_id_hashids.encode(@stock.cupboard_id))
+			if @stock.planner_shopping_list_portion_id != nil
+				cupboard_redirect_path = cupboards_path
+				matching_portions = current_user.planner_shopping_list_portions
+					.select{|p|p.ingredient_id == @stock.ingredient_id}
+
+				if matching_portions.length > 0
+					matching_portions.each do |portion|
+						find_matching_stock_for_portion(portion)
+					end
+				end
+
+				if percentage_of_portion_in_stock(@stock) > 95
+					@stock.planner_shopping_list_portion.update_attributes(
+						checked: true
+					)
+				else
+					@stock.planner_shopping_list_portion.update_attributes(
+						checked: false
+					)
+				end
+
+			else
+				cupboard_redirect_path = cupboards_path(anchor: cupboard_id_hashids.encode(@stock.cupboard_id))
+			end
+			redirect_to cupboard_redirect_path
 			update_recipe_stock_matches(@stock[:ingredient_id])
+
 		else
 			flash[:danger] = %Q[Looks like there was a problem, make sure you pick an ingredient, and set a stock amount]
 			redirect_to edit_stock_path(@stock), fallback: cupboards_path

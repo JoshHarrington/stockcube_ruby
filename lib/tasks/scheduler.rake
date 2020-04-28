@@ -16,3 +16,10 @@ task :send_check_email => :environment do
 		end
 	end
 end
+
+task :remove_old_stock_and_portions => :environment do
+	User.all.each do |u|
+		u.remove_out_of_date_stock
+		u.remove_old_planner_portions
+	end
+end

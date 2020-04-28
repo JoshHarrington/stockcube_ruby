@@ -5,6 +5,8 @@ class CupboardsController < ApplicationController
 	include ShoppingListsHelper
 	include CupboardHelper
 
+	include PortionStockHelper
+
 	before_action :correct_user,   only: [:show, :edit, :update]
 	def index
 		@cupboards = user_cupboards(current_user)

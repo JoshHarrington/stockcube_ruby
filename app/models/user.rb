@@ -1,5 +1,6 @@
 include UsersHelper
 include StockHelper
+include PlannerShoppingListHelper
 class User < ApplicationRecord
 
   # Include default devise modules. Others available are:
@@ -38,6 +39,14 @@ class User < ApplicationRecord
 
   def feedback_email(user, issue_details, current_path)
     UserMailer.admin_feedback_notification(user, issue_details, current_path).deliver_now
+  end
+
+  def remove_out_of_date_stock
+    destroy_old_stock(self)
+  end
+
+  def remove_old_planner_portions
+    remove_old_planner_portion(self)
   end
 
   private
