@@ -4,6 +4,9 @@ class PlannerController < ApplicationController
 	include ServingHelper
 	include UnitsHelper
 	include CupboardHelper
+
+	include PortionStockHelper
+
 	def index
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
@@ -252,7 +255,7 @@ class PlannerController < ApplicationController
 						"portion_type": portion_type,
 						"portion_note": portion_note,
 						"shopping_list_portion_id": planner_portion_id_hash.encode(p.id),
-						"portion_description": short_serving_description(p),
+						"portion_description": portion_type == "combi" ? combi_serving_description(p) : short_serving_description(p),
 						"recipe_title": p.has_attribute?(:planner_recipe_id) && p.planner_recipe.recipe.present? ? p.planner_recipe.recipe.title.to_s : recipe_title.to_s,
 						"in_stock": portion_type == "individual" && p.stock && percentage_of_portion_in_stock(p.stock) > 2 && percentage_of_portion_in_stock(p.stock) < 100 ? percentage_of_portion_in_stock(p.stock) : 0,
 						"checked": p.checked,

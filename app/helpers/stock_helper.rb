@@ -1,6 +1,11 @@
 module StockHelper
+	include ApplicationHelper
+
 	include PlannerShoppingListHelper
 	include CupboardHelper
+
+	include PortionStockHelper
+
 	# if updating one or more ingredients (stock addition) - ingredient_id should be defined
 	# if no ingredient_id defined then use all of current users stock to search for matching recipes
 
@@ -122,54 +127,6 @@ module StockHelper
 			num_stock_ingredients: num_stock_ingredients,
 			num_needed_ingredients: num_needed_ingredients
 		)
-	end
-
-	def remove_stock_after_portion_unchecked(planner_portion = nil, portion_type = nil)
-		return if planner_portion == nil || portion_type == nil
-
-		if portion_type == "combi_portion"
-			planner_portion.planner_shopping_list_portions.each do |portion|
-				portion.stock.destroy
-			end
-		elsif portion_type == "individual_portion"
-			planner_portion.stock.destroy
-		end
-	end
-
-	def add_stock_after_portion_checked(planner_portion = nil, portion_type = nil)
-		return if planner_portion == nil || portion_type == nil
-
-		user = planner_portion.user
-
-		if portion_type == "combi_portion"
-			planner_portion.planner_shopping_list_portions.map{|p| p.stock.destroy if p.stock }
-			planner_portion.planner_shopping_list_portions.each do |portion|
-				check_if_planner_stock_exists_before_creating(portion)
-			end
-		elsif portion_type == "individual_portion"
-			check_if_planner_stock_exists_before_creating(planner_portion)
-			if planner_portion.combi_planner_shopping_list_portion_id != nil
-
-				combi_portion = planner_portion.combi_planner_shopping_list_portion
-				if combi_portion.planner_shopping_list_portions.count{|p|p.checked == false} == 0
-					combi_portion.update_attributes(checked: true)
-				end
-			end
-		end
-
-	end
-
-	def check_if_planner_stock_exists_before_creating(portion = nil)
-		return if portion == nil
-		user = portion.user
-
-		if portion.stock != nil
-			## if portion stock exists delete it
-			## simpler than figuring out how much extra stock to create and combining them
-			portion.stock.destroy
-		end
-
-		new_stock_create(user, portion.amount, portion.unit_id, (portion.planner_recipe.date + 2.weeks), portion.ingredient_id, first_cupboard(user).id, portion)
 	end
 
 	def _convert_portions_to_stock(portions, processing_type, user_id = nil)
@@ -477,5 +434,11 @@ module StockHelper
 		return {original: cupboard_id, encoded: validated_encoded_cupboard_id}
 	end
 
+	def destroy_old_stock(user = nil)
+		return if user == nil
+		all_user_stock = user_stock(user.id)
+		out_of_date_stock = all_user_stock.select{|s| s.use_by_date < Date.current - stock_date_limit.days}
+		out_of_date_stock.map{|s| s.destroy}
+	end
 end
 

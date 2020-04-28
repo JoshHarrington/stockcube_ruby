@@ -17,7 +17,7 @@ module UsersHelper
     @onion_id = Ingredient.find_or_create_by(name: "Onion").id
     @cheese_id = Ingredient.find_or_create_by(name: "Cheese (Cheddar)").id
 
-    units_to_check = ["Each", "Loaf", "Pint", "Gram"]
+    units_to_check = ["Each", "Loaf", "Pint", "gram"]
     units_to_check.each do |unit|
       model = Unit.where('lower(name) = ?', name.downcase).first
       model ||= Unit.create(:name => unit)
@@ -31,7 +31,7 @@ module UsersHelper
         @pint_unit_id = model.id
         model.update_attributes(metric_ratio: 568.261, unit_type: "Volume")
       end
-      if unit == "Gram"
+      if unit == "gram"
         @gram_unit_id = model.id
       end
     end

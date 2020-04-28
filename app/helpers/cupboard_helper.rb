@@ -53,41 +53,6 @@ module CupboardHelper
 		return stock_from_planner_portions
 	end
 
-	def percentage_of_portion_in_stock(stock = nil)
-		return 0 if stock == nil
-
-		portion = stock.planner_shopping_list_portion
-		return 0 if portion == nil
-
-		return 0 if stock.ingredient_id != portion.ingredient_id
-		return 0 if stock.unit.unit_type != portion.unit.unit_type
-
-		if stock.unit.unit_type != nil
-
-			metric_stock_amount = standardise_amount_with_metric_ratio(stock.amount, stock.unit.metric_ratio)
-			metric_portion_amount = standardise_amount_with_metric_ratio(portion.amount, portion.unit.metric_ratio)
-
-			portion_in_stock_percentage = (metric_stock_amount / metric_portion_amount.to_f) * 100
-
-			if portion_in_stock_percentage > 100
-				return 100
-			else
-				return portion_in_stock_percentage.round()
-			end
-		else
-			return 0 if stock.unit_id != portion.unit_id
-
-			portion_in_stock_percentage = (stock.amount / portion.amount.to_f) * 100
-
-			if portion_in_stock_percentage > 100
-				return 100
-			else
-				return portion_in_stock_percentage.round()
-			end
-		end
-
-	end
-
 	def user_cupboards(user = nil)
 		return if user == nil
 		return user.cupboard_users.where(accepted: true).select{|cu| cu.cupboard.setup == false && cu.cupboard.hidden == false }.map{|cu| cu.cupboard }.sort_by{|c| c.created_at}.reverse!

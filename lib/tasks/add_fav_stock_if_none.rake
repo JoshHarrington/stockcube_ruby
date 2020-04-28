@@ -14,7 +14,7 @@ namespace :add_fav_stock_if_none do
 				@each_unit_id = Unit.find_or_create_by(name: "Each").id
 				@loaf_unit_id = Unit.find_or_create_by(name: "Loaf").id
 				@pint_unit_id = Unit.find_or_create_by(name: "Pint").id
-				@gram_unit_id = Unit.find_or_create_by(name: "Gram").id
+				@gram_unit_id = Unit.find_or_create_by(name: "gram").id
 
 				UserFavStock.create(
 					ingredient_id: @tomatoe_id,

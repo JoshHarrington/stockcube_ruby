@@ -1,5 +1,4 @@
 module ApplicationHelper
-	include PlannerShoppingListHelper
 	include UnitsHelper
 	def icomoon(name, viewBox='')
 		image_png_name = name.to_s + '.png'
@@ -133,22 +132,23 @@ module ApplicationHelper
 			return '<li>'.html_safe + link_to(link_string, page_path) + '</li>'.html_safe
 		end
 	end
-	def shopping_list_class
-		return unless current_user && current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.day && pr.date < Date.current + 7.day} && !(params[:controller] == 'planner' && params[:action] == 'list')
-		if current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.day && pr.date < Date.current + 7.day}.length > 0 && checked_portions != shopping_list_portions.length
-			return 'shopping_list_open'
-		end
-	end
-
-	def shopping_list_count
-		if total_portions > 0
-			return checked_portions.to_s + '/' + total_portions.to_s
-		else
-			return false
-		end
-	end
 
 	def logged_in?
 		user_signed_in?
+	end
+
+	def stock_date_limit
+		# number of days passed 'use by date' that stock can used for
+		return 4
+	end
+
+	def planner_date_limit
+		# number of days before today that shopping list portions should exist for
+		return 0
+
+		## eg if a planner recipe's portion have not been checked off
+		##		by the time the recipe's date becomes 'yesterday' from current date
+		## 		then those portions will be destroyed and
+		##		any associated stock with be disassociated from that planner recipe
 	end
 end
