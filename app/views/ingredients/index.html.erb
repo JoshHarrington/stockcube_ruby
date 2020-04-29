@@ -20,7 +20,7 @@
                 <ul style="width: 100%;list-style: circle;padding-left: 2em;">
                   <% ingredient.default_ingredient_sizes.each do |size| %>
                     <li>
-                      <p><%= standard_serving_size(size) %></p>
+                      <p><%= short_serving_size(size) %></p>
                     </li>
                   <% end %>
                 </ul>
