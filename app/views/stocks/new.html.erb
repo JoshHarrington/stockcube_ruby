@@ -51,7 +51,7 @@
 										<%= s.hidden_field :ingredient_id, :value => size.ingredient_id %>
 										<%= s.hidden_field :unit_id, :value => size.unit_id %>
 										<%= s.hidden_field :use_by_date, :value => Date.current + ingredient_default_use_by_date_diff.to_i.days, :min => Date.current - 2.days %>
-										<%= s.submit standard_serving_size(size), class: "list_block--collection--action" %>
+										<%= s.submit short_serving_size(size), class: "list_block--collection--action" %>
 									<% end %>
 								</li>
 							<% end %>
