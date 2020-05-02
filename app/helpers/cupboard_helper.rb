@@ -55,10 +55,34 @@ module CupboardHelper
 
 	def user_cupboards(user = nil)
 		return if user == nil
-		return user.cupboard_users.where(accepted: true).select{|cu| cu.cupboard.setup == false && cu.cupboard.hidden == false }.map{|cu| cu.cupboard }.sort_by{|c| c.created_at}.reverse!
+		return user.cupboard_users.where(accepted: true)
+			.select{|cu| cu.cupboard.setup == false && cu.cupboard.hidden == false }
+			.map{|cu| cu.cupboard }.sort_by{|c| c.created_at}.reverse!
 	end
 	def first_cupboard(user = nil)
 		return user_cupboards(user).first
+	end
+
+
+	def user_stock(user = nil)
+		return if user == nil
+
+		cupboards = user_cupboards(user)
+
+		user_stock = user.stocks
+			.where(cupboard_id: cupboards.map(&:id), planner_shopping_list_portion_id: nil, hidden: false)
+			.uniq
+
+		return user_stock
+	end
+
+	def user_stock_multiples(user = nil)
+		return if user == nil
+
+		user_stock_multiples = user_stock(user)
+			.group_by{|s|s.ingredient_id}.select{|i_id, v| v.length > 1 }.values.flatten
+
+		return user_stock_multiples
 	end
 
 	def needed_stock(planner_recipe)

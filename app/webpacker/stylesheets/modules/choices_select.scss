@@ -48,3 +48,8 @@
 .choices__list--dropdown {
 	z-index: 3;
 }
+
+.stocks_controller.edit_page .choices.is-disabled .choices__item::after {
+	content: " (set by recipe portion)";
+	color: $black-40;
+}

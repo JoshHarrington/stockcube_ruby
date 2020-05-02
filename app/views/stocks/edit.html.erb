@@ -1,9 +1,14 @@
 <% provide(:title, "Editing your stock of #{@current_ingredient.name}") %>
 
 <div class="item_form--wrapper">
-	<%= form_for @stock, :html => {id: "stock_form", class: "item_form"}, :validate => true do |s| %>
+	<%= form_for @stock, :html => {id: "stock_form", class: "item_form"} do |s| %>
 		<div class="item_form--title">
-			<h1><%= @current_ingredient.name %></h1>
+			<div style="width:100%">
+				<h1><%= @current_ingredient.name %></h1>
+				<% if @stock.planner_recipe_id != nil && @stock.planner_shopping_list_portion_id != nil %>
+					<p>Reserved for recipe: <%= @stock.planner_recipe.recipe.title %> [<%= @stock.planner_recipe.date.to_s(:short) %>]</p>
+				<% end %>
+			</div>
 			<%= link_to delete_stock_path(@delete_stock_hashids.encode(@stock.id)), class: "list_block--item--action list_block--item--action--btn delete_stock_btn", id: "stock_delete_btn" do %>
 				<%= icomoon('bin') %>
 			<% end %>
@@ -11,11 +16,11 @@
 		<div class="item_form--contents">
 			<div class="item_form--content_row">
 				<%= s.label :amount, 'Amount of stock' %>
-				<%= s.number_field(:amount, value: round_if_whole(@stock.amount) , placeholder: '250', class: "item_form--content_row--half_width_input", validate: true) %>
-				<%= s.select :unit_id, options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }, selected: @stock.unit_id), {}, {class: "choices--basis half_select"} %>
+				<%= s.number_field(:amount, value: round_if_whole(@stock.amount) , placeholder: '250', class: "item_form--content_row--half_width_input", validate: true, min: 0, max: @stock.planner_shopping_list_portion_id != nil ? @stock.planner_shopping_list_portion.amount : undefined, required: true ) %>
+				<%= s.select :unit_id, options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }, selected: @stock.unit_id), {}, {class: "choices--basis half_select", disabled: @stock.planner_shopping_list_portion_id != nil} %>
 			</div>
 			<div class="item_form--content_row">
-				<%= s.label :use_by_date, 'Use by date'  %> <%= s.date_field(:use_by_date, min: Date.current, value: @stock.use_by_date, validate: true) %>
+				<%= s.label :use_by_date, 'Use by date'  %> <%= s.date_field(:use_by_date, min: Date.current, value: @stock.use_by_date, validate: true, required: true) %>
 				<% if @cupboards.length == 1 %>
 					<%= s.hidden_field "cupboard_id", value: @cupboards.last.id.to_s %>
 				<% end %>
