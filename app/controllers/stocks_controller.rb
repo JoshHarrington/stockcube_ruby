@@ -160,6 +160,7 @@ class StocksController < ApplicationController
 		end
 
 		add_stock_after_portion_checked(planner_portion, params[:portion_type])
+		delete_all_combi_planner_portions_and_create_new(planner_portion.planner_shopping_list.id)
 	end
 
 	def remove_shopping_list_portion
@@ -190,6 +191,7 @@ class StocksController < ApplicationController
 		end
 
 		remove_stock_after_portion_unchecked(planner_portion, params[:portion_type])
+		delete_all_combi_planner_portions_and_create_new(planner_portion.planner_shopping_list.id)
 	end
 
 	def add_shopping_list
@@ -270,6 +272,7 @@ class StocksController < ApplicationController
 			else
 				cupboard_redirect_path = cupboards_path(anchor: cupboard_id_hashids.encode(@stock.cupboard_id))
 			end
+			delete_all_combi_planner_portions_and_create_new(current_user.planner_shopping_list.id)
 			redirect_to cupboard_redirect_path
 			update_recipe_stock_matches(@stock[:ingredient_id])
 

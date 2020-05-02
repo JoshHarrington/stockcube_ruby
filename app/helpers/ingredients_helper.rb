@@ -1,12 +1,11 @@
 module IngredientsHelper
 
-	def convert_serving_to_hash(serving)
+	def convert_serving_to_hash(serving = nil)
+		return if serving == nil
 		return serving if serving.class == Hash
 		return {
-			amount: (serving != false && serving != nil && serving.has_attribute?(:amount) ? serving.amount : nil),
-			unit_type: (serving != false && serving != nil && serving.unit && serving.unit.has_attribute?(:unit_type) ? serving.unit.unit_type : nil),
-			unit_id: (serving != false && serving != nil && serving.has_attribute?(:unit_id) ? serving.unit_id : nil),
-			metric_ratio: (serving != false && serving != nil && serving.unit && serving.unit.has_attribute?(:metric_ratio) ? serving.unit.metric_ratio : nil)
+			amount: serving.amount ? serving.amount.to_f : nil,
+			unit: serving.unit
 		}
 	end
 
@@ -15,8 +14,20 @@ module IngredientsHelper
 		return false unless serving_array.length > 1
 		processed_serving_array = []
 		serving_array.map{|i| processed_serving_array.push(convert_serving_to_hash(i))}
-		return false if processed_serving_array.select{|i| i[:unit_type] == nil || i[:unit_id] == nil || i[:metric_ratio] == nil || i[:amount] == nil }.length > 0
+		return false if processed_serving_array.select{|i| i[:unit] == nil || i[:amount] == nil }.length > 0
 		return processed_serving_array
+	end
+
+	def convert_to_different_unit(serving = nil, unit_to_convert_to = nil)
+		return if serving == nil || unit_to_convert_to == nil
+
+		processed_serving = convert_serving_to_hash(serving)
+		return if processed_serving[:unit] == nil || processed_serving[:amount] == nil
+
+		return {
+			amount: processed_serving[:amount] / unit_to_convert_to.metric_ratio,
+			unit: unit_to_convert_to
+		}
 	end
 
 
@@ -25,7 +36,7 @@ module IngredientsHelper
 			serving = convert_serving_to_hash(serving)
 		end
 
-		return serving[:unit_type]
+		return serving[:unit].unit_type
 	end
 
 	def ingredient_metric_check(serving)
@@ -33,7 +44,7 @@ module IngredientsHelper
 			serving = convert_serving_to_hash(serving)
 		end
 
-		return false if serving[:metric_ratio] == nil
+		return false if serving[:unit].metric_ratio == nil
 		return serving
 	end
 
@@ -41,7 +52,7 @@ module IngredientsHelper
 		processed_serving_array = convert_serving_array_to_array_of_hashes(serving_array)
 		return false if processed_serving_array == false
 
-		unit_types = processed_serving_array.map{|i| i[:unit_type]}.uniq
+		unit_types = processed_serving_array.map{|i| i[:unit].unit_type}.uniq
 		return false if unit_types.length > 1
 
 		return unit_types.first
@@ -53,14 +64,16 @@ module IngredientsHelper
 
 		return false if serving == nil
 		processed_serving = convert_serving_to_hash(serving)
-		return false if (processed_serving[:unit_type] == nil || processed_serving[:unit_id] == nil || processed_serving[:amount] == nil || processed_serving[:metric_ratio] == nil)
+		return false if (processed_serving[:unit] == nil || processed_serving[:amount] == nil)
 
-		return {
-			amount: processed_serving[:amount].to_f * processed_serving[:metric_ratio].to_f,
-			metric_ratio: 1,
-			unit_type: processed_serving[:unit_type],
-			unit_id: default_unit_id(processed_serving)
-		}
+		if processed_serving[:unit].unit_type != nil
+			return {
+				amount: processed_serving[:amount].to_f * processed_serving[:unit].metric_ratio.to_f,
+				unit: default_unit(processed_serving)
+			}
+		else
+			return processed_serving
+		end
 
 	end
 
@@ -79,7 +92,7 @@ module IngredientsHelper
 		processed_serving_array = convert_serving_array_to_array_of_hashes(serving_array)
 		return false if processed_serving_array == false
 
-		unit_types = processed_serving_array.map{|i| i[:unit_type]}.uniq
+		unit_types = processed_serving_array.map{|i| i[:unit].unit_type}.uniq
 		return false if unit_types.length > 1
 
 		processed_serving_array = processed_serving_array.map{|s| serving_converter(s)}
@@ -90,9 +103,6 @@ module IngredientsHelper
 
 		serving_diff = processed_serving_array.first
 		serving_diff[:amount] = serving_diff_amount
-
-		puts "serving_difference"
-		puts serving_diff
 
 		return serving_diff
 
@@ -108,28 +118,32 @@ module IngredientsHelper
 		processed_serving_array = convert_serving_array_to_array_of_hashes(serving_array)
 		return false if processed_serving_array == false
 
-		unit_types = processed_serving_array.map{|i| i[:unit_type]}.uniq
+		unit_types = processed_serving_array.map{|i| i[:unit].unit_type}.uniq
 		return false if unit_types.length > 1
 
-		unit_ids = processed_serving_array.map{|i| i[:unit_id]}.uniq
+		unit_ids = processed_serving_array.map{|i| i[:unit]}.uniq
 		if unit_ids.length > 1
 			processed_serving_array = processed_serving_array.map{|s| serving_converter(s)}
 		end
 
 		return {
 			amount: processed_serving_array.select{|s| s.key?(:amount) && s[:amount] != nil}.sum{|s| s[:amount] },
-			unit_type: processed_serving_array.first[:unit_type],
-			metric_ratio: processed_serving_array.first[:metric_ratio],
-			unit_id: processed_serving_array.first[:unit_id]
+			unit: processed_serving_array.first[:unit]
 		}
 
 	end
 
-	def default_unit_id(serving = nil)
+	def default_unit(serving = nil)
 		return unless serving != nil
 		return unless ingredient_metric_check(serving) || get_serving_unit_type(serving)
 
-		return Unit.find_by(unit_type: get_serving_unit_type(serving), metric_ratio: 1).id
+		return Unit.find_by(unit_type: get_serving_unit_type(serving), metric_ratio: 1)
+	end
+
+	def default_unit_id(serving = nil)
+		return unless serving != nil
+
+		return default_unit(serving).id
 
 	end
 

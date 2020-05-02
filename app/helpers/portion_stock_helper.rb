@@ -1,6 +1,8 @@
 module PortionStockHelper
 	include UtilsHelper
 	include ApplicationHelper
+	include CupboardHelper
+	include IngredientsHelper
 
 	def combine_stock_group(stock_group = nil, user = nil)
 		return if stock_group == nil || user == nil
@@ -9,7 +11,7 @@ module PortionStockHelper
 
 		Rails.logger.debug "combine_stock_group stock_group #{stock_group.map(&:id)}"
 
-		similar_stocks_group_for_metric = stock_group
+		similar_stocks_group_for_metric = stock_group.uniq
 			.select{|s|
 				s.unit.unit_type != nil && s.planner_shopping_list_portion_id == nil && s.hidden == false
 			}.group_by{|s| [s.ingredient_id, s.unit.unit_type]}
@@ -53,17 +55,8 @@ module PortionStockHelper
 	def combine_existing_similar_stock(user = nil)
 		return if user == nil
 
-		Rails.logger.debug "combine_existing_similar_stock"
-
-		cupboards = user_cupboards(user)
-		cupboard_id = cupboards.first.id
-
-		user_stock = user.stocks.where(cupboard_id: cupboards.map(&:id))
-			.group_by{|s|s.ingredient_id}.select{|i_id, v| v.length > 1 }.values.flatten.uniq
-
-		Rails.logger.debug "user_stock #{user_stock.map(&:id)}"
-		combine_stock_group(user_stock, user)
-
+		user_stock_multiples = user_stock_multiples(user)
+		combine_stock_group(user_stock_multiples, user)
   end
 
 
@@ -179,13 +172,10 @@ module PortionStockHelper
 		Rails.logger.debug "find_matching_stock_for_portion"
 
 		user = portion.user
-		cupboards = user_cupboards(user)
-		user_stock = user.stocks.where(cupboard_id: cupboards.map(&:id))
+		user_stock = user_stock(user)
 
-		## only get stock that isn't associated to a planner portion
 		available_stock = user_stock
-			.select{|s| s.hidden == false && s.planner_shopping_list_portion_id == nil &&
-				s.ingredient_id == portion.ingredient_id}
+			.select{|s|	s.ingredient_id == portion.ingredient_id}
 
 		Rails.logger.debug "available_stock #{available_stock.map(&:id)}"
 
@@ -310,6 +300,102 @@ module PortionStockHelper
 				end
 			end
 		end
+	end
+
+	def combine_grouped_servings(serving_array = [], find_stock_needed_bool = true)
+		return if serving_array == [] || serving_array.length == 0
+
+		portion_group_with_stock_diff = []
+		serving_array.each do |planner_portion|
+			return nil if planner_portion.class != PlannerShoppingListPortion
+			converted_planner_portion = serving_converter(planner_portion)
+
+			if find_stock_needed_bool && planner_portion.stock != nil
+				converted_planner_portion_stock = serving_converter(planner_portion.stock)
+
+				Rails.logger.debug "combine_grouped_servings"
+				Rails.logger.debug "planner_portion"
+				Rails.logger.debug planner_portion
+
+				Rails.logger.debug "converted_planner_portion"
+				Rails.logger.debug converted_planner_portion
+
+				Rails.logger.debug "converted_planner_portion_stock"
+				Rails.logger.debug converted_planner_portion_stock
+
+				portion_stock_diff = serving_difference([converted_planner_portion, converted_planner_portion_stock])
+
+				if portion_stock_diff != false
+					portion_group_with_stock_diff.push(portion_stock_diff)
+				else
+					### planner portion - stock didn't work, so add planner portion anyway
+					portion_group_with_stock_diff.push(serving_converter(planner_portion))
+				end
+			else
+
+				Rails.logger.debug "planner_portion.stock == nil"
+				Rails.logger.debug "planner_portion id"
+				Rails.logger.debug planner_portion.id
+
+				converted_serving = serving_converter(planner_portion)
+
+				Rails.logger.debug "converted_serving"
+				Rails.logger.debug converted_serving
+				if converted_serving != false
+					portion_group_with_stock_diff.push(converted_serving)
+				end
+			end
+		end
+
+
+		combi_portions_added = serving_addition(portion_group_with_stock_diff)
+
+
+		combi_amount = combi_portions_added && combi_portions_added[:unit].unit_type != nil ? convert_to_different_unit(combi_portions_added, serving_array.first.unit) : combi_portions_added
+		return combi_amount
+	end
+
+	def list_grouped_stock(serving_list = [], find_stock_needed_bool = true)
+		return if serving_list == [] || serving_list.length == 0
+		if serving_list.group_by{|s|s.ingredient_id}.length > 1
+			Rails.logger.debug "multiple ingredient types passed in"
+			raise "Multiple ingredients passed in, should only be one type"
+
+			return nil
+		end
+
+		ingredient_list_group = []
+
+		serving_list.select{|s|s.unit.unit_type != nil}.group_by{|s|s.unit.unit_type}.each do |u_type, s|
+			ingredient_list_group.push(s)
+		end
+
+		serving_list.select{|s|s.unit.unit_type == nil}.group_by{|s|s.unit_id}.each do |u_id, s|
+			Rails.logger.debug "list_grouped_stock s.unit.unit_type == nil"
+			Rails.logger.debug s
+			ingredient_list_group.push(s)
+		end
+
+		list_grouped_stock = []
+		ingredient_list_group.each do |portion_group|
+			combined_similar_portions_minus_stock = combine_grouped_servings(portion_group, find_stock_needed_bool)
+
+			combined_similar_portions_minus_stock_amount = combined_similar_portions_minus_stock[:amount]
+			combined_similar_portions_minus_stock[:amount] = ("%.3g" % combined_similar_portions_minus_stock_amount).to_f
+
+			Rails.logger.debug "portion_group"
+			Rails.logger.debug portion_group
+
+			Rails.logger.debug "combined_similar_portions_minus_stock"
+			Rails.logger.debug combined_similar_portions_minus_stock
+
+			if combined_similar_portions_minus_stock != nil
+				list_grouped_stock.push(combined_similar_portions_minus_stock)
+			end
+		end
+
+		return list_grouped_stock
+
 	end
 
 end

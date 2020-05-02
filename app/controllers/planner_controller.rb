@@ -255,13 +255,16 @@ class PlannerController < ApplicationController
 						"portion_type": portion_type,
 						"portion_note": portion_note,
 						"shopping_list_portion_id": planner_portion_id_hash.encode(p.id),
-						"portion_description": portion_type == "combi" ? combi_serving_description(p) : short_serving_description(p),
+						"portion_description": stock_needed_serving_description(p),
+						"portion_size": short_serving_size(p),
 						"recipe_title": p.has_attribute?(:planner_recipe_id) && p.planner_recipe.recipe.present? ? p.planner_recipe.recipe.title.to_s : recipe_title.to_s,
 						"in_stock": portion_type == "individual" && p.stock && percentage_of_portion_in_stock(p.stock) > 2 && percentage_of_portion_in_stock(p.stock) < 100 ? percentage_of_portion_in_stock(p.stock) : 0,
 						"checked": p.checked,
+						"show_child_portions?": portion_type == "combi" ? ((p.unit_id == nil && p.amount == nil) || (p.checked != true && p.planner_shopping_list_portions.count{|cp|cp.checked} == 0 && p.planner_shopping_list_portions.count{|cp|cp.stock != nil && percentage_of_portion_in_stock(cp.stock) <= 2} == 0 ) ? true : false ) : false,
 						"child_portions": portion_type == "combi" ?
 							p.planner_shopping_list_portions.map{|child_portion| {
-								"portion_description": short_serving_description(child_portion),
+								"portion_description": stock_needed_serving_description(child_portion),
+								"portion_size": short_serving_size(child_portion),
 								"recipe_title": child_portion.planner_recipe.recipe.title,
 								"checked": child_portion.checked,
 								"shopping_list_portion_id": planner_portion_id_hash.encode(child_portion.id),

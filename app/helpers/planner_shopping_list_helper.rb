@@ -1,5 +1,4 @@
 module PlannerShoppingListHelper
-	include IngredientsHelper
 	include PortionStockHelper
 	include UtilsHelper
 
@@ -37,123 +36,7 @@ module PlannerShoppingListHelper
 		user.planner_recipes.where('date < ?', Date.current).map{|pr| pr.planner_shopping_list_portions.destroy_all}
 	end
 
-	### STEPS
-	## [/] find all portions, order by date [sort_all_planner_portions_by_date]
-	## [/] combine all similar stock in the same cupboard [combine_existing_similar_stock]
-	## [/] for each portion, check if similar stock exists [find_matching_stock_for_portion]
-	## [/] if similar stock exists - is there enough of it to fill planner portion need
-	## [/] if yes (whole amount or more), mark planner portion as checked
-	##      and create new stock with whole planner portion amount
-	##      and mark as associated to that planner portion
-	##      remove total amount of planner portion from existing stock
-	## [/] if yes (partial amount)
-	##			update similar stock with planner portion id and planner recipe id
-	##			add note in shopping list with amount still needed for planner portion
-	##			set percentage filled amount for stock associated to planner portion
-
-
-	def _add_planner_recipe_to_shopping_list(planner_recipe = nil)
-		return if planner_recipe == nil
-		planner_shopping_list = PlannerShoppingList.find_or_create_by(user_id: current_user.id)
-
-		recipe_portions = planner_recipe.recipe.portions.reject{|p| p.ingredient.name.downcase == 'water'}
-		puts "recipe_portions" + recipe_portions.to_s
-		ingredients_from_recipe_portions = recipe_portions.map(&:ingredient_id)
-
-		cupboards = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact.sort_by{|c| c.created_at}.reverse!
-		stock = cupboards.map{|c| c.stocks.select{|s| s.use_by_date > Date.current - 4.days && s.ingredient.name.downcase != 'water' && s.planner_recipe_id == nil && s.hidden == false }}.flatten.compact
-		ingredients_from_stock = stock.map(&:ingredient_id)
-
-		uncommon_ingredients = ingredients_from_recipe_portions - ingredients_from_stock
-
-		if ingredients_from_recipe_portions && ingredients_from_stock.length > 0
-			common_ingredients = ingredients_from_recipe_portions & ingredients_from_stock
-
-			common_ingredients.each do |ing|
-				## find the highest amount of stock ?
-				stock_from_ing = stock.select{|s| s.ingredient_id == ing}.first
-
-				portions_from_ing = recipe_portions.select{|p| p.ingredient_id == ing}
-
-				portions_sum_from_ing = {}
-				if portions_from_ing.length == 0
-					next
-				else
-					portions_sum_from_ing = serving_addition(portions_from_ing)
-				end
-
-				puts "portions_sum_from_ing"
-				puts portions_sum_from_ing
-
-				serving_diff = serving_difference([stock_from_ing, portions_sum_from_ing])
-
-				use_by_date_diff = get_ingredient_use_by_date_diff(Ingredient.find(ing))
-
-				if serving_diff != false
-					serving_diff_amount = serving_diff[:amount]
-					if serving_diff_amount <= 0
-						stock_from_ing.update_attributes(
-							planner_recipe_id: planner_recipe.id
-						)
-						## original stock updated
-						if serving_diff_amount < 0
-							## when amount < 0 new stock is needed so shopping list portion should be created at the same time
-							PlannerShoppingListPortion.create(
-								user_id: current_user.id,
-								planner_recipe_id: planner_recipe.id,
-								ingredient_id: ing,
-								unit_id: serving_diff[:unit_id],
-								amount: -(serving_diff_amount),
-								planner_shopping_list_id: planner_shopping_list.id,
-								date: planner_recipe.date + use_by_date_diff.days
-							)
-						end
-					elsif serving_diff_amount > 0
-						recipe_stock = Stock.create(
-							ingredient_id: ing,
-							amount: serving_converter(portions_sum_from_ing)[:amount],
-							planner_recipe_id: planner_recipe.id,
-							unit_id: serving_diff[:unit_id],
-							use_by_date: stock_from_ing.use_by_date,
-							cupboard_id: stock_from_ing.cupboard_id,
-							hidden: false,
-							always_available: false
-						)
-						current_user.stocks << recipe_stock
-						serving_hash = {
-							metric_ratio: stock_from_ing.unit.metric_ratio,
-							unit_type: stock_from_ing.unit.unit_type,
-							amount: serving_diff_amount
-						}
-
-						stock_from_ing.update_attributes(
-							unit_id: serving_diff[:unit_id],
-							amount: serving_diff_amount
-						)
-					end
-				else
-					uncommon_ingredients.push(ing)
-				end
-			end
-		end
-
-		uncommon_ingredients.each do |uc_ing|
-			recipe_portions.select{|p| p.ingredient_id == uc_ing}.each do |portion|
-				PlannerShoppingListPortion.create(
-					user_id: current_user.id,
-					planner_recipe_id: planner_recipe.id,
-					ingredient_id: portion.ingredient_id,
-					unit_id: portion.unit_id,
-					amount: portion.amount,
-					planner_shopping_list_id: planner_shopping_list.id,
-					date: planner_recipe.date + 2.weeks
-				)
-			end
-		end
-
-	end
-
-	def setup_wrapper_portions(portion = nil, amount = nil, unit_id = nil, current_user = nil, planner_shopping_list_id = nil)
+	def _setup_wrapper_portions(portion = nil, amount = nil, unit_id = nil, current_user = nil, planner_shopping_list_id = nil)
 		return if portion == nil || amount == nil || unit_id == nil || user_signed_in? == false || planner_shopping_list_id == nil
 
 		wrapper_portion = PlannerPortionWrapper.find_or_create_by(
@@ -232,15 +115,18 @@ module PlannerShoppingListHelper
 		## Find all planner portions with same ingredient
 		planner_shopping_list.planner_shopping_list_portions.group_by{|p| p.ingredient_id}.select{|k,v| v.length > 1}.each do |ing_id, portion_group|
 
-			Rails.logger.debug "portion_group #{portion_group}"
 
-			combi_amount = serving_addition(portion_group)
+			combi_amount = combine_grouped_servings(portion_group, true)
+
+			Rails.logger.debug "combi_amount"
+			Rails.logger.debug combi_amount
+
 			combi_portion = CombiPlannerShoppingListPortion.create(
 				user_id: planner_shopping_list.user_id,
 				planner_shopping_list_id: planner_shopping_list.id,
 				ingredient_id: ing_id,
-				amount: combi_amount && combi_amount[:amount] ? combi_amount[:amount] : nil,
-				unit_id: combi_amount && combi_amount[:unit_id] ? combi_amount[:unit_id] : nil,
+				amount: combi_amount != nil && combi_amount != false && combi_amount.has_key?(:amount) ? combi_amount[:amount] : nil,
+				unit_id: combi_amount != nil && combi_amount != false && combi_amount.has_key?(:unit) ? combi_amount[:unit].id : nil,
 				date: portion_group.sort_by{|p| p.planner_recipe.date}.first.date,
 				checked: portion_group.count{|p| p.checked == false} > 0 ? false : true
 			)
@@ -252,16 +138,6 @@ module PlannerShoppingListHelper
 			end
 
 		end
-
-			### TODO --- instead of always trying to figure out what to items added together is for combi portion
-			### 			   could just show those two amounts grouped eg Carrots [100g + 2 small]
-			### 				 if combi portion amount is nil, output individual portion amount instead?
-			###			 --- Render combi portion as wrapper/parent to other portions
-			###					 - if combi portion amount is known then show it and hide other portions,
-			###					 other portions can be shown and checked individually
-			###							if combi portion is checked - both other portions are checked also
-			###					 - if combi portion not know, still wrapped with combi portion,
-			### 					but expanded to show other portion amounts
 
 	end
 
@@ -329,7 +205,7 @@ module PlannerShoppingListHelper
 			if serving_addition(stock_group)
 				stock_addition_hash = serving_addition(stock_group)
 				stock_amount = stock_addition_hash[:amount]
-				stock_unit_id = stock_addition_hash[:unit_id]
+				stock_unit_id = stock_addition_hash[:unit].id
 				stock_partner.update_attributes(
 					amount: stock_amount,
 					unit_id: stock_unit_id
@@ -448,14 +324,6 @@ module PlannerShoppingListHelper
 
 	def current_planner_recipe_ids
 		return [] if user_signed_in? == false
-		# if session.has_key?(:current_planner_recipe_ids)
-		# 	Rails.logger.debug "session[:current_planner_recipe_ids] - "
-		# 	Rails.logger.debug session[:current_planner_recipe_ids]
-		# 	return session[:current_planner_recipe_ids]
-		# else
-		# 	update_current_planner_recipe_ids
-		# 	current_planner_recipe_ids
-		# end
 		return current_user.planner_recipes.where(date: Date.current..Date.current+7.days).map(&:recipe_id)
 	end
 

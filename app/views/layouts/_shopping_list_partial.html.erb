@@ -55,7 +55,7 @@
 					<p class="h3 portion_ingredient_name">
 						<%= check_box_tag "planner_shopping_list_portions_add[#{planner_portion_id_hash.encode(portion.id)}]", "planner_shopping_list_portions_add", portion.checked, class: "fancy_checkbox" %>
 						<%= label_tag "planner_shopping_list_portions_add[#{planner_portion_id_hash.encode(portion.id)}]", class: "fancy_checkbox_label" do %>
-							<%= short_serving_description(portion) %>
+							<%= serving_description(portion) %>
 						<% end %>
 					</p>
 					<div class="shopping_list_portion-size_row">

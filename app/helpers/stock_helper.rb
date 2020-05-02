@@ -188,7 +188,7 @@ module StockHelper
 
 							wrapper_stock = Stock.find_by(
 								ingredient_id: portion.ingredient_id,
-								unit_id: wrapper_stock_diff[:unit_id],
+								unit_id: wrapper_stock_diff[:unit].id,
 								planner_portion_wrapper_id: portion.planner_portion_wrapper_id
 							)
 							if wrapper_stock != nil && wrapper_stock_diff[:amount] > 0
@@ -202,7 +202,7 @@ module StockHelper
 								wrapper_stock = Stock.create(
 									ingredient_id: portion.ingredient_id,
 									amount: wrapper_stock_diff[:amount],
-									unit_id: wrapper_stock_diff[:unit_id],
+									unit_id: wrapper_stock_diff[:unit].id,
 									use_by_date: portion.date,
 									cupboard_id: cupboard_id,
 									always_available: false,
@@ -236,27 +236,6 @@ module StockHelper
 
 	end
 
-	def user_stock(user_id = nil)
-		user = nil
-		if user_id == nil && current_user != nil
-			user = current_user
-		elsif user_id != nil
-			user = User.find(user_id)
-		end
-
-		if user != nil
-			all_stock = []
-
-			cupboards = user_cupboards(user)
-			cupboards.each do |c|
-				stock = cupboard_stocks_selection_in_date(c)
-				all_stock.push(stock)
-			end
-
-			return all_stock.flatten.compact
-		end
-	end
-
 	def user_unique_ingredients(user_id = nil)
 		user = nil
 		if user_id == nil && current_user != nil
@@ -266,7 +245,7 @@ module StockHelper
 		end
 
 		if user != nil
-			stock = user_stock(user.id)
+			stock = user_stock(user)
 			return stock.map{|s|s.ingredient}.uniq
 		end
 	end
@@ -408,7 +387,7 @@ module StockHelper
 				stock_id: @stock.id,
 				user_id: current_user[:id]
 			)
-			flash[:notice] = %Q[Just added #{short_serving_description(@stock)} to <a href="#{cupboards_path}">your cupboards</a>]
+			flash[:notice] = %Q[Just added #{serving_description(@stock)} to <a href="#{cupboards_path}">your cupboards</a>]
 			return @stock
 		else
 			return nil
@@ -436,7 +415,7 @@ module StockHelper
 
 	def destroy_old_stock(user = nil)
 		return if user == nil
-		all_user_stock = user_stock(user.id)
+		all_user_stock = user_stock(user)
 		out_of_date_stock = all_user_stock.select{|s| s.use_by_date < Date.current - stock_date_limit.days}
 		out_of_date_stock.map{|s| s.destroy}
 	end

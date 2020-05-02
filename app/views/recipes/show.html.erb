@@ -160,7 +160,7 @@
                   ingredient_in_stock = true
                 end
               %>
-            <li <%= ingredient_in_stock ? 'class="in_stock"' : '' %>><%= short_serving_description(portion) %></li>
+            <li <%= ingredient_in_stock ? 'class="in_stock"' : '' %>><%= serving_description(portion) %></li>
           <% end %>
         </ul>
       <% else %>

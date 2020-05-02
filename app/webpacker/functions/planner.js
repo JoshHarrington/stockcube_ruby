@@ -154,12 +154,14 @@ const renderShoppingList = (shoppingList, animated = false) => {
 			if (portion["in_stock"] !== 0){
 				InStockNote = `<span style="width: 100%;
 				font-size: 1.1rem;
-				color: #656565;">${portion["in_stock"]}% already in stock</span>`
+				color: #656565;">${portion["portion_size"]} already in stock</span>`
 			}
 			const RecipePortionLiP = '<p class="h3 portion_ingredient_name"><input type="checkbox" id="planner_shopping_list_portions_add_'+ portion["shopping_list_portion_id"] + '" class="fancy_checkbox" ' + (portion["checked"] === true && 'checked') + '> ' + '<label for="planner_shopping_list_portions_add_'+ portion["shopping_list_portion_id"] + '" class="fancy_checkbox_label" style="flex-wrap:wrap"><span>' + portion["portion_description"] + '</span>' + InStockNote +'</label></p>'
 
 			const ChildPortionsUl = document.createElement('ul')
-			if (portion["portion_type"] == "combi" && portion["child_portions"] !== null) {
+			if (portion["portion_type"] == "combi" &&
+					portion["child_portions"] !== null &&
+					portion["show_child_portions?"] === true) {
 
 				portion["child_portions"].forEach((childPortion) => {
 					const ChildPortionLi = document.createElement('li')
@@ -177,7 +179,7 @@ const renderShoppingList = (shoppingList, animated = false) => {
 					if (childPortion["in_stock"] !== 0){
 						ChildInStockNote = `<span style="width: 100%;
 						font-size: 1.1rem;
-						color: #656565;">${childPortion["in_stock"]}% already in stock</span>`
+						color: #656565;">${childPortion["portion_size"]} already in stock</span>`
 					}
 					const ChildPortionLiP = '<p class="h3 portion_ingredient_name"><input type="checkbox" id="planner_shopping_list_portions_add_'+ childPortion["shopping_list_portion_id"] + '" class="fancy_checkbox" ' + (childPortion["checked"] === true && 'checked') + '> ' + '<label for="planner_shopping_list_portions_add_'+ childPortion["shopping_list_portion_id"] + '" class="fancy_checkbox_label" style="flex-wrap:wrap"><span>' + childPortion["portion_description"]+ '</span>' + ChildInStockNote +'</label></p>'
 

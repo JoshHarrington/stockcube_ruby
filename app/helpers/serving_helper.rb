@@ -3,6 +3,7 @@ module ServingHelper
 	include CupboardHelper
 
 	include PortionStockHelper
+	include IngredientsHelper
 
 	def serving_unit_convert(amount = nil, unit = nil)
 		return if amount == nil || unit == nil
@@ -33,131 +34,209 @@ module ServingHelper
 		end
 	end
 
-	def standard_serving_description(serving)
+	def short_serving_size(serving = nil)
+		return if serving == nil
 
-		updated_serving = serving_unit_convert(serving.amount, serving.unit)
-
-		unit_name = updated_serving != nil ? updated_serving[:unit][:name] : nil
-		amount = updated_serving != nil ? updated_serving[:amount] : nil
-
-		if unit_name != nil && amount != nil
-
-			if unit_name.downcase == 'each'
-				return amount.to_s + ' ' + (serving.ingredient.name.to_s).pluralize(amount)
-			elsif unit_name.downcase == 'small' || unit_name.downcase == 'medium' || unit_name.downcase == 'large'
-				return amount.to_s + ' ' + unit_name + ' ' + (serving.ingredient.name.to_s).pluralize(amount)
-			else
-				return amount.to_s + ' ' + (unit_name).pluralize(amount) + ' ' + serving.ingredient.name.to_s
-			end
+		if serving.class == Hash
+			unit = serving.has_key?(:unit) ? serving[:unit] : nil
+			serving_amount = serving[:amount]
 		else
-			return "standard_serving_description no unit_name && no amount"
+			unit = serving.unit
+			serving_amount = serving.amount
+		end
+
+		stock = nil
+		if serving.class == PlannerShoppingListPortion
+			if serving.class == Hash
+				stock = serving[:stock]
+			else
+				stock = serving.stock
+			end
+		end
+
+		serving_numeric_string = ''
+		if stock != nil && percentage_of_portion_in_stock(stock) < 95
+			serving_numeric_string = round_if_whole(stock.amount).to_s + ' of ' + round_if_whole(serving_amount).to_s
+		else
+			serving_numeric_string = round_if_whole(serving_amount).to_s
+		end
+
+		unit_name = unit ? unit.name : nil
+		unit_short_name = unit && unit.short_name ? unit.short_name : nil
+
+		if unit != nil
+			if unit_name.downcase == 'each'
+				return serving_numeric_string
+			elsif unit_name.downcase == 'small' || unit_name.downcase == 'medium' || unit_name.downcase == 'large'
+				return serving_numeric_string + ' ' + unit_name
+			else
+				return serving_numeric_string + (unit_short_name != nil ? unit_short_name : unit_name).pluralize(serving_amount)
+			end
 		end
 	end
 
-	def short_serving_description(serving, portion = nil)
-		updated_serving = serving_unit_convert(serving.amount, serving.unit)
+	def serving_description(serving = nil)
+		return if serving == nil
 
-		unit_short_name = updated_serving != nil ? updated_serving[:unit][:short_name] : nil
-		amount = updated_serving != nil ? updated_serving[:amount] : nil
-
-		if unit_short_name == nil
-			standard_serving_description(serving)
-		elsif amount != nil
-
-
-			total_serving_size = ''
-			if portion != nil && percentage_of_portion_in_stock(serving) < 95
-				total_serving_size = ' of ' + round_if_whole(portion.amount).to_s
-			end
-
-			if unit_short_name.downcase == 'each'
-				return amount.to_s + total_serving_size + ' ' + (serving.ingredient.name.to_s).pluralize(amount)
-			elsif unit_short_name.downcase == 'small' || unit_short_name.downcase == 'medium' || unit_short_name.downcase == 'large'
-				return amount.to_s + total_serving_size + ' ' + unit_short_name + ' ' + (serving.ingredient.name.to_s).pluralize(amount)
-			else
-				return amount.to_s + total_serving_size + unit_short_name + ' ' + serving.ingredient.name.to_s
-			end
+		if serving.class == Hash
+			unit = serving.has_key?(:unit) ? serving[:unit] : nil
+			serving_amount = serving[:amount]
 		else
-			return "short_serving_description no unit_name && no amount"
+			unit = serving.unit
+			serving_amount = serving.amount
 		end
 
+		if serving.class == CombiPlannerShoppingListPortion && unit == nil && serving_amount == nil
+			return combi_serving_description(serving)
+		end
+
+		unit_name = unit != nil ? unit.name : nil
+
+		if unit_name != nil && serving_amount != nil
+
+			case unit_name
+			when "each"
+				return short_serving_size(serving) + ' ' + (serving.ingredient.name.to_s).pluralize(serving_amount)
+			when ("small" || "medium" || "large")
+				return short_serving_size(serving) + ' ' + (serving.ingredient.name.to_s).pluralize(serving_amount)
+			else
+				return short_serving_size(serving) + ' ' + serving.ingredient.name.to_s
+			end
+
+		end
+	end
+
+
+	def upscale_serving(serving = nil)
+		return if serving == nil
+
+		processed_serving = serving_converter(serving)
+
+		upscaled_serving = nil
+		if processed_serving[:unit].metric_ratio == 1 && processed_serving[:amount] > 999
+			if processed_serving[:unit].unit_type == "Mass"
+				kg_unit = Unit.find_or_create_by(
+					name: "kilogram",
+					short_name: "kg",
+					unit_type: "Mass",
+					metric_ratio: 1000
+				)
+				upscaled_serving = convert_to_different_unit(processed_serving, kg_unit)
+			elsif processed_serving[:unit].unit_type == "Volume"
+				litre_unit = Unit.find_or_create_by(
+					name: "litre",
+					short_name: "l",
+					unit_type: "Volume",
+					metric_ratio: 1000
+				)
+				upscaled_serving = convert_to_different_unit(processed_serving, litre_unit)
+			end
+		end
+
+		return upscaled_serving != nil ? upscaled_serving : processed_serving
 	end
 
 	def combi_serving_description(combi_portion = nil)
 		return if combi_portion == nil
-		if combi_portion.amount != nil && combi_portion.unit_id != nil
-			short_serving_description(combi_portion)
-		else
 
-			combi_serving_portions_formatted = []
+		if combi_portion.planner_shopping_list_portions.select{|p|p.checked == false}.length > 0
+			Rails.logger.debug "At least one combi planner portions is not checked"
+			Rails.logger.debug "list_grouped_stock(combi_portion.planner_shopping_list_portions)"
 
-			grouped_combi_portions__by_unit_type = combi_portion.planner_shopping_list_portions.select{|p|p.unit.unit_type != nil}.group_by{|p| [p.ingredient_id, p.unit.unit_type]}
-			grouped_combi_portions__by_unit_type.each do |(ingredient_id, unit_type), portions|
-				if portions.length == 1
-					combi_serving_portions_formatted.push({
-						amount: portions.first.amount,
-						unit: portions.first.unit
-					})
-				elsif portions.group_by{|p| p.unit_id}.length == 1
-					combi_serving_portions_formatted.push({
-						amount: portions.map{|p|p.amount}.sum,
-						unit: portions.first.unit
-					})
-				else
-					portions_amount_array = portions.map{ |p|
-						standardise_amount_with_metric_ratio(p.amount, p.unit.metric_ratio)
-					}
-					combi_serving_portions_formatted.push({
-						amount: portions_amount_array.sum / portions.first.unit.metric_ratio,
-						unit: portion.first.unit
-					})
-				end
-			end
+			needed_stock = list_grouped_stock(combi_portion.planner_shopping_list_portions, true)
+			Rails.logger.debug needed_stock
 
-			grouped_non_metric_combi_portions__by_unit_id = combi_portion.planner_shopping_list_portions.select{|p|p.unit.unit_type == nil}.group_by{|p| [p.ingredient_id, p.unit_id]}
+			combi_serving_portions_formatted = needed_stock.compact.select{|p|p[:amount] != 0}
 
-			grouped_non_metric_combi_portions__by_unit_id.each do |(ingredient_id, unit_id), portions|
-				if portions.length == 1
-					combi_serving_portions_formatted.push({
-						amount: portions.first.amount,
-						unit: portions.first.unit
-					})
-				else
-					combi_serving_portions_formatted.push({
-						amount: portions.map{|p|p.amount}.sum,
-						unit: portions.first.unit
-					})
-				end
-			end
-
-			combi_portions_list = combi_serving_portions_formatted.map{|p| short_serving_size(p) }
-
+			Rails.logger.debug "combi_serving_portions_formatted"
+			Rails.logger.debug combi_serving_portions_formatted
+			combi_portions_list = combi_serving_portions_formatted.map{|p| stock_needed_serving_size(upscale_serving(p)) }
 
 			return combi_portions_list.join(" + ").to_s + ' ' + combi_portion.ingredient.name
+		else
+
+			Rails.logger.debug "All combi planner portions are checked"
+
+			combi_serving_portions_formatted = list_grouped_stock(combi_portion.planner_shopping_list_portions, false).compact
+			combi_portions_list = combi_serving_portions_formatted.map{|p| stock_needed_serving_size(upscale_serving(p)) }
+
+			return combi_portions_list.join(" + ").to_s + ' ' + combi_portion.ingredient.name
+
 		end
 	end
 
-	def short_serving_size(serving = nil)
-		return if serving == nil
+
+	def stock_needed_serving_size(serving = nil)
+		return if serving == nil || serving.class == Array
+
 		if serving.class == Hash
-			unit = serving[:unit]
-			amount = serving[:amount]
+			unit = serving.has_key?(:unit) ? serving[:unit] : nil
+			serving_amount = serving[:amount]
 		else
 			unit = serving.unit
-			amount = serving.unit
+			serving_amount = serving.amount
 		end
 
-		rounded_amount_string = round_if_whole(amount).to_s
+		stock = nil
+		if serving.class == PlannerShoppingListPortion
+			if serving.class == Hash
+				stock = serving[:stock]
+			else
+				stock = serving.stock
+			end
+		end
 
-		unit_name = unit.name
-		unit_short_name = unit.short_name
-
-		if unit_name.downcase == 'each'
-			return rounded_amount_string
-		elsif unit_name.downcase == 'small' || unit_name.downcase == 'medium' || unit_name.downcase == 'large'
-			return rounded_amount_string + ' ' + unit_name
+		serving_numeric_string = ''
+		if stock != nil && percentage_of_portion_in_stock(stock) < 95
+			serving_numeric_string = round_if_whole(serving_amount - stock.amount).to_s
 		else
-			return rounded_amount_string + ' ' + (unit_short_name != nil ? unit_short_name : unit_name).pluralize(amount)
+			serving_numeric_string = round_if_whole(serving_amount).to_s
+		end
+
+		if unit != nil && serving_amount != nil
+
+			unit_name = unit.name
+			unit_short_name = unit.short_name
+
+			if unit_name.downcase == 'each'
+				return serving_numeric_string
+			elsif unit_name.downcase == 'small' || unit_name.downcase == 'medium' || unit_name.downcase == 'large'
+				return serving_numeric_string + ' ' + unit_name
+			else
+				return serving_numeric_string + (unit_short_name != nil ? unit_short_name : unit_name).pluralize(serving_amount)
+			end
 		end
 	end
+
+	def stock_needed_serving_description(serving = nil)
+		return if serving == nil
+
+		if serving.class == Hash
+			unit = serving[:unit]
+			serving_amount = serving[:amount]
+		else
+			unit = serving.unit
+			serving_amount = serving.amount
+		end
+
+		if serving.class == CombiPlannerShoppingListPortion
+			return combi_serving_description(serving)
+		end
+
+		unit_name = unit != nil ? unit.name : nil
+
+		if unit_name != nil && serving_amount != nil
+
+			case unit_name
+			when "each"
+				return stock_needed_serving_size(serving) + ' ' + (serving.ingredient.name.to_s).pluralize(serving_amount)
+			when ("small" || "medium" || "large")
+				return stock_needed_serving_size(serving) + ' ' + (serving.ingredient.name.to_s).pluralize(serving_amount)
+			else
+				return stock_needed_serving_size(serving) + ' ' + serving.ingredient.name.to_s
+			end
+
+		end
+	end
+
 end
