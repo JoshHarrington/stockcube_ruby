@@ -70,7 +70,7 @@ module ServingHelper
 			elsif unit_name.downcase == 'small' || unit_name.downcase == 'medium' || unit_name.downcase == 'large'
 				return serving_numeric_string + ' ' + unit_name
 			else
-				return serving_numeric_string + (unit_short_name != nil ? unit_short_name : unit_name).pluralize(serving_amount)
+				return serving_numeric_string + (unit_short_name != nil ? unit_short_name : " " + unit_name.to_s).pluralize(serving_amount)
 			end
 		end
 	end
@@ -94,10 +94,9 @@ module ServingHelper
 
 		if unit_name != nil && serving_amount != nil
 
-			case unit_name
-			when "each"
+			if unit_name == "each"
 				return short_serving_size(serving) + ' ' + (serving.ingredient.name.to_s).pluralize(serving_amount)
-			when ("small" || "medium" || "large")
+			elsif unit_name.downcase == 'small' || unit_name.downcase == 'medium' || unit_name.downcase == 'large'
 				return short_serving_size(serving) + ' ' + (serving.ingredient.name.to_s).pluralize(serving_amount)
 			else
 				return short_serving_size(serving) + ' ' + serving.ingredient.name.to_s
@@ -140,27 +139,30 @@ module ServingHelper
 		return if combi_portion == nil
 
 		if combi_portion.planner_shopping_list_portions.select{|p|p.checked == false}.length > 0
-			Rails.logger.debug "At least one combi planner portions is not checked"
-			Rails.logger.debug "list_grouped_stock(combi_portion.planner_shopping_list_portions)"
 
 			needed_stock = list_grouped_stock(combi_portion.planner_shopping_list_portions, true)
-			Rails.logger.debug needed_stock
 
 			combi_serving_portions_formatted = needed_stock.compact.select{|p|p[:amount] != 0}
 
-			Rails.logger.debug "combi_serving_portions_formatted"
-			Rails.logger.debug combi_serving_portions_formatted
 			combi_portions_list = combi_serving_portions_formatted.map{|p| stock_needed_serving_size(upscale_serving(p)) }
 
-			return combi_portions_list.join(" + ").to_s + ' ' + combi_portion.ingredient.name
-		else
+			ingredient_name = combi_portion.ingredient.name
+			if combi_serving_portions_formatted.length == 1
+				ingredient_name = combi_portion.ingredient.name.pluralize(serving_converter(combi_serving_portions_formatted.first)[:amount])
+			end
 
-			Rails.logger.debug "All combi planner portions are checked"
+			return combi_portions_list.join(" + ").to_s + ' ' + ingredient_name
+		else
 
 			combi_serving_portions_formatted = list_grouped_stock(combi_portion.planner_shopping_list_portions, false).compact
 			combi_portions_list = combi_serving_portions_formatted.map{|p| stock_needed_serving_size(upscale_serving(p)) }
 
-			return combi_portions_list.join(" + ").to_s + ' ' + combi_portion.ingredient.name
+			ingredient_name = combi_portion.ingredient.name
+			if combi_serving_portions_formatted.length == 1
+				ingredient_name = combi_portion.ingredient.name.pluralize(serving_converter(combi_serving_portions_formatted.first)[:amount])
+			end
+
+			return combi_portions_list.join(" + ").to_s + ' ' + ingredient_name
 
 		end
 	end
@@ -203,7 +205,7 @@ module ServingHelper
 			elsif unit_name.downcase == 'small' || unit_name.downcase == 'medium' || unit_name.downcase == 'large'
 				return serving_numeric_string + ' ' + unit_name
 			else
-				return serving_numeric_string + (unit_short_name != nil ? unit_short_name : unit_name).pluralize(serving_amount)
+				return serving_numeric_string + (unit_short_name != nil ? unit_short_name : " " + unit_name.to_s).pluralize(serving_amount)
 			end
 		end
 	end
@@ -227,10 +229,10 @@ module ServingHelper
 
 		if unit_name != nil && serving_amount != nil
 
-			case unit_name
-			when "each"
+			# case unit_name
+			if unit_name == "each"
 				return stock_needed_serving_size(serving) + ' ' + (serving.ingredient.name.to_s).pluralize(serving_amount)
-			when ("small" || "medium" || "large")
+			elsif unit_name.downcase == 'small' || unit_name.downcase == 'medium' || unit_name.downcase == 'large'
 				return stock_needed_serving_size(serving) + ' ' + (serving.ingredient.name.to_s).pluralize(serving_amount)
 			else
 				return stock_needed_serving_size(serving) + ' ' + serving.ingredient.name.to_s
