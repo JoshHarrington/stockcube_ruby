@@ -8,6 +8,8 @@ module PlannerShoppingListHelper
 
 		## sort by date to find portion needed soonest
 		sorted_planner_portions = all_planner_portions.sort_by{|p|p.date}
+
+		return sorted_planner_portions
 	end
 
 	def sum_stock_amounts(amounts_array = [])
@@ -73,30 +75,33 @@ module PlannerShoppingListHelper
 		planner_shopping_list.planner_recipes.each do |pr|
 
 			## Ignore old planner recipes
-			next if pr.date < Date.current
+			if pr.date < Date.current
+				pr.destroy
+			else
 
-			## Loop over all associated recipe portions
-			pr.recipe.portions.each do |rp|
+				## Loop over all associated recipe portions
+				pr.recipe.portions.each do |rp|
 
-				## Ignore water portions
-				next if rp.ingredient.name.downcase == 'water'
+					## Ignore water portions
+					next if rp.ingredient.name.downcase == 'water'
 
-				## Create new planner portions using the recipe portion as template
-				PlannerShoppingListPortion.find_or_create_by(
-					user_id: planner_shopping_list.user_id,
-					planner_recipe_id: pr.id,
-					ingredient_id: rp.ingredient_id,
-					planner_shopping_list_id: planner_shopping_list.id
-				).update_attributes(
-					unit_id: rp.unit_id,
-					amount: rp.amount,
-					date: pr.date + get_ingredient_use_by_date_diff(rp.ingredient)
-				)
+					## Create new planner portions using the recipe portion as template
+					PlannerShoppingListPortion.find_or_create_by(
+						user_id: planner_shopping_list.user_id,
+						planner_recipe_id: pr.id,
+						ingredient_id: rp.ingredient_id,
+						planner_shopping_list_id: planner_shopping_list.id
+					).update_attributes(
+						unit_id: rp.unit_id,
+						amount: rp.amount,
+						date: pr.date + get_ingredient_use_by_date_diff(rp.ingredient)
+					)
 
-				#### TODO - check if stock already exists?
-				####				or can be taken from cupboards
-				####				if yes then setup planner portion with checked state
+					#### TODO - check if stock already exists?
+					####				or can be taken from cupboards
+					####				if yes then setup planner portion with checked state
 
+				end
 			end
 		end
 	end
@@ -156,6 +161,9 @@ module PlannerShoppingListHelper
 		refresh_all_planner_portions(planner_shopping_list)
 
 		sorted_planner_portions = sort_all_planner_portions_by_date(planner_shopping_list)
+
+		Rails.logger.debug "sorted_planner_portions"
+		Rails.logger.debug sorted_planner_portions
 
 		sorted_planner_portions.each do |portion|
 			find_matching_stock_for_portion(portion)
@@ -263,6 +271,12 @@ module PlannerShoppingListHelper
 
 		return shopping_list_portions.sort_by!{|p| p.ingredient.name}
 
+	end
+
+	def email_sharing_mailto_list(shopping_list_portions = nil)
+		return if shopping_list_portions == nil
+
+		return "mailto:?subject=Ingredients%20to%20buy&body=#{shopping_list_portions.filter{|p| p.checked == false}.map{|p|'- ' + URI.escape(stock_needed_serving_description(p)).to_s}.join('%0D%0A') }"
 	end
 
 	def unchecked_portions

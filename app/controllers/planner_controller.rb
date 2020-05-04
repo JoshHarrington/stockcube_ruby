@@ -228,6 +228,8 @@ class PlannerController < ApplicationController
 
 			fetched_shopping_list_portions = shopping_list_portions(shopping_list)
 
+			email_sharing = email_sharing_mailto_list(fetched_shopping_list_portions)
+
 			if fetched_shopping_list_portions.length > 0
 				formatted_shopping_list_portions = fetched_shopping_list_portions.sort_by{|p| p.ingredient.name}.map do |p|
 					num_assoc_recipes = '1'
@@ -283,7 +285,7 @@ class PlannerController < ApplicationController
 						"min_date": (Date.current - 2.days).strftime("%Y-%m-%d"),
 					}
 				end
-				shopping_list_output = [{"stats": {"checked_portions": checked_portions, "total_portions": fetched_shopping_list_portions.length}}, {"portions": formatted_shopping_list_portions }, {"gen_id": shopping_list.gen_id }, {"unit_list": unit_list()}]
+				shopping_list_output = [{"stats": {"checked_portions": checked_portions, "total_portions": fetched_shopping_list_portions.length}}, {"portions": formatted_shopping_list_portions }, {"gen_id": shopping_list.gen_id }, {"unit_list": unit_list()}, {"email_sharing": email_sharing}]
 			else
 				shopping_list_output = []
 			end
