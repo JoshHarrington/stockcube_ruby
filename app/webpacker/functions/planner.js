@@ -149,14 +149,11 @@ const renderShoppingList = (shoppingList, animated = false) => {
 			RecipePortionLiTag = '<h6 class="mb-3 portion_recipe_tag">' + portion["portion_note"] + '</h6>'
 
 
-			let InStockNote = ''
-
-			if (portion["in_stock"] !== 0){
-				InStockNote = `<span style="width: 100%;
+			const	FreshNote = `<span class="fresh_note" style="width: 100%;
 				font-size: 1.1rem;
-				color: #656565;">${portion["portion_size"]} already in stock</span>`
-			}
-			const RecipePortionLiP = '<p class="h3 portion_ingredient_name"><input type="checkbox" id="planner_shopping_list_portions_add_'+ portion["shopping_list_portion_id"] + '" class="fancy_checkbox" ' + (portion["checked"] === true && 'checked') + '> ' + '<label for="planner_shopping_list_portions_add_'+ portion["shopping_list_portion_id"] + '" class="fancy_checkbox_label" style="flex-wrap:wrap"><span>' + portion["portion_description"] + '</span>' + InStockNote +'</label></p>'
+				color: #656565;">Typically fresh for ${portion["fresh_for"]} days</span>`
+
+			const RecipePortionLiP = '<p class="h3 portion_ingredient_name"><input type="checkbox" id="planner_shopping_list_portions_add_'+ portion["shopping_list_portion_id"] + '" class="fancy_checkbox" ' + (portion["checked"] === true && 'checked') + '> ' + '<label for="planner_shopping_list_portions_add_'+ portion["shopping_list_portion_id"] + '" class="fancy_checkbox_label" style="flex-wrap:wrap"><span class="portion_description">' + portion["portion_description"] + '</span>' + FreshNote +'</label></p>'
 
 			const ChildPortionsUl = document.createElement('ul')
 			if (portion["portion_type"] == "combi" &&
@@ -188,7 +185,7 @@ const renderShoppingList = (shoppingList, animated = false) => {
 
 
 					ChildPortionLi.innerHTML = ChildPortionRecipeTag + ChildPortionLiP + ChildPortionSizeHidden + ChildPortionDateHidden
-					ChildPortionsUl.appendChild(ChildPortionLi)
+					// ChildPortionsUl.appendChild(ChildPortionLi)
 				})
 			}
 
@@ -209,21 +206,13 @@ const renderShoppingList = (shoppingList, animated = false) => {
 			const RecipePortionLiDateRow = '<div class="shopping_list_portion-date_row"><p class="shopping_list_portion-date_row-tag h6">Use by date:</p><input type="date" min="' + portion["min_date"] + '" name="planner_shopping_list_portions_date_'+ portion["shopping_list_portion_id"] +'" value="' + portion["portion_date"] + '" placeholder="' + portion["portion_date"] + '" /></div><hr />'
 			const RecipePortionDateHidden = '<input type="hidden" name="planner_shopping_list_portions_date_'+ portion["shopping_list_portion_id"] +'" value="' + portion["portion_date"] + '" />'
 
-			const FreshForRow = '<p style="width: 100%;margin-top: 0.7rem;font-size: 1.1rem;color: gray;">Fresh for '+ portion['fresh_for'] +' days</p></div><hr />'
+			const FreshForRow = '<p style="width: 100%;margin-bottom: 0.7rem;font-size: 1.1rem;color: gray;">Fresh for '+ portion['fresh_for'] +' days</p></div>'
 
 
-			let RecipePortionLiContentsPartial = RecipePortionLiTag + RecipePortionLiP + RecipePortionSizeHidden + RecipePortionDateHidden
+			let RecipePortionLiContentsPartial = RecipePortionLiP + RecipePortionSizeHidden + RecipePortionDateHidden
 
 
-			if (ChildPortionsUl.hasChildNodes()) {
-				RecipePortionLi.innerHTML = RecipePortionLiContentsPartial
-				RecipePortionLi.appendChild(ChildPortionsUl)
-				const HR = document.createElement('hr')
-				RecipePortionLi.appendChild(HR)
-			} else {
-				RecipePortionLi.innerHTML = RecipePortionLiContentsPartial + FreshForRow
-			}
-
+			RecipePortionLi.innerHTML = RecipePortionLiContentsPartial
 
 			ListTopUl.appendChild(RecipePortionLi)
 
