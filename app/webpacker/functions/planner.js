@@ -73,6 +73,7 @@ const updateShoppingListCheckCount = (shoppingList) => {
 const renderShoppingList = (shoppingList, animated = false) => {
 
 	const ShoppingList = document.querySelector('.planner_shopping_list--wrapper')
+	const FloatingAction = document.querySelector('.planner_shopping_list-floating_action')
 
 	const ShoppingListInner = document.querySelector('.planner_shopping_list--inner')
 	const ShoppingListTitleBlock = ShoppingListInner.querySelector('.title_block')
@@ -89,6 +90,9 @@ const renderShoppingList = (shoppingList, animated = false) => {
 		ShoppingListTitle.innerText = 'Shopping List'
 		if (ShoppingList) {
 			hideShoppingList()
+			if (FloatingAction) {
+				FloatingAction.style.display = 'none'
+			}
 		}
 		updateButtonFractionSpan()
 		ListTopUl.innerHTML = '<p>Shopping List is currently empty, move some recipes to <a href="/planner">your planner</a> to get items added to this list</p>'
@@ -101,6 +105,7 @@ const renderShoppingList = (shoppingList, animated = false) => {
 	} else {
 		const GenId = shoppingList[2]["gen_id"]
 		const UnitList = shoppingList[3]["unit_list"]
+		const EmailSharing = shoppingList[4]["email_sharing"]
 		const ShoppingListTitleContent = 'Shopping List (' + shoppingList[0]["stats"]["checked_portions"] + '/' + shoppingList[0]["stats"]["total_portions"] + ')'
 		ShoppingListTitle.innerText = ShoppingListTitleContent
 
@@ -227,6 +232,11 @@ const renderShoppingList = (shoppingList, animated = false) => {
 					showShoppingList()
 				}
 			}
+		}
+
+		if (FloatingAction) {
+			FloatingAction.querySelector('.list_block--collection--action').setAttribute('href', EmailSharing)
+			FloatingAction.style.display = 'flex'
 		}
 
 	}

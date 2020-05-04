@@ -172,6 +172,7 @@ module PortionStockHelper
 		Rails.logger.debug "find_matching_stock_for_portion"
 
 		user = portion.user
+		user_cupboards = user_cupboards(user)
 		user_stock = user_stock(user)
 
 		available_stock = user_stock
@@ -210,7 +211,7 @@ module PortionStockHelper
 				if metric_stock_amount >= metric_portion_amount
 
 					## create new stock from portion
-					new_stock_create(user, portion.amount, portion.unit_id, comparable_stock.use_by_date, portion.ingredient_id, cupboards.first.id, portion)
+					new_stock_create(user, portion.amount, portion.unit_id, comparable_stock.use_by_date, portion.ingredient_id, user_cupboards.first.id, portion)
 
 					if metric_stock_amount == metric_portion_amount
 						comparable_stock.destroy
@@ -271,7 +272,7 @@ module PortionStockHelper
 
 				if stock_amount >= portion_amount
 					## create new stock from portion
-					new_stock_create(user, portion.amount, portion.unit_id, comparable_stock.use_by_date, portion.ingredient_id, cupboards.first.id, portion)
+					new_stock_create(user, portion.amount, portion.unit_id, comparable_stock.use_by_date, portion.ingredient_id, user_cupboards.first.id, portion)
 
 					if stock_amount == portion_amount
 						comparable_stock.destroy

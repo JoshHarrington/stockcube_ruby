@@ -71,9 +71,8 @@
 			<% end %>
 		</ul>
 	<% end %>
-	<% if fetched_shopping_list_portions.length > 0 %>
-		<div class="planner_shopping_list-floating_action">
-			<%= link_to "Email shopping list", "mailto:?subject=Ingredients%20to%20buy&body=#{fetched_shopping_list_portions.map{|p|'- ' + URI.escape(stock_needed_serving_description(p)).to_s}.join("%0D%0A") }", class: "list_block--collection--action", target: "_blank"  %>
-		</div>
-	<% end %>
+
+	<div class="planner_shopping_list-floating_action" <% if fetched_shopping_list_portions.length > 0 %>style="display:none"<% end %>>
+		<%= link_to "Email shopping list", email_sharing_mailto_list(fetched_shopping_list_portions), class: "list_block--collection--action", target: "_blank"  %>
+	</div>
 </div>
