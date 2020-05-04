@@ -121,10 +121,8 @@ $bp-shopping-list-mobile: 35rem;
 		display: flex;
     align-items: baseline;
     flex-wrap: wrap;
-    justify-content: space-between;
-		p:first-child {
-			margin-bottom: 10px;
-		}
+		justify-content: space-between;
+		margin-bottom: 1.4rem;
 		p label {
 			font-size: 1.5rem;
 		}
@@ -139,11 +137,14 @@ $bp-shopping-list-mobile: 35rem;
 			.fancy_checkbox_label::after {
 				color: black;
 			}
-			.portion_ingredient_name {
+			.portion_ingredient_name .portion_description {
 				text-decoration: line-through;
 			}
 			p:not(.portion_ingredient_name), input, select, .choices.choices_select {
 				pointer-events: none;
+			}
+			.fresh_note {
+				display: block;
 			}
 		}
 		.portion_recipe_tag {
@@ -151,6 +152,9 @@ $bp-shopping-list-mobile: 35rem;
 		}
 		.portion_ingredient_name {
 			margin-right: 1em;
+		}
+		.fresh_note {
+			display: none;
 		}
 	}
 }
