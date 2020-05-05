@@ -1,6 +1,7 @@
 module PlannerShoppingListHelper
 	include PortionStockHelper
 	include UtilsHelper
+	include ServingHelper
 
 	def sort_all_planner_portions_by_date(planner_shopping_list = nil)
 		## Get all planner portions
@@ -279,6 +280,8 @@ module PlannerShoppingListHelper
 
 		unchecked_portions = shopping_list_portions.select{|p| p.checked == false}
 		return "" if unchecked_portions.length == 0
+
+		unchecked_portions = []
 
 		escaped_portion_list = unchecked_portions.map{|p|'- ' + URI.escape(stock_needed_serving_description(p)).to_s}.join('%0D%0A')
 
