@@ -1,7 +1,7 @@
 class CombiPlannerShoppingListPortion < ApplicationRecord
 
 	# after_update :update_related_planner_portions_checked_state
-	has_many 	 :planner_shopping_list_portions, dependent: :nullify
+	has_many :planner_shopping_list_portions, dependent: :nullify
 
   belongs_to :user
   belongs_to :ingredient

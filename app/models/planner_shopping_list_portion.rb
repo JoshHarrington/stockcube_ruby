@@ -1,5 +1,7 @@
 class PlannerShoppingListPortion < ApplicationRecord
 
+	before_destroy :delete_combi_portions
+
   belongs_to :user
   belongs_to :ingredient
 	belongs_to :planner_shopping_list
@@ -11,5 +13,12 @@ class PlannerShoppingListPortion < ApplicationRecord
 	belongs_to :unit
 
 	validates :amount, presence: true
+
+	private
+		def delete_combi_portions
+			if self.combi_planner_shopping_list_portion
+				self.combi_planner_shopping_list_portion.destroy
+			end
+		end
 
 end
