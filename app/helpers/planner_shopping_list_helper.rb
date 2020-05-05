@@ -275,8 +275,9 @@ module PlannerShoppingListHelper
 
 	def email_sharing_mailto_list(shopping_list_portions = nil)
 		return if shopping_list_portions == nil
+		return "" if shopping_list_portions.length == 0
 
-		return "mailto:?subject=Ingredients%20to%20buy&body=#{shopping_list_portions.filter{|p| p.checked == false}.map{|p|'- ' + URI.escape(stock_needed_serving_description(p)).to_s}.join('%0D%0A') }"
+		return "mailto:?subject=Ingredients%20to%20buy&body=#{shopping_list_portions.select{|p| p.checked == false}.map{|p|'- ' + URI.escape(stock_needed_serving_description(p)).to_s}.join('%0D%0A') }"
 	end
 
 	def unchecked_portions
