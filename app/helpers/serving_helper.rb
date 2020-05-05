@@ -152,7 +152,7 @@ module ServingHelper
 			end
 
 			return combi_portions_list.join(" + ").to_s + ' ' + ingredient_name
-		else
+		elsif combi_portion.planner_shopping_list_portions.length > 0
 
 			combi_serving_portions_formatted = list_grouped_stock(combi_portion.planner_shopping_list_portions, false).compact
 			combi_portions_list = combi_serving_portions_formatted.map{|p| stock_needed_serving_size(upscale_serving(p)) }
