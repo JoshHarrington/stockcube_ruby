@@ -277,7 +277,12 @@ module PlannerShoppingListHelper
 		return if shopping_list_portions == nil
 		return "" if shopping_list_portions.length == 0
 
-		return "mailto:?subject=Ingredients%20to%20buy&body=#{shopping_list_portions.select{|p| p.checked == false}.map{|p|'- ' + URI.escape(stock_needed_serving_description(p)).to_s}.join('%0D%0A') }"
+		unchecked_portions = shopping_list_portions.select{|p| p.checked == false}
+		return "" if unchecked_portions.length == 0
+
+		escaped_portion_list = unchecked_portions.map{|p|'- ' + URI.escape(stock_needed_serving_description(p)).to_s}.join('%0D%0A')
+
+		return "mailto:?subject=Ingredients%20to%20buy&body=#{ escaped_portion_list }"
 	end
 
 	def unchecked_portions
