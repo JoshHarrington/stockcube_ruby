@@ -1,4 +1,9 @@
 @import "tailwindcss/base";
+
+svg {
+  @apply inline-block;
+}
+
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 

@@ -1,59 +1,73 @@
-// function hideAlert(el) {
-// 	if (el.classList.contains('alert_wrapper')) {
-// 		el.classList.add('alert_hide')
-// 	} else {
-// 		hideAlert(el.parentNode)
-// 	}
-// }
+import { ready } from "./utils"
 
-// function showAlert(el) {
-// 	if (el.classList.contains('alert_wrapper')) {
-// 		el.classList.remove('alert_hide')
-// 	} else {
-// 		showAlert(el.parentNode)
-// 	}
-// }
+const hideAlert = (el) => {
+	const wrapper = el.closest('.alert_wrapper')
+	wrapper.classList.add('alert_hide')
+}
 
-// $(document).ready(function() {
-// 	if (document.querySelector('.alert') != null) {
+const showAlert = (el) => {
+	const wrapper = el.closest('.alert_wrapper')
+	wrapper.classList.remove('alert_hide')
+}
 
-// 		var standardAlerts = document.querySelectorAll('.alert:not(.alert-sticky)');
+const noRecipeUpdate = (el) => {
+	const StickyAlert = el.closest('.alert-sticky_recipe')
+	if (StickyAlert) {
+		document.cookie = "recipeUpdate=nope; max-age=21600;path=/"
+	}
+}
 
-// 		if (standardAlerts.length) {
-// 			var maxIntervalsToRun = standardAlerts.length
-// 			var counter = 0;
-// 			var interval = setInterval(function(){
-// 				hideAlert(standardAlerts[counter]);
-// 				counter++;
-// 				if(counter === maxIntervalsToRun) {
-// 					clearInterval(interval);
-// 				}
-// 			}, 6000);
-// 		}
+const alertFn = () => {
 
-// 		var noUpdateBtns = document.querySelectorAll('.dismiss_no_update');
-// 		for (var i = 0; i < noUpdateBtns.length; i++) {
-// 			noUpdateBtns[i].addEventListener('click', function(e) {
-// 				hideAlert(e.target)
-// 				noRecipeUpdate(e.target)
-// 			});
-// 		}
+	if (!!document.querySelector('.alert')) {
 
-// 		if (!document.cookie.split(';').filter(function(item) {
-// 			return item.trim().indexOf('recipeUpdate=') === 0
-// 		}).length) {
-// 			var recipeAlerts = document.querySelectorAll('.alert-sticky_recipe');
-// 			for (var i = 0; i < recipeAlerts.length; i++) {
-// 				showAlert(recipeAlerts[i])
-// 			}
-// 		}
-// 	}
-// });
+		const standardAlerts = document.querySelectorAll('.alert:not(.alert-sticky)');
 
-// function noRecipeUpdate(el) {
-// 	if (el.classList.contains('alert-sticky_recipe')) {
-// 		document.cookie = "recipeUpdate=nope; max-age=21600;path=/"
-// 	} else {
-// 		noRecipeUpdate(el.parentNode)
-// 	}
-// }
+		if (standardAlerts.length) {
+
+			standardAlerts.forEach((alert, i) => {
+				const interval = setInterval(() => {
+					hideAlert(alert)
+					if (i === standardAlerts.length - 1) {
+						clearInterval(interval)
+					}
+				}, 6000)
+			})
+
+			// var maxIntervalsToRun = standardAlerts.length
+			// var counter = 0;
+			// var interval = setInterval(function(){
+			// 	hideAlert(standardAlerts[counter]);
+			// 	counter++;
+			// 	if(counter === maxIntervalsToRun) {
+			// 		clearInterval(interval);
+			// 	}
+			// }, 6000);
+		}
+
+		const noUpdateBtns = document.querySelectorAll('.dismiss_no_update');
+		if (noUpdateBtns.length) {
+			noUpdateBtns.forEach((btn) => {
+				btn.addEventListener('click', (e) => {
+					hideAlert(e.target)
+					noRecipeUpdate(e.target)
+				})
+			})
+		}
+
+		if (!document.cookie.split(';').filter(function(item) {
+			return item.trim().indexOf('recipeUpdate=') === 0
+		}).length) {
+			const recipeAlerts = document.querySelectorAll('.alert-sticky_recipe');
+			if (recipeAlerts.length) {
+				recipeAlerts.forEach((alert) => {
+					showAlert(alert)
+				})
+			}
+		}
+	}
+}
+
+ready(alertFn)
+
+

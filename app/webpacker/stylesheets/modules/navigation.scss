@@ -462,14 +462,12 @@ footer[role="contentinfo"] {
       width: 70%;
       background: $teal-40;
       border-right: 2px solid $teal-110;
-      left: -70%;
+      // left: -70%;
       .block {
         background: transparent;
       }
       .close-btn {
         display: block;
-        filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70);
-        // opacity: 0.7;
         &:focus, &:hover {
           filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
           opacity: 1;
@@ -483,73 +481,71 @@ footer[role="contentinfo"] {
   .js-nav #inner-wrap {
     left: 70%;
   }
-  .csstransforms3d.csstransitions {
-    &.js-ready {
-      #nav {
-        left: 0;
-        -webkit-transform: translate3d(-100%, 0, 0);
-        -moz-transform: translate3d(-100%, 0, 0);
-        -ms-transform: translate3d(-100%, 0, 0);
-        -o-transform: translate3d(-100%, 0, 0);
-        transform: translate3d(-100%, 0, 0);
-        -webkit-backface-visibility: hidden;
-        -moz-backface-visibility: hidden;
-        -ms-backface-visibility: hidden;
-        -o-backface-visibility: hidden;
-        backface-visibility: hidden;
-      }
-      #inner-wrap {
-        left: 0 !important;
-        -webkit-transform: none;
-        -moz-transform: none;
-        -ms-transform: none;
-        -o-transform: none;
-        transform: none;
-        -webkit-transition: -webkit-transform 500ms ease;
-        -moz-transition: -moz-transform 500ms ease;
-        -o-transition: -o-transform 500ms ease;
-        transition: transform 500ms ease;
-        -webkit-backface-visibility: hidden;
-        -moz-backface-visibility: hidden;
-        -ms-backface-visibility: hidden;
-        -o-backface-visibility: hidden;
-        backface-visibility: hidden;
-      }
+  .js-ready {
+    #nav {
+      left: 0;
+      -webkit-transform: translate3d(-100%, 0, 0);
+      -moz-transform: translate3d(-100%, 0, 0);
+      -ms-transform: translate3d(-100%, 0, 0);
+      -o-transform: translate3d(-100%, 0, 0);
+      transform: translate3d(-100%, 0, 0);
+      -webkit-backface-visibility: hidden;
+      -moz-backface-visibility: hidden;
+      -ms-backface-visibility: hidden;
+      -o-backface-visibility: hidden;
+      backface-visibility: hidden;
     }
-    &.js-nav #inner-wrap {
-      -webkit-transform: translate3d(70%, 0, 0) scale3d(1, 1, 1);
-      -moz-transform: translate3d(70%, 0, 0) scale3d(1, 1, 1);
-      -ms-transform: translate3d(70%, 0, 0) scale3d(1, 1, 1);
-      -o-transform: translate3d(70%, 0, 0) scale3d(1, 1, 1);
-      transform: translate3d(70%, 0, 0) scale3d(1, 1, 1);
+    #inner-wrap {
+      left: 0 !important;
+      -webkit-transform: none;
+      -moz-transform: none;
+      -ms-transform: none;
+      -o-transform: none;
+      transform: none;
+      -webkit-transition: -webkit-transform 500ms ease;
+      -moz-transition: -moz-transform 500ms ease;
+      -o-transition: -o-transform 500ms ease;
+      transition: transform 500ms ease;
+      -webkit-backface-visibility: hidden;
+      -moz-backface-visibility: hidden;
+      -ms-backface-visibility: hidden;
+      -o-backface-visibility: hidden;
+      backface-visibility: hidden;
     }
-    &.js-ready #nav .block {
-      filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70);
-      opacity: 0.7;
-      -webkit-transition: opacity 300ms 100ms, -webkit-transform 500ms ease;
-      -webkit-transition-delay: ease, 0s;
-      -moz-transition: opacity 300ms 100ms ease, -moz-transform 500ms ease;
-      -o-transition: opacity 300ms 100ms ease, -o-transform 500ms ease;
-      transition: opacity 300ms 100ms ease, transform 500ms ease;
-      -webkit-transform: translate3d(70%, 0, 0) scale3d(0.9, 0.9, 0.9);
-      -moz-transform: translate3d(70%, 0, 0) scale3d(0.9, 0.9, 0.9);
-      -ms-transform: translate3d(70%, 0, 0) scale3d(0.9, 0.9, 0.9);
-      -o-transform: translate3d(70%, 0, 0) scale3d(0.9, 0.9, 0.9);
-      transform: translate3d(70%, 0, 0) scale3d(0.9, 0.9, 0.9);
-      -webkit-transform-origin: 50% 0%;
-      -moz-transform-origin: 50% 0%;
-      -ms-transform-origin: 50% 0%;
-      -o-transform-origin: 50% 0%;
-      transform-origin: 50% 0%;
-    }
-    &.js-nav #nav .block {
-      filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
-      opacity: 1;
-      -webkit-transform: translate3d(0, 0, 0);
-      -moz-transform: translate3d(0, 0, 0);
-      -ms-transform: translate3d(0, 0, 0);
-      -o-transform: translate3d(0, 0, 0);
-      transform: translate3d(0, 0, 0);
-    }
+  }
+  &.js-nav #inner-wrap {
+    -webkit-transform: translate3d(70%, 0, 0) scale3d(1, 1, 1);
+    -moz-transform: translate3d(70%, 0, 0) scale3d(1, 1, 1);
+    -ms-transform: translate3d(70%, 0, 0) scale3d(1, 1, 1);
+    -o-transform: translate3d(70%, 0, 0) scale3d(1, 1, 1);
+    transform: translate3d(70%, 0, 0) scale3d(1, 1, 1);
+  }
+  &.js-ready #nav .block {
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70);
+    opacity: 0.7;
+    -webkit-transition: opacity 300ms 100ms, -webkit-transform 500ms ease;
+    -webkit-transition-delay: ease, 0s;
+    -moz-transition: opacity 300ms 100ms ease, -moz-transform 500ms ease;
+    -o-transition: opacity 300ms 100ms ease, -o-transform 500ms ease;
+    transition: opacity 300ms 100ms ease, transform 500ms ease;
+    -webkit-transform: translate3d(70%, 0, 0) scale3d(0.9, 0.9, 0.9);
+    -moz-transform: translate3d(70%, 0, 0) scale3d(0.9, 0.9, 0.9);
+    -ms-transform: translate3d(70%, 0, 0) scale3d(0.9, 0.9, 0.9);
+    -o-transform: translate3d(70%, 0, 0) scale3d(0.9, 0.9, 0.9);
+    transform: translate3d(70%, 0, 0) scale3d(0.9, 0.9, 0.9);
+    -webkit-transform-origin: 50% 0%;
+    -moz-transform-origin: 50% 0%;
+    -ms-transform-origin: 50% 0%;
+    -o-transform-origin: 50% 0%;
+    transform-origin: 50% 0%;
+  }
+  &.js-nav #nav .block {
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+    opacity: 1;
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
 }

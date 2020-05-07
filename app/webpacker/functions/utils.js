@@ -89,7 +89,6 @@ const isMobileDevice = () => {
 };
 
 
-
 export {
   ready,
   ajaxRequest,
