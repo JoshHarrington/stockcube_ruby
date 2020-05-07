@@ -1,47 +1,43 @@
 import {ready, showAlert, isSelectorValid} from './utils'
 
-var togglePublicRowFade = function() {
-	var publicStatusRow = $('#recipe_public_status_row');
-	var publicStatusBtns = $('#recipe_public_status_row input');
-	$('#recipe_live_status_row input[type="radio"]').click(function(e){
-		if (e.target == $('#live_radio_1')[0]) {
-			publicStatusRow.removeClass('faded_out');
-		} else {
-			publicStatusRow.addClass('faded_out');
-		}
+
+const togglePubStatusRowFade = (event) => {
+	var publicStatusRow = document.querySelector('#recipe_public_status_row');
+	const button = event.target
+	console.log(button)
+	publicStatusRow.classList.toggle('faded_out')
+
+	// 	if (e.target == $('#live_radio_1')[0]) {
+	// 		publicStatusRow.removeClass('faded_out');
+	// 	} else {
+	// 		publicStatusRow.addClass('faded_out');
+	// 	}
+
+}
+
+const setPublicRowFadeStatus = () => {
+
+	document.querySelectorAll('#recipe_live_status_row input[type="radio"]').forEach((btn) => {
+		btn.addEventListener('click', togglePubStatusRowFade)
 	})
 }
 
-var confirmDeleteIngredient = function(){
-	$('.ingredient_row label').click(function (e) {
-		var deleteStateClass = 'delete_state';
-		var $this = $(this);
-		var el = e.target;
-		var ingredientRow = el.parentNode;
-		if (ingredientRow.classList) {
-			ingredientRow.classList.add(deleteStateClass);
-		} else {
-			ingredientRow.className += ' ' + deleteStateClass;
-		}
-		window.setTimeout(function(){confirmFunc($this, ingredientRow, deleteStateClass)},12);
-	});
+const deletePortion = (event) => {
+	const portionLabel = event.target
+	const portionItem = portionLabel.closest('li')
+	const portionDesc = portionItem.querySelector('p').innerText
+	const portionDeleteCheckbox = portionLabel.previousElementSibling
+	if (window.confirm("Sure that you want to delete that ingredient?")) {
+		portionDeleteCheckbox.checked = true
+		portionItem.remove()
+		showAlert(`Deleted the "${portionDesc}" portion from this recipe`)
+	}
 }
 
-var confirmFunc = function($this, ingredientRow, deleteStateClass){
-	if (window.confirm("Sure that you want to delete that ingredient?")) {
-		if (ingredientRow.classList) {
-			ingredientRow.classList.add('slide_up');
-		} else {
-			ingredientRow.className += ' slide_up';
-		}
-	} else {
-		if (ingredientRow.classList) {
-			ingredientRow.classList.remove(deleteStateClass);
-		} else {
-			ingredientRow.className = ingredientRow.className.replace(deleteStateClass, '');
-		}
-		$this.siblings('input[type="checkbox"]').prop('checked', false);
-	}
+const confirmDeleteIngredient = () => {
+	document.querySelectorAll('.ingredient_row label').forEach((label) => {
+		label.addEventListener('click', deletePortion)
+	})
 }
 
 const hashFocus = (hash = null) => {
@@ -210,19 +206,17 @@ const makePublishableOnChange = () => {
 }
 
 
-var submitClicked = function(){
-	$('input[type="submit"]').click(function(){
-		if($('#recipe_title').val() == ''){
-			scrollAndFocusTitle();
-		}
-	});
+const submitClicked = () => {
+	document.querySelector('input[type="submit"]').addEventListener('click', scrollAndFocusTitle)
 }
 
-var scrollAndFocusTitle = function(){
-	document.querySelector('#recipe_title_container').scrollIntoView({
-		behavior: 'smooth'
-	});
-	document.querySelector('#recipe_title').focus();
+var scrollAndFocusTitle = () => {
+	if (document.querySelector('#recipe_title').value === "") {
+		document.querySelector('#recipe_title_container').scrollIntoView({
+			behavior: 'smooth'
+		});
+		document.querySelector('#recipe_title').focus();
+	}
 }
 
 
@@ -302,10 +296,10 @@ const deleteLastStep = () => {
 }
 
 const recipeFn = () => {
-	if (document.querySelector('#recipe_edit')){
+	if (!!document.querySelector('#recipe_edit')){
 		// beforeUnload();
 		confirmDeleteIngredient();
-		togglePublicRowFade();
+		setPublicRowFadeStatus();
 		hashFocus();
 		makePublishableOnChange();
 		submitClicked();

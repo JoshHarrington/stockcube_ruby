@@ -1,27 +1,28 @@
-// var cupboard_share = function() {
+import { ready } from "./utils";
 
-// 	$('#cupboard_share_add_user_list .people_marker:not([hidden])').click(function(){
-// 		// grab email from marker
-// 		$marker_email = $(this).data('email');
-// 		// check content of textare
-// 		$email_txtarea_val = $('#cupboard_user_emails').val();
-// 		if ($email_txtarea_val == '') {
-// 			$('#cupboard_user_emails').val($marker_email);
-// 		} else {
-// 			$new_textarea_val = $email_txtarea_val + ', ' + $marker_email
-// 			$('#cupboard_user_emails').val($new_textarea_val);
-// 		}
-// 		$(this).attr('hidden', 'hidden');
-// 		if ($('#cupboard_share_add_user_list .people_marker:not([hidden])').length == 0) {
-// 			$('#cupboard_share_add_user_list__title, #cupboard_share_add_user_list').attr('hidden', 'hidden');
-// 		}
-// 	});
+const addEmailToTextArea = (event) => {
+	const peopleMarker = event.target
+	const email = peopleMarker.dataset.email
+	const emailsTextarea = document.querySelector('#cupboard_user_emails')
+	const emailsTextareaValue = emailsTextarea.value
+	if (emailsTextareaValue === "") {
+		emailsTextarea.value = email
+	} else {
+		emailsTextarea.value = `${emailsTextareaValue}, ${email}`
+	}
+	peopleMarker.remove()
+}
 
+const cupboardShareFn = () => {
+	if(!!document.querySelector('#cupboard_share')) {
+		const cupboardSharePage = document.querySelector('#cupboard_share')
+		const peopleMarkers = cupboardSharePage.querySelectorAll('#cupboard_share_add_user_list .people_marker:not([hidden])')
+		if (peopleMarkers.length) {
+			peopleMarkers.forEach((p) => {
+				p.addEventListener('click', addEmailToTextArea)
+			})
+		}
+	}
+}
 
-// };
-
-// $(document).ready(function() {
-// 	if ($('#cupboard_share').length > 0) {
-// 		cupboard_share();
-// 	}
-// });
+ready(cupboardShareFn)

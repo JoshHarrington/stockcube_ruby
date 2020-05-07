@@ -189,34 +189,47 @@ class CupboardsController < ApplicationController
 			redirect_to root_path
 		end
 	end
-	def autosave
+	def location_update
 		if params.has_key?(:cupboard_location) && params[:cupboard_location].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != '' && Cupboard.find(params[:cupboard_id]).cupboard_users.where(owner: true).first.user == current_user
 			@cupboard_id = params[:cupboard_id]
-			@cupboard_title = params[:cupboard_location]
-			@cupboard_to_edit = current_user.cupboards.find(@cupboard_id)
-			@cupboard_to_edit.update_attributes(
-				location: @cupboard_title
-			)
-		end
-		if params.has_key?(:stock_id) && params[:stock_id].to_s != ''
-			@stock_to_delete = Stock.find(params[:stock_id])
-			@stock_to_delete.each do |stock|
-				stock.update_attributes(
-					hidden: true
+			@cupboard_title = params[:cupboard_location].strip
+			@cupboard_to_edit = user_cupboards(current_user).select{|c| c.id == @cupboard_id.to_i}.first
+			if @cupboard_to_edit.location != @cupboard_title
+				@cupboard_to_edit.update_attributes(
+					location: @cupboard_title
 				)
+				respond_to do |format|
+					format.json { render json: {
+						"status": "success",
+						"location": @cupboard_title
+					}.as_json, status: 200}
+					format.html { redirect_to cupboards_path }
+				end
+			else
+				respond_to do |format|
+					format.json { render json: {
+						"status": "no_change",
+						"location": @cupboard_title
+					}.as_json, status: 200}
+					format.html { redirect_to cupboards_path }
+				end
 			end
-			stock_ingredient_ids = @stock_to_delete.map(&:ingredient_id).uniq
-			update_recipe_stock_matches(stock_ingredient_ids)
 		end
+	end
+	def delete
 		if params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != '' && current_user.cupboards.where(hidden: false, setup: false).length > 1 && Cupboard.find(params[:cupboard_id_delete]).cupboard_users.where(owner: true).first.user == current_user
-			@cupboard_to_delete = Cupboard.find(params[:cupboard_id_delete].to_i)
-			@cupboard_to_delete.update_attribute(
-				:hidden, true
-			)
-
-			### this warning won't be shown at the right point in the flow so will just confuse users
-			# elsif params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != '' && current_user.cupboards.where(hidden: false, setup: false).length == 1
-			# 	flash[:warning] = "Don't delete that cupboard! It's the last one you have :O"
+			@cupboard_to_delete = user_cupboards(current_user).select{|c| c.id == params[:cupboard_id_delete].to_i}.first
+			if @cupboard_to_delete.destroy
+				respond_to do |format|
+					format.json { render json: {"status": "success"}.as_json, status: 200}
+					format.html { redirect_to cupboards_path }
+				end
+			else
+				respond_to do |format|
+					format.json { render json: {"status": "fails"}.as_json, status: 400}
+					format.html { redirect_to cupboards_path }
+				end
+			end
 		end
 	end
 

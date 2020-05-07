@@ -16,8 +16,8 @@
 		<div class="item_form--contents">
 			<div class="item_form--content_row">
 				<%= s.label :amount, 'Amount of stock' %>
-				<%= s.number_field(:amount, value: round_if_whole(@stock.amount) , placeholder: '250', class: "item_form--content_row--half_width_input", validate: true, min: 0, max: @stock.planner_shopping_list_portion_id != nil ? @stock.planner_shopping_list_portion.amount : undefined, required: true ) %>
-				<%= s.select :unit_id, options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }, selected: @stock.unit_id), {}, {class: "choices--basis half_select", disabled: @stock.planner_shopping_list_portion_id != nil} %>
+				<%= s.number_field(:amount, value: round_if_whole(@stock.amount) , placeholder: '250', class: "item_form--content_row--half_width_input", validate: true, min: 0, max: @stock.planner_shopping_list_portion_id != nil ? @stock.planner_shopping_list_portion.amount : 'undefined', required: true ) %>
+				<%= s.select :unit_id, options_for_select(@unit_list, selected: @preselect_unit_id), {}, {class: "choices--basis half_select", disabled: @stock.planner_shopping_list_portion_id != nil} %>
 			</div>
 			<div class="item_form--content_row">
 				<%= s.label :use_by_date, 'Use by date'  %> <%= s.date_field(:use_by_date, min: Date.current, value: @stock.use_by_date, validate: true, required: true) %>

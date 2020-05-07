@@ -71,4 +71,8 @@ module RecipesHelper
 			pluralize(portion_amount, portion_unit.to_s.titleize) + ' ' + ingredient.to_s
 		end
 	end
+
+	def cuisines_list()
+		return ["American", "British", "Caribbean", "Chinese", "French", "Greek", "Indian", "Italian", "Japanese", "Mediterranean", "Mexican", "Moroccan", "Spanish", "Thai", "Turkish", "Vietnamese"]
+	end
 end

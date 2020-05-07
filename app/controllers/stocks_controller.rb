@@ -6,6 +6,7 @@ class StocksController < ApplicationController
 	include ShoppingListsHelper
 	include CupboardHelper
 	include PlannerShoppingListHelper
+	include UnitsHelper
 
 	include PortionStockHelper
 
@@ -122,7 +123,7 @@ class StocksController < ApplicationController
 	end
 
 	def edit
-		@stock = Stock.find(params[:id])
+		@stock = current_user.stocks.find(params[:id])
 		@current_cupboard = @stock.cupboard
 
 		if @stock.planner_recipe_id == nil
@@ -134,7 +135,17 @@ class StocksController < ApplicationController
 		@ingredients = Ingredient.all.sort_by{|i| i.name.downcase}
 		@current_ingredient = @stock.ingredient
 
-		@preselect_unit = @stock.unit_id
+		preselect_unit = @stock.unit
+
+		@preselect_unit_id = preselect_unit.id
+		preselect_unit_type = preselect_unit.unit_type
+
+		Rails.logger.debug "preselect_unit"
+		Rails.logger.debug preselect_unit
+		Rails.logger.debug preselect_unit_type
+
+		@unit_list = unit_list_for_select(preselect_unit_type)
+
 
 		@delete_stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
 	end
@@ -227,15 +238,39 @@ class StocksController < ApplicationController
 		return unless params.has_key?(:id) && params[:id].to_s != ''
 
 		delete_stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
-		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 		decrypted_stock_id = delete_stock_hashids.decode(params[:id]).first
-		stock = Stock.find(decrypted_stock_id)
-		cupboard_id = stock.cupboard_id
-		stock.destroy
+		stock = current_user.stocks.find(decrypted_stock_id)
 
-		if !params.has_key?(:type) || (params.has_key?(:type) && params[:type].to_s != 'post')
-			redirect_to cupboards_path(anchor: cupboard_id_hashids.encode(cupboard_id))
+		if stock == nil
+			respond_to do |format|
+				format.json { render json: {"status": "no_stock_found"}.as_json, status: 404}
+				format.html {redirect_to cupboards_path}
+			end
+			return
 		end
+
+		cupboard_id = stock.cupboard_id
+
+		stock_without_planner_portion = stock.planner_shopping_list_portion_id == nil ? true : false
+		non_post_request = !params.has_key?(:type) || (params.has_key?(:type) && params[:type].to_s != 'post')
+
+		send_to_specific_cupboard = stock_without_planner_portion && non_post_request
+
+		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+		encoded_cupboard_id = cupboard_id_hashids.encode(cupboard_id)
+
+		if stock.destroy
+			respond_to do |format|
+				format.json { render json: {"status": "success"}.as_json, status: 200}
+				format.html { redirect_to(cupboards_path(anchor: send_to_specific_cupboard ? encoded_cupboard_id : "")) }
+			end
+		else
+			respond_to do |format|
+				format.json { render json: {"status": "fails"}.as_json, status: 400}
+				format.html { redirect_to(cupboards_path(anchor: send_to_specific_cupboard ? encoded_cupboard_id : "")) }
+			end
+		end
+
 	end
 
 	def update
@@ -288,7 +323,11 @@ class StocksController < ApplicationController
 
 
 		def correct_user
-			stock = Stock.find(params[:id])
+			stock = current_user.stocks.where(id: params[:id]).first
+			if stock == nil
+				redirect_to cupboards_path
+				return
+			end
 			unless stock.cupboard.communal == false || stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])
 				redirect_to cupboards_path
 			end
