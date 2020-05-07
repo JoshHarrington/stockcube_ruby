@@ -4,6 +4,7 @@ class RecipesController < ApplicationController
 	include ShoppingListsHelper
 	include StockHelper
 	include UnitsHelper
+	include RecipesHelper
 
 	require 'will_paginate/array'
 
@@ -52,6 +53,17 @@ class RecipesController < ApplicationController
 		@recipe = Recipe.find(params[:id])
 		@portions = @recipe.portions
 		@ingredients = @recipe.ingredients
+		@cuisines = cuisines_list()
+
+		@recipe_cuisine = @recipe.cuisine
+
+
+		Rails.logger.debug "edit recipes"
+		Rails.logger.debug "cuisines"
+		Rails.logger.debug @cuisines
+		Rails.logger.debug "recipe cuisine"
+		Rails.logger.debug @recipe_cuisine
+
 		### checking for duplicate ingredients should be done once as a rake task and the database updated
 		# similar_portions_count = 0
 		# @portions.each do |portion|
@@ -87,7 +99,7 @@ class RecipesController < ApplicationController
 	def new
 		@recipe = Recipe.new
 		@units = unit_list()
-		@cuisines = ["American", "British", "Caribbean", "Chinese", "French", "Greek", "Indian", "Italian", "Japanese", "Mediterranean", "Mexican", "Moroccan", "Spanish", "Thai", "Turkish", "Vietnamese"]
+		@cuisines = cuisines_list()
   end
   def create
 		@recipe = Recipe.new(recipe_params)
@@ -123,7 +135,8 @@ class RecipesController < ApplicationController
 		@portions = @recipe.portions.order("created_at ASC")
 		@units = unit_list()
 		@recipe_cuisine = @recipe.cuisine.to_s != '' ? @recipe.cuisine : nil
-		@cuisines = ["American", "British", "Caribbean", "Chinese", "French", "Greek", "Indian", "Italian", "Japanese", "Mediterranean", "Mexican", "Moroccan", "Spanish", "Thai", "Turkish", "Vietnamese"]
+		@cuisines = cuisines_list()
+
 
 		similar_portions_count = 0
 		@portions.each do |portion|

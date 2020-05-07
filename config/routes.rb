@@ -60,7 +60,8 @@ Rails.application.routes.draw do
   get '/cupboards/:id/edit' => 'cupboards#edit', as: :edit_cupboard
   patch '/cupboards/:id/edit' => 'cupboards#update'
   post '/cupboards' => 'cupboards#create'
-  post '/cupboards/autosave' => 'cupboards#autosave'
+  post '/cupboards/name_update' => 'cupboards#location_update'
+  post '/cupboards/delete' => 'cupboards#delete'
   post '/cupboards/autosave_sorting' => 'cupboards#autosave_sorting'
   post '/cupboards/share/:id' => 'cupboards#share_request'
   post '/cupboards/delete_quick_add_stock' => 'cupboards#delete_quick_add_stock'
