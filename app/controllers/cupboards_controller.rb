@@ -243,11 +243,36 @@ class CupboardsController < ApplicationController
 	end
 
 	def autosave_sorting
-		return unless current_user && params.has_key?(:stock_id) && params.has_key?(:cupboard_id) && params.has_key?(:old_cupboard_id) && params[:stock_id].to_s != '' && params[:cupboard_id].to_s != '' && params[:old_cupboard_id].to_s != ''
-		@stock_to_edit = Stock.where(id: params[:stock_id]).first
-		@stock_to_edit.update_attributes(
-			cupboard_id: params[:cupboard_id]
-		)
+		return unless current_user && params.has_key?(:stock_id) && params.has_key?(:cupboard_id) && params[:stock_id].to_s != '' && params[:cupboard_id].to_s != ''
+		@stock_to_edit = user_stock(current_user).select{|s|s.id == params[:stock_id].to_i}.first
+
+		old_cupboard_id = @stock_to_edit.cupboard_id
+
+		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+		cupboard_id = cupboard_id_hashids.decode(params[:cupboard_id]).first
+
+		if @stock_to_edit
+
+			if old_cupboard_id != cupboard_id
+				@stock_to_edit.update_attributes(
+					cupboard_id: cupboard_id
+				)
+				respond_to do |format|
+					format.json { render json: {"status": "success"}.as_json, status: 200}
+					format.html { redirect_to cupboards_path }
+				end
+			else
+				respond_to do |format|
+					format.json { render json: {"status": "no_change"}.as_json, status: 200}
+					format.html { redirect_to cupboards_path }
+				end
+			end
+		else
+			respond_to do |format|
+				format.json { render json: {"status": "failure"}.as_json, status: 400}
+				format.html { redirect_to cupboards_path }
+			end
+		end
 	end
 
 	def delete_quick_add_stock

@@ -4,36 +4,65 @@ import { ajaxRequest, isMobileDevice, ready, showAlert } from './utils';
 const cupboardFn = function() {
 
 	const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-	const cupboardStocks = document.querySelectorAll('.cupboard.list_block .list_block--content')
+	const cupboards = document.querySelectorAll('[data-name="cupboard-sortable"]')
 
 	if (isMobileDevice() === false){
-		cupboardStocks.forEach(function(stock) {
-			const cupboardUsersHash = stock.getAttribute('data-cupboard-users')
-			new Sortable(stock, {
+		cupboards.forEach((cupboard) => {
+
+			const cupboardUsersHash = cupboard.dataset.cupboardUsers
+
+			new Sortable(cupboard, {
 				group: cupboardUsersHash,
 				animation: 150,
-				draggable: '.list_block--item:not(.non_sortable)',
-				ghostClass: 'list_block--item_placeholder',
+				draggable: '.sortable',
+				ghostClass: 'ghost-sorting',
 				onStart: function() {
-					document.querySelectorAll('.cupboard.list_block .list_block--content:not([data-cupboard-users="' + cupboardUsersHash + '"]').forEach(function(non_matching_cupboard) {
-						non_matching_cupboard.parentNode.classList.add('sortable_not_allowed')
+					const nonMatchingCupboards = document.querySelectorAll(`[data-name="cupboard-sortable"]:not([data-cupboard-users="${cupboardUsersHash}"]`)
+					nonMatchingCupboards.forEach((cupboard) => {
+						cupboard.closest('[data-name="cupboard"]').classList.add('sortable_not_allowed')
 					})
 				},
 				onEnd: function(e) {
-					document.querySelectorAll('.cupboard.list_block.sortable_not_allowed').forEach(function(non_matching_cupboard) {
-						non_matching_cupboard.classList.remove('sortable_not_allowed')
+
+					document.querySelectorAll('.sortable_not_allowed').forEach((noSortingCupboard) => {
+						noSortingCupboard.classList.remove('.sortable_not_allowed')
 					})
 
 					const el = e.item
-					const stock_id = el.getAttribute('data-stock-id')
-					const cupboard_to_id = e.to.getAttribute('data-cupboard-id')
-					const cupboard_from_id = e.from.getAttribute('data-cupboard-id')
-					const data = "stock_id=" + stock_id + "&cupboard_id=" + cupboard_to_id + "&old_cupboard_id=" + cupboard_from_id
-					const request = new XMLHttpRequest()
-					request.open('POST', '/cupboards/autosave_sorting', true)
-					request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
-					request.setRequestHeader('X-CSRF-Token', csrfToken)
-					request.send(data)
+
+					const stockId = el.id
+					const stockTitle = el.querySelector('[data-name="stock-description"]').innerText
+
+					const cupboard = e.to
+					const cupboardId = cupboard.dataset.cupboardId
+
+					const cupboardTitle = cupboard.querySelector('input[name*="cupboard_location"]').value
+
+					const	data = {
+						method: 'post',
+						body: JSON.stringify(
+							{
+								stock_id: stockId,
+								cupboard_id: cupboardId
+							}
+						),
+						headers: {
+							'Content-Type': 'application/json',
+							'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+						},
+						credentials: 'same-origin'
+					}
+
+					fetch('/cupboards/autosave_sorting', data)
+					.then(response => response.json())
+					.then(data => {
+						if(data["status"] === "success"){
+							showAlert(`Stock "${stockTitle}" moved to "${cupboardTitle}"`)
+						} else if(data["status"] !== "no_change") {
+							showAlert(`Something went wrong, couldn't move "${stockTitle}"`)
+						}
+					})
+
 				}
 			})
 		});
