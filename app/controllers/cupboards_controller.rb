@@ -217,16 +217,25 @@ class CupboardsController < ApplicationController
 		end
 	end
 	def delete
-		if params.has_key?(:cupboard_id_delete) && params[:cupboard_id_delete].to_s != '' && current_user.cupboards.where(hidden: false, setup: false).length > 1 && Cupboard.find(params[:cupboard_id_delete]).cupboard_users.where(owner: true).first.user == current_user
-			@cupboard_to_delete = user_cupboards(current_user).select{|c| c.id == params[:cupboard_id_delete].to_i}.first
-			if @cupboard_to_delete.destroy
-				respond_to do |format|
-					format.json { render json: {"status": "success"}.as_json, status: 200}
-					format.html { redirect_to cupboards_path }
+		if params.has_key?(:id) && params[:id].to_s != ''
+			#  && current_user.cupboards.where(hidden: false, setup: false).length > 1 && Cupboard.find(params[:id]).cupboard_users.where(owner: true).first.user == current_user
+			cupboards = user_cupboards(current_user)
+			if cupboards.length > 1
+				@cupboard_to_delete = cupboards.select{|c| c.id == params[:id].to_i}.first
+				if @cupboard_to_delete.destroy
+					respond_to do |format|
+						format.json { render json: {"status": "success"}.as_json, status: 200}
+						format.html { redirect_to cupboards_path }
+					end
+				else
+					respond_to do |format|
+						format.json { render json: {"status": "failure"}.as_json, status: 400}
+						format.html { redirect_to cupboards_path }
+					end
 				end
 			else
 				respond_to do |format|
-					format.json { render json: {"status": "fails"}.as_json, status: 400}
+					format.json { render json: {"status": "not_allowed", "reason": "You only have one cupboard, so it's best not to delete it!"}.as_json, status: 405}
 					format.html { redirect_to cupboards_path }
 				end
 			end

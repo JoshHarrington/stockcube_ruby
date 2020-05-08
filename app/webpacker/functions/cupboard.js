@@ -58,7 +58,7 @@ const cupboardFn = function() {
 		btn.addEventListener('click', function(){deleteQuickAddStock(hashedId)}, false)
 	})
 
-	const cupboardStockDeleteBtns = document.querySelectorAll('.cupboard_stock_delete_btn')
+	const cupboardStockDeleteBtns = document.querySelectorAll('[data-name="delete-stock-btn"]')
 	cupboardStockDeleteBtns.forEach(function(btn) {
 		btn.addEventListener('click', deleteCupboardStock, false)
 	})
@@ -66,10 +66,11 @@ const cupboardFn = function() {
 
 
 const deleteCupboardStock = (event) => {
+	event.preventDefault()
 	const btn = event.target
 	const hashedId = btn.getAttribute('id')
-	const stock = btn.closest('.list_block--item')
-	const stockTitle = stock.querySelector('.list_block--item--content').innerText
+	const stock = btn.closest('a[data-name="stock"]')
+	const stockTitle = stock.querySelector('[data-name="stock-description"]').innerText
 	const confirmCheck = confirm(`Deleting "${stockTitle}" - do you want to continue?`);
 
 	const	data = {
@@ -86,14 +87,13 @@ const deleteCupboardStock = (event) => {
 		},
 		credentials: 'same-origin'
 	}
-	event.preventDefault()
 
 	if (confirmCheck == true) {
 		fetch(`/stock/delete/${hashedId}`, data)
 		.then(response => response.json())
 		.then(data => {
 			if(data["status"] === "success"){
-				stock.remove()
+				stock.parentElement.remove()
 				showAlert(`Stock "${stockTitle}" deleted`)
 			} else {
 				showAlert(`Something went wrong, couldn't delete "${stockTitle}"`)
@@ -134,7 +134,107 @@ const cupboardEditFn = () => {
 }
 
 
+const sendCupboardTitleUpdate = (event) => {
+	const title = event.target
+
+
+	const cupboard = title.closest('[data-name="cupboard"]')
+	const cupboardId = cupboard.querySelector('input[name="cupboard_id').value
+	const titleValue = title.value
+
+	const	data = {
+		method: 'post',
+		body: JSON.stringify(
+			{
+				cupboard_location: titleValue,
+				cupboard_id: cupboardId
+			}
+		),
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+		},
+		credentials: 'same-origin'
+	}
+	fetch("/cupboards/name_update", data)
+	.then(response => response.json())
+	.then(data => {
+		if(data["status"] === "success" || data["status"] === "no_change"){
+			title.value = data["location"]
+			if(data["status"] !== "no_change") {
+				showAlert(`Cupboard "${titleValue}" - name updated`)
+			}
+		} else {
+			showAlert(`Something went wrong, couldn't update "${titleValue}"`)
+		}
+	})
+	.catch((error) => {
+		console.error('Error:', error);
+	});
+}
+
+
+const CupboardTitleUpdateFn = () => {
+	const cupboardTitleInputs = document.querySelectorAll('input[name="cupboard_location"]')
+	if (cupboardTitleInputs.length === 0) {
+		return null
+	}
+
+	cupboardTitleInputs.forEach((title) => {
+		title.addEventListener('blur', sendCupboardTitleUpdate)
+	})
+}
+
+const sendDeleteCupboardUpdateFn = (event) => {
+	const deleteBtn = event.target
+	const cupboard = deleteBtn.closest('[data-name="cupboard"]')
+	const cupboardId = cupboard.querySelector('input[name="cupboard_id').value
+	const titleValue = cupboard.querySelector('input[name="cupboard_location').value
+
+	const confirmAction = confirm(`Deleting "${titleValue}" - do you want to continue?`)
+	if (confirmAction === true){
+		const	data = {
+			method: 'put',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+			},
+			credentials: 'same-origin'
+		}
+		fetch(`/cupboards/${cupboardId}/delete`, data)
+		.then(response => response.json())
+		.then(data => {
+			if(data["status"] === "success"){
+				cupboard.parentElement.remove()
+				showAlert(`"${titleValue}" deleted`)
+			} else if (data["status"] === "failure") {
+				showAlert(`Something went wrong, couldn't delete "${titleValue}"`)
+			} else if (data["status"] === "not_allowed") {
+				showAlert(data["reason"])
+			}
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+		});
+	}
+}
+
+const DeleteCupboardFn = () => {
+
+	const cupboardDeleteBtns = document.querySelectorAll('[data-name="delete-cupboard-btn"]')
+	if (cupboardDeleteBtns.length === 0) {
+		return null
+	}
+
+	cupboardDeleteBtns.forEach((btn) => {
+		btn.addEventListener('click', sendDeleteCupboardUpdateFn)
+	})
+}
+
+
 const cupboardFns = () => {
+	DeleteCupboardFn()
+	CupboardTitleUpdateFn()
 	if(!!document.querySelector('#cupboard-list')){
 		cupboardFn()
 	}
