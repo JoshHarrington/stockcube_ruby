@@ -61,7 +61,7 @@ Rails.application.routes.draw do
   patch '/cupboards/:id/edit' => 'cupboards#update'
   post '/cupboards' => 'cupboards#create'
   post '/cupboards/name_update' => 'cupboards#location_update'
-  post '/cupboards/delete' => 'cupboards#delete'
+  put '/cupboards/:id/delete' => 'cupboards#delete'
   post '/cupboards/autosave_sorting' => 'cupboards#autosave_sorting'
   post '/cupboards/share/:id' => 'cupboards#share_request'
   post '/cupboards/delete_quick_add_stock' => 'cupboards#delete_quick_add_stock'
