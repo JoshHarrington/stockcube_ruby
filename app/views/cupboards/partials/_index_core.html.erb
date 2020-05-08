@@ -1,71 +1,96 @@
 <% if planner_recipes.length > 0 %>
-  <div class="list_block--collection--wrap">
-    <div class="list_block--collection--sibling list_block--collection--sibling_stack">
-      <h2>Planner Ingredients</h2>
-      <p class="item_form--content_item_note"><%= icomoon('information-outline')%> These are reserved ingredients, that we think you're going to be using in recipes soon</p>
+  <div class="py-8 border-b border-solid border-gray-500">
+    <div class="px-6 flex flex-wrap py-4">
+      <h2 class="w-full text-lg mb-2">Planner Recipes</h2>
+      <div class="w-full">
+        <p class="w-full text-gray-700 flex items-center text-base"><span class="flex w-5 h-5 mr-2"><%= icomoon('information-outline')%></span> Here are the upcoming recipes from your planner</p>
+        <p class="w-full text-gray-700 text-base">Checked off shopping list items will be shown here</p>
+      </div>
     </div>
-    <div class="list_block--collection">
+    <div class="flex flex-wrap p-4">
       <% planner_recipes.each do |p_recipe| %>
-        <div class="cupboard list_block <%= planner_recipes.length == 1 && 'list_block-wide' %>">
-          <div class="list_block--content">
-            <div class="list_block--title non_sortable">
-              <h3><%= link_to p_recipe.recipe.title, recipe_path(p_recipe.recipe) %> (<%= p_recipe.date.to_s(:short) %>) [<%= recipe_portions_checked_portions(p_recipe)[:recipe_portions_in_stock] %>/<%= recipe_portions_checked_portions(p_recipe)[:recipe_portion_total] %> in stock]</h3>
-            </div>
-            <% planner_stocks(p_recipe).each do |stock| %>
-              <% out_of_date_sentence = 'out of date' + (stock.use_by_date > Time.zone.now ? ' in ' : ' ') + (distance_of_time_in_words(Time.zone.now, stock.use_by_date)) + (stock.use_by_date <= Time.zone.now ? ' ago': '') %>
-              <div class="list_block--item list_block--item--with-bar sortable--item">
-                <span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= percentage_of_portion_in_stock(stock) %>%"></span></span>
-                <%= link_to ((stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? edit_stock_path(stock.id) : ''), class: "list_block--item--content", title: "#{stock.ingredient.name} - #{out_of_date_sentence}" do %>
-                  <p><%= serving_description(stock.planner_shopping_list_portion) %></p>
-                  <span class="h6 list_block--item--lesser_note"><%= distance_of_time_in_words(Time.zone.now, stock.use_by_date) + (stock.use_by_date <= Time.zone.now ? ' ago': '')%></span>
-                <% end %>
+        <div class="flex p-2 flex-grow w-full md:w-1/2 lg:w-1/3">
+          <div class="w-full rounded content-between flex flex-col border border-solid border-primary-400">
+
+            <div class="flex flex-wrap pt-4 px-2 pb-10">
+              <div class="w-full mx-1 mb-4 non_sortable flex items-center">
+                <h3><%= link_to p_recipe.recipe.title, recipe_path(p_recipe.recipe) %> (<%= p_recipe.date.to_s(:short) %>) [<%= recipe_portions_checked_portions(p_recipe)[:recipe_portions_in_stock] %>/<%= recipe_portions_checked_portions(p_recipe)[:recipe_portion_total] %> in stock]</h3>
               </div>
-            <% end %>
-            <% needed_stock(p_recipe).each do |stock| %>
-              <span class="list_block--item non_sortable list_block--item_stacked list_block--item_faded" title="Not yet in cupboards">
-                <span class="list_block--item--content list_block--item--content_left">
-                  <p><%= serving_description(stock) %></p>
-                </span>
-              </span>
-            <% end %>
+              <% planner_stocks(p_recipe).each do |stock| %>
+                <% out_of_date_sentence = 'out of date' + (stock.use_by_date > Time.zone.now ? ' in ' : ' ') + (distance_of_time_in_words(Time.zone.now, stock.use_by_date)) + (stock.use_by_date <= Time.zone.now ? ' ago': '') %>
+                <div class="max-w-md flex p-1 w-1/2 sm:w-1/3 non_sortable
+                          <% if planner_recipes.length > 1 %>
+                            md:w-1/2 lg:w-1/3
+                          <% else %>
+                            md:w-1/4 lg:w-1/5
+                          <% end %>">
+                  <div class="flex flex-col w-full items-start rounded bg-primary-400 hover:bg-primary-300 focus:bg-primary-300 overflow-hidden" style="min-height: 8rem;">
+                    <span class="w-full h-4 bg-primary-100 flex"><span class="bg-primary-600 h-full" style="width: <%= percentage_of_portion_in_stock(stock) %>%"></span></span>
+                    <%= link_to ((stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? edit_stock_path(stock.id) : ''),
+                        class: "p-3 w-full flex-grow flex flex-col justify-between", title: "#{stock.ingredient.name} - #{out_of_date_sentence}" do %>
+                      <p class="text-base mb-2"><%= serving_description(stock.planner_shopping_list_portion) %></p>
+                      <span class="w-full text-sm text-gray-700">Fresh for <%= distance_of_time_in_words(Time.zone.now, stock.use_by_date) + (stock.use_by_date <= Time.zone.now ? ' ago': '')%></span>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+              <% needed_stock(p_recipe).each do |stock| %>
+                <div class="max-w-md flex p-1 w-1/2 sm:w-1/3 non_sortable
+                            <% if planner_recipes.length > 1 %>
+                              md:w-1/2 lg:w-1/3
+                            <% else %>
+                              md:w-1/4 lg:w-1/5
+                            <% end %>">
+                  <span class="w-full p-3 rounded bg-primary-200 overflow-hidden cursor-not-allowed non_sortable"
+                        style="min-height: 8rem;"
+                        title="Not yet in cupboards">
+                    <p class="w-full mb-2 italic text-gray-600 text-sm">Need to buy</p>
+                    <p class="w-full text-base text-gray-700"><%= serving_description(stock) %></p>
+                  </span>
+                </div>
+              <% end %>
+            </div>
           </div>
         </div>
       <% end %>
     </div>
   </div>
 <% end %>
-<div class="list_block--collection--wrap">
-  <div class="_list_block--collection--sibling px-6 flex justify-center items-center">
-    <h2 class="text-2xl">Your Cupboards</h2>
-    <button class="js-modal font-sans text-base border border-primary-400 border-solid ml-3 text-black no-underline rounded
+<div class="mb-4 py-6">
+  <div class="px-6 flex justify-center items-center flex-col py-4 text-center">
+    <h2 class="text-2xl mb-4">Your Cupboards</h2>
+    <button class="js-modal font-sans text-base border border-primary-400 border-solid text-black no-underline rounded
     hover:bg-primary-100 focus:bg-primary-100 p-2 bg-white"
       data-modal-content-id="demo"
       data-modal-title="Quick demo on how to add ingredients"
       data-modal-close-img="<%= png_icon_path('close') %>">How to use</button>
     <%= link_to "How to use", cupboards_demo_path,
-        class: "no-js-modal-link text-base border border-primary-400 border-solid ml-3 text-black no-underline rounded
+        class: "no-js-modal-link text-base border border-primary-400 border-solid text-black no-underline rounded
                 hover:bg-primary-100 focus:bg-primary-100 p-2 inline-block"
       %>
   </div>
   <div id="cupboard-list" class="flex flex-wrap p-4">
     <% user_cupboards(current_user).each do |cupboard| %>
       <div class="flex p-2 flex-grow w-full md:w-1/2">
-        <div class="cupboard w-full rounded content-between flex flex-col border border-solid border-primary-400 relative <%= cupboard_empty_class(cupboard) %> list_block-stack <%= cupboard_shared_class(cupboard) %> <%= cupboards.length == 1 ? 'list_block-wide' : nil %>"
+        <div class="cupboard w-full rounded content-between flex flex-col border border-solid border-primary-400 relative"
             style="min-height: 8rem;"
             data-name="cupboard"
             id="<%= cupboard_id_hashids.encode(cupboard.id) %>">
-          <div class="flex flex-wrap pt-4 px-2 pb-10" data-cupboard-id="<%= cupboard.id %>" data-cupboard-users="<%= cupboard_users_hashids.encode(cupboard.cupboard_users.map(&:user_id).sort!) %>">
+          <div class="flex flex-wrap pt-4 px-2 pb-10"
+            data-name="cupboard-sortable"
+            data-cupboard-users="<%= cupboard_users_hashids.encode(cupboard.cupboard_users.map(&:user_id).sort!) %>"
+            data-cupboard-id="<%= cupboard_id_hashids.encode(cupboard.id) %>">
             <% if cupboard.cupboard_users.length > 1 %>
               <div class="list_block--title_note">SHARED CUPBOARD</div>
             <% end %>
             <div class="w-full mx-1 mb-4 non_sortable flex items-center">
               <h3 class="w-full">
                 <%= hidden_field_tag "cupboard_id", cupboard.id %>
-                <%= text_field_tag "cupboard_location", cupboard.location,
+                <%= text_field_tag "cupboard_location_#{cupboard.id}", cupboard.location,
                 {
                   readonly: cupboard.cupboard_users.where(owner: true).first.user != current_user,
                   title: cupboard.cupboard_users.where(owner: true).first.user != current_user ? "Only the owner can edit a cupboard's name" : nil,
-                  class: "text-xl hover:bg-primary-200 py-1 hover:pl-2 focus:bg-primary-300 focus:pl-2 focus:border-b focus:border-solid focus:border-primary-500"
+                  class: "w-full transition-all ease duration-300 text-xl border-b border-solid border-primary-300 hover:bg-primary-50 py-1 hover:pl-2 focus:bg-primary-200 focus:pl-2 focus:border-primary-500"
                 } %>
               </h3>
               <% if cupboard_stocks_selection_in_date(cupboard).length == 0 && cupboards.length > 1 && cupboard.cupboard_users.where(owner: true).first.user == current_user %>
@@ -79,14 +104,17 @@
               <% cupboard_stocks_selection_in_date(cupboard).each do |stock| %>
                 <% out_of_date_sentence = 'out of date' + (stock.use_by_date > Time.zone.now ? ' in ' : ' ') + (distance_of_time_in_words(Time.zone.now, stock.use_by_date)) + (stock.use_by_date <= Time.zone.now ? ' ago': '') %>
                 <div
-                  class="max-w-lg flex p-1 w-1/2 sm:w-1/3
-                  <% if user_cupboards(current_user).length > 1%>
+                  class="sortable max-w-lg flex p-1 w-1/2 sm:w-1/3
+                  <% if user_cupboards(current_user).length > 1 %>
                     md:w-1/2 lg:w-1/3 xl:w-1/4
                   <% else %>
                     md:w-1/4 lg:w-1/5 xl:w-1/6
-                  <% end %>" style="min-height: 8rem;">
+                  <% end %>"
+                  data-sortable
+                  style="min-height: 8rem;"
+                  id="<%= stock.id %>">
                   <%= link_to ((cupboard.communal == false || stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? edit_stock_path(stock.id) : ''),
-                      class: "flex flex-wrap w-full items-start rounded p-3 relative border border-solid border-primary-400 bg-primary-400 hover:bg-primary-300 focus:bg-primary-300 list_block--item_show#{date_warning_class(stock)} stock_#{stock.id} #{(cupboard.communal == false || stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? '' : 'list_block--item-disabled'}",
+                      class: "flex flex-wrap w-full items-start rounded p-3 border border-solid border-primary-400 bg-primary-400 hover:bg-primary-300 focus:bg-primary-300 list_block--item_show#{date_warning_class(stock)} stock_#{stock.id} #{(cupboard.communal == false || stock.users.length == 0 || stock.users.map(&:id).include?(current_user[:id])) ? '' : 'list_block--item-disabled'}",
                       data: {
                         cupboard_id: "#{cupboard.id}",
                         stock_id:"#{stock.id}",
@@ -110,13 +138,13 @@
                 </div>
               <% end %>
             <% end %>
-            <div class="non_sortable max-w-lg flex p-1 w-1/2 sm:w-1/3
+            <div class="order-3 non_sortable max-w-lg flex p-1 w-1/2 sm:w-1/3
                 <% if user_cupboards(current_user).length > 1%>
                   md:w-1/2 lg:w-1/3 xl:w-1/4
                 <% else %>
                   md:w-1/4 lg:w-1/5 xl:w-1/6
                 <% end %>" style="min-height: 8rem;">
-              <div class=" flex flex-col w-full bg-white order-3 rounded p-2 relative border border-solid border-primary-400">
+              <div class=" flex flex-col w-full bg-white rounded p-2 border border-solid border-primary-400">
                 <%= link_to "Add typical ingredients", stocks_new_path(:cupboard_id => cupboard_id_hashids.encode(cupboard.id)), class: "m-1 rounded p-3 relative border border-solid border-primary-400 bg-primary-400 hover:bg-primary-300 focus:bg-primary-300 non_sortable" %>
                 <%= link_to "Add other ingredient", stocks_custom_new_path(:cupboard_id => cupboard_id_hashids.encode(cupboard.id)), class: "m-1 rounded p-3 relative border border-solid border-primary-400 hover:bg-primary-100 focus:bg-primary-100 non_sortable" %>
               </div>
@@ -124,16 +152,15 @@
           </div>
           <div class="w-full mt-auto flex justify-center">
             <% if cupboard.users.select{|u| u != current_user}.length < 1 %>
-              <%= link_to "Cupboard sharing settings", cupboard_share_path(cupboard_sharing_hashids.encode(cupboard.id)),
-                  class: "w-full text-center px-4 py-5 bg-primary-200 border-t border-solid border-primary-400 text-base",
-                  title: "Start sharing this cupboard" %>
+              <%= link_to "Add people to this cupboard", cupboard_share_path(cupboard_sharing_hashids.encode(cupboard.id)),
+                  class: "w-full text-center px-4 py-5 bg-primary-200 border-t border-solid border-primary-400 text-base" %>
             <% else %>
               <%= link_to cupboard_share_path(cupboard_sharing_hashids.encode(cupboard.id)),
                   class: "w-full border-t border-solid border-primary-400 flex",
                   title: "Sharing settings" do %>
                 <div class="w-full p-3 flex items-center hover:bg-primary-50">
                   <p class="text-base mr-3">
-                    <span>Shared with: </span>
+                    <span>Cupboard shared with: </span>
                     <span>
                       <%= cupboard.cupboard_users.select{|cu|cu.user != current_user}.map{|cu|cu.user.name}.to_sentence %>
                     </span>
