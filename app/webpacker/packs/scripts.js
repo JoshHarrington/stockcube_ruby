@@ -3,7 +3,6 @@ import '../functions/general';
 import '../functions/alert';
 
 import '../functions/cupboard';
-import '../functions/list_block';
 import '../functions/navigation';
 import '../functions/stocks';
 import '../functions/recipes';

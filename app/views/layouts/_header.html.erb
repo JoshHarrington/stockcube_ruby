@@ -13,7 +13,7 @@
     </div>
   <% end %>
   <header id="top" role="banner">
-    <div class="block">
+    <div class="nav-block">
       <% if user_signed_in? %>
         <%= link_to "Site Navigation", href: "#nav", id: "nav-open-btn", class: "nav-btn open-btn svg-btn", data: { turbolinks: 'false' } do %>
           <%= icomoon('menu') %>
@@ -46,7 +46,7 @@
   </header>
 
   <nav id="nav" role="navigation" <% if subnav %>class="subnav_shown"<% end%>>
-    <div class="block">
+    <div class="nav-block">
       <h1>
         <%= link_to root_path, id: "logo" do %>
           <%= icomoon('logo') %>
