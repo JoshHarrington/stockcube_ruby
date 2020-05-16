@@ -40,7 +40,6 @@ gem 'sendgrid-ruby'
 
 gem 'dotenv-rails'
 
-gem 'jquery-rails', '~> 4.3', '>= 4.3.1'
 gem 'cocoon'
 
 gem 'seed_dump', '~> 3.2', '>= 3.2.4'
@@ -51,10 +50,6 @@ gem 'fraction', '~> 0.3.2'
 gem 'pg', '0.20.0'
 
 gem 'client_side_validations'
-
-gem 'jquery-ui-rails'
-
-gem 'momentjs-rails'
 
 gem 'searchkick'
 
