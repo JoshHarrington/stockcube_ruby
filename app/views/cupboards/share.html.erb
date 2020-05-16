@@ -29,7 +29,10 @@
 				<p class="h5">Add email addresses to invite people to this cupboard. When adding multiple addresses, separate them with a comma eg:
 				<strong>"h.granger@spew.org, genie@lamplife.net"</strong></p>
 			<% end %>
-			<%= text_area_tag :cupboard_user_emails, (params[:cupboard_user_emails] ? params[:cupboard_user_emails] : nil),  cols: 60, rows: 10, placeholder: "timon@hakunamatata.com" %>
+			<%= text_area_tag :cupboard_user_emails,
+					(params[:cupboard_user_emails] ? params[:cupboard_user_emails] : nil),
+					cols: 60, rows: 10, placeholder: "timon@hakunamatata.com",
+					class: "border border-solid border-gray-600 rounded px-2 py-3" %>
 			<% if @all_other_cupboard_users.length > 0 %>
 				<h4 id="cupboard_share_add_user_list__title">Add people from other cupboards</h4>
 				<ul class="pretty_form--flex_list" id="cupboard_share_add_user_list">
