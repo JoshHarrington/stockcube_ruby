@@ -204,7 +204,7 @@ const sendCupboardTitleUpdate = (event) => {
 
 
 const CupboardTitleUpdateFn = () => {
-	const cupboardTitleInputs = document.querySelectorAll('input[name="cupboard_location"]')
+	const cupboardTitleInputs = document.querySelectorAll('input[name*="cupboard_location')
 	if (cupboardTitleInputs.length === 0) {
 		return null
 	}
@@ -218,7 +218,7 @@ const sendDeleteCupboardUpdateFn = (event) => {
 	const deleteBtn = event.target
 	const cupboard = deleteBtn.closest('[data-name="cupboard"]')
 	const cupboardId = cupboard.querySelector('input[name="cupboard_id').value
-	const titleValue = cupboard.querySelector('input[name="cupboard_location').value
+	const titleValue = cupboard.querySelector('input[name*="cupboard_location').value
 
 	const confirmAction = confirm(`Deleting "${titleValue}" - do you want to continue?`)
 	if (confirmAction === true){
