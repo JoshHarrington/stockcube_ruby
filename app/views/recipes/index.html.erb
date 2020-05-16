@@ -1,29 +1,88 @@
 <% provide(:title, 'Recipes') %>
 <div class="main">
-  <div class="container">
-    <div class="list_block--collection--wrap">
-    <%= form_tag recipes_path, class: 'search_box--form',  method: :get do %>
-        <div class="search_box">
-          <%= text_field_tag :search, params[:search], class: "bordered", placeholder: "what do you fancy? Salsa Verde with Salmon? Stove Top Macaroni and Cheese?", list: "recipe_search_autocomplete_list" %>
-          <datalist id="recipe_search_autocomplete_list">
-            <% @recipe_search_autocomplete_list.each do |item| %>
-              <option value="<%= item %>">
-            <% end %>
-          </datalist>
-          <%= button_tag "Search", name: nil do %>
-            <%= icomoon('search') %>
+  <div class="list_block--collection--wrap">
+  <%= form_tag recipes_path, class: 'search_box--form',  method: :get do %>
+      <div class="search_box">
+        <%= text_field_tag :search, params[:search], class: "bordered", placeholder: "what do you fancy? Salsa Verde with Salmon? Stove Top Macaroni and Cheese?", list: "recipe_search_autocomplete_list" %>
+        <datalist id="recipe_search_autocomplete_list">
+          <% @recipe_search_autocomplete_list.each do |item| %>
+            <option value="<%= item %>">
           <% end %>
+        </datalist>
+        <%= button_tag "Search", name: nil do %>
+          <%= icomoon('search') %>
+        <% end %>
+      </div>
+    <% end %>
+    <% if @no_results == true %>
+    <div class="list_block--collection--sibling list_block--collection--sibling_stack">
+      <p>No results found! Maybe try something like <%= link_to 'potato', recipes_path(search: 'potato') %> or <%= link_to 'egg', recipes_path(search: 'egg') %></p>
+    </div>
+    <% end %>
+      <%= will_paginate(@recipes) %>
+
+    <div class="list_block--collection list_block--collection__tight <% if defined? @mini_progress_on %>mini_progress<% end %>">
+    <% @recipes.each do |recipe| %>
+        <%
+          user_recipe_stock_matches = UserRecipeStockMatch.where(user_id: current_user[:id], recipe_id: recipe[:id])
+          next if user_recipe_stock_matches.length == 0
+          user_recipe_stock_match = user_recipe_stock_matches.first
+          ingredient_stock_match_decimal = user_recipe_stock_match[:ingredient_stock_match_decimal]
+          num_stock_ingredients = user_recipe_stock_match[:num_stock_ingredients]
+          num_needed_ingredients = user_recipe_stock_match[:num_needed_ingredients]
+        %>
+        <%=
+          render 'recipe_list_partial',
+          recipe: recipe,
+          ingredient_stock_match_decimal: ingredient_stock_match_decimal,
+          num_stock_ingredients: num_stock_ingredients,
+          num_needed_ingredients: num_needed_ingredients,
+          ingredient_results: @ingredient_results
+        %>
+      <% end %>
+    </div>
+    <% if @no_results == nil %>
+      <%= will_paginate(@recipes) %>
+    <% end %>
+  </div>
+  <div class="list_block--collection--wrap">
+    <div class="list_block--collection--sibling list_block--collection--sibling_stack">
+      <% if current_user.recipes.length > 0 %>
+        <h2><%= link_to "Your recipes", your_recipes_path %></h2>
+      <% else %>
+        <h2>Your recipes</h2>
+        <p>Add your first recipe!</p>
+      <% end %>
+    </div>
+    <% if current_user.recipes.length > 0 %>
+      <div class="list_block--collection list_block--collection__tight">
+        <%= link_to new_recipe_path(:anchor => 'recipe_title_container'), class: "list_block list_block--link_first link_block-medium_bold link_block-centered" do %>
+          <span>Add a new recipe</span>
+        <% end %>
+        <% current_user.recipes.order("updated_at desc").limit(8).each do |recipe| %>
+          <%= render 'recipe_list_partial', recipe: recipe, recipe_edit_mode: true %>
+        <% end %>
+      </div>
+      <% if current_user.recipes.length > 8 %>
+        <div class="list_block--collection--sibling">
+          <%= link_to "See all of your recipes", your_recipes_path, class: "list_block--item--action" %>
         </div>
       <% end %>
-      <% if @no_results == true %>
-      <div class="list_block--collection--sibling list_block--collection--sibling_stack">
-        <p>No results found! Maybe try something like <%= link_to 'potato', recipes_path(search: 'potato') %> or <%= link_to 'egg', recipes_path(search: 'egg') %></p>
+    <% else %>
+      <div class="list_block--collection list_block--collection__tight">
+        <%= link_to new_recipe_path(:anchor => 'recipe_title_container'), class: "list_block list_block-wide list_block--link_first link_block-large_bold link_block-centered" do %>
+          <span>Add a new recipe</span>
+        <% end %>
       </div>
-      <% end %>
-        <%= will_paginate(@recipes) %>
-
-      <div class="list_block--collection list_block--collection__tight <% if defined? @mini_progress_on %>mini_progress<% end %>">
-      <% @recipes.each do |recipe| %>
+    <% end %>
+  </div>
+  <% if @fav_recipes.length > 0 %>
+    <div class="list_block--collection--wrap">
+      <div class="list_block--collection--sibling">
+        <h2>Favourited recipes</h2>
+      </div>
+      <div class="list_block--collection list_block--collection__tight">
+        <% @fav_recipes_limit.each do |recipe| %>
           <%
             user_recipe_stock_matches = UserRecipeStockMatch.where(user_id: current_user[:id], recipe_id: recipe[:id])
             next if user_recipe_stock_matches.length == 0
@@ -32,76 +91,15 @@
             num_stock_ingredients = user_recipe_stock_match[:num_stock_ingredients]
             num_needed_ingredients = user_recipe_stock_match[:num_needed_ingredients]
           %>
-          <%=
-            render 'recipe_list_partial',
-            recipe: recipe,
-            ingredient_stock_match_decimal: ingredient_stock_match_decimal,
-            num_stock_ingredients: num_stock_ingredients,
-            num_needed_ingredients: num_needed_ingredients,
-            ingredient_results: @ingredient_results
-          %>
+          <%= render 'recipe_list_partial', recipe: recipe, ingredient_stock_match_decimal: ingredient_stock_match_decimal, num_stock_ingredients: num_stock_ingredients, num_needed_ingredients: num_needed_ingredients  %>
         <% end %>
       </div>
-      <% if @no_results == nil %>
-        <%= will_paginate(@recipes) %>
-      <% end %>
-    </div>
-    <div class="list_block--collection--wrap">
-      <div class="list_block--collection--sibling list_block--collection--sibling_stack">
-        <% if current_user.recipes.length > 0 %>
-          <h2><%= link_to "Your recipes", your_recipes_path %></h2>
-        <% else %>
-          <h2>Your recipes</h2>
-          <p>Add your first recipe!</p>
-        <% end %>
-      </div>
-      <% if current_user.recipes.length > 0 %>
-        <div class="list_block--collection list_block--collection__tight">
-          <%= link_to new_recipe_path(:anchor => 'recipe_title_container'), class: "list_block list_block--link_first link_block-medium_bold link_block-centered" do %>
-            <span>Add a new recipe</span>
-          <% end %>
-          <% current_user.recipes.order("updated_at desc").limit(8).each do |recipe| %>
-            <%= render 'recipe_list_partial', recipe: recipe, recipe_edit_mode: true %>
-          <% end %>
-        </div>
-        <% if current_user.recipes.length > 8 %>
-          <div class="list_block--collection--sibling">
-            <%= link_to "See all of your recipes", your_recipes_path, class: "list_block--item--action" %>
-          </div>
-        <% end %>
-      <% else %>
-        <div class="list_block--collection list_block--collection__tight">
-          <%= link_to new_recipe_path(:anchor => 'recipe_title_container'), class: "list_block list_block-wide list_block--link_first link_block-large_bold link_block-centered" do %>
-            <span>Add a new recipe</span>
-          <% end %>
-        </div>
-      <% end %>
-    </div>
-    <% if @fav_recipes.length > 0 %>
-      <div class="list_block--collection--wrap">
+      <% if @fav_recipes.length > 6 %>
         <div class="list_block--collection--sibling">
-          <h2>Favourited recipes</h2>
+          <%= link_to "See all of your favourited recipes", favourite_recipes_path, class: "list_block--item--action" %>
         </div>
-        <div class="list_block--collection list_block--collection__tight">
-          <% @fav_recipes_limit.each do |recipe| %>
-            <%
-              user_recipe_stock_matches = UserRecipeStockMatch.where(user_id: current_user[:id], recipe_id: recipe[:id])
-              next if user_recipe_stock_matches.length == 0
-              user_recipe_stock_match = user_recipe_stock_matches.first
-              ingredient_stock_match_decimal = user_recipe_stock_match[:ingredient_stock_match_decimal]
-              num_stock_ingredients = user_recipe_stock_match[:num_stock_ingredients]
-              num_needed_ingredients = user_recipe_stock_match[:num_needed_ingredients]
-            %>
-            <%= render 'recipe_list_partial', recipe: recipe, ingredient_stock_match_decimal: ingredient_stock_match_decimal, num_stock_ingredients: num_stock_ingredients, num_needed_ingredients: num_needed_ingredients  %>
-          <% end %>
-        </div>
-        <% if @fav_recipes.length > 6 %>
-          <div class="list_block--collection--sibling">
-            <%= link_to "See all of your favourited recipes", favourite_recipes_path, class: "list_block--item--action" %>
-          </div>
-        <% end %>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
+  <% end %>
 
-  </div>
 </div>
