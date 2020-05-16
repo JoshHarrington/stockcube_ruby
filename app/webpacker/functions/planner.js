@@ -95,7 +95,7 @@ const renderShoppingList = (shoppingList, animated = false) => {
 			}
 		}
 		updateButtonFractionSpan()
-		ListTopUl.innerHTML = '<p>Shopping List is currently empty, move some recipes to <a href="/planner">your planner</a> to get items added to this list</p>'
+		ListTopUl.innerHTML = '<p>Shopping List is currently empty, move some recipes to <a class="underline" href="/planner">your planner</a> to get items added to this list</p>'
 		if (ShoppingListTitleNote !== null) {
 			ShoppingListTitleNote.style.display = 'none'
 		}
