@@ -311,17 +311,13 @@ const setupPortionUpdateWatch = () => {
 			portionType = 'combi_portion'
 		}
 
-		console.log('unitSelect', unitSelect)
 		const unitSelect = portionLi.querySelector('select')
 		let unitId = unitSelect ? unitSelect.value : null
 
 
-		console.log('amountInput', amountInput)
 		const amountInput = portionLi.querySelector('input[name*="planner_shopping_list_portions_amount"]')
 		let amount = amountInput.value
 
-
-		console.log('dateInput', dateInput)
 		const dateInput = portionLi.querySelector('input[name*="planner_shopping_list_portions_date_"]')
 		let date = dateInput.value
 
@@ -372,7 +368,6 @@ const setupShoppingListCheckingOff = () => {
 			const portionId = portionLi.getAttribute('id')
 
 			let portionType = ''
-			console.log("portionLi", portionLi)
 			if (portionLi.classList.contains('individual_portion')) {
 				portionType = 'individual_portion'
 			} else {
