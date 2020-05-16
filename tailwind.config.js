@@ -1,4 +1,4 @@
-const { colors } = require('tailwindcss/defaultTheme')
+const { transitionProperty } = require('tailwindcss/defaultTheme')
 
 module.exports = {
   theme: {
@@ -39,6 +39,19 @@ module.exports = {
       '4xl': '3.15rem',
       '5xl': '4.2rem',
       '6xl': '5.6rem',
+    },
+    maxHeight: {
+      '0': '0',
+      '1/4': '25%',
+      '1/2': '50%',
+      '3/4': '75%',
+      'full': '100%',
+      'screen': '100vh'
+    },
+    transitionProperty: {
+      ...transitionProperty,
+      'height': 'height, max-height',
+      'spacing': 'margin, padding',
     }
   },
   variants: {
