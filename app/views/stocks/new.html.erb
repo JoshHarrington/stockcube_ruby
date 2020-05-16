@@ -1,72 +1,70 @@
 <% provide(:title, "Adding stock to cupboards") %>
 
 <div class="main">
-  <div class="container">
-    <div class="list_block--collection--wrap">
-			<div class="list_block--collection--sibling">
-			<%= link_to cupboards_path,
-				style: "font-size: 1.4rem;
-								border: 1px solid teal;
-								display: inline-block;
-								margin-left: 0.9rem;
-								padding: 0.3rem 0.6rem;
-								text-decoration: none;
-								color: black;
-								border-radius: 0.3rem;" do %>
-				<span style="width:1.3rem;margin-right: 0.3rem;display: inline-block;height: 1.3rem;"><%= icomoon('arrow_back') %></span>
-				Back to cupboards
-			<% end %>
-			</div>
-			<div class="list_block--collection--sibling" style="margin:2rem 0 1rem;">
-        <h1>Add some typical ingredients to your cupboard</h1>
-				<%= link_to "Add other ingredient", stocks_custom_new_path(cupboard_id: @cupboard_id) %>
-      </div>
-			<div class="list_block--collection list_block--collection__tight">
-				<% @top_ingredients.each do |i| %>
-					<% ingredient_default_use_by_date_diff = ordered_typical_ingredients().select{|ti| ti[:name] == i.name.downcase}.first[:use_by_date_diff] %>
-					<div class="list_block list_block__column"
-						style="background-image: url('https://source.unsplash.com/500x300/weekly?food,ingredient,<%= i.name.split(' ').join(',') %>');background-size: cover;
-							background-color: rgba(255, 255, 255, .5);
-							background-blend-mode: screen;
-							background-size: cover;
-							background-position: center;">
-						<div style="
-							width: 100%;
-							padding: 0.8rem 1.2rem;
-							background-color: #ffffffa3;
-							display: flex;
-							justify-content: space-between;
-							align-items: center;
-							min-height: 5rem">
-							<h2><%= i.name %></h2>
-							<%= render "stocks/partials/new_stock_set_date", i: i, use_by_date_diff: ingredient_default_use_by_date_diff.to_i %>
-						</div>
-						<h3 style="padding:0.8rem 1.2rem;margin:2rem 1.2rem 0.7rem;background-color:#56c4bb8c;width:auto;display:inline-block;align-self:flex-start;">Select the size to add:</h3>
-						<ul style="padding:.2rem 1.2rem 1rem">
-							<% i.default_ingredient_sizes.first(3).each do |size| %>
-								<li style="margin:.3rem 0 1.2rem;">
-									<%= form_for @stock, :url => create_stock_path, :html => {:style => "display:flex;flex-direction:column;align-items:flex-start"} do |s| %>
-										<%= s.hidden_field :cupboard_id, :value => @cupboard_id %>
-										<%= s.hidden_field :amount, :value => size.amount.to_f %>
-										<%= s.hidden_field :ingredient_id, :value => size.ingredient_id %>
-										<%= s.hidden_field :unit_id, :value => size.unit_id %>
-										<%= s.hidden_field :use_by_date, :value => Date.current + ingredient_default_use_by_date_diff.to_i.days, :min => Date.current - 2.days %>
-										<%= s.submit short_serving_size(size), class: "list_block--collection--action" %>
-									<% end %>
-								</li>
-							<% end %>
-						</ul>
-					</div>
-				<% end %>
-				<%= link_to stocks_custom_new_path(cupboard_id: @cupboard_id), class: "list_block list_block-wide list_block--link_first link_block-large_bold link_block-centered", style: "background-image:url(https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80);
-						background-size: cover;
+	<div class="list_block--collection--wrap">
+		<div class="list_block--collection--sibling">
+		<%= link_to cupboards_path,
+			style: "font-size: 1.4rem;
+							border: 1px solid teal;
+							display: inline-block;
+							margin-left: 0.9rem;
+							padding: 0.3rem 0.6rem;
+							text-decoration: none;
+							color: black;
+							border-radius: 0.3rem;" do %>
+			<span style="width:1.3rem;margin-right: 0.3rem;display: inline-block;height: 1.3rem;"><%= icomoon('arrow_back') %></span>
+			Back to cupboards
+		<% end %>
+		</div>
+		<div class="list_block--collection--sibling" style="margin:2rem 0 1rem;">
+			<h1>Add some typical ingredients to your cupboard</h1>
+			<%= link_to "Add other ingredient", stocks_custom_new_path(cupboard_id: @cupboard_id) %>
+		</div>
+		<div class="list_block--collection list_block--collection__tight">
+			<% @top_ingredients.each do |i| %>
+				<% ingredient_default_use_by_date_diff = ordered_typical_ingredients().select{|ti| ti[:name] == i.name.downcase}.first[:use_by_date_diff] %>
+				<div class="list_block list_block__column"
+					style="background-image: url('https://source.unsplash.com/500x300/weekly?food,ingredient,<%= i.name.split(' ').join(',') %>');background-size: cover;
 						background-color: rgba(255, 255, 255, .5);
 						background-blend-mode: screen;
-						min-height: 20vw;
-						background-position: center center;" do %>
-					<p>Add other ingredient</p>
-				<% end %>
-			</div>
+						background-size: cover;
+						background-position: center;">
+					<div style="
+						width: 100%;
+						padding: 0.8rem 1.2rem;
+						background-color: #ffffffa3;
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						min-height: 5rem">
+						<h2><%= i.name %></h2>
+						<%= render "stocks/partials/new_stock_set_date", i: i, use_by_date_diff: ingredient_default_use_by_date_diff.to_i %>
+					</div>
+					<h3 style="padding:0.8rem 1.2rem;margin:2rem 1.2rem 0.7rem;background-color:#56c4bb8c;width:auto;display:inline-block;align-self:flex-start;">Select the size to add:</h3>
+					<ul style="padding:.2rem 1.2rem 1rem">
+						<% i.default_ingredient_sizes.first(3).each do |size| %>
+							<li style="margin:.3rem 0 1.2rem;">
+								<%= form_for @stock, :url => create_stock_path, :html => {:style => "display:flex;flex-direction:column;align-items:flex-start"} do |s| %>
+									<%= s.hidden_field :cupboard_id, :value => @cupboard_id %>
+									<%= s.hidden_field :amount, :value => size.amount.to_f %>
+									<%= s.hidden_field :ingredient_id, :value => size.ingredient_id %>
+									<%= s.hidden_field :unit_id, :value => size.unit_id %>
+									<%= s.hidden_field :use_by_date, :value => Date.current + ingredient_default_use_by_date_diff.to_i.days, :min => Date.current - 2.days %>
+									<%= s.submit short_serving_size(size), class: "list_block--collection--action" %>
+								<% end %>
+							</li>
+						<% end %>
+					</ul>
+				</div>
+			<% end %>
+			<%= link_to stocks_custom_new_path(cupboard_id: @cupboard_id), class: "list_block list_block-wide list_block--link_first link_block-large_bold link_block-centered", style: "background-image:url(https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80);
+					background-size: cover;
+					background-color: rgba(255, 255, 255, .5);
+					background-blend-mode: screen;
+					min-height: 20vw;
+					background-position: center center;" do %>
+				<p>Add other ingredient</p>
+			<% end %>
 		</div>
 	</div>
 </div>
