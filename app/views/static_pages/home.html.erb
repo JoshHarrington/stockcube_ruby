@@ -30,13 +30,6 @@
   .bottom_banner_bar p + p {
     margin-top: 1rem;
   }
-  .wrapper {
-    max-width: 90rem;
-    padding-left: 2rem;
-    padding-right: 2rem;
-    margin-left: auto;
-    margin-right: auto;
-  }
   .call_out_bar {
     background-color: #a2d7d2;
     padding-top: 8rem;
@@ -65,13 +58,6 @@
   }
   .answer p {
     line-height: 1.4;
-  }
-
-  .flex {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-around;
   }
 
   .perspective {
@@ -289,7 +275,7 @@
 </style>
 
 <section class="banner_bar">
-  <div class="wrapper flex">
+  <div class="standard-wrapper flex items-center flex-wrap justify-around">
     <div class="banner_bar-text">
       <h1>Stockcubes</h1>
       <h2>Fighting food waste at home</h2>
@@ -318,20 +304,20 @@
 </section>
 
 <section class="call_out_bar">
-  <div class="wrapper">
+  <div class="standard-wrapper">
     <h3>We're here to make it ridiculously simple to <br /><strong>plan your meals</strong> and <strong>cut your food waste</strong></h3>
   </div>
 </section>
 
 <section class="tour_jumper">
-  <div class="wrapper tour_jumper--contents">
+  <div class="standard-wrapper tour_jumper--contents">
     <p>Check out the tour</p>
     <%= icomoon('arrow_forward') %>
   </div>
 </section>
 
 
-<section class="wrapper q-a-block">
+<section class="standard-wrapper q-a-block">
 
   <div class="question">
     <p><strong>Why should you care about food waste?</strong></p>
@@ -373,7 +359,7 @@
 </section>
 
 <section id="tour_video">
-  <div class="wrapper">
+  <div class="standard-wrapper">
     <h3>Take a tour of the Stockcubes platform</h3>
     <iframe width="560" height="315" src="https://www.youtube.com/embed/puqc09GIO0I" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     <%= link_to "Sign up", new_user_registration_path %>

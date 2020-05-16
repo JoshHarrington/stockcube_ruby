@@ -1,49 +1,13 @@
-<style>
-	.cookie-banner {
-		background-color: rgba(0,0,0,.75);
-		color: white;
-		position: fixed;
-		bottom: 0;
-		width: 100%;
-		padding: 1.6rem;
-		left: 0;
-		font-size: 1.5rem;
-		text-align: center;
-		line-height: 1.7;
-		z-index: 6;
-	}
-	.cookie-banner a {
-		font-size: 1.5rem;
-		color: white;
-	}
-	.cookie-banner button {
-		background: #bae8e6;
-		border: none;
-		border-radius: 2px;
-		font-size: 1.5rem;
-		margin-left: .8rem;
-		cursor: pointer;
-		padding: .5rem .6rem;
-		font-family: 'Lato', sans-serif;
-	}
-	.cookie-banner.hidden {
-		display:none;
-	}
-	.cookie-banner .wrapper {
-		max-width: 90rem;
-		padding-left: 2rem;
-		padding-right: 2rem;
-		margin: 0 auto;
-	}
-</style>
-
 <script>
 	function setCookieBannerCookie() {
 		document.cookie = "cookie-policy=1";
-		document.querySelector('.cookie-banner').classList.add('hidden')
+		document.querySelector('[data-name="cookie-banner"]').classList.add('hidden')
 	}
 </script>
 
-<div class="cookie-banner">
-	<div class="wrapper">Stockcubes uses cookies to improve your experience on our site. You can read our <a href="/cookie-policy">cookies policy here</a>. By continuing to use the site, you consent to use our cookies. <button onClick="setCookieBannerCookie()">Ok, understood</button></div>
+<div data-name="cookie-banner" class="bg-black-a-800 text-white fixed bottom-0 w-full left-0 text-center z-50 p-8 leading-relaxed text-lg">
+	<div class="standard-wrapper">Stockcubes uses cookies to improve your experience on our site. You can read our
+		<a class="underline text-white text-lg" href="/cookie-policy">cookies policy here</a>.<br class="hidden md:inline-block"/>
+		By continuing to use the site, you consent to use our cookies.
+		<button class="text-black font-sans py-1 px-2 cursor-pointer mx-auto block mt-3 text-lg border-none rounded bg-primary-200" onClick="setCookieBannerCookie()">Ok, understood</button></div>
 </div>

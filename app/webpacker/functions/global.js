@@ -27,8 +27,8 @@ const globalFn = () => {
 	// hide cookie banner if cookie present
 	if (document.cookie.split(';').some(function(item) {
 		return item.trim().indexOf('cookie-policy=') == 0
-	}) && document.querySelector('.cookie-banner')) {
-		document.querySelector('.cookie-banner').classList.add('hidden')
+	}) && document.querySelector('[data-name="cookie-banner"]')) {
+		document.querySelector('[data-name="cookie-banner"]').classList.add('hidden')
 	}
 	document.querySelectorAll('.tour_jumper, .tour_jumper *').forEach(t => {
 		t.addEventListener('click', jumpToTour)
