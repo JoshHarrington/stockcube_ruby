@@ -28,7 +28,7 @@
 		<% end %>
 	</div>
 	<% if total_portions == 0 %>
-		<ul><p>Shopping List is currently empty, move some recipes to <%= link_to 'your planner', planner_path %> to get items added to this list</p></ul>
+		<ul><p>Shopping List is currently empty, move some recipes to <%= link_to 'your planner', planner_path, class: "underline" %> to get items added to this list</p></ul>
 	<% else %>
 		<ul class="planner_sl-recipe_list">
 			<% fetched_shopping_list_portions.each do |portion| %>
