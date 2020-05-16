@@ -81,7 +81,7 @@ const renderShoppingList = (shoppingList, animated = false) => {
 	// const ShoppingListExpandBtn = ShoppingListTitleBlock.querySelector('.planner_shopping_list--fullscreen_btn')
 	const ListTopUl = document.createElement('ul')
 	ListTopUl.classList.add('planner_sl-recipe_list')
-	let ShoppingListTitleNote = ShoppingListTitleBlock.querySelector('p.item_form--content_item_note')
+	let ShoppingListTitleNote = ShoppingListTitleBlock.querySelector('[data-name="shopping-list-note"]')
 	let ShoppingListTitleFullscreenBtn = ShoppingListTitleBlock.querySelector('a.planner_shopping_list--fullscreen_btn')
 
 	const OldShoppingListContent = ShoppingListInner.querySelector('ul')
@@ -113,8 +113,8 @@ const renderShoppingList = (shoppingList, animated = false) => {
 			ShoppingListTitleNote.style.display = 'block'
 		} else {
 			ShoppingListTitleNote = document.createElement('p')
-			ShoppingListTitleNote.classList.add('h6','item_form--content_item_note')
-			ShoppingListTitleNote.innerHTML = `<svg class="icomoon-icon icon-information-outline"><use xlink:href="${SVG}#icon-information-outline"></use></svg><img class="icon-png" src="${PNGInfoOutline}"/> Checking off items adds them to <a href="/cupboards">your cupboard</a> automatically (once checked they'll disappear from the list in 24 hours)`
+			ShoppingListTitleNote.classList.add('flex', 'text-gray-600', 'text-sm', 'mt-2')
+			ShoppingListTitleNote.innerHTML = `<span class="w-6 h-6 mr-1 inline-block"><svg class="icomoon-icon icon-information-outline"><use xlink:href="${SVG}#icon-information-outline"></use></svg></span> Add to cupboards by checking off items`
 			ShoppingListTitleBlock.appendChild(ShoppingListTitleNote)
 		}
 
