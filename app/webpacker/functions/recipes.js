@@ -3,16 +3,7 @@ import {ready, showAlert, isSelectorValid} from './utils'
 
 const togglePubStatusRowFade = (event) => {
 	var publicStatusRow = document.querySelector('#recipe_public_status_row');
-	const button = event.target
-	console.log(button)
 	publicStatusRow.classList.toggle('faded_out')
-
-	// 	if (e.target == $('#live_radio_1')[0]) {
-	// 		publicStatusRow.removeClass('faded_out');
-	// 	} else {
-	// 		publicStatusRow.addClass('faded_out');
-	// 	}
-
 }
 
 const setPublicRowFadeStatus = () => {
