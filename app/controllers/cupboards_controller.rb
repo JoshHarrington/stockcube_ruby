@@ -31,8 +31,7 @@ class CupboardsController < ApplicationController
 	end
 
 	def show
-		@cupboard = Cupboard.find(params[:id])
-		@stocks = @cupboard.stocks.order(use_by_date: :asc)
+		redirect_to cupboards_path
 	end
 	def new
 		@cupboard = Cupboard.new
@@ -54,10 +53,6 @@ class CupboardsController < ApplicationController
     else
       render 'new'
     end
-	end
-	def edit_all
-		@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map(&:cupboard_id)
-		@cupboards = current_user.cupboards.where(id: @cupboard_ids).order(location: :asc).where(hidden: false, setup: false)
 	end
 	def share
 		@cupboard_sharing_hashids = Hashids.new(ENV['CUPBOARD_SHARING_ID_SALT'])

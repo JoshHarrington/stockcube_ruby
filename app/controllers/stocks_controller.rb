@@ -14,10 +14,10 @@ class StocksController < ApplicationController
 	before_action :correct_user, only: [:edit]
 
 	def index
-		@stocks = Stock.all
+		redirect_to cupboards_path
 	end
 	def show
-		@stock = Stock.find(params[:id])
+		redirect_to cupboards_path
 	end
 	def picks
 		@tomatoe_id = Ingredient.where(name: "Tomatoes").first.id
