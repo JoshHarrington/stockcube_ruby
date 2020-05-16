@@ -78,7 +78,6 @@ const renderShoppingList = (shoppingList, animated = false) => {
 	const ShoppingListInner = document.querySelector('.planner_shopping_list--inner')
 	const ShoppingListTitleBlock = ShoppingListInner.querySelector('.title_block')
 	const ShoppingListTitle = ShoppingListTitleBlock.querySelector('h2')
-	// const ShoppingListExpandBtn = ShoppingListTitleBlock.querySelector('.planner_shopping_list--fullscreen_btn')
 	const ListTopUl = document.createElement('ul')
 	ListTopUl.classList.add('planner_sl-recipe_list')
 	let ShoppingListTitleNote = ShoppingListTitleBlock.querySelector('[data-name="shopping-list-note"]')
@@ -114,26 +113,19 @@ const renderShoppingList = (shoppingList, animated = false) => {
 		} else {
 			ShoppingListTitleNote = document.createElement('p')
 			ShoppingListTitleNote.classList.add('flex', 'text-gray-600', 'text-sm', 'mt-2')
-			ShoppingListTitleNote.innerHTML = `<span class="w-6 h-6 mr-1 inline-block"><svg class="icomoon-icon icon-information-outline"><use xlink:href="${SVG}#icon-information-outline"></use></svg></span> Add to cupboards by checking off items`
+			ShoppingListTitleNote.innerHTML = `<span class="w-6 h-6 mr-1 inline-block"><svg class="icomoon-icon icon-information-outline"><use xlink:href="${SVG}#icon-information-outline"></use></svg></span>Add to cupboards by checking off items`
 			ShoppingListTitleBlock.appendChild(ShoppingListTitleNote)
 		}
 
 		if (ShoppingListTitleFullscreenBtn !== null) {
 			ShoppingListTitleFullscreenBtn.style.display = 'block'
-		} else {
+		} else if (!(document.body.classList.contains('planner_controller') && document.body.classList.contains('list_page'))) {
 			ShoppingListTitleFullscreenBtn = document.createElement('a')
 			ShoppingListTitleFullscreenBtn.classList.add('planner_shopping_list--fullscreen_btn')
-			if (document.body.classList.contains('planner_controller') && document.body.classList.contains('list_page')) {
-				ShoppingListTitleFullscreenBtn.setAttribute('title', 'Close shopping list share page')
-				ShoppingListTitleFullscreenBtn.setAttribute('href', `/planner`)
-				ShoppingListTitleFullscreenBtn.innerHTML = `<svg class="icomoon-icon icon-fullscreen_exit"><use xlink:href="${SVG}#icon-fullscreen_exit"></use></svg><img class="icon-png" src="${PNGFullscreenExit}"/>`
-				ShoppingListTitleBlock.appendChild(ShoppingListTitleFullscreenBtn)
-			} else {
-				ShoppingListTitleFullscreenBtn.setAttribute('title', 'View and share shopping list')
-				ShoppingListTitleFullscreenBtn.setAttribute('href', `/list/${GenId}`)
-				ShoppingListTitleFullscreenBtn.innerHTML = `<svg class="icomoon-icon icon-fullscreen"><use xlink:href="${SVG}#icon-fullscreen"></use></svg><img class="icon-png" src="${PNGFullscreen}"/>`
-				ShoppingListTitleBlock.appendChild(ShoppingListTitleFullscreenBtn)
-			}
+			ShoppingListTitleFullscreenBtn.setAttribute('title', 'View and share shopping list')
+			ShoppingListTitleFullscreenBtn.setAttribute('href', `/list/${GenId}`)
+			ShoppingListTitleFullscreenBtn.innerHTML = `<svg class="icomoon-icon icon-fullscreen"><use xlink:href="${SVG}#icon-fullscreen"></use></svg><img class="icon-png" src="${PNGFullscreen}"/>`
+			ShoppingListTitleBlock.appendChild(ShoppingListTitleFullscreenBtn)
 		}
 
 		shoppingList[1]["portions"].forEach(function(portion) {
@@ -154,9 +146,7 @@ const renderShoppingList = (shoppingList, animated = false) => {
 			RecipePortionLiTag = '<h6 class="mb-3 portion_recipe_tag">' + portion["portion_note"] + '</h6>'
 
 
-			const	FreshNote = `<span class="fresh_note" style="width: 100%;
-				font-size: 1.1rem;
-				color: #656565;">Typically fresh for ${portion["fresh_for"]} days</span>`
+			const	FreshNote = `<span class="fresh_note w-full text-sm">Typically fresh for ${portion["fresh_for"]} days</span>`
 
 			const RecipePortionLiP = '<p class="h3 portion_ingredient_name"><input type="checkbox" id="planner_shopping_list_portions_add_'+ portion["shopping_list_portion_id"] + '" class="fancy_checkbox" ' + (portion["checked"] === true && 'checked') + '> ' + '<label for="planner_shopping_list_portions_add_'+ portion["shopping_list_portion_id"] + '" class="fancy_checkbox_label" style="flex-wrap:wrap"><span class="portion_description">' + portion["portion_description"] + '</span>' + FreshNote +'</label></p>'
 
