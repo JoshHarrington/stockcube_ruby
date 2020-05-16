@@ -22,22 +22,24 @@ class PlannerController < ApplicationController
 
 	def list
 		if params.has_key?(:gen_id) && PlannerShoppingList.find_by(gen_id: params[:gen_id]) != nil
+			## shopping list found
+
+			@shopping_list = PlannerShoppingList.find_by(gen_id: params[:gen_id])
+
+			## redirect if no shopping list portions found
 			if shopping_list_portions(@shopping_list).length == 0
-				if user_signed_in?
-					redirect_to planner_path
-					flash[:notice] = "Looks like there aren't any ingredients in that shopping list"
-				else
-					redirect_to root_path
-					flash[:notice] = "Sign up or sign in to create your own sharable shopping list"
-				end
+				redirect_to root_path
+				flash[:notice] = "Looks like there aren't any ingredients in that shopping list"
 			end
-		elsif user_signed_in?
-			redirect_to planner_path
-			flash[:notice] = "That shopping list link didn't work, sorry!"
+
 		else
+			## redirect to root
 			redirect_to root_path
-			flash[:notice] = "Sign up or sign in to create your own sharable shopping list"
+
+			## show message to explain redirection
+			flash[:notice] = "Looks like that shopping list link doesn't work"
 		end
+
 	end
 
 	def recipe_add_to_planner
@@ -228,7 +230,7 @@ class PlannerController < ApplicationController
 
 			fetched_shopping_list_portions = shopping_list_portions(shopping_list)
 
-			email_sharing = email_sharing_mailto_list(fetched_shopping_list_portions)
+			email_sharing = email_sharing_mailto_list(fetched_shopping_list_portions, shopping_list.gen_id)
 
 			if fetched_shopping_list_portions.length > 0
 				formatted_shopping_list_portions = fetched_shopping_list_portions.sort_by{|p| p.ingredient.name}.map do |p|
