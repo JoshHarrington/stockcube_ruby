@@ -44,12 +44,17 @@
 				<% if @recipe.steps.length > 0 %>
 					<% @recipe.steps.order(:number).each do |step| %>
 						<li>
-							<%= f.text_area "[steps][#{step.id}][content]", :value => step.content, rows: 2, style: 'min-height: 70px;min-width:100%', :placeholder => "The next step to make this meal"%>
+							<%= f.text_area "[steps][#{step.id}][content]", :value => step.content, rows: 2,
+									class: "min-w-full border border-solid border-gray-600 rounded px-2 py-3",
+									style: 'min-height: 70px', :placeholder => "The next step to make this meal"%>
 						</li>
 					<% end %>
 				<% else %>
 					<li>
-						<textarea name="new_recipe_steps[]" value="" rows="2" style="min-height: 70px;min-width:100%" placeholder="The next step to make this meal"></textarea>
+						<textarea name="new_recipe_steps[]" value="" rows="2"
+											class="min-w-full border border-solid border-gray-600 rounded px-2 py-3"
+											style="min-height: 70px"
+											placeholder="The next step to make this meal"></textarea>
 					</li>
 				<% end %>
 				<div class="devise_links">
@@ -62,7 +67,9 @@
 		</div>
 		<div class="content_rich--row">
 			<h3>Notes (extra info):</h3>
-			<%= f.text_area :note, :value => (@recipe.note ? @recipe.note : ''), rows: 4, style: 'min-height: 200px;', :placeholder => "Anything the people using the recipe need to know that can't be covered in the Method (above)"%>
+			<%= f.text_area :note, value: (@recipe.note ? @recipe.note : ''), rows: 4,
+					class: "border border-solid border-gray-600 rounded px-2 py-3 min-w-full",
+					style: 'min-height: 200px;', placeholder: "Anything the people using the recipe need to know that can't be covered in the Method (above)"%>
 		</div>
 		<div class="content_rich--row content_rich--row-with_children">
 			<div class="content_rich--row--half">
