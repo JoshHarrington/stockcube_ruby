@@ -10,8 +10,6 @@ Rails.application.routes.draw do
   get '/privacy-policy', to: 'static_pages#privacy_policy'
   get '/terms-of-use', to: 'static_pages#terms_of_use'
 
-  # get '/elements' => 'static_pages#elements'
-
   get 'password_resets/new'
   get 'password_resets/edit'
 
@@ -47,16 +45,15 @@ Rails.application.routes.draw do
   post '/stock/new/:cupboard_id' => 'stocks#create', as: :create_stock
   post '/stock/new' => 'stocks#create_with_params', as: :create_stock_with_params
   post '/stock/delete/:id' => 'stocks#delete_stock', as: :delete_stock_post
+  get '/stock' => 'stocks#index'
 
   get '/cupboards' => 'cupboards#index'
   get '/cupboards/demo' => 'cupboards#demo'
   get '/cupboards/new' => 'cupboards#new'
-  # get '/cupboards/edit_all' => 'cupboards#edit_all', as: :edit_all_cupboard
   get '/cupboards/share/:id' => 'cupboards#share', as: :cupboard_share
   get '/cupboards/accept_cupboard_invite' => 'cupboards#accept_cupboard_invite'
-  get '/cupboards/:id' => 'cupboards#index'
+  get '/cupboards/:id' => 'cupboards#show'
   post '/cupboards/accept_cupboard_invite' => 'cupboards#accept_cupboard_invite', as: :accept_cupboard_invite
-  # get '/cupboards/sharing_request' => 'cupboards#sharing_request', as: :cupboard_sharing_request
   get '/cupboards/:id/edit' => 'cupboards#edit', as: :edit_cupboard
   patch '/cupboards/:id/edit' => 'cupboards#update'
   post '/cupboards' => 'cupboards#create'
