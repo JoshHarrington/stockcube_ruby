@@ -10,7 +10,7 @@
 <div class="planner_shopping_list--inner">
 	<div class="title_block">
 		<h2>Shopping List <% if total_portions > 0 %>(<%= checked_portions %>/<%= total_portions %>)<% end %></h2>
-		<% if total_portions > 0 %><p class="h6 item_form--content_item_note"><%= icomoon('information-outline')%> Checking off items adds them to <%= current_user ? (link_to "your cupboard", cupboards_path) : "the cupboard" %> automatically (once checked they'll disappear from the list in 24 hours)</p><% end %>
+		<% if total_portions > 0 %><p data-name="shopping-list-note" class="flex text-gray-600 text-sm mt-2"><span class="w-6 h-6 mr-1 inline-block"><%= icomoon('information-outline')%></span> Add to cupboards by checking off items</p><% end %>
 
 		<% if current_user && !defined?(shopping_list) && total_portions > 0 %>
 			<%= link_to shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id), title: "View and share shopping list", class: "planner_shopping_list--fullscreen_btn" do %>
