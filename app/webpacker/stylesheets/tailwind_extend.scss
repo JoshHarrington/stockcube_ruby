@@ -1,3 +1,8 @@
 .ghost-sorting [data-name="stock"] {
   @apply bg-primary-100 text-gray-600;
 }
+
+.standard-wrapper {
+  max-width: 90rem;
+  @apply px-8 mx-auto;
+}

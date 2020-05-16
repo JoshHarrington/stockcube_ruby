@@ -1,3 +1,5 @@
+const { colors } = require('tailwindcss/defaultTheme')
+
 module.exports = {
   theme: {
     extend: {
@@ -15,8 +17,11 @@ module.exports = {
           '100': 'hsl(177, 50%, 82%)',
           '50': 'hsl(177, 50%, 88%)'
         },
-        black: {
-          'a80': 'rgba(0, 0, 0, .8)'
+        "black-a": {
+          '500': 'rgba(0, 0, 0, .5)',
+          '600': 'rgba(0, 0, 0, .6)',
+          '700': 'rgba(0, 0, 0, .7)',
+          '800': 'rgba(0, 0, 0, .8)'
         }
       },
       fontFamily: {
