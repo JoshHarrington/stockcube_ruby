@@ -182,7 +182,7 @@ module IngredientsHelper
 
 		if ing.default_ingredient_sizes && ing.default_ingredient_sizes.length > 0
 			return ing.default_ingredient_sizes.sort{|a,b| b.use_by_date_diff <=> a.use_by_date_diff}.first.use_by_date_diff
-		elsif ing.use_by_date_diff != 0
+		elsif ing.use_by_date_diff && ing.use_by_date_diff != 0
 			return ing.use_by_date_diff
 		end
 
