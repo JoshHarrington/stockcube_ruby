@@ -30,12 +30,10 @@ jobs:
     steps:
       - checkout
 
-      - type: cache-restore
-          name: Restore bundle cache
+      - restore_cache:
           key: myapp-bundle-{{ checksum "Gemfile.lock" }}
 
-      - type: cache-restore
-          name: Restore yarn cache
+      - restore_cache:
           key: myapp-yarn-{{ checksum "yarn.lock" }}
 
       # Bundle install dependencies
@@ -47,14 +45,12 @@ jobs:
           name: Yarn Install
           command: yarn install
 
-      - type: cache-save
-          name: Store bundle cache
+      - save_cache:
           key: myapp-bundle-{{ checksum "Gemfile.lock" }}
           paths:
             - vendor/bundle
 
-      - type: cache-save
-          name: Store yarn cache
+      - save_cache:
           key: myapp-yarn-{{ checksum "yarn.lock" }}
           paths:
             - ~/.yarn-cache
