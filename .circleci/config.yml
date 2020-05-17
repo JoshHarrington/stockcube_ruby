@@ -12,7 +12,10 @@ workflows:
             - build
           filters:
             branches:
-              only: staging
+              only:
+                - staging
+                - master
+
 jobs:
   build:
     docker:
