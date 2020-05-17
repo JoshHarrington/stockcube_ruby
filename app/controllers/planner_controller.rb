@@ -37,7 +37,7 @@ class PlannerController < ApplicationController
 			redirect_to root_path
 
 			## show message to explain redirection
-			flash[:notice] = "Looks like that shopping list link doesn't work"
+			flash[:error] = "Looks like that shopping list link doesn't work"
 		end
 
 	end
@@ -218,90 +218,105 @@ class PlannerController < ApplicationController
 	end
 
 	def get_shopping_list_content
-		if (current_user && current_user.planner_shopping_list.ready == true) || (params.has_key?(:gen_id) && PlannerShoppingList.find_by(gen_id: params[:gen_id]).present? && PlannerShoppingList.find_by(gen_id: params[:gen_id]).ready == true)
+		shopping_list = nil
 
-			if params.has_key?(:gen_id) && PlannerShoppingList.find_by(gen_id: params[:gen_id]).present? && PlannerShoppingList.find_by(gen_id: params[:gen_id]).ready == true
-				shopping_list = PlannerShoppingList.find_by(gen_id: params[:gen_id])
-			elsif current_user && current_user.planner_shopping_list.ready == true
-				shopping_list = current_user.planner_shopping_list
-			else
-				return
-			end
-
-			fetched_shopping_list_portions = shopping_list_portions(shopping_list)
-
-			email_sharing = email_sharing_mailto_list(fetched_shopping_list_portions, shopping_list.gen_id)
-
-			if fetched_shopping_list_portions.length > 0
-				formatted_shopping_list_portions = fetched_shopping_list_portions.sort_by{|p| p.ingredient.name}.map do |p|
-					num_assoc_recipes = '1'
-					if p.class.name == 'PlannerPortionWrapper'
-						if p.combi_planner_shopping_list_portion != nil
-							portion_type = 'wrapper'
-							num_assoc_recipes = p.combi_planner_shopping_list_portion.planner_shopping_list_portions.length
-							portion_note = 'Combi portion (' + num_assoc_recipes.to_s + ' recipes)'
-						else
-							portion_type = 'wrapper'
-							recipe_title = p.planner_shopping_list_portion.planner_recipe.recipe.title
-							portion_note = 'Recipe portion - ' + recipe_title
-						end
-					else
-						if p.class.name == "CombiPlannerShoppingListPortion"
-							portion_type = 'combi'
-							num_assoc_recipes = p.planner_shopping_list_portions.length
-							portion_note = 'Combi portion (' + num_assoc_recipes.to_s + ' recipes)'
-						else
-							portion_type = 'individual'
-							portion_note = 'Recipe portion - ' + p.planner_recipe.recipe.title
-						end
-					end
-					{
-						"portion_type": portion_type,
-						"portion_note": portion_note,
-						"shopping_list_portion_id": planner_portion_id_hash.encode(p.id),
-						"portion_description": stock_needed_serving_description(p),
-						"portion_size": short_serving_size(p),
-						"recipe_title": p.has_attribute?(:planner_recipe_id) && p.planner_recipe.recipe.present? ? p.planner_recipe.recipe.title.to_s : recipe_title.to_s,
-						"in_stock": portion_type == "individual" && p.stock && percentage_of_portion_in_stock(p.stock) > 2 && percentage_of_portion_in_stock(p.stock) < 100 ? percentage_of_portion_in_stock(p.stock) : 0,
-						"checked": p.checked,
-						"show_child_portions?": portion_type == "combi" ? ((p.unit_id == nil && p.amount == nil) || (p.checked != true && p.planner_shopping_list_portions.count{|cp|cp.checked} == 0 && p.planner_shopping_list_portions.count{|cp|cp.stock != nil && percentage_of_portion_in_stock(cp.stock) <= 2} == 0 ) ? true : false ) : false,
-						"child_portions": portion_type == "combi" ?
-							p.planner_shopping_list_portions.map{|child_portion| {
-								"portion_description": stock_needed_serving_description(child_portion),
-								"portion_size": short_serving_size(child_portion),
-								"recipe_title": child_portion.planner_recipe.recipe.title,
-								"checked": child_portion.checked,
-								"shopping_list_portion_id": planner_portion_id_hash.encode(child_portion.id),
-								"portion_amount": round_if_whole(child_portion.amount),
-								"in_stock": child_portion.stock && percentage_of_portion_in_stock(child_portion.stock) > 2 && percentage_of_portion_in_stock(child_portion.stock) < 100 ? percentage_of_portion_in_stock(child_portion.stock) : 0,
-								"portion_date": child_portion.date.strftime("%Y-%m-%d"),
-								"fresh_for": (child_portion.date - Date.today).to_i,
-								"min_date": (Date.current - 2.days).strftime("%Y-%m-%d")
-							}} : nil,
-						"num_assoc_recipes": num_assoc_recipes,
-						"ingredient_name": p.ingredient.name,
-						"portion_amount": round_if_whole(p.amount),
-						"portion_unit": p.unit_id,
-						"portion_date": p.date.strftime("%Y-%m-%d"),
-						"fresh_for": (p.date - Date.today).to_i,
-						"min_date": (Date.current - 2.days).strftime("%Y-%m-%d"),
-					}
-				end
-				shopping_list_output = [{"stats": {"checked_portions": checked_portions, "total_portions": fetched_shopping_list_portions.length}}, {"portions": formatted_shopping_list_portions }, {"gen_id": shopping_list.gen_id }, {"unit_list": unit_list()}, {"email_sharing": email_sharing}]
-			else
-				shopping_list_output = []
-			end
-
-			respond_to do |format|
-				format.json { render json: shopping_list_output.as_json}
-				format.html { redirect_to planner_path }
-			end
-
+		if params.has_key?(:gen_id)
+			shopping_list = PlannerShoppingList.find_by(gen_id: params[:gen_id])
+		elsif user_signed_in?
+			shopping_list = current_user.planner_shopping_list
 		else
+			### probably will never get into this branch
 			respond_to do |format|
-				format.json { render json: [].as_json, status: 202}
+				format.json { render json: {'shopping list': 'not found'}.as_json, status: 404}
 				format.html { redirect_to planner_path }
+			end and return
+		end
+
+		if shopping_list == nil
+			respond_to do |format|
+				format.json { render json: {'shopping list': 'not found'}.as_json, status: 404}
+				format.html { redirect_to planner_path }
+			end and return
+		end
+
+		if shopping_list.ready == false
+			if shopping_list.updated_at < 30.seconds.ago
+				shopping_list.update_attributes(ready: true)
+			else
+				respond_to do |format|
+					format.json { render json: {'shopping list': 'not ready'}.as_json, status: 202}
+					format.html { redirect_to planner_path }
+				end and return
 			end
+		end
+
+		fetched_shopping_list_portions = shopping_list_portions(shopping_list)
+
+		email_sharing = email_sharing_mailto_list(fetched_shopping_list_portions, shopping_list.gen_id)
+
+		if fetched_shopping_list_portions.length > 0
+			formatted_shopping_list_portions = fetched_shopping_list_portions.sort_by{|p| p.ingredient.name}.map do |p|
+				num_assoc_recipes = '1'
+				if p.class.name == 'PlannerPortionWrapper'
+					if p.combi_planner_shopping_list_portion != nil
+						portion_type = 'wrapper'
+						num_assoc_recipes = p.combi_planner_shopping_list_portion.planner_shopping_list_portions.length
+						portion_note = 'Combi portion (' + num_assoc_recipes.to_s + ' recipes)'
+					else
+						portion_type = 'wrapper'
+						recipe_title = p.planner_shopping_list_portion.planner_recipe.recipe.title
+						portion_note = 'Recipe portion - ' + recipe_title
+					end
+				else
+					if p.class.name == "CombiPlannerShoppingListPortion"
+						portion_type = 'combi'
+						num_assoc_recipes = p.planner_shopping_list_portions.length
+						portion_note = 'Combi portion (' + num_assoc_recipes.to_s + ' recipes)'
+					else
+						portion_type = 'individual'
+						portion_note = 'Recipe portion - ' + p.planner_recipe.recipe.title
+					end
+				end
+				{
+					"portion_type": portion_type,
+					"portion_note": portion_note,
+					"shopping_list_portion_id": planner_portion_id_hash.encode(p.id),
+					"portion_description": stock_needed_serving_description(p),
+					"portion_size": short_serving_size(p),
+					"recipe_title": p.has_attribute?(:planner_recipe_id) && p.planner_recipe.recipe.present? ? p.planner_recipe.recipe.title.to_s : recipe_title.to_s,
+					"in_stock": portion_type == "individual" && p.stock && percentage_of_portion_in_stock(p.stock) > 2 && percentage_of_portion_in_stock(p.stock) < 100 ? percentage_of_portion_in_stock(p.stock) : 0,
+					"checked": p.checked,
+					"show_child_portions?": portion_type == "combi" ? ((p.unit_id == nil && p.amount == nil) || (p.checked != true && p.planner_shopping_list_portions.count{|cp|cp.checked} == 0 && p.planner_shopping_list_portions.count{|cp|cp.stock != nil && percentage_of_portion_in_stock(cp.stock) <= 2} == 0 ) ? true : false ) : false,
+					"child_portions": portion_type == "combi" ?
+						p.planner_shopping_list_portions.map{|child_portion| {
+							"portion_description": stock_needed_serving_description(child_portion),
+							"portion_size": short_serving_size(child_portion),
+							"recipe_title": child_portion.planner_recipe.recipe.title,
+							"checked": child_portion.checked,
+							"shopping_list_portion_id": planner_portion_id_hash.encode(child_portion.id),
+							"portion_amount": round_if_whole(child_portion.amount),
+							"in_stock": child_portion.stock && percentage_of_portion_in_stock(child_portion.stock) > 2 && percentage_of_portion_in_stock(child_portion.stock) < 100 ? percentage_of_portion_in_stock(child_portion.stock) : 0,
+							"portion_date": child_portion.date.strftime("%Y-%m-%d"),
+							"fresh_for": (child_portion.date - Date.today).to_i,
+							"min_date": (Date.current - 2.days).strftime("%Y-%m-%d")
+						}} : nil,
+					"num_assoc_recipes": num_assoc_recipes,
+					"ingredient_name": p.ingredient.name,
+					"portion_amount": round_if_whole(p.amount),
+					"portion_unit": p.unit_id,
+					"portion_date": p.date.strftime("%Y-%m-%d"),
+					"fresh_for": (p.date - Date.today).to_i,
+					"min_date": (Date.current - 2.days).strftime("%Y-%m-%d"),
+				}
+			end
+			shopping_list_output = [{"stats": {"checked_portions": checked_portions, "total_portions": fetched_shopping_list_portions.length}}, {"portions": formatted_shopping_list_portions }, {"gen_id": shopping_list.gen_id }, {"unit_list": unit_list()}, {"email_sharing": email_sharing}]
+		else
+			shopping_list_output = []
+		end
+
+		respond_to do |format|
+			format.json { render json: shopping_list_output.as_json}
+			format.html { redirect_to planner_path }
 		end
 	end
 end
