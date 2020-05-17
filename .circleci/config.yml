@@ -39,11 +39,13 @@ jobs:
         key: myapp-yarn-{{ checksum "yarn.lock" }}
 
       # Bundle install dependencies
-      - run: bundle install --path vendor/bundle
+      - run:
+          name: Bundle Install
+          command: bin/bundle install --path vendor/bundle
 
       - run:
-        name: Yarn Install
-        command: yarn install
+          name: Yarn Install
+          command: yarn install
 
       - type: cache-save
         name: Store bundle cache
