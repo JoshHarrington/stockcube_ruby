@@ -238,6 +238,19 @@ const renderShoppingList = (shoppingList, animated = false) => {
 		document.querySelector('main').prepend(ShoppingListInner)
 	}
 
+	if (shoppingList[0]["stats"]["checked_portions"] > 0) {
+		const checkedTitle = document.createElement('li')
+		checkedTitle.classList.add('order-2', 'text-base', 'pt-4', 'border-0', 'border-t', 'border-solid', 'border-gray-300', 'text-gray-600')
+		checkedTitle.dataset.name = 'checked-title'
+		checkedTitle.innerText = 'Items added to cupboards:'
+		ListTopUl.appendChild(checkedTitle)
+	} else {
+		const checkedTitle = ListTopUl.querySelector('li[data-name="checked-title"]')
+		if (checkedTitle) {
+			checkedTitle.remove()
+		}
+	}
+
 	const selectEl = document.querySelectorAll('.planner_sl-recipe_list select.choices--basis')
 	if (selectEl.length > 0){
 		selectEl.forEach(function(select){
@@ -290,7 +303,7 @@ const setupPortionUpdateWatch = () => {
 		genId = window.location.pathname.replace('/list/','')
 	}
 
-	const shoppingListPortions = document.querySelectorAll('.planner_shopping_list--inner .planner_sl-recipe_list li')
+	const shoppingListPortions = document.querySelectorAll('.planner_shopping_list--inner .planner_sl-recipe_list li:not([data-name="checked-title"])')
 	shoppingListPortions.forEach(function(portionLi){
 		const portionId = portionLi.getAttribute('id')
 
@@ -387,6 +400,16 @@ const setupShoppingListCheckingOff = () => {
 
 			if (portionCheckbox.checked) {
 				ajaxRequest(portionData, '/stock/add_portion')
+
+				const ListTopUl = document.querySelector('.planner_shopping_list--inner .planner_sl-recipe_list')
+				if (!(ListTopUl.querySelector('li[data-name="checked-title"]'))){
+					const checkedTitle = document.createElement('li')
+					checkedTitle.classList.add('order-2', 'text-base', 'pt-4', 'border-0', 'border-t', 'border-solid', 'border-gray-300', 'text-gray-600')
+					checkedTitle.dataset.name = 'checked-title'
+					checkedTitle.innerText = 'Items added to cupboards:'
+					ListTopUl.appendChild(checkedTitle)
+				}
+
 			} else {
 				ajaxRequest(portionData, '/stock/remove_portion')
 			}
