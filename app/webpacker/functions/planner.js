@@ -133,7 +133,7 @@ const renderShoppingList = (shoppingList, animated = false) => {
 			RecipePortionLi.setAttribute('id', portion["shopping_list_portion_id"])
 			RecipePortionLi.classList.add('shopping_list_portion')
 			if (portion["checked"] === true){
-				RecipePortionLi.classList.add('portion_checked')
+				RecipePortionLi.classList.add('portion_checked', 'order-3')
 			}
 			let RecipePortionLiTag
 
@@ -365,7 +365,12 @@ const setupShoppingListCheckingOff = () => {
 			}
 
 			const portionData = "shopping_list_portion_id=" + portionId + "&portion_type=" + portionType + (genId !== null ? "&gen_id=" + genId : "")
-			portionLi.classList.toggle('portion_checked')
+			if (portionCheckbox.checked) {
+				portionLi.classList.add('portion_checked', 'order-3')
+				console.log('portion li', portionLi, portionCheckbox)
+			} else {
+				portionLi.classList.remove('portion_checked', 'order-3')
+			}
 
 
 			if (portionType == 'combi_portion') {
