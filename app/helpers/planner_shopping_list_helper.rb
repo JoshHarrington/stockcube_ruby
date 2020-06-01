@@ -276,6 +276,18 @@ module PlannerShoppingListHelper
 
 	end
 
+	def processed_shopping_list_portions(sl_portions = nil)
+		return if sl_portions == nil
+
+		return sl_portions.map{|p| {
+			encodedId: planner_portion_id_hash.encode(p.id),
+			checked: p.checked,
+			description: serving_description(p),
+			type: p.class == CombiPlannerShoppingListPortion ? 'combi_portion' : 'individual_portion',
+			freshForTime: (p.date - Date.today).to_i
+		}}
+	end
+
 	def email_sharing_mailto_list(shopping_list_portions = nil, shopping_list_gen_id = nil)
 		return if shopping_list_portions == nil
 		return "" if shopping_list_portions.length == 0
@@ -309,12 +321,12 @@ module PlannerShoppingListHelper
 		return session[:sl_unchecked_portions_count]
 	end
 
-	def checked_portions
+	def checked_portions()
 		add_portion_counts_to_session
 		return session[:sl_checked_portions_count]
 	end
 
-	def total_portions
+	def total_portions()
 		add_portion_counts_to_session
 		return session[:sl_total_portions_count]
 	end

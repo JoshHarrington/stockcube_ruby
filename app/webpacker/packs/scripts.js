@@ -9,7 +9,7 @@ import '../functions/recipes';
 import '../functions/cupboard_share';
 import '../functions/user';
 import '../functions/feedback';
-import '../functions/planner';
+// import '../functions/planner';
 import '../functions/ingredients';
 
 import '../functions/vendor/van11yModal';
