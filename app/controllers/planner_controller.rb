@@ -309,7 +309,7 @@ class PlannerController < ApplicationController
 					"min_date": (Date.current - 2.days).strftime("%Y-%m-%d"),
 				}
 			end
-			shopping_list_output = [{"stats": {"checked_portions": checked_portions, "total_portions": fetched_shopping_list_portions.length}}, {"portions": formatted_shopping_list_portions }, {"gen_id": shopping_list.gen_id }, {"unit_list": unit_list()}, {"email_sharing": email_sharing}]
+			shopping_list_output = [{"stats": {"checked_portions": checked_portions(), "total_portions": total_portions()}}, {"portions": formatted_shopping_list_portions }, {"gen_id": shopping_list.gen_id }, {"unit_list": unit_list()}, {"email_sharing": email_sharing}]
 		else
 			shopping_list_output = []
 		end
