@@ -150,28 +150,60 @@ class StocksController < ApplicationController
 		@delete_stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
 	end
 
-	def add_shopping_list_portion
-		return unless params.has_key?(:shopping_list_portion_id) && params.has_key?(:portion_type)
+	def toggle_shopping_list_portion
+		unless params.has_key?(:shopping_list_portion_id) && params.has_key?(:portion_type)
+			respond_to do |format|
+				format.json { render json: {'message': 'Bad portion params'}.as_json, status: 400}
+				format.html { redirect_to planner_path }
+			end and return
+		end
+
 		planner_portion_id = planner_portion_id_hash.decode(params[:shopping_list_portion_id]).first
-		Rails.logger.debug "add_shopping_list_portion #{planner_portion_id}"
+
 		if params[:portion_type] == "individual_portion"
 			planner_portion = PlannerShoppingListPortion.find(planner_portion_id)
 		elsif params[:portion_type] == "combi_portion"
 			planner_portion = CombiPlannerShoppingListPortion.find(planner_portion_id)
+		else
+			respond_to do |format|
+				format.json { render json: {'message': 'Portion type not found'}.as_json, status: 404}
+				format.html { redirect_to planner_path }
+			end and return
 		end
 
 		planner_portion.update_attributes(
-			checked: true
+			checked: !planner_portion.checked
 		)
 
 		if params[:portion_type] == "combi_portion"
 			planner_portion.planner_shopping_list_portions.update_all(
-				checked: true
+				checked: !planner_portion.checked
+			)
+		elsif planner_portion.checked == false && planner_portion.combi_planner_shopping_list_portion_id != nil
+			planner_portion.combi_planner_shopping_list_portion.update_attributes(
+				checked: false
 			)
 		end
 
-		add_stock_after_portion_checked(planner_portion, params[:portion_type])
+		if planner_portion.checked == true
+			add_stock_after_portion_checked(planner_portion, params[:portion_type])
+		else
+			remove_stock_after_portion_unchecked(planner_portion, params[:portion_type])
+		end
+
 		delete_all_combi_planner_portions_and_create_new(planner_portion.planner_shopping_list.id)
+
+		fetched_shopping_list_portions = shopping_list_portions(planner_portion.planner_shopping_list)
+		processed_fetched_shopping_list_portions = processed_shopping_list_portions(fetched_shopping_list_portions)
+
+		respond_to do |format|
+			format.json { render json: {
+				'shoppingListPortions': processed_fetched_shopping_list_portions,
+				'portionDescription': serving_description(planner_portion),
+				'checkedPortionCount': checked_portions(),
+				'totalPortionCount': total_portions()}.as_json, status: 200}
+			format.html { redirect_to planner_path }
+		end and return
 	end
 
 	def remove_shopping_list_portion
