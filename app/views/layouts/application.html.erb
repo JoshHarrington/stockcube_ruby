@@ -160,34 +160,7 @@
         <% end %>
         <main>
           <% if current_user && !(params[:controller] == 'planner' && params[:action] == 'list') %>
-            <aside class="planner_shopping_list--wrapper">
-            	<button class="list_toggle" style="
-                  display: flex;
-                  width: auto;
-                  align-items: center;
-                  border-radius:2rem;
-                  padding:0;
-                  <% if shopping_list_count == false %>display:none;<% end %>">
-                <span class="cross icon_char"
-                    style="height: 3.1rem;
-                            width: 1.6rem;
-                            margin-left: 0.9rem;
-                            margin-right: 0.7rem;"
-                    title="Close shopping list">
-                  <%= icomoon('close') %>
-                </span>
-                <span class="chevron_left icon_char" style="height: 3.1rem;width:3.1rem" title="Open shopping list">
-                  <%= icomoon('navigate_before') %>
-                </span>
-
-                <span id="button__shopping_list_fraction"
-                    style="font-size: 1.3rem;
-                          margin-right:.9rem;
-                          <% if shopping_list_count == false %>display:none<% end %>"
-                ><%= shopping_list_count != false ? shopping_list_count : nil %></span>
-              </button>
-              <%= render 'layouts/shopping_list_partial' %>
-            </aside>
+            <%= render 'layouts/shopping_list_partial' %>
           <% end %>
           <%= yield %>
           <%= debug(params) if Rails.env.development? %>
