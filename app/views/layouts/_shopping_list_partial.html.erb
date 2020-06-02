@@ -18,45 +18,5 @@
 											controller: params[:controller],
 											action: params[:action],
 											sharePath: user_signed_in? && shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id),
-											mailtoHrefContent: defined?(shopping_list) && email_sharing_mailto_list(fetched_shopping_list_portions, shopping_list.gen_id)},
+											mailtoHrefContent: email_sharing_mailto_list(fetched_shopping_list_portions, defined?(shopping_list) ? shopping_list.gen_id : (user_signed_in? && current_user.planner_shopping_list.gen_id))},
 										{prerender: true}) %>
-
-
-<div class="planner_shopping_list--inner">
-	<div class="title_block">
-		<h2>Shopping List <% if total_portions > 0 %>(<%= checked_portions() %>/<%= total_portions %>)<% end %></h2>
-		<% if total_portions() > 0 %><p data-name="shopping-list-note" class="flex text-gray-600 text-sm mt-2"><span class="w-6 h-6 mr-1 inline-block"><%= icomoon('information-outline')%></span>Add to cupboards by checking off items</p><% end %>
-
-		<% if current_user && !defined?(shopping_list) && total_portions() > 0 %>
-			<%= link_to shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id), title: "View and share shopping list", class: "planner_shopping_list--fullscreen_btn" do %>
-				<%= icomoon('fullscreen') %>
-			<% end %>
-		<% elsif defined?(shopping_list) && params.has_key?(:gen_id) %>
-				<%= link_to "Email shopping list", email_sharing_mailto_list(fetched_shopping_list_portions, shopping_list.gen_id), class: "mt-8 bg-white p-3 inline-block rounded hover:bg-primary-700 hover:text-white focus:bg-primary-800 focus:text-white", target: "_blank"  %>
-		<% end %>
-	</div>
-	<% if total_portions() == 0 %>
-		<ul><p>Shopping List is currently empty, move some recipes to <%= link_to 'your planner', planner_path, class: "underline" %> to get items added to this list</p></ul>
-	<% else %>
-		<ul class="planner_sl-recipe_list">
-			<% fetched_shopping_list_portions.each do |portion| %>
-				<li id="<%= planner_portion_id_hash.encode(portion.id) %>"
-						class="shopping_list_portion <%= portion.class.name == "CombiPlannerShoppingListPortion" ? 'combi_portion' : 'individual_portion' %> <%= portion.checked ? 'portion_checked' : '' %>">
-					<p class="h3 portion_ingredient_name">
-						<%= check_box_tag "planner_shopping_list_portions_add[#{planner_portion_id_hash.encode(portion.id)}]", "planner_shopping_list_portions_add", portion.checked, class: "fancy_checkbox" %>
-						<%= label_tag "planner_shopping_list_portions_add[#{planner_portion_id_hash.encode(portion.id)}]", class: "fancy_checkbox_label flex-wrap" do %>
-							<span <% if portion.checked %>class="line-through"<% end %> ><%= serving_description(portion) %></span>
-							<% if portion.checked %>
-								<span class="fresh_note w-full text-sm">Typically fresh for 17 days</span>
-							<% end %>
-						<% end %>
-					</p>
-				</li>
-			<% end %>
-		</ul>
-	<% end %>
-
-	<div class="planner_shopping_list-floating_action" <% if fetched_shopping_list_portions.length > 0 %>style="display:none"<% end %>>
-		<%= link_to "Email shopping list", email_sharing_mailto_list(fetched_shopping_list_portions, defined?(shopping_list) && shopping_list.gen_id), class: "list_block--collection--action", target: "_blank"  %>
-	</div>
-</div>

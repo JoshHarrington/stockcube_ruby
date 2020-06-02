@@ -39,8 +39,7 @@ Rails.application.routes.draw do
   patch '/stock/:id' => 'stocks#update'
   post '/stock' => 'stocks#create'
   post '/stock/custom' => 'stocks#create_custom', as: :create_custom_stock
-  post '/stock/add_portion' => 'stocks#add_shopping_list_portion'
-  post '/stock/remove_portion' => 'stocks#remove_shopping_list_portion'
+  post '/stock/toggle_portion' => 'stocks#toggle_shopping_list_portion'
   post '/stock/add_shopping_list' => 'stocks#add_shopping_list'
   post '/stock/new/:cupboard_id' => 'stocks#create', as: :create_stock
   post '/stock/new' => 'stocks#create_with_params', as: :create_stock_with_params
