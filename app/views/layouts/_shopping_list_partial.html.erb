@@ -4,13 +4,12 @@
 	else
 		fetched_shopping_list_portions = shopping_list_portions(nil)
 	end
-	@units = unit_list()
 
 	processed_fetched_shopping_list_portions = processed_shopping_list_portions(fetched_shopping_list_portions)
 %>
 
 
-<%= react_component("ShoppingList",
+<%= react_component("ShoppingListStandalone",
 										{ csrfToken: form_authenticity_token,
 											checkedPortionCount: checked_portions(),
 											totalPortionCount: total_portions(),

@@ -1,32 +1,28 @@
 <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <defs>
+<symbol id="icon-navigate_next" viewBox="0 0 24 24">
+<path d="M9.984 6l6 6-6 6-1.406-1.406 4.594-4.594-4.594-4.594z"></path>
+</symbol>
 <symbol id="icon-navigate_before" viewBox="0 0 24 24">
-<title>navigate_before</title>
 <path d="M15.422 7.406l-4.594 4.594 4.594 4.594-1.406 1.406-6-6 6-6z"></path>
 </symbol>
 <symbol id="icon-arrow_back" viewBox="0 0 24 24">
-<title>arrow_back</title>
 <path d="M20.016 11.016v1.969h-12.188l5.578 5.625-1.406 1.406-8.016-8.016 8.016-8.016 1.406 1.406-5.578 5.625h12.188z"></path>
 </symbol>
 <symbol id="icon-arrow_forward" viewBox="0 0 24 24">
-<title>arrow_forward</title>
 <path d="M12 3.984l8.016 8.016-8.016 8.016-1.406-1.406 5.578-5.625h-12.188v-1.969h12.188l-5.578-5.625z"></path>
 </symbol>
 <symbol id="icon-fullscreen" viewBox="0 0 24 24">
-<title>fullscreen</title>
 <path d="M14.016 5.016h4.969v4.969h-1.969v-3h-3v-1.969zM17.016 17.016v-3h1.969v4.969h-4.969v-1.969h3zM5.016 9.984v-4.969h4.969v1.969h-3v3h-1.969zM6.984 14.016v3h3v1.969h-4.969v-4.969h1.969z"></path>
 </symbol>
 <symbol id="icon-fullscreen_exit" viewBox="0 0 24 24">
-<title>fullscreen_exit</title>
 <path d="M15.984 8.016h3v1.969h-4.969v-4.969h1.969v3zM14.016 18.984v-4.969h4.969v1.969h-3v3h-1.969zM8.016 8.016v-3h1.969v4.969h-4.969v-1.969h3zM5.016 15.984v-1.969h4.969v4.969h-1.969v-3h-3z"></path>
 </symbol>
 <symbol id="icon-user" viewBox="0 0 24 24">
-<title>user</title>
 <path d="M17 9c0-1.381-0.56-2.631-1.464-3.535s-2.155-1.465-3.536-1.465-2.631 0.56-3.536 1.465c-0.904 0.904-1.464 2.154-1.464 3.535s0.56 2.631 1.464 3.535c0.905 0.905 2.155 1.465 3.536 1.465s2.631-0.56 3.536-1.465c0.904-0.904 1.464-2.154 1.464-3.535z"></path>
 <path d="M6 19c0 1 2.25 2 6 2 3.518 0 6-1 6-2 0-2-2.354-4-6-4-3.75 0-6 2-6 4z"></path>
 </symbol>
 <symbol id="icon-logo" viewBox="0 0 38 20">
-<title>logo</title>
 <path fill="#65b5ae" style="fill: var(--color1, #65b5ae)" d="M11.357 2.283l10.613-2.274v11.002l-10.613 2.743z"></path>
 <path fill="#77c9c4" style="fill: var(--color2, #77c9c4)" d="M11.359 13.749l10.611-2.739 9.413 3.082-10.742 2.916z"></path>
 <path fill="#98dcd8" style="fill: var(--color3, #98dcd8)" d="M11.347 2.245l9.293 2.725v12.039l-9.293-3.277z"></path>
@@ -36,63 +32,48 @@
 <path fill="#aae2de" style="fill: var(--color7, #aae2de)" d="M26.996 3.517l10.647-2.446v11.381l-10.647 2.829z"></path>
 </symbol>
 <symbol id="icon-add-solid" viewBox="0 0 20 20">
-<title>add-solid</title>
 <path d="M11 9v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM10 20c-5.523 0-10-4.477-10-10s4.477-10 10-10v0c5.523 0 10 4.477 10 10s-4.477 10-10 10v0z"></path>
 </symbol>
 <symbol id="icon-checkmark" viewBox="0 0 20 20">
-<title>checkmark</title>
 <path d="M0 11l2-2 5 5 11-11 2 2-13 13z"></path>
 </symbol>
 <symbol id="icon-edit" viewBox="0 0 20 20">
-<title>edit</title>
 <path d="M12.3 3.7l4 4-12.3 12.3h-4v-4l12.3-12.3zM13.7 2.3l2.3-2.3 4 4-2.3 2.3-4-4z"></path>
 </symbol>
 <symbol id="icon-heart" viewBox="0 0 20 20">
-<title>heart</title>
 <path d="M10 3.22l-0.61-0.6c-0.983-0.931-2.314-1.504-3.779-1.504-3.038 0-5.5 2.462-5.5 5.5 0 1.462 0.571 2.791 1.501 3.776l-0.002-0.003 8.39 8.39 8.39-8.4c0.928-0.983 1.499-2.312 1.499-3.774 0-3.038-2.462-5.5-5.5-5.5-1.465 0-2.796 0.573-3.782 1.506l0.003-0.002-0.61 0.61z"></path>
 </symbol>
 <symbol id="icon-information-outline" viewBox="0 0 20 20">
-<title>information-outline</title>
 <path d="M2.93 17.070c-1.884-1.821-3.053-4.37-3.053-7.193 0-5.523 4.477-10 10-10 2.823 0 5.372 1.169 7.19 3.050l0.003 0.003c1.737 1.796 2.807 4.247 2.807 6.947 0 5.523-4.477 10-10 10-2.7 0-5.151-1.070-6.95-2.81l0.003 0.003zM15.66 15.66c1.449-1.449 2.344-3.45 2.344-5.66 0-4.421-3.584-8.004-8.004-8.004-2.21 0-4.211 0.896-5.66 2.344v0c-1.449 1.449-2.344 3.45-2.344 5.66 0 4.421 3.584 8.004 8.004 8.004 2.21 0 4.211-0.896 5.66-2.344v0zM9 11v-2h2v6h-2v-4zM9 5h2v2h-2v-2z"></path>
 </symbol>
 <symbol id="icon-list-add" viewBox="0 0 20 20">
-<title>list-add</title>
 <path d="M15 9h-3v2h3v3h2v-3h3v-2h-3v-3h-2v3zM0 3h10v2h-10v-2zM0 11h10v2h-10v-2zM0 7h10v2h-10v-2zM0 15h10v2h-10v-2z"></path>
 </symbol>
 <symbol id="icon-search" viewBox="0 0 20 20">
-<title>search</title>
 <path d="M12.9 14.32c-1.34 1.049-3.050 1.682-4.908 1.682-4.418 0-8-3.582-8-8s3.582-8 8-8c4.418 0 8 3.582 8 8 0 1.858-0.633 3.567-1.695 4.925l0.013-0.018 5.35 5.33-1.42 1.42-5.33-5.34zM8 14c3.314 0 6-2.686 6-6s-2.686-6-6-6v0c-3.314 0-6 2.686-6 6s2.686 6 6 6v0z"></path>
 </symbol>
 <symbol id="icon-bin" viewBox="0 0 20 20">
-<title>bin</title>
 <path d="M6 2l2-2h4l2 2h4v2h-16v-2h4zM3 6h14l-1 14h-12l-1-14zM8 8v10h1v-10h-1zM11 8v10h1v-10h-1z"></path>
 </symbol>
 <symbol id="icon-calendar" viewBox="0 0 20 20">
-<title>calendar</title>
 <path d="M1 4c0-1.1 0.9-2 2-2h14c1.105 0 2 0.895 2 2v0 14c0 1.105-0.895 2-2 2v0h-14c-1.105 0-2-0.895-2-2v0-14zM3 6v12h14v-12h-14zM5 0h2v2h-2v-2zM13 0h2v2h-2v-2zM5 9h2v2h-2v-2zM5 13h2v2h-2v-2zM9 9h2v2h-2v-2zM9 13h2v2h-2v-2zM13 9h2v2h-2v-2zM13 13h2v2h-2v-2z"></path>
 </symbol>
 <symbol id="icon-close" viewBox="0 0 20 20">
-<title>close</title>
 <path d="M10 8.586l-7.071-7.071-1.414 1.414 7.071 7.071-7.071 7.071 1.414 1.414 7.071-7.071 7.071 7.071 1.414-1.414-7.071-7.071 7.071-7.071-1.414-1.414-7.071 7.071z"></path>
 </symbol>
 <symbol id="icon-list" viewBox="0 0 20 20">
-<title>list</title>
 <path d="M1 4h2v2h-2v-2zM5 4h14v2h-14v-2zM1 9h2v2h-2v-2zM5 9h14v2h-14v-2zM1 14h2v2h-2v-2zM5 14h14v2h-14v-2z"></path>
 </symbol>
 <symbol id="icon-location-food" viewBox="0 0 20 20">
-<title>location-food</title>
 <path d="M18 11v7c0 1.105-0.895 2-2 2s-2-0.895-2-2v0-5h-2v-10c0-1.657 1.343-3 3-3v0h3v11zM4 10c-1.105 0-2-0.895-2-2v0-7c0-0.552 0.448-1 1-1s1 0.448 1 1v0 4h1v-4c0-0.552 0.448-1 1-1s1 0.448 1 1v0 4h1v-4c0-0.552 0.448-1 1-1s1 0.448 1 1v0 7c0 1.105-0.895 2-2 2v0 8c0 1.105-0.895 2-2 2s-2-0.895-2-2v0-8z"></path>
 </symbol>
 <symbol id="icon-menu" viewBox="0 0 20 20">
-<title>menu</title>
 <path d="M0 3h20v2h-20v-2zM0 9h20v2h-20v-2zM0 15h20v2h-20v-2z"></path>
 </symbol>
 <symbol id="icon-notifications" viewBox="0 0 20 20">
-<title>notifications</title>
 <path d="M4 8c0-0.001 0-0.002 0-0.003 0-2.608 1.664-4.827 3.988-5.654l0.042-0.013c-0.016-0.095-0.025-0.204-0.025-0.315 0-1.105 0.895-2 2-2s2 0.895 2 2c0 0.111-0.009 0.22-0.027 0.327l0.002-0.012c2.361 0.843 4.020 3.060 4.020 5.664 0 0.002 0 0.004 0 0.006v-0 6l3 2v1h-18v-1l3-2v-6zM12 18c0 1.105-0.895 2-2 2s-2-0.895-2-2v0h4z"></path>
 </symbol>
 <symbol id="icon-view-column" viewBox="0 0 20 20">
-<title>view-column</title>
 <path d="M12 4h-4v12h4v-12zM14 4v12h4v-12h-4zM6 4h-4v12h4v-12zM0 2h20v16h-20v-16z"></path>
 </symbol>
 </defs>
