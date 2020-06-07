@@ -288,6 +288,91 @@ module PlannerShoppingListHelper
 		}}
 	end
 
+	def processed_recipe_list(recipes = nil)
+		return if recipes == nil
+
+		recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
+
+		return recipes.map{|r| {
+			encodedId: recipe_id_hash.encode(r.id),
+			title: r.title,
+			percentInCupboards: percent_in_cupboards(r).to_s,
+			path: recipe_path(r),
+			stockInfoNote: "#{num_stock_ingredients(r)} of #{r.portions.length} ingredients in stock"
+		}}
+
+	end
+
+	def processed_planner_list(user = nil)
+		return if user == nil
+
+		date_range = (-1..31)
+		planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
+
+		return date_range.map{|d|
+			date = Date.current + d.days
+			date_num = date.to_formatted_s(:number)
+			date_id = planner_recipe_date_hash.encode(date_num)
+			calendar_note = nil
+			if d == -1
+				calendar_note = "Yesterday " + date.to_s(:short)
+			elsif d == 0
+				calendar_note = "Today " + date.to_s(:short)
+			elsif d == 1
+				calendar_note = "Tomorrow " + date.to_s(:short)
+			else
+				calendar_note = date.to_s(:short)
+			end
+
+			planner_recipes = user.planner_recipes.where(date: date)
+
+			{
+				dateId: date_id,
+				calendarNote: calendar_note
+			}
+
+
+		}
+
+		# <% (-1..31).each do |d| %>
+		# 	<%
+		# 		date = Date.current + d.days
+		# 		date_num = date.to_formatted_s(:number)
+		# 		date_id = @planner_recipe_date_hash.encode(date_num)
+		# 	%>
+		# 	<div class="tiny-slide
+		# 		<% if d == -1 %>yesterday<% end %>"><div class="tiny-contents" id="<%= date_id %>"><h2 class="no-drag">
+		# 		<% if d == -1 %>Yesterday<% end %>
+		# 		<% if d == 0 %>Today<% end %>
+		# 		<% if d == 1 %>Tomorrow<% end %>
+		# 		<%= date.to_s(:short) %>
+		# 		</h2>
+		# 		<% PlannerRecipe.where(date: date, user_id: current_user.id).each do |p_recipe| %>
+		# 			<%
+		# 				recipe = p_recipe.recipe
+		# 				if user_recipe_stock_match_check(recipe.id) != nil
+		# 					message = num_stock_ingredients(recipe).to_s + " ingredients in stock, " + num_needed_ingredients(recipe).to_s + " needed"
+		# 				else
+		# 					message = recipe.title
+		# 				end
+		# 			%>
+		# 			<div class="list_block--item list_block--item--with-bar sortable--item"
+		# 					data-parent-id="<%= date_id %>"
+		# 					id="<%= @recipe_id_hash.encode(p_recipe.recipe.id) %>"
+		# 					title="<%= message %>"
+		# 					aria-label="<%= message %>"
+		# 					data-ingredients-in-stock="<%= num_stock_ingredients(recipe) %>"
+		# 			>
+		# 				<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= recipe_portions_in_stock_vs_total_percentage(p_recipe) %>%"></span></span>
+		# 				<%= link_to recipe.title, recipe_path(recipe) %>
+		# 				<button class="delete list_block--item--action list_block--item--action--btn"><%= icomoon('bin') %></button>
+		# 			</div>
+		# 		<% end %>
+		# 	</div></div>
+
+		# <% end %>
+	end
+
 	def email_sharing_mailto_list(shopping_list_portions = nil, shopping_list_gen_id = nil)
 		return if shopping_list_portions == nil
 		return "" if shopping_list_portions.length == 0

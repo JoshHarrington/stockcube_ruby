@@ -88,6 +88,17 @@ const isMobileDevice = () => {
   return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
 };
 
+const toKebabCase = str => (
+  str && str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+    .map(x => x.toLowerCase())
+    .join('-')
+)
+
+const toCamelCase = str => (
+  str && str.toLowerCase()
+    .replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase())
+)
+
 
 export {
   ready,
@@ -95,5 +106,7 @@ export {
   makeUniqueId,
   showAlert,
   isSelectorValid,
-  isMobileDevice
+  isMobileDevice,
+  toKebabCase,
+  toCamelCase
 }

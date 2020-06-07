@@ -893,6 +893,11 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
+"@brainhubeu/react-carousel@^1.18.2":
+  version "1.18.2"
+  resolved "https://registry.yarnpkg.com/@brainhubeu/react-carousel/-/react-carousel-1.18.2.tgz#35097ea7498dcc8976a9d398db7dc6d7eadde5d0"
+  integrity sha512-Bj29XoQoLoInpACLSr34RK25pBHAq1i7Ws3Wt3H38eCbBX8zamWfmxLM6qkmnaQ3/r2kbncDKXXUi7qAQmO7pg==
+
 "@csstools/convert-colors@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
@@ -905,6 +910,11 @@
   dependencies:
     postcss "7.0.28"
     purgecss "^2.2.0"
+
+"@popperjs/core@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.4.0.tgz#0e1bdf8d021e7ea58affade33d9d607e11365915"
+  integrity sha512-NMrDy6EWh9TPdSRiHmHH2ye1v5U0gBD7pRYwSwJvomx7Bm4GG04vu63dYiVzebLOx2obPpJugew06xVP0Nk7hA==
 
 "@rails/webpacker@4.2.2":
   version "4.2.2"

@@ -159,7 +159,7 @@
           </div>
         <% end %>
         <main>
-          <% if current_user && !(params[:controller] == 'planner' && params[:action] == 'list') %>
+          <% if current_user && !(params[:controller] == 'planner') %>
             <%= render 'layouts/shopping_list_partial' %>
           <% end %>
           <%= yield %>
