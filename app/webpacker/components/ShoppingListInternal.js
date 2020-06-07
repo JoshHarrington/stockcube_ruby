@@ -1,16 +1,8 @@
 import React, {useState} from "react"
-// import PropTypes from "prop-types"
-const classNames = require('classnames')
-import SVG from '../icons/symbol-defs.svg'
+import * as classNames from "classnames"
 import { showAlert } from "../functions/utils"
 
-function Icon(props) {
-  const name = props.name
-  const className = props.className
-  return (
-    <svg className={className}><use className="fill-current" xlinkHref={`${SVG}#icon-${name}`} /></svg>
-  )
-}
+import Icon from './Icon'
 
 function togglePortionCheck(portion, csrfToken, checked, updateShoppingListPortions, updateShoppingListComplete) {
 
@@ -52,27 +44,33 @@ function switchShoppingListClass() {
   document.querySelector('html').classList.toggle('shopping_list_open')
 }
 
-function ShoppingList(props) {
-  const [checkedPortionCount, updateCheckedPortionCount] = useState(props.checkedPortionCount)
-  const [shoppingListShown, toggleShoppingListShow] = useState(false)
-  const totalPortionCount = props.totalPortionCount
-  const [shoppingListComplete, updateShoppingListComplete] = useState(!!(checkedPortionCount === totalPortionCount))
-  const [shoppingListPortions, updateShoppingListPortions] = useState(props.shoppingListPortions)
-  const controller = props.controller
-  const action = props.action
+function ShoppingListInternal(props) {
 
-  const onListPage = !!(controller === "planner" && action === "list")
-  const totalPortionsPositive = !!(totalPortionCount && totalPortionCount !== 0)
-  const showToggleButton = !!(totalPortionsPositive && !onListPage)
+  const {
+    checkedPortionCount,
+    updateCheckedPortionCount,
+    shoppingListShown,
+    toggleShoppingListShow,
+    totalPortionCount,
+    updateTotalPortionCount,
+    shoppingListComplete,
+    updateShoppingListComplete,
+    shoppingListPortions,
+    updateShoppingListPortions,
+    toggleButtonShow,
+    updateToggleButtonShow,
+    totalPortionsPositive,
+    onListPage,
+    sharePath,
+    mailtoHrefContent,
+    csrfToken
+  } = props
 
-  const sharePath = props.sharePath
-
-  const mailtoHrefContent = props.mailtoHrefContent
 
   return (
     <aside className="fixed h-screen bottom-0 right-0 z-10 bg-white border-0 border-l border-solid border-primary-200 transition-all duration-500" style={{width: "30rem", left: shoppingListShown ? 'calc(100% - 30rem)' : '100%'}}>
       <div className="flex h-screen flex-col">
-        {showToggleButton &&
+        {toggleButtonShow &&
           <button
             className="fixed border-0 bg-primary-600 text-white overflow-hidden outline-none transition-all duration-500 shadow-lg flex w-auto items-center rounded-full p-2 pr-4 right-0 top-0 mt-32 mr-5 focus:outline-none focus:shadow-outline"
             onClick={() => {
@@ -117,7 +115,7 @@ function ShoppingList(props) {
                       type="checkbox" id={`planner_shopping_list_portions_add_${portion.encodedId}`}
                       className="fancy_checkbox"
                       onChange={() => {
-                        togglePortionCheck(portion, props.csrfToken, checked, updateShoppingListPortions, updateShoppingListComplete)
+                        togglePortionCheck(portion, csrfToken, checked, updateShoppingListPortions, updateShoppingListComplete)
                         if (!checked) {
                           updateCheckedPortionCount(checkedPortionCount + 1)
                         } else {
@@ -157,4 +155,4 @@ function ShoppingList(props) {
   )
 }
 
-export default ShoppingList
+export default ShoppingListInternal

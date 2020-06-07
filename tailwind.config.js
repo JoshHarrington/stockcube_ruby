@@ -1,4 +1,4 @@
-const { transitionProperty } = require('tailwindcss/defaultTheme')
+const { transitionProperty, spacing } = require('tailwindcss/defaultTheme')
 
 module.exports = {
   theme: {
@@ -26,6 +26,16 @@ module.exports = {
       },
       fontFamily: {
         'sans': ['Lato', 'system-ui', '-apple-system', 'BlinkMacSystemFont', "Segoe UI", 'Roboto', "Helvetica Neue", 'Arial', "Noto Sans", 'sans-serif', "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"]
+      },
+      spacing: {
+        ...spacing,
+        'screen-1/2': '50vw',
+        'screen-1/4': '25vw',
+        'screen-1/5': '20vw',
+        'screen-2/5': '40vw',
+        'screen-3/5': '60vw',
+        'screen-4/5': '80vw',
+        'screen-full': '100vw'
       }
     },
     fontSize: {
@@ -55,6 +65,7 @@ module.exports = {
     }
   },
   variants: {
+    sizing: ['responsive'],
     padding: ['responsive', 'hover', 'focus'],
     borderStyle: ['responsive', 'hover', 'focus'],
     borderWidth: ['responsive', 'hover', 'focus'],

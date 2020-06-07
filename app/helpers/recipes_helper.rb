@@ -1,4 +1,5 @@
 module RecipesHelper
+
 	def vegan?(recipe)
 		if recipe.ingredients.none?{ |ingredient| ingredient.vegan == false }
 			return true
@@ -75,4 +76,5 @@ module RecipesHelper
 	def cuisines_list()
 		return ["American", "British", "Caribbean", "Chinese", "French", "Greek", "Indian", "Italian", "Japanese", "Mediterranean", "Mexican", "Moroccan", "Spanish", "Thai", "Turkish", "Vietnamese"]
 	end
+
 end

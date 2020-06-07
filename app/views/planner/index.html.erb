@@ -1,5 +1,28 @@
 <% provide(:title, 'Planner') %>
 
+<%
+	if defined?(shopping_list)
+		fetched_shopping_list_portions = shopping_list_portions(shopping_list)
+	else
+		fetched_shopping_list_portions = shopping_list_portions(nil)
+	end
+
+	processed_fetched_shopping_list_portions = processed_shopping_list_portions(fetched_shopping_list_portions)
+%>
+
+<%= react_component("ShoppingListContainer",
+										{ csrfToken: form_authenticity_token,
+											checkedPortionCount: checked_portions(),
+											totalPortionCount: total_portions(),
+											shoppingListPortions: processed_fetched_shopping_list_portions,
+											controller: params[:controller],
+											action: params[:action],
+											sharePath: user_signed_in? && shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id),
+											mailtoHrefContent: email_sharing_mailto_list(fetched_shopping_list_portions, defined?(shopping_list) ? shopping_list.gen_id : (user_signed_in? && current_user.planner_shopping_list.gen_id)),
+											recipes: processed_recipe_list(@recipes),
+											planner: processed_planner_list(current_user),
+											plannerRecipes: processed_recipe_list(current_user.planner_recipes)}) %>
+
 <div class="list_block--collection--wrap" id="dashboard">
 	<div class="list_block--collection">
 		<div class="list_block list_block-stack list_block-wide">
