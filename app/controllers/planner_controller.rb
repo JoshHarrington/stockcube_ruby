@@ -103,11 +103,16 @@ class PlannerController < ApplicationController
 
 		respond_to do |format|
 			format.json { render json: {
-				planner_id: date_id,
-				recipe_id: hashed_recipe_id,
-				recipe_title: recipe.title,
-				recipe_href: recipe_path(recipe_id),
-				percent_in_cupboards: percent_in_cupboards(recipe)
+				plannerDateId: date_id,
+				recipeEncodedId: hashed_recipe_id,
+				recipeTitle: recipe.title,
+				recipePath: recipe_path(recipe_id),
+				percentInCupboards: percent_in_cupboards(recipe),
+				plannerRecipesByDate: processed_planner_recipes_by_date(current_user),
+				suggestedRecipes: processed_recipe_list_for_user(current_user),
+				checkedPortionCount: checked_portions(),
+				totalPortionCount: total_portions(),
+				shoppingListPortions: processed_shopping_list_portions(shopping_list_portions(nil, current_user))
 			}.as_json, status: 200}
 		end
 
@@ -171,34 +176,20 @@ class PlannerController < ApplicationController
 		current_user.planner_shopping_list.update_attributes(
 			ready: false
 		)
-		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
-		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
-		if params.has_key?(:recipe_id) && Recipe.exists?(@recipe_id_hash.decode(params[:recipe_id]).first)
-			recipe = Recipe.find(@recipe_id_hash.decode(params[:recipe_id]).first)
+
+		planner_recipe_id_hash = Hashids.new(ENV['PLANNER_RECIPE_ID_SALT'])
+
+		if params.has_key?(:planner_recipe_id) && PlannerRecipe.exists?(planner_recipe_id_hash.decode(params[:planner_recipe_id]).first)
+			planner_recipe = current_user.planner_recipes.find(planner_recipe_id_hash.decode(params[:planner_recipe_id]).first)
 		else
 			current_user.planner_shopping_list.update_attributes(
 				ready: true
 			)
-			return
+			respond_to do |format|
+				format.json { render json: {'planner recipe delete': 'not allowed'}.as_json, status: 400}
+				format.html { redirect_to planner_path }
+			end and return
 		end
-
-
-		if recipe && params.has_key?(:date) && Date.parse(@planner_recipe_date_hash.decode(params[:date]).first.to_s).to_date && (recipe.public == true || recipe.user == current_user)
-			recipe_id = recipe.id
-			user_id = current_user.id
-			date = Date.parse(@planner_recipe_date_hash.decode(params[:date]).first.to_s).to_date
-		else
-			current_user.planner_shopping_list.update_attributes(
-				ready: true
-			)
-			return
-		end
-
-		planner_recipe = PlannerRecipe.find_by(
-			user_id: user_id,
-			recipe_id: recipe_id,
-			date: date
-		)
 
 		if planner_recipe.present?
 			combine_divided_stock_after_planner_recipe_delete(planner_recipe)
@@ -209,6 +200,17 @@ class PlannerController < ApplicationController
 		current_user.planner_shopping_list.update_attributes(
 			ready: true
 		)
+
+		respond_to do |format|
+			format.json { render json: {
+				plannerRecipesByDate: processed_planner_recipes_by_date(current_user),
+				suggestedRecipes: processed_recipe_list_for_user(current_user),
+				checkedPortionCount: checked_portions(),
+				totalPortionCount: total_portions(),
+				shoppingListPortions: processed_shopping_list_portions(shopping_list_portions(nil, current_user)),
+			}.as_json, status: 200}
+			format.html { redirect_to planner_path }
+		end
 
 		update_current_planner_recipe_ids
 	end

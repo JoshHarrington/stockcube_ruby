@@ -1,10 +1,10 @@
 import React from "react"
 import Icon from "./Icon"
 import RecipeItem from "./RecipeItem"
+import TooltipWrapper from "./TooltipWrapper"
 
 
-function PlannerRecipeList(props) {
-	const {recipes} = props
+function PlannerRecipeList({children}) {
 	return (
 		<div className="list_block--collection">
 			<div className="list_block list_block-stack list_block-wide">
@@ -15,19 +15,7 @@ function PlannerRecipeList(props) {
 							<Icon name="information-outline" className="w-5 h-5 mr-2" />
 							Add to your planner to build your meal plan and shopping list</p>
 					</div>
-					{recipes.map((recipe, index) => {
-						const {encodedId, title, percentInCupboards, path, stockInfoNote} = recipe
-						return (
-							<RecipeItem
-								key={index}
-								encodedId={encodedId}
-								title={title}
-								percentInCupboards={percentInCupboards}
-								path={path}
-								stockInfoNote={stockInfoNote}
-							/>
-						)
-					})}
+					{children}
 				</div>
 			</div>
 		</div>
