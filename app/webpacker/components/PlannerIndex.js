@@ -7,7 +7,15 @@ import TooltipWrapper from "./TooltipWrapper"
 import Icon from "./Icon"
 import { showAlert } from "../functions/utils"
 
-function addRecipeToPlanner(encodedId, csrfToken, updateGlobalPlannerRecipes, updateSuggestedRecipes) {
+function addRecipeToPlanner(
+	encodedId,
+	csrfToken,
+	updateGlobalPlannerRecipes,
+	updateSuggestedRecipes,
+	updateCheckedPortionCount,
+	updateTotalPortionCount,
+	updateShoppingListPortions
+) {
 
 	const data = {
 		method: 'post',
@@ -24,20 +32,32 @@ function addRecipeToPlanner(encodedId, csrfToken, updateGlobalPlannerRecipes, up
 	showAlert("Adding recipe to your planner")
 
   fetch("/planner/recipe_add", data).then((response) => {
-    if(response.status != 200){
-      window.alert('Something went wrong! Maybe refresh the page and try again')
-    } else {
+		if(response.status === 200){
       return response.json();
+		} else {
+			window.alert('Something went wrong! Maybe refresh the page and try again')
+			throw new Error('non-200 response status')
     }
   }).then((jsonResponse) => {
 		updateGlobalPlannerRecipes(jsonResponse["plannerRecipesByDate"])
 		updateSuggestedRecipes(jsonResponse["suggestedRecipes"])
+		updateCheckedPortionCount(jsonResponse["checkedPortionCount"])
+		updateTotalPortionCount(jsonResponse["totalPortionCount"])
+		updateShoppingListPortions(jsonResponse["shoppingListPortions"])
 		showAlert("Recipe added to your planner")
   });
 
 }
 
-function deleteRecipeFromPlanner(plannerRecipeId, csrfToken, updateGlobalPlannerRecipes, updateSuggestedRecipes) {
+function deleteRecipeFromPlanner(
+	plannerRecipeId,
+	csrfToken,
+	updateGlobalPlannerRecipes,
+	updateSuggestedRecipes,
+	updateCheckedPortionCount,
+	updateTotalPortionCount,
+	updateShoppingListPortions
+) {
 	const data = {
 		method: 'post',
     body: JSON.stringify({
@@ -53,14 +73,18 @@ function deleteRecipeFromPlanner(plannerRecipeId, csrfToken, updateGlobalPlanner
 	showAlert("Removing recipe from your planner")
 
   fetch("/planner/recipe_delete", data).then((response) => {
-    if(response.status != 200){
-      window.alert('Something went wrong! Maybe refresh the page and try again')
-    } else {
+    if(response.status === 200){
       return response.json();
+		} else {
+			window.alert('Something went wrong! Maybe refresh the page and try again')
+			throw new Error('non-200 response status')
     }
   }).then((jsonResponse) => {
 		updateGlobalPlannerRecipes(jsonResponse["plannerRecipesByDate"])
 		updateSuggestedRecipes(jsonResponse["suggestedRecipes"])
+		updateCheckedPortionCount(jsonResponse["checkedPortionCount"])
+		updateTotalPortionCount(jsonResponse["totalPortionCount"])
+		updateShoppingListPortions(jsonResponse["shoppingListPortions"])
 		showAlert("Recipe removed from your planner")
   });
 }
@@ -97,7 +121,15 @@ function PlannerIndex(props) {
 											name="button" type="submit"
 											className="p-2 mb-1 ml-2 w-10 h-10 bg-white rounded-sm flex-shrink-0 flex" title="Add this recipe to your planner"
 											data-recipe-id={encodedId} data-type="add-to-planner"
-											onClick={() => addRecipeToPlanner(encodedId, props.csrfToken, updateGlobalPlannerRecipes, updateSuggestedRecipes)}>
+											onClick={() => addRecipeToPlanner(
+												encodedId,
+												props.csrfToken,
+												updateGlobalPlannerRecipes,
+												updateSuggestedRecipes,
+												updateCheckedPortionCount,
+												updateTotalPortionCount,
+												updateShoppingListPortions
+											)}>
 											<Icon name="list-add" className="w-full h-full" />
 										</button>
 									</TooltipWrapper>
@@ -123,7 +155,15 @@ function PlannerIndex(props) {
 												name="button" type="submit"
 												className="p-2 mb-1 ml-2 w-10 h-10 bg-white rounded-sm flex-shrink-0 flex" title="Remove this recipe from your planner"
 												data-recipe-id={recipe.encodedId} data-type="add-to-planner"
-												onClick={() => deleteRecipeFromPlanner(recipe.plannerRecipeId, props.csrfToken, updateGlobalPlannerRecipes, updateSuggestedRecipes)}
+												onClick={() => deleteRecipeFromPlanner(
+													recipe.plannerRecipeId,
+													props.csrfToken,
+													updateGlobalPlannerRecipes,
+													updateSuggestedRecipes,
+													updateCheckedPortionCount,
+													updateTotalPortionCount,
+													updateShoppingListPortions
+												)}
 											>
 												<Icon name="bin" className="w-full h-full" />
 											</button>

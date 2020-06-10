@@ -155,4 +155,25 @@ function ShoppingListInternal(props) {
   )
 }
 
-export default ShoppingListInternal
+const ShoppingListButton = ({switchShoppingListClass, shoppingListShown, toggleShoppingListShow, checkedPortionCount, totalPortionCount}) => {
+  return (
+    <button
+      className="fixed border-0 bg-primary-600 text-white overflow-hidden outline-none transition-all duration-500 shadow-lg flex w-auto items-center rounded-full p-2 pr-4 right-0 top-0 mt-32 mr-5 focus:outline-none focus:shadow-outline"
+      onClick={() => {
+        switchShoppingListClass()
+        toggleShoppingListShow(!shoppingListShown)
+      }}
+      style={{right: shoppingListShown ? '30rem' : 0}}>
+      <>
+        { shoppingListShown ? <Icon name="close" className="w-5 h-5 my-1 mx-1" /> :
+        <Icon name="navigate_before" className="w-8 h-8" />}
+        <span className="text-base">{`${checkedPortionCount}/${totalPortionCount}`}</span>
+      </>
+    </button>
+  )
+}
+
+export {
+  ShoppingListWrapper,
+  ShoppingListButton
+}
