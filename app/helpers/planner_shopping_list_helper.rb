@@ -231,9 +231,9 @@ module PlannerShoppingListHelper
 		end
 	end
 
-	def shopping_list_portions(shopping_list = nil)
-		if shopping_list == nil && current_user && current_user.planner_shopping_list.present?
-			shopping_list = current_user.planner_shopping_list
+	def shopping_list_portions(shopping_list = nil, user = nil)
+		if shopping_list == nil && (user_signed_in? || user != nil)
+			shopping_list = user != nil ? user.planner_shopping_list : current_user.planner_shopping_list
 		elsif shopping_list == nil && user_signed_in? == false
 			return []
 		elsif user_signed_in? && current_user.planner_shopping_list.present?
@@ -288,19 +288,36 @@ module PlannerShoppingListHelper
 		}}
 	end
 
+	def processed_recipe(recipe = nil, planner_recipe_id = nil)
+		return nil if recipe == nil
+
+		recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
+
+		return {
+			encodedId: recipe_id_hash.encode(recipe.id),
+			title: recipe.title,
+			percentInCupboards: percent_in_cupboards(recipe).to_s,
+			path: recipe_path(recipe),
+			stockInfoNote: "#{num_stock_ingredients(recipe)} of #{recipe.portions.length} ingredients in stock",
+			plannerRecipeId: planner_recipe_id
+		}
+	end
+
 	def processed_recipe_list(recipes = nil)
 		return if recipes == nil
 
 		recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 
-		return recipes.map{|r| {
-			encodedId: recipe_id_hash.encode(r.id),
-			title: r.title,
-			percentInCupboards: percent_in_cupboards(r).to_s,
-			path: recipe_path(r),
-			stockInfoNote: "#{num_stock_ingredients(r)} of #{r.portions.length} ingredients in stock"
-		}}
+		return recipes.map{|r| processed_recipe(r)}
 
+	end
+
+	def processed_recipe_list_for_user(user = nil)
+		return if user == nil
+
+		recipes = user.user_recipe_stock_matches.order(ingredient_stock_match_decimal: :desc).reject{|u_r| current_planner_recipe_ids.include?(u_r.recipe_id) }.select{|u_r| u_r.recipe && u_r.recipe.portions.length != 0 && (u_r.recipe[:public] || u_r.recipe[:user_id] == current_user[:id])}[0..11].map{|u_r| u_r.recipe}
+
+		return processed_recipe_list(recipes)
 	end
 
 	def processed_planner_list(user = nil)
@@ -330,47 +347,23 @@ module PlannerShoppingListHelper
 				dateId: date_id,
 				calendarNote: calendar_note
 			}
-
-
 		}
 
-		# <% (-1..31).each do |d| %>
-		# 	<%
-		# 		date = Date.current + d.days
-		# 		date_num = date.to_formatted_s(:number)
-		# 		date_id = @planner_recipe_date_hash.encode(date_num)
-		# 	%>
-		# 	<div class="tiny-slide
-		# 		<% if d == -1 %>yesterday<% end %>"><div class="tiny-contents" id="<%= date_id %>"><h2 class="no-drag">
-		# 		<% if d == -1 %>Yesterday<% end %>
-		# 		<% if d == 0 %>Today<% end %>
-		# 		<% if d == 1 %>Tomorrow<% end %>
-		# 		<%= date.to_s(:short) %>
-		# 		</h2>
-		# 		<% PlannerRecipe.where(date: date, user_id: current_user.id).each do |p_recipe| %>
-		# 			<%
-		# 				recipe = p_recipe.recipe
-		# 				if user_recipe_stock_match_check(recipe.id) != nil
-		# 					message = num_stock_ingredients(recipe).to_s + " ingredients in stock, " + num_needed_ingredients(recipe).to_s + " needed"
-		# 				else
-		# 					message = recipe.title
-		# 				end
-		# 			%>
-		# 			<div class="list_block--item list_block--item--with-bar sortable--item"
-		# 					data-parent-id="<%= date_id %>"
-		# 					id="<%= @recipe_id_hash.encode(p_recipe.recipe.id) %>"
-		# 					title="<%= message %>"
-		# 					aria-label="<%= message %>"
-		# 					data-ingredients-in-stock="<%= num_stock_ingredients(recipe) %>"
-		# 			>
-		# 				<span class="list_block--item--tracking_bar"><span class="list_block--item--tracking_bar-percent" style="width: <%= recipe_portions_in_stock_vs_total_percentage(p_recipe) %>%"></span></span>
-		# 				<%= link_to recipe.title, recipe_path(recipe) %>
-		# 				<button class="delete list_block--item--action list_block--item--action--btn"><%= icomoon('bin') %></button>
-		# 			</div>
-		# 		<% end %>
-		# 	</div></div>
+	end
 
-		# <% end %>
+	def processed_planner_recipes_by_date(user = nil)
+		return if user == nil
+
+		planner_recipe_id_hash = Hashids.new(ENV['PLANNER_RECIPE_ID_SALT'])
+		planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
+
+		planner_recipes_by_date = user.planner_recipes.select{|pr|pr.date > Date.current - 2.day}.group_by{|pr| planner_recipe_date_hash.encode(pr.date.to_formatted_s(:number)) }
+		processed_planner_recipes_by_date_hash = planner_recipes_by_date.map{|date, prs| {
+			date: date,
+			plannerRecipes: prs.map{|pr|processed_recipe(pr.recipe, planner_recipe_id_hash.encode(pr.id))}
+		}}
+
+		return processed_planner_recipes_by_date_hash
 	end
 
 	def email_sharing_mailto_list(shopping_list_portions = nil, shopping_list_gen_id = nil)
