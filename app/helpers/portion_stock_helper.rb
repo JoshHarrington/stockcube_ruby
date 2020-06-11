@@ -9,16 +9,12 @@ module PortionStockHelper
 
 		cupboard_id = user_cupboards(user).first.id
 
-		Rails.logger.debug "combine_stock_group stock_group #{stock_group.map(&:id)}"
-
 		similar_stocks_group_for_metric = stock_group.uniq
 			.select{|s|
 				s.unit.unit_type != nil && s.planner_shopping_list_portion_id == nil && s.hidden == false
 			}.group_by{|s| [s.ingredient_id, s.unit.unit_type]}
 
 		matching_metric_stock_hash = similar_stocks_group_for_metric.select{|(i, ut),v| v.length > 1 }
-
-		Rails.logger.debug "matching_metric_stock_hash #{matching_metric_stock_hash}"
 
 		matching_metric_stock_hash.each do |(ingredient_id, unit_type), stocks|
 			stock_amount_array = stocks.map{ |s|
@@ -118,6 +114,7 @@ module PortionStockHelper
 
 
 	def remove_stock_after_portion_unchecked(planner_portion = nil, portion_type = nil)
+		Rails.logger.debug "remove_stock_after_portion_unchecked"
 		return if planner_portion == nil || portion_type == nil
 
 		if portion_type == "combi_portion"
@@ -130,6 +127,7 @@ module PortionStockHelper
 	end
 
 	def add_stock_after_portion_checked(planner_portion = nil, portion_type = nil)
+		Rails.logger.debug "add_stock_after_portion_checked"
 		return if planner_portion == nil || portion_type == nil
 
 		user = planner_portion.user
@@ -169,8 +167,6 @@ module PortionStockHelper
 	def find_matching_stock_for_portion(portion = nil)
 		return if portion == nil
 
-		Rails.logger.debug "find_matching_stock_for_portion"
-
 		user = portion.user
 		user_cupboards = user_cupboards(user)
 		user_stock = user_stock(user)
@@ -178,19 +174,15 @@ module PortionStockHelper
 		available_stock = user_stock
 			.select{|s|	s.ingredient_id == portion.ingredient_id}
 
-		Rails.logger.debug "available_stock #{available_stock.map(&:id)}"
-
 		return if available_stock.length == 0
 
 		### check if portion is metric
 		if portion.unit.unit_type != nil
 
-			Rails.logger.debug "portion.unit.unit_type != nil"
 
 			subsection_of_available_metric_stock = available_stock.select{|s|s.unit.unit_type != nil}
 
 			if subsection_of_available_metric_stock.length > 1
-				Rails.logger.debug "subsection_of_available_metric_stock.length > 1"
 
 				combine_stock_group(subsection_of_available_metric_stock, user)
 
@@ -198,8 +190,6 @@ module PortionStockHelper
 				## this way there should only be max 1 stock to compare against
 				find_matching_stock_for_portion(portion)
 			elsif subsection_of_available_metric_stock.length == 1
-
-				Rails.logger.debug "subsection_of_available_metric_stock.length == 1"
 
 				comparable_stock = subsection_of_available_metric_stock.first
 
@@ -230,8 +220,6 @@ module PortionStockHelper
 
 				else
 
-					Rails.logger.debug "metric_stock_amount < metric_portion_amount"
-
 					stock_amount = metric_stock_amount / portion.unit.metric_ratio
 
 					comparable_stock.update_attributes(
@@ -240,8 +228,6 @@ module PortionStockHelper
 						unit_id: portion.unit_id,
 						planner_recipe_id: portion.planner_recipe_id
 					)
-
-					Rails.logger.debug "comparable_stock #{comparable_stock.id}"
 
 					### could add extra column to planner portion table to record amount in stock
 					### right now just need to do check on what stock associated to planner portion
@@ -314,16 +300,6 @@ module PortionStockHelper
 			if find_stock_needed_bool && planner_portion.stock != nil
 				converted_planner_portion_stock = serving_converter(planner_portion.stock)
 
-				Rails.logger.debug "combine_grouped_servings"
-				Rails.logger.debug "planner_portion"
-				Rails.logger.debug planner_portion
-
-				Rails.logger.debug "converted_planner_portion"
-				Rails.logger.debug converted_planner_portion
-
-				Rails.logger.debug "converted_planner_portion_stock"
-				Rails.logger.debug converted_planner_portion_stock
-
 				portion_stock_diff = serving_difference([converted_planner_portion, converted_planner_portion_stock])
 
 				if portion_stock_diff != false
@@ -334,14 +310,8 @@ module PortionStockHelper
 				end
 			else
 
-				Rails.logger.debug "planner_portion.stock == nil"
-				Rails.logger.debug "planner_portion id"
-				Rails.logger.debug planner_portion.id
-
 				converted_serving = serving_converter(planner_portion)
 
-				Rails.logger.debug "converted_serving"
-				Rails.logger.debug converted_serving
 				if converted_serving != false
 					portion_group_with_stock_diff.push(converted_serving)
 				end
@@ -372,8 +342,6 @@ module PortionStockHelper
 		end
 
 		serving_list.select{|s|s.unit.unit_type == nil}.group_by{|s|s.unit_id}.each do |u_id, s|
-			Rails.logger.debug "list_grouped_stock s.unit.unit_type == nil"
-			Rails.logger.debug s
 			ingredient_list_group.push(s)
 		end
 
@@ -383,12 +351,6 @@ module PortionStockHelper
 
 			combined_similar_portions_minus_stock_amount = combined_similar_portions_minus_stock[:amount]
 			combined_similar_portions_minus_stock[:amount] = ("%.3g" % combined_similar_portions_minus_stock_amount).to_f
-
-			Rails.logger.debug "portion_group"
-			Rails.logger.debug portion_group
-
-			Rails.logger.debug "combined_similar_portions_minus_stock"
-			Rails.logger.debug combined_similar_portions_minus_stock
 
 			if combined_similar_portions_minus_stock != nil
 				list_grouped_stock.push(combined_similar_portions_minus_stock)

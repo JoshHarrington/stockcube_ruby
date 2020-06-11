@@ -10,7 +10,7 @@ class StocksController < ApplicationController
 
 	include PortionStockHelper
 
-	before_action :authenticate_user!, except: [:add_shopping_list_portion, :remove_shopping_list_portion]
+	before_action :authenticate_user!, except: [:toggle_shopping_list_portion]
 	before_action :correct_user, only: [:edit]
 
 	def index
@@ -171,21 +171,27 @@ class StocksController < ApplicationController
 			end and return
 		end
 
+		### serving_description returns nil after combi portion stock has been cleaned out
+		### so currently description is generated before updates to combi portion or stock
+		planner_portion_description = serving_description(planner_portion)
+
+		checked_state = !planner_portion.checked
+
 		planner_portion.update_attributes(
-			checked: !planner_portion.checked
+			checked: checked_state
 		)
 
 		if params[:portion_type] == "combi_portion"
 			planner_portion.planner_shopping_list_portions.update_all(
-				checked: !planner_portion.checked
+				checked: checked_state
 			)
-		elsif planner_portion.checked == false && planner_portion.combi_planner_shopping_list_portion_id != nil
+		elsif checked_state == false && planner_portion.combi_planner_shopping_list_portion_id != nil
 			planner_portion.combi_planner_shopping_list_portion.update_attributes(
 				checked: false
 			)
 		end
 
-		if planner_portion.checked == true
+		if checked_state == true
 			add_stock_after_portion_checked(planner_portion, params[:portion_type])
 		else
 			remove_stock_after_portion_unchecked(planner_portion, params[:portion_type])
@@ -198,72 +204,13 @@ class StocksController < ApplicationController
 
 		respond_to do |format|
 			format.json { render json: {
-				'shoppingListPortions': processed_fetched_shopping_list_portions,
-				'portionDescription': serving_description(planner_portion),
-				'checkedPortionCount': checked_portions(),
-				'totalPortionCount': total_portions()}.as_json, status: 200}
+				shoppingListPortions: processed_fetched_shopping_list_portions,
+				portionDescription: planner_portion_description,
+				checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
+				totalPortionCount: fetched_shopping_list_portions.count
+			}.as_json, status: 200}
 			format.html { redirect_to planner_path }
 		end and return
-	end
-
-	def remove_shopping_list_portion
-
-		return unless params.has_key?(:shopping_list_portion_id) && params.has_key?(:portion_type)
-		planner_portion_id = planner_portion_id_hash.decode(params[:shopping_list_portion_id]).first
-		Rails.logger.debug "add_shopping_list_portion #{planner_portion_id}"
-		if params[:portion_type] == "individual_portion"
-			planner_portion = PlannerShoppingListPortion.find(planner_portion_id)
-		elsif params[:portion_type] == "combi_portion"
-			planner_portion = CombiPlannerShoppingListPortion.find(planner_portion_id)
-		end
-
-		planner_portion.update_attributes(
-			checked: false
-		)
-
-		if params[:portion_type] == "individual_portion"
-			if planner_portion.combi_planner_shopping_list_portion_id != nil
-				planner_portion.combi_planner_shopping_list_portion.update_attributes(
-					checked: false
-				)
-			end
-		elsif params[:portion_type] == "combi_portion"
-			planner_portion.planner_shopping_list_portions.update_all(
-				checked: false
-			)
-		end
-
-		remove_stock_after_portion_unchecked(planner_portion, params[:portion_type])
-		delete_all_combi_planner_portions_and_create_new(planner_portion.planner_shopping_list.id)
-	end
-
-	def add_shopping_list
-		return unless current_user
-		current_user.planner_shopping_list.update_attributes(
-			ready: false
-		)
-		shopping_list = current_user.planner_shopping_list
-		portions = current_user.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}}.flatten
-		combi_portions = shopping_list.combi_planner_shopping_list_portions.select{|c|c.date > Date.current - 6.hours && c.date < Date.current + 7.day}
-		if combi_portions.length > 0
-			combi_portions.each do |combi_portion|
-				add_individual_portion_as_stock(combi_portion.planner_shopping_list_portions)
-				combi_portion.destroy
-			end
-		end
-
-		if portions.length > 0
-			add_individual_portion_as_stock(portions)
-		end
-
-		all_portions = combi_portions + portions
-		all_portion_ids = all_portions.map(&:ingredient_id)
-
-		update_recipe_stock_matches_core(all_portion_ids, current_user.id)
-
-		current_user.planner_shopping_list.update_attributes(
-			ready: true
-		)
 	end
 
 	def delete_stock

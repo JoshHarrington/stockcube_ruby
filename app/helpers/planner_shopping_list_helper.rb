@@ -118,16 +118,11 @@ module PlannerShoppingListHelper
 		## Delete all planner combi portions
 		planner_shopping_list.combi_planner_shopping_list_portions.destroy_all
 
-		Rails.logger.debug planner_shopping_list.planner_shopping_list_portions.group_by{|p| p.ingredient_id}.select{|k,v| v.length > 1}
-
 		## Find all planner portions with same ingredient
 		planner_shopping_list.planner_shopping_list_portions.group_by{|p| p.ingredient_id}.select{|k,v| v.length > 1}.each do |ing_id, portion_group|
 
 
 			combi_amount = combine_grouped_servings(portion_group, true)
-
-			Rails.logger.debug "combi_amount"
-			Rails.logger.debug combi_amount
 
 			combi_portion = CombiPlannerShoppingListPortion.create(
 				user_id: planner_shopping_list.user_id,
@@ -164,9 +159,6 @@ module PlannerShoppingListHelper
 		refresh_all_planner_portions(planner_shopping_list)
 
 		sorted_planner_portions = sort_all_planner_portions_by_date(planner_shopping_list)
-
-		Rails.logger.debug "sorted_planner_portions"
-		Rails.logger.debug sorted_planner_portions
 
 		sorted_planner_portions.each do |portion|
 			find_matching_stock_for_portion(portion)
@@ -268,9 +260,6 @@ module PlannerShoppingListHelper
 		session[:sl_checked_portions_count] = shopping_list_portions.count{|p|p.checked == true}
 		session[:sl_unchecked_portions_count] = shopping_list_portions.count{|p|p.checked == false}
 		session[:sl_total_portions_count] = shopping_list_portions.count
-
-		Rails.logger.debug "combi_portions"
-		Rails.logger.debug combi_portions
 
 		return shopping_list_portions.sort_by!{|p| p.ingredient.name}
 

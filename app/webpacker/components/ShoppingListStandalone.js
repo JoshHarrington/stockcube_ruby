@@ -1,6 +1,6 @@
 import React, {useState} from "react"
 
-import ShoppingListInternal from "./ShoppingListInternal"
+import {ShoppingListWrapper} from "./ShoppingListInternal"
 
 function ShoppingListStandalone(props) {
   const [checkedPortionCount, updateCheckedPortionCount] = useState(props.checkedPortionCount)
@@ -15,7 +15,7 @@ function ShoppingListStandalone(props) {
   const [toggleButtonShow, updateToggleButtonShow] = useState(!!(totalPortionsPositive && !onListPage))
 
   return (
-    <ShoppingListInternal
+    <ShoppingListWrapper
       checkedPortionCount={checkedPortionCount}
       updateCheckedPortionCount={updateCheckedPortionCount}
 

@@ -4,7 +4,15 @@ import { showAlert } from "../functions/utils"
 
 import Icon from './Icon'
 
-function togglePortionCheck(portion, csrfToken, checked, updateShoppingListPortions, updateShoppingListComplete) {
+function togglePortionCheck(
+  portion,
+  csrfToken,
+  checked,
+  updateShoppingListPortions,
+  updateShoppingListComplete,
+  updateCheckedPortionCount,
+  updateTotalPortionCount
+) {
 
 	const data = {
 		method: 'post',
@@ -27,7 +35,9 @@ function togglePortionCheck(portion, csrfToken, checked, updateShoppingListPorti
       return response.json();
     }
   }).then((jsonResponse) => {
-    updateShoppingListPortions(jsonResponse["shoppingListPortions"])
+    updateShoppingListPortions(jsonResponse.shoppingListPortions)
+    updateCheckedPortionCount(jsonResponse.checkedPortionCount)
+    updateTotalPortionCount(jsonResponse.totalPortionCount)
     if (jsonResponse["checkedPortionCount"] === jsonResponse["totalPortionCount"]) {
       updateShoppingListComplete(true)
     }
@@ -44,7 +54,7 @@ function switchShoppingListClass() {
   document.querySelector('html').classList.toggle('shopping_list_open')
 }
 
-function ShoppingListInternal(props) {
+function ShoppingListWrapper(props) {
 
   const {
     checkedPortionCount,
@@ -71,19 +81,13 @@ function ShoppingListInternal(props) {
     <aside className="fixed h-screen bottom-0 right-0 z-10 bg-white border-0 border-l border-solid border-primary-200 transition-all duration-500" style={{width: "30rem", left: shoppingListShown ? 'calc(100% - 30rem)' : '100%'}}>
       <div className="flex h-screen flex-col">
         {toggleButtonShow &&
-          <button
-            className="fixed border-0 bg-primary-600 text-white overflow-hidden outline-none transition-all duration-500 shadow-lg flex w-auto items-center rounded-full p-2 pr-4 right-0 top-0 mt-32 mr-5 focus:outline-none focus:shadow-outline"
-            onClick={() => {
-              switchShoppingListClass()
-              toggleShoppingListShow(!shoppingListShown)
-            }}
-            style={{right: shoppingListShown ? '30rem' : 0}}>
-            <>
-              { shoppingListShown ? <Icon name="close" className="w-5 h-5 my-1 mx-1" /> :
-              <Icon name="navigate_before" className="w-8 h-8" />}
-              <span className="text-base">{`${checkedPortionCount}/${totalPortionCount}`}</span>
-            </>
-          </button>
+          <ShoppingListButton
+            switchShoppingListClass={switchShoppingListClass}
+            shoppingListShown={shoppingListShown}
+            toggleShoppingListShow={toggleShoppingListShow}
+            checkedPortionCount={checkedPortionCount}
+            totalPortionCount={totalPortionCount}
+          />
         }
         <div
           className="bg-primary-200 p-5 flex items-start flex-col justify-center relative"
@@ -104,7 +108,7 @@ function ShoppingListInternal(props) {
           {!!(totalPortionsPositive && !shoppingListComplete) &&
             <>
               {shoppingListPortions.map((portion, index) => {
-                const [checked, updateCheck] = useState(portion.checked)
+                const checked = portion.checked
                 return (
                   <li
                     key={index}
@@ -115,13 +119,20 @@ function ShoppingListInternal(props) {
                       type="checkbox" id={`planner_shopping_list_portions_add_${portion.encodedId}`}
                       className="fancy_checkbox"
                       onChange={() => {
-                        togglePortionCheck(portion, csrfToken, checked, updateShoppingListPortions, updateShoppingListComplete)
-                        if (!checked) {
-                          updateCheckedPortionCount(checkedPortionCount + 1)
-                        } else {
-                          updateCheckedPortionCount(checkedPortionCount - 1)
-                        }
-                        updateCheck(!checked)
+                        togglePortionCheck(
+                          portion,
+                          csrfToken,
+                          checked,
+                          updateShoppingListPortions,
+                          updateShoppingListComplete,
+                          updateCheckedPortionCount,
+                          updateTotalPortionCount
+                        )
+                        // updateShoppingListPortions(shoppingListPortions.map(p =>
+                        //   p.encodedId === portion.encodedId
+                        //   ? {...p, checked: !checked}
+                        //   : p
+                        // ))
                       }}
                       name={`planner_shopping_list_portions_add[${portion.encodedId}]`} checked={checked} />
                     <label className={classNames('fancy_checkbox_label flex-wrap text-lg')} htmlFor={`planner_shopping_list_portions_add_${portion.encodedId}`}>
@@ -155,7 +166,13 @@ function ShoppingListInternal(props) {
   )
 }
 
-const ShoppingListButton = ({switchShoppingListClass, shoppingListShown, toggleShoppingListShow, checkedPortionCount, totalPortionCount}) => {
+const ShoppingListButton = ({
+  switchShoppingListClass,
+  shoppingListShown,
+  toggleShoppingListShow,
+  checkedPortionCount,
+  totalPortionCount
+}) => {
   return (
     <button
       className="fixed border-0 bg-primary-600 text-white overflow-hidden outline-none transition-all duration-500 shadow-lg flex w-auto items-center rounded-full p-2 pr-4 right-0 top-0 mt-32 mr-5 focus:outline-none focus:shadow-outline"
