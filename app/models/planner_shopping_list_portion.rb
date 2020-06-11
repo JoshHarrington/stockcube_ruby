@@ -16,6 +16,7 @@ class PlannerShoppingListPortion < ApplicationRecord
 
 	private
 		def delete_combi_portions
+			Rails.logger.debug "delete_combi_portions"
 			if self.combi_planner_shopping_list_portion
 				self.combi_planner_shopping_list_portion.destroy
 			end

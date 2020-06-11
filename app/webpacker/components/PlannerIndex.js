@@ -1,5 +1,5 @@
 import React, {useState} from "react"
-import ShoppingListInternal from "./ShoppingListInternal"
+import { ShoppingListWrapper } from "./ShoppingListInternal"
 import PlannerRecipeList from "./PlannerRecipeList"
 import Carousel from "./Carousel"
 import RecipeItem from "./RecipeItem"
@@ -14,7 +14,8 @@ function addRecipeToPlanner(
 	updateSuggestedRecipes,
 	updateCheckedPortionCount,
 	updateTotalPortionCount,
-	updateShoppingListPortions
+	updateShoppingListPortions,
+	updateToggleButtonShow
 ) {
 
 	const data = {
@@ -44,6 +45,11 @@ function addRecipeToPlanner(
 		updateCheckedPortionCount(jsonResponse["checkedPortionCount"])
 		updateTotalPortionCount(jsonResponse["totalPortionCount"])
 		updateShoppingListPortions(jsonResponse["shoppingListPortions"])
+		if (jsonResponse["totalPortionCount"] > 0) {
+			updateToggleButtonShow(true)
+		} else {
+			updateToggleButtonShow(false)
+		}
 		showAlert("Recipe added to your planner")
   });
 
@@ -56,7 +62,8 @@ function deleteRecipeFromPlanner(
 	updateSuggestedRecipes,
 	updateCheckedPortionCount,
 	updateTotalPortionCount,
-	updateShoppingListPortions
+	updateShoppingListPortions,
+	updateToggleButtonShow
 ) {
 	const data = {
 		method: 'post',
@@ -85,6 +92,11 @@ function deleteRecipeFromPlanner(
 		updateCheckedPortionCount(jsonResponse["checkedPortionCount"])
 		updateTotalPortionCount(jsonResponse["totalPortionCount"])
 		updateShoppingListPortions(jsonResponse["shoppingListPortions"])
+		if (jsonResponse["totalPortionCount"] > 0) {
+			updateToggleButtonShow(true)
+		} else {
+			updateToggleButtonShow(false)
+		}
 		showAlert("Recipe removed from your planner")
   });
 }
@@ -128,7 +140,8 @@ function PlannerIndex(props) {
 												updateSuggestedRecipes,
 												updateCheckedPortionCount,
 												updateTotalPortionCount,
-												updateShoppingListPortions
+												updateShoppingListPortions,
+												updateToggleButtonShow
 											)}>
 											<Icon name="list-add" className="w-full h-full" />
 										</button>
@@ -162,7 +175,8 @@ function PlannerIndex(props) {
 													updateSuggestedRecipes,
 													updateCheckedPortionCount,
 													updateTotalPortionCount,
-													updateShoppingListPortions
+													updateShoppingListPortions,
+													updateToggleButtonShow
 												)}
 											>
 												<Icon name="bin" className="w-full h-full" />
@@ -175,7 +189,7 @@ function PlannerIndex(props) {
 					)
 				}
 			)}</Carousel>
-			<ShoppingListInternal
+			<ShoppingListWrapper
 				checkedPortionCount={checkedPortionCount}
 				updateCheckedPortionCount={updateCheckedPortionCount}
 
