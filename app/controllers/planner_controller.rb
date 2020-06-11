@@ -101,6 +101,8 @@ class PlannerController < ApplicationController
 		date_id = @planner_recipe_date_hash.encode(date_num)
 		hashed_recipe_id = @recipe_id_hash.encode(recipe_id)
 
+		fetched_shopping_list_portions = shopping_list_portions(nil, current_user)
+
 		respond_to do |format|
 			format.json { render json: {
 				plannerDateId: date_id,
@@ -110,9 +112,9 @@ class PlannerController < ApplicationController
 				percentInCupboards: percent_in_cupboards(recipe),
 				plannerRecipesByDate: processed_planner_recipes_by_date(current_user),
 				suggestedRecipes: processed_recipe_list_for_user(current_user),
-				checkedPortionCount: checked_portions(),
-				totalPortionCount: total_portions(),
-				shoppingListPortions: processed_shopping_list_portions(shopping_list_portions(nil, current_user))
+				checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
+				totalPortionCount: fetched_shopping_list_portions.count,
+				shoppingListPortions: processed_shopping_list_portions(fetched_shopping_list_portions)
 			}.as_json, status: 200}
 		end
 
@@ -201,13 +203,15 @@ class PlannerController < ApplicationController
 			ready: true
 		)
 
+		fetched_shopping_list_portions = shopping_list_portions(nil, current_user)
+
 		respond_to do |format|
 			format.json { render json: {
 				plannerRecipesByDate: processed_planner_recipes_by_date(current_user),
 				suggestedRecipes: processed_recipe_list_for_user(current_user),
-				checkedPortionCount: checked_portions(),
-				totalPortionCount: total_portions(),
-				shoppingListPortions: processed_shopping_list_portions(shopping_list_portions(nil, current_user)),
+				checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
+				totalPortionCount: fetched_shopping_list_portions.count,
+				shoppingListPortions: processed_shopping_list_portions(fetched_shopping_list_portions),
 			}.as_json, status: 200}
 			format.html { redirect_to planner_path }
 		end
