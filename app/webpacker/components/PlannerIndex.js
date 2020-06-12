@@ -1,4 +1,22 @@
 import React, {useState, useEffect} from "react"
+
+import {Calendar, momentLocalizer} from "react-big-calendar"
+import Moment from 'moment'
+
+const localizer = momentLocalizer(Moment)
+
+const myEventsList = [{
+	title: "An event",
+	start: <Moment date={"2020-06-19T12:59-0500"} />,
+	end: <Moment date={"2020-06-19T12:59-0500"} />,
+	allDay: true
+},{
+	title: "Another event",
+	start: <Moment date={"2020-06-21T12:59-0500"} />,
+	end: <Moment date={"2020-06-21T12:59-0500"} />,
+	allDay: true
+}]
+
 import {
 	ShoppingListWrapper,
 	ShoppingListButton,
@@ -171,6 +189,12 @@ function PlannerIndex(props) {
 						)
 					})}
 			</PlannerRecipeList>
+			<Calendar
+				localizer={localizer}
+				events={myEventsList}
+				startAccessor="start"
+				endAccessor="end"
+			/>
 			<Carousel>{props.planner.map(plannerDate => {
 				return (
 					<div key={plannerDate.dateId} className="w-full h-screen-3/5 sm:h-screen-2/5 lg:h-screen-1/4 mx-2 border border-gray-800 border-solid p-3">
