@@ -99,6 +99,16 @@ const toCamelCase = str => (
     .replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase())
 )
 
+function switchShoppingListClass(openBool = null) {
+  if (openBool === null) {
+    document.querySelector('html').classList.toggle('shopping_list_open')
+  } else if (openBool) {
+    document.querySelector('html').classList.add('shopping_list_open')
+  } else {
+    document.querySelector('html').classList.remove('shopping_list_open')
+  }
+}
+
 
 export {
   ready,
@@ -108,5 +118,6 @@ export {
   isSelectorValid,
   isMobileDevice,
   toKebabCase,
-  toCamelCase
+  toCamelCase,
+  switchShoppingListClass
 }

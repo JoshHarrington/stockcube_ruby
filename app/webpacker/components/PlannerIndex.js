@@ -1,11 +1,18 @@
-import React, {useState} from "react"
-import { ShoppingListWrapper } from "./ShoppingListInternal"
+import React, {useState, useEffect} from "react"
+import {
+	ShoppingListWrapper,
+	ShoppingListButton,
+	ShoppingListTopBanner,
+	ShoppingListBottomBanner,
+	PortionWrapper,
+	PortionItem
+} from "./ShoppingListComponents"
 import PlannerRecipeList from "./PlannerRecipeList"
 import Carousel from "./Carousel"
 import RecipeItem from "./RecipeItem"
 import TooltipWrapper from "./TooltipWrapper"
 import Icon from "./Icon"
-import { showAlert } from "../functions/utils"
+import { showAlert, switchShoppingListClass } from "../functions/utils"
 
 function addRecipeToPlanner(
 	encodedId,
@@ -45,11 +52,7 @@ function addRecipeToPlanner(
 		updateCheckedPortionCount(jsonResponse["checkedPortionCount"])
 		updateTotalPortionCount(jsonResponse["totalPortionCount"])
 		updateShoppingListPortions(jsonResponse["shoppingListPortions"])
-		if (jsonResponse["totalPortionCount"] > 0) {
-			updateToggleButtonShow(true)
-		} else {
-			updateToggleButtonShow(false)
-		}
+
 		showAlert("Recipe added to your planner")
   });
 
@@ -92,29 +95,46 @@ function deleteRecipeFromPlanner(
 		updateCheckedPortionCount(jsonResponse["checkedPortionCount"])
 		updateTotalPortionCount(jsonResponse["totalPortionCount"])
 		updateShoppingListPortions(jsonResponse["shoppingListPortions"])
-		if (jsonResponse["totalPortionCount"] > 0) {
-			updateToggleButtonShow(true)
-		} else {
-			updateToggleButtonShow(false)
-		}
+
 		showAlert("Recipe removed from your planner")
   });
 }
 
 function PlannerIndex(props) {
   const [checkedPortionCount, updateCheckedPortionCount] = useState(props.checkedPortionCount)
-  const [shoppingListShown, toggleShoppingListShow] = useState(false)
   const [totalPortionCount, updateTotalPortionCount] = useState(props.totalPortionCount)
-  const [shoppingListComplete, updateShoppingListComplete] = useState(!!(checkedPortionCount === totalPortionCount))
   const [shoppingListPortions, updateShoppingListPortions] = useState(props.shoppingListPortions)
   const {controller, action, sharePath, csrfToken, mailtoHrefContent} = props
 
   const onListPage = !!(controller === "planner" && action === "list")
   const totalPortionsPositive = !!(totalPortionCount && totalPortionCount !== 0)
-  const [toggleButtonShow, updateToggleButtonShow] = useState(!!(totalPortionsPositive && !onListPage))
 
 	const [globalPlannerRecipes, updateGlobalPlannerRecipes] = useState(props.plannerRecipesByDate)
 	const [suggestedRecipes, updateSuggestedRecipes] = useState(props.suggestedRecipes)
+
+  const [toggleButtonShow, updateToggleButtonShow] = useState(totalPortionsPositive)
+  const [shoppingListShown, toggleShoppingListShow] = useState(false)
+	useEffect(() => {
+		if (!!totalPortionCount && totalPortionCount > 0) {
+			toggleShoppingListShow(true)
+			switchShoppingListClass(true)
+			updateToggleButtonShow(true)
+		} else {
+			toggleShoppingListShow(false)
+			switchShoppingListClass(false)
+			updateToggleButtonShow(false)
+		}
+	}, [totalPortionCount])
+
+
+	const [shoppingListComplete, updateShoppingListComplete] = useState(!!(checkedPortionCount === totalPortionCount))
+	useEffect(() => {
+		if (checkedPortionCount === totalPortionCount) {
+			updateShoppingListComplete(true)
+		} else {
+			updateShoppingListComplete(false)
+		}
+	}, [checkedPortionCount, totalPortionCount])
 
   return (
 		<main>
@@ -189,31 +209,55 @@ function PlannerIndex(props) {
 					)
 				}
 			)}</Carousel>
-			<ShoppingListWrapper
-				checkedPortionCount={checkedPortionCount}
-				updateCheckedPortionCount={updateCheckedPortionCount}
-
-				shoppingListShown={shoppingListShown}
-				toggleShoppingListShow={toggleShoppingListShow}
-
-				totalPortionCount={totalPortionCount}
-				updateTotalPortionCount={updateTotalPortionCount}
-
-				shoppingListComplete={shoppingListComplete}
-				updateShoppingListComplete={updateShoppingListComplete}
-
-				shoppingListPortions={shoppingListPortions}
-				updateShoppingListPortions={updateShoppingListPortions}
-
-				toggleButtonShow={toggleButtonShow}
-				updateToggleButtonShow={updateToggleButtonShow}
-
-				totalPortionsPositive={totalPortionsPositive}
-				onListPage={onListPage}
-				sharePath={sharePath}
-				mailtoHrefContent={mailtoHrefContent}
-				csrfToken={csrfToken}
-			/>
+			<ShoppingListWrapper shoppingListShown={shoppingListShown}>
+				{toggleButtonShow &&
+					<ShoppingListButton
+						switchShoppingListClass={switchShoppingListClass}
+						shoppingListShown={shoppingListShown}
+						toggleShoppingListShow={toggleShoppingListShow}
+						checkedPortionCount={checkedPortionCount}
+						totalPortionCount={totalPortionCount}
+					/>
+				}
+				<ShoppingListTopBanner
+					totalPortionsPositive={totalPortionsPositive}
+					checkedPortionCount={checkedPortionCount}
+					totalPortionCount={totalPortionCount}
+					sharePath={sharePath}
+					mailtoHrefContent={mailtoHrefContent}
+					onListPage={onListPage}
+				/>
+				<PortionWrapper shoppingListComplete={shoppingListComplete}>
+					{!totalPortionsPositive && <p>Shopping List is currently empty, move some recipes to <a href="/planner" className="underline">your planner</a> to get items added to this list</p>}
+					{!!(totalPortionsPositive && !shoppingListComplete) &&
+						<>
+							{shoppingListPortions.map((portion, index) => (
+								<PortionItem
+									key={index}
+									checked={portion.checked}
+									portion={portion}
+									csrfToken={csrfToken}
+									updateShoppingListPortions={updateShoppingListPortions}
+									updateShoppingListComplete={updateShoppingListComplete}
+									updateCheckedPortionCount={updateCheckedPortionCount}
+									updateTotalPortionCount={updateTotalPortionCount}
+								/>
+							))}
+							{checkedPortionCount > 0 &&
+								<li className="order-2 text-base pt-6 border-0 border-t border-solid border-gray-300 text-gray-600 mb-6">
+									Items added to cupboards:
+								</li>
+							}
+						</>
+					}
+					{!!(totalPortionsPositive && shoppingListComplete) &&
+						<p><Icon name="checkmark" className="mr-3 h-8 w-8 text-green-500"/>Shopping list complete</p>
+					}
+				</PortionWrapper>
+				{!!(totalPortionsPositive && !onListPage && !!mailtoHrefContent) &&
+					<ShoppingListBottomBanner mailtoHrefContent={mailtoHrefContent} />
+				}
+			</ShoppingListWrapper>
     </main>
   )
 }
