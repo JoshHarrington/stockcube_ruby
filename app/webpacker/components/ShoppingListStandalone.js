@@ -1,21 +1,19 @@
 import React, {useState} from "react"
+import { ShoppingListExample } from "./ShoppingListComponents"
 
-import {ShoppingListWrapper} from "./ShoppingListInternal"
-
-function ShoppingListStandalone(props) {
+const ShoppingListStandalone = props => {
   const [checkedPortionCount, updateCheckedPortionCount] = useState(props.checkedPortionCount)
   const [shoppingListShown, toggleShoppingListShow] = useState(false)
   const [totalPortionCount, updateTotalPortionCount] = useState(props.totalPortionCount)
   const [shoppingListComplete, updateShoppingListComplete] = useState(!!(checkedPortionCount === totalPortionCount))
   const [shoppingListPortions, updateShoppingListPortions] = useState(props.shoppingListPortions)
-  const {controller, action, sharePath, csrfToken, mailtoHrefContent} = props
+  const {onListPage, sharePath, csrfToken, mailtoHrefContent} = props
 
-  const onListPage = !!(controller === "planner" && action === "list")
   const totalPortionsPositive = !!(totalPortionCount && totalPortionCount !== 0)
   const [toggleButtonShow, updateToggleButtonShow] = useState(!!(totalPortionsPositive && !onListPage))
 
   return (
-    <ShoppingListWrapper
+    <ShoppingListExample
       checkedPortionCount={checkedPortionCount}
       updateCheckedPortionCount={updateCheckedPortionCount}
 

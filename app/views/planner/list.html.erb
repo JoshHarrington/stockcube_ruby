@@ -1,3 +1,16 @@
-<%= render partial: 'layouts/shopping_list_partial',
-	locals: {shopping_list: @shopping_list}
+<%
+	if defined?(@shopping_list)
+		fetched_shopping_list_portions = shopping_list_portions(@shopping_list)
+	else
+		fetched_shopping_list_portions = shopping_list_portions(nil)
+	end
 %>
+
+<%= react_component("PlannerSharePage",
+		{ csrfToken: form_authenticity_token,
+			checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
+			totalPortionCount: fetched_shopping_list_portions.count,
+			shoppingListPortions: processed_shopping_list_portions(fetched_shopping_list_portions),
+			onListPage: true,
+			sharePath: user_signed_in? && shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id),
+			mailtoHrefContent: email_sharing_mailto_list(fetched_shopping_list_portions, defined?(shopping_list) ? shopping_list.gen_id : (user_signed_in? && current_user.planner_shopping_list.gen_id))}) %>
