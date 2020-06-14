@@ -189,12 +189,14 @@ function PlannerIndex(props) {
 						)
 					})}
 			</PlannerRecipeList>
-			<Calendar
-				localizer={localizer}
-				events={myEventsList}
-				startAccessor="start"
-				endAccessor="end"
-			/>
+			<div className="h-screen">
+				<Calendar
+					localizer={localizer}
+					events={myEventsList}
+					startAccessor="start"
+					endAccessor="end"
+				/>
+			</div>
 			<Carousel>{props.planner.map(plannerDate => {
 				return (
 					<div key={plannerDate.dateId} className="w-full h-screen-3/5 sm:h-screen-2/5 lg:h-screen-1/4 mx-2 border border-gray-800 border-solid p-3">
