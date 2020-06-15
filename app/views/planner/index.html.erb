@@ -19,7 +19,8 @@
 			mailtoHrefContent: email_sharing_mailto_list(fetched_shopping_list_portions, defined?(shopping_list) ? shopping_list.gen_id : (user_signed_in? && current_user.planner_shopping_list.gen_id)),
 			suggestedRecipes: processed_recipe_list(@recipes),
 			planner: processed_planner_list(current_user),
-			plannerRecipesByDate: processed_planner_recipes_by_date(current_user)
+			plannerRecipesByDate: processed_planner_recipes_by_date(current_user),
+			plannerRecipes: processed_planner_recipes_with_date(current_user)
 		}) %>
 
 <div class="list_block--collection--wrap" id="dashboard">
