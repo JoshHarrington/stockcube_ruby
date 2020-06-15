@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react"
 
-import {Calendar, momentLocalizer} from "react-big-calendar"
-import Moment from 'moment'
+import {momentLocalizer} from "react-big-calendar"
+import Moment from "moment"
 
 const localizer = momentLocalizer(Moment)
 
@@ -18,6 +18,7 @@ import RecipeItem from "./RecipeItem"
 import TooltipWrapper from "./TooltipWrapper"
 import Icon from "./Icon"
 import { showAlert, switchShoppingListClass } from "../functions/utils"
+import Dnd from "./DnDCalendar"
 
 function addRecipeToPlanner(
 	encodedId,
@@ -134,6 +135,7 @@ function PlannerIndex(props) {
 
 	const myEventsList = globalPlannerRecipes.map(recipe => (
 		{
+			id: recipe.encodedId,
 			title: recipe.plannerRecipe.title,
 			start: new Date(recipe.date),
 			end: new Date(recipe.date),
@@ -186,7 +188,7 @@ function PlannerIndex(props) {
 					})}
 			</PlannerRecipeList>
 			<div className="h-screen">
-				<Calendar
+				<Dnd
 					localizer={localizer}
 					events={myEventsList}
 					startAccessor="start"
