@@ -365,6 +365,7 @@ module PlannerShoppingListHelper
 		processed_planner_recipes_with_date_hash = user_planner_recipes.map{|pr| {
 			encodedDateId: planner_recipe_date_hash.encode(pr.date.to_formatted_s(:number)),
 			date: pr.date.to_formatted_s(:iso8601),
+			encodedId: planner_recipe_id_hash.encode(pr.id),
 			plannerRecipe: processed_recipe(pr.recipe, planner_recipe_id_hash.encode(pr.id))
 		}}
 
