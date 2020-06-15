@@ -346,13 +346,29 @@ module PlannerShoppingListHelper
 		planner_recipe_id_hash = Hashids.new(ENV['PLANNER_RECIPE_ID_SALT'])
 		planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
 
-		planner_recipes_by_date = user.planner_recipes.select{|pr|pr.date > Date.current - 2.day}.group_by{|pr| planner_recipe_date_hash.encode(pr.date.to_formatted_s(:number)) }
-		processed_planner_recipes_by_date_hash = planner_recipes_by_date.map{|date, prs| {
-			date: date,
+		planner_recipes_by_date = user.planner_recipes.select{|pr|pr.date > Date.current - 2.day}.group_by{|pr| [planner_recipe_date_hash.encode(pr.date.to_formatted_s(:number)), pr.date.to_formatted_s(:iso8601)] }
+		processed_planner_recipes_by_date_hash = planner_recipes_by_date.map{|(encoded_date_id, date_string), prs| {
+			encodedDateId: encoded_date_id,
+			date: date_string,
 			plannerRecipes: prs.map{|pr|processed_recipe(pr.recipe, planner_recipe_id_hash.encode(pr.id))}
 		}}
 
 		return processed_planner_recipes_by_date_hash
+	end
+
+	def processed_planner_recipes_with_date(user = nil)
+
+		planner_recipe_id_hash = Hashids.new(ENV['PLANNER_RECIPE_ID_SALT'])
+		planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
+
+		user_planner_recipes = user.planner_recipes
+		processed_planner_recipes_with_date_hash = user_planner_recipes.map{|pr| {
+			encodedDateId: planner_recipe_date_hash.encode(pr.date.to_formatted_s(:number)),
+			date: pr.date.to_formatted_s(:iso8601),
+			plannerRecipe: processed_recipe(pr.recipe, planner_recipe_id_hash.encode(pr.id))
+		}}
+
+		return processed_planner_recipes_with_date_hash
 	end
 
 	def email_sharing_mailto_list(shopping_list_portions = nil, shopping_list_gen_id = nil)
