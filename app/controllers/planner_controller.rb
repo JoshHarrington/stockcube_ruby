@@ -111,6 +111,7 @@ class PlannerController < ApplicationController
 				recipePath: recipe_path(recipe_id),
 				percentInCupboards: percent_in_cupboards(recipe),
 				plannerRecipesByDate: processed_planner_recipes_by_date(current_user),
+				plannerRecipes: processed_planner_recipes_with_date(current_user),
 				suggestedRecipes: processed_recipe_list_for_user(current_user),
 				checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
 				totalPortionCount: fetched_shopping_list_portions.count,
@@ -208,6 +209,7 @@ class PlannerController < ApplicationController
 		respond_to do |format|
 			format.json { render json: {
 				plannerRecipesByDate: processed_planner_recipes_by_date(current_user),
+				plannerRecipes: processed_planner_recipes_with_date(current_user),
 				suggestedRecipes: processed_recipe_list_for_user(current_user),
 				checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
 				totalPortionCount: fetched_shopping_list_portions.count,

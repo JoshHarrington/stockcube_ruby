@@ -5,18 +5,6 @@ import Moment from 'moment'
 
 const localizer = momentLocalizer(Moment)
 
-const myEventsList = [{
-	title: "An event",
-	start: <Moment date={"2020-06-19T12:59-0500"} />,
-	end: <Moment date={"2020-06-19T12:59-0500"} />,
-	allDay: true
-},{
-	title: "Another event",
-	start: <Moment date={"2020-06-21T12:59-0500"} />,
-	end: <Moment date={"2020-06-21T12:59-0500"} />,
-	allDay: true
-}]
-
 import {
 	ShoppingListWrapper,
 	ShoppingListButton,
@@ -26,7 +14,6 @@ import {
 	PortionItem
 } from "./ShoppingListComponents"
 import PlannerRecipeList from "./PlannerRecipeList"
-import Carousel from "./Carousel"
 import RecipeItem from "./RecipeItem"
 import TooltipWrapper from "./TooltipWrapper"
 import Icon from "./Icon"
@@ -65,7 +52,7 @@ function addRecipeToPlanner(
 			throw new Error('non-200 response status')
     }
   }).then((jsonResponse) => {
-		updateGlobalPlannerRecipes(jsonResponse["plannerRecipesByDate"])
+		updateGlobalPlannerRecipes(jsonResponse["plannerRecipes"])
 		updateSuggestedRecipes(jsonResponse["suggestedRecipes"])
 		updateCheckedPortionCount(jsonResponse["checkedPortionCount"])
 		updateTotalPortionCount(jsonResponse["totalPortionCount"])
@@ -108,7 +95,7 @@ function deleteRecipeFromPlanner(
 			throw new Error('non-200 response status')
     }
   }).then((jsonResponse) => {
-		updateGlobalPlannerRecipes(jsonResponse["plannerRecipesByDate"])
+		updateGlobalPlannerRecipes(jsonResponse["plannerRecipes"])
 		updateSuggestedRecipes(jsonResponse["suggestedRecipes"])
 		updateCheckedPortionCount(jsonResponse["checkedPortionCount"])
 		updateTotalPortionCount(jsonResponse["totalPortionCount"])
@@ -127,7 +114,7 @@ function PlannerIndex(props) {
   const onListPage = !!(controller === "planner" && action === "list")
   const totalPortionsPositive = !!(totalPortionCount && totalPortionCount !== 0)
 
-	const [globalPlannerRecipes, updateGlobalPlannerRecipes] = useState(props.plannerRecipesByDate)
+	const [globalPlannerRecipes, updateGlobalPlannerRecipes] = useState(props.plannerRecipes)
 	const [suggestedRecipes, updateSuggestedRecipes] = useState(props.suggestedRecipes)
 
   const [toggleButtonShow, updateToggleButtonShow] = useState(totalPortionsPositive)
@@ -144,6 +131,15 @@ function PlannerIndex(props) {
 		}
 	}, [totalPortionCount])
 
+
+	const myEventsList = globalPlannerRecipes.map(recipe => (
+		{
+			title: recipe.plannerRecipe.title,
+			start: new Date(recipe.date),
+			end: new Date(recipe.date),
+			allDay: true
+		}
+	))
 
 	const [shoppingListComplete, updateShoppingListComplete] = useState(!!(checkedPortionCount === totalPortionCount))
 	useEffect(() => {
@@ -197,44 +193,6 @@ function PlannerIndex(props) {
 					endAccessor="end"
 				/>
 			</div>
-			<Carousel>{props.planner.map(plannerDate => {
-				return (
-					<div key={plannerDate.dateId} className="w-full h-screen-3/5 sm:h-screen-2/5 lg:h-screen-1/4 mx-2 border border-gray-800 border-solid p-3">
-						<div className="text-base mb-2">{plannerDate.calendarNote}</div>
-						{globalPlannerRecipes.filter(recipeGroup => recipeGroup.date === plannerDate.dateId).length === 1 &&
-							globalPlannerRecipes.filter(recipeGroup => recipeGroup.date === plannerDate.dateId)[0].plannerRecipes.map((recipe, index) => (
-								<RecipeItem encodedId={recipe.encodedId} key={index} width="full">
-									<TooltipWrapper position="bottom" width={48} text={recipe.stockInfoNote} className="top-0 left-0 flex-shrink-0 mb-2 bg-primary-100 w-full rounded-t-sm h-4">
-										<span className="block h-full rounded-tl-sm bg-primary-600" style={{width: `${recipe.percentInCupboards}%`}}></span>
-									</TooltipWrapper>
-									<div className="flex w-full px-3 justify-between">
-										<a href={recipe.path}>{recipe.title}</a>
-										<TooltipWrapper text="Remove from planner" width={32}>
-											<button
-												name="button" type="submit"
-												className="p-2 mb-1 ml-2 w-10 h-10 bg-white rounded-sm flex-shrink-0 flex" title="Remove this recipe from your planner"
-												data-recipe-id={recipe.encodedId} data-type="add-to-planner"
-												onClick={() => deleteRecipeFromPlanner(
-													recipe.plannerRecipeId,
-													props.csrfToken,
-													updateGlobalPlannerRecipes,
-													updateSuggestedRecipes,
-													updateCheckedPortionCount,
-													updateTotalPortionCount,
-													updateShoppingListPortions,
-													updateToggleButtonShow
-												)}
-											>
-												<Icon name="bin" className="w-full h-full" />
-											</button>
-										</TooltipWrapper>
-									</div>
-								</RecipeItem>
-							))}
-					</div>
-					)
-				}
-			)}</Carousel>
 			<ShoppingListWrapper shoppingListShown={shoppingListShown}>
 				{toggleButtonShow &&
 					<ShoppingListButton
