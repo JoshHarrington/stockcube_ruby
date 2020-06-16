@@ -63,6 +63,7 @@ Rails.application.routes.draw do
   post '/cupboards/delete_quick_add_stock' => 'cupboards#delete_quick_add_stock'
   post '/cupboards/delete_cupboard_stock' => 'cupboards#delete_cupboard_stock'
   post '/cupboards/delete_cupboard_user' => 'cupboards#delete_cupboard_user'
+  post '/cupboards/planner_recipes' => 'cupboards#get_latest_planner_recipes'
 
   get '/ingredients' => 'ingredients#index'
   get '/ingredients/new' => 'ingredients#new'

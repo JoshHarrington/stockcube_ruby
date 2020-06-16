@@ -1,9 +1,11 @@
 require 'uri'
 
 module PlannerShoppingListHelper
+	include ActionView::Helpers::DateHelper
 	include PortionStockHelper
 	include UtilsHelper
 	include ServingHelper
+	include CupboardHelper
 
 	def sort_all_planner_portions_by_date(planner_shopping_list = nil)
 		## Get all planner portions
@@ -74,11 +76,16 @@ module PlannerShoppingListHelper
 	def refresh_all_planner_portions(planner_shopping_list = nil)
 		return if planner_shopping_list == nil
 
+		planner_shopping_list.user.remove_old_planner_portions
+
 		## Loop over all relevant (not old) planner recipes
 		planner_shopping_list.planner_recipes.select{|pr| pr.date >= Date.current}.each do |pr|
 
 			## Loop over all associated recipe portions
 			pr.recipe.portions.each do |rp|
+
+				Rails.logger.debug "refresh_all_planner_portions recipe portions"
+				Rails.logger.debug "portion id - #{rp.id} - #{rp.ingredient.name}"
 
 				## Ignore water portions
 				next if rp.ingredient.name.downcase == 'water'
@@ -149,6 +156,7 @@ module PlannerShoppingListHelper
 			return
 		end
 
+		current_user.remove_out_of_date_stock
 
 		refresh_all_planner_portions(planner_shopping_list)
 
@@ -251,6 +259,10 @@ module PlannerShoppingListHelper
 
 
 		shopping_list_portions = combi_portions + planner_recipe_portions + portion_wrappers
+
+		Rails.logger.debug "shopping_list_portions find mushrooms"
+		Rails.logger.debug shopping_list_portions.select{|p| p.ingredient_id == 108}
+
 		session[:sl_checked_portions_count] = shopping_list_portions.count{|p|p.checked == true}
 		session[:sl_unchecked_portions_count] = shopping_list_portions.count{|p|p.checked == false}
 		session[:sl_total_portions_count] = shopping_list_portions.count
@@ -271,10 +283,47 @@ module PlannerShoppingListHelper
 		}}
 	end
 
-	def processed_recipe(recipe = nil, planner_recipe_id = nil)
+	def return_portions_for_planner_recipe(planner_recipe_id = nil)
+		return [] if planner_recipe_id == nil
+
+		planner_recipe = PlannerRecipe.find(planner_recipe_id)
+
+		planner_stocks = planner_recipe.planner_shopping_list_portions
+											.map{|p| p.stock}.compact
+											.select{|s|s.hidden == false && s.always_available == false}
+											.sort_by{|s| s.use_by_date}
+		needed_stocks = planner_recipe.recipe.portions.where.not(ingredient_id: planner_stocks.map(&:ingredient_id).uniq)
+
+		planner_stocks_array = planner_stocks.map{|s| {
+			percentInCupboards: percentage_of_portion_in_stock(s),
+			title: serving_description(s.planner_shopping_list_portion),
+			freshForTime: distance_of_time_in_words(Time.zone.now, s.use_by_date).to_s + (s.use_by_date <= Time.zone.now ? ' ago' : '').to_s
+		}}
+
+		Rails.logger.debug "planner_stocks"
+		Rails.logger.debug planner_stocks.map{|ps|ps.ingredient.name}
+
+		needed_stocks_array = needed_stocks.map{|s| {
+			percentInCupboards: 0,
+			title: serving_description(s),
+			freshForTime: nil
+		}}
+
+		Rails.logger.debug "needed_stocks"
+		Rails.logger.debug needed_stocks.map{|s|s.ingredient.name}
+
+		combined_stocks_array = planner_stocks_array + needed_stocks_array
+
+		Rails.logger.debug "return_portions_for_planner_recipe combined_stocks_array"
+		Rails.logger.debug combined_stocks_array
+		return combined_stocks_array
+	end
+
+	def processed_recipe(recipe = nil, planner_recipe_id = nil, return_portions = false)
 		return nil if recipe == nil
 
 		recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
+		planner_recipe_id_hash = Hashids.new(ENV['PLANNER_RECIPE_ID_SALT'])
 
 		return {
 			encodedId: recipe_id_hash.encode(recipe.id),
@@ -282,7 +331,8 @@ module PlannerShoppingListHelper
 			percentInCupboards: percent_in_cupboards(recipe).to_s,
 			path: recipe_path(recipe),
 			stockInfoNote: "#{num_stock_ingredients(recipe)} of #{recipe.portions.length} ingredients in stock",
-			plannerRecipeId: planner_recipe_id
+			plannerRecipeId: planner_recipe_id,
+			portions: return_portions && return_portions_for_planner_recipe(planner_recipe_id_hash.decode(planner_recipe_id).first)
 		}
 	end
 
@@ -350,7 +400,7 @@ module PlannerShoppingListHelper
 	# 	return processed_planner_recipes_by_date_hash
 	# end
 
-	def processed_planner_recipes_with_date(user = nil)
+	def processed_planner_recipes_with_date(user = nil, return_portions = false)
 
 		planner_recipe_id_hash = Hashids.new(ENV['PLANNER_RECIPE_ID_SALT'])
 		planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
@@ -360,7 +410,7 @@ module PlannerShoppingListHelper
 			encodedDateId: planner_recipe_date_hash.encode(pr.date.to_formatted_s(:number)),
 			date: pr.date.to_formatted_s(:iso8601),
 			encodedId: planner_recipe_id_hash.encode(pr.id),
-			plannerRecipe: processed_recipe(pr.recipe, planner_recipe_id_hash.encode(pr.id))
+			plannerRecipe: processed_recipe(pr.recipe, planner_recipe_id_hash.encode(pr.id), return_portions)
 		}}
 
 		return processed_planner_recipes_with_date_hash

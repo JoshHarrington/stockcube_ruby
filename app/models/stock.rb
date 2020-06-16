@@ -1,4 +1,6 @@
 class Stock < ApplicationRecord
+	before_destroy :uncheck_planner_portions
+
 	belongs_to :cupboard
 	belongs_to :ingredient
 	belongs_to :unit
@@ -16,5 +18,19 @@ class Stock < ApplicationRecord
 	validates_numericality_of :amount, on: :create
 	validates :use_by_date, presence: {message: "Make sure you select a date"}
 	validates :unit_id, presence: {message: "Make sure you select a unit"}
+
+	private
+		def uncheck_planner_portions
+			if self.planner_shopping_list_portion_id != nil
+				planner_portion = self.planner_shopping_list_portion
+
+				planner_portion.update_attributes(
+					checked: false
+				)
+				if planner_portion.combi_planner_shopping_list_portion != nil
+					planner_portion.combi_planner_shopping_list_portion.destroy
+				end
+			end
+		end
 
 end
