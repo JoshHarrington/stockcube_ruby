@@ -1,10 +1,5 @@
 import React, {useState, useEffect} from "react"
 
-import {momentLocalizer} from "react-big-calendar"
-import Moment from "moment"
-
-const localizer = momentLocalizer(Moment)
-
 import {
 	ShoppingListWrapper,
 	ShoppingListButton,
@@ -23,7 +18,7 @@ import Dnd from "./DnDCalendar"
 function addRecipeToPlanner(
 	encodedId,
 	csrfToken,
-	updateGlobalPlannerRecipes,
+	updatePlannerRecipes,
 	updateSuggestedRecipes,
 	updateCheckedPortionCount,
 	updateTotalPortionCount,
@@ -53,7 +48,7 @@ function addRecipeToPlanner(
 			throw new Error('non-200 response status')
     }
   }).then((jsonResponse) => {
-		updateGlobalPlannerRecipes(jsonResponse["plannerRecipes"])
+		updatePlannerRecipes(jsonResponse["plannerRecipes"])
 		updateSuggestedRecipes(jsonResponse["suggestedRecipes"])
 		updateCheckedPortionCount(jsonResponse["checkedPortionCount"])
 		updateTotalPortionCount(jsonResponse["totalPortionCount"])
@@ -64,21 +59,16 @@ function addRecipeToPlanner(
 
 }
 
-function deleteRecipeFromPlanner(
-	plannerRecipeId,
+
+function recipeDetailsRefresh(
 	csrfToken,
-	updateGlobalPlannerRecipes,
 	updateSuggestedRecipes,
 	updateCheckedPortionCount,
 	updateTotalPortionCount,
-	updateShoppingListPortions,
-	updateToggleButtonShow
+	updateShoppingListPortions
 ) {
 	const data = {
 		method: 'post',
-    body: JSON.stringify({
-      "planner_recipe_id": plannerRecipeId
-    }),
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRF-Token': csrfToken
@@ -86,9 +76,9 @@ function deleteRecipeFromPlanner(
 		credentials: 'same-origin'
   }
 
-	showAlert("Removing recipe from your planner")
+	showAlert("Updating planner details")
 
-  fetch("/planner/recipe_delete", data).then((response) => {
+  fetch("/planner", data).then((response) => {
     if(response.status === 200){
       return response.json();
 		} else {
@@ -96,30 +86,34 @@ function deleteRecipeFromPlanner(
 			throw new Error('non-200 response status')
     }
   }).then((jsonResponse) => {
-		updateGlobalPlannerRecipes(jsonResponse["plannerRecipes"])
-		updateSuggestedRecipes(jsonResponse["suggestedRecipes"])
-		updateCheckedPortionCount(jsonResponse["checkedPortionCount"])
-		updateTotalPortionCount(jsonResponse["totalPortionCount"])
-		updateShoppingListPortions(jsonResponse["shoppingListPortions"])
+		console.log("jsonResponse", jsonResponse)
+		updateSuggestedRecipes(jsonResponse.suggestedRecipes)
+		updateCheckedPortionCount(jsonResponse.checkedPortionCount)
+		updateTotalPortionCount(jsonResponse.totalPortionCount)
+		updateShoppingListPortions(jsonResponse.shoppingListPortions)
 
-		showAlert("Recipe removed from your planner")
-  });
+		showAlert("Planner details updated")
+  })
 }
+
+
+
 
 function PlannerIndex(props) {
   const [checkedPortionCount, updateCheckedPortionCount] = useState(props.checkedPortionCount)
   const [totalPortionCount, updateTotalPortionCount] = useState(props.totalPortionCount)
   const [shoppingListPortions, updateShoppingListPortions] = useState(props.shoppingListPortions)
-  const {controller, action, sharePath, csrfToken, mailtoHrefContent} = props
+  const {sharePath, csrfToken, mailtoHrefContent, onListPage} = props
 
-  const onListPage = !!(controller === "planner" && action === "list")
   const totalPortionsPositive = !!(totalPortionCount && totalPortionCount !== 0)
 
-	const [globalPlannerRecipes, updateGlobalPlannerRecipes] = useState(props.plannerRecipes)
+	const [plannerRecipes, updatePlannerRecipes] = useState(props.plannerRecipes)
 	const [suggestedRecipes, updateSuggestedRecipes] = useState(props.suggestedRecipes)
 
   const [toggleButtonShow, updateToggleButtonShow] = useState(totalPortionsPositive)
-  const [shoppingListShown, toggleShoppingListShow] = useState(false)
+	const [shoppingListShown, toggleShoppingListShow] = useState(false)
+	// const [shoppingListLoaded, toggleShoppingListLoaded] = useState(false)
+
 	useEffect(() => {
 		if (!!totalPortionCount && totalPortionCount > 0) {
 			toggleShoppingListShow(true)
@@ -132,17 +126,6 @@ function PlannerIndex(props) {
 		}
 	}, [totalPortionCount])
 
-
-	const myEventsList = globalPlannerRecipes.map(recipe => (
-		{
-			id: recipe.encodedId,
-			title: recipe.plannerRecipe.title,
-			start: new Date(recipe.date),
-			end: new Date(recipe.date),
-			allDay: true
-		}
-	))
-
 	const [shoppingListComplete, updateShoppingListComplete] = useState(!!(checkedPortionCount === totalPortionCount))
 	useEffect(() => {
 		if (checkedPortionCount === totalPortionCount) {
@@ -151,6 +134,31 @@ function PlannerIndex(props) {
 			updateShoppingListComplete(false)
 		}
 	}, [checkedPortionCount, totalPortionCount])
+
+	const eventsSetup = plannerRecipes.map(recipe => (
+		{
+			id: recipe.encodedId,
+			title: recipe.plannerRecipe.title,
+			start: new Date(recipe.date),
+			end: new Date(recipe.date),
+			allDay: true
+		}
+	))
+	const [events, updateEvents] = useState(eventsSetup)
+
+  useEffect(() => {
+		updateEvents(
+      plannerRecipes.map(recipe => (
+        {
+          id: recipe.encodedId,
+          title: recipe.plannerRecipe.title,
+          start: new Date(recipe.date),
+          end: new Date(recipe.date),
+          allDay: true
+        }
+      ))
+    )
+	}, [plannerRecipes])
 
   return (
 		<main>
@@ -171,8 +179,8 @@ function PlannerIndex(props) {
 											data-recipe-id={encodedId} data-type="add-to-planner"
 											onClick={() => addRecipeToPlanner(
 												encodedId,
-												props.csrfToken,
-												updateGlobalPlannerRecipes,
+												csrfToken,
+												updatePlannerRecipes,
 												updateSuggestedRecipes,
 												updateCheckedPortionCount,
 												updateTotalPortionCount,
@@ -187,12 +195,16 @@ function PlannerIndex(props) {
 						)
 					})}
 			</PlannerRecipeList>
-			<div className="h-screen">
+			<div className="h-screen px-6 mt-3">
 				<Dnd
-					localizer={localizer}
-					events={myEventsList}
-					startAccessor="start"
-					endAccessor="end"
+					updatePlannerRecipes={updatePlannerRecipes}
+					updateSuggestedRecipes={updateSuggestedRecipes}
+					updateCheckedPortionCount={updateCheckedPortionCount}
+					updateTotalPortionCount={updateTotalPortionCount}
+					updateShoppingListPortions={updateShoppingListPortions}
+					csrfToken={csrfToken}
+					events={events}
+					updateEvents={updateEvents}
 				/>
 			</div>
 			<ShoppingListWrapper shoppingListShown={shoppingListShown}>
@@ -214,6 +226,7 @@ function PlannerIndex(props) {
 					onListPage={onListPage}
 				/>
 				<PortionWrapper shoppingListComplete={shoppingListComplete}>
+					{/* {!shoppingListLoaded && <div className="h-screen relative bg-white">Loading...</div>} */}
 					{!totalPortionsPositive && <p>Shopping List is currently empty, move some recipes to <a href="/planner" className="underline">your planner</a> to get items added to this list</p>}
 					{!!(totalPortionsPositive && !shoppingListComplete) &&
 						<>

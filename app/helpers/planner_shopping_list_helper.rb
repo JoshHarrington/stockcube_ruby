@@ -74,37 +74,31 @@ module PlannerShoppingListHelper
 	def refresh_all_planner_portions(planner_shopping_list = nil)
 		return if planner_shopping_list == nil
 
-		## Loop over all planner recipes
-		planner_shopping_list.planner_recipes.each do |pr|
+		## Loop over all relevant (not old) planner recipes
+		planner_shopping_list.planner_recipes.select{|pr| pr.date >= Date.current}.each do |pr|
 
-			## Ignore old planner recipes
-			if pr.date < Date.current
-				pr.destroy
-			else
+			## Loop over all associated recipe portions
+			pr.recipe.portions.each do |rp|
 
-				## Loop over all associated recipe portions
-				pr.recipe.portions.each do |rp|
+				## Ignore water portions
+				next if rp.ingredient.name.downcase == 'water'
 
-					## Ignore water portions
-					next if rp.ingredient.name.downcase == 'water'
+				## Create new planner portions using the recipe portion as template
+				PlannerShoppingListPortion.find_or_create_by(
+					user_id: planner_shopping_list.user_id,
+					planner_recipe_id: pr.id,
+					ingredient_id: rp.ingredient_id,
+					planner_shopping_list_id: planner_shopping_list.id
+				).update_attributes(
+					unit_id: rp.unit_id,
+					amount: rp.amount,
+					date: pr.date + get_ingredient_use_by_date_diff(rp.ingredient)
+				)
 
-					## Create new planner portions using the recipe portion as template
-					PlannerShoppingListPortion.find_or_create_by(
-						user_id: planner_shopping_list.user_id,
-						planner_recipe_id: pr.id,
-						ingredient_id: rp.ingredient_id,
-						planner_shopping_list_id: planner_shopping_list.id
-					).update_attributes(
-						unit_id: rp.unit_id,
-						amount: rp.amount,
-						date: pr.date + get_ingredient_use_by_date_diff(rp.ingredient)
-					)
+				#### TODO - check if stock already exists?
+				####				or can be taken from cupboards
+				####				if yes then setup planner portion with checked state
 
-					#### TODO - check if stock already exists?
-					####				or can be taken from cupboards
-					####				if yes then setup planner portion with checked state
-
-				end
 			end
 		end
 	end
@@ -266,7 +260,7 @@ module PlannerShoppingListHelper
 	end
 
 	def processed_shopping_list_portions(sl_portions = nil)
-		return if sl_portions == nil
+		return [] if sl_portions == nil
 
 		return sl_portions.map{|p| {
 			encodedId: planner_portion_id_hash.encode(p.id),
@@ -309,52 +303,52 @@ module PlannerShoppingListHelper
 		return processed_recipe_list(recipes)
 	end
 
-	def processed_planner_list(user = nil)
-		return if user == nil
+	# def processed_planner_list(user = nil)
+	# 	return if user == nil
 
-		date_range = (-1..31)
-		planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
+	# 	date_range = (-1..31)
+	# 	planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
 
-		return date_range.map{|d|
-			date = Date.current + d.days
-			date_num = date.to_formatted_s(:number)
-			date_id = planner_recipe_date_hash.encode(date_num)
-			calendar_note = nil
-			if d == -1
-				calendar_note = "Yesterday " + date.to_s(:short)
-			elsif d == 0
-				calendar_note = "Today " + date.to_s(:short)
-			elsif d == 1
-				calendar_note = "Tomorrow " + date.to_s(:short)
-			else
-				calendar_note = date.to_s(:short)
-			end
+	# 	return date_range.map{|d|
+	# 		date = Date.current + d.days
+	# 		date_num = date.to_formatted_s(:number)
+	# 		date_id = planner_recipe_date_hash.encode(date_num)
+	# 		calendar_note = nil
+	# 		if d == -1
+	# 			calendar_note = "Yesterday " + date.to_s(:short)
+	# 		elsif d == 0
+	# 			calendar_note = "Today " + date.to_s(:short)
+	# 		elsif d == 1
+	# 			calendar_note = "Tomorrow " + date.to_s(:short)
+	# 		else
+	# 			calendar_note = date.to_s(:short)
+	# 		end
 
-			planner_recipes = user.planner_recipes.where(date: date)
+	# 		planner_recipes = user.planner_recipes.where(date: date)
 
-			{
-				dateId: date_id,
-				calendarNote: calendar_note
-			}
-		}
+	# 		{
+	# 			dateId: date_id,
+	# 			calendarNote: calendar_note
+	# 		}
+	# 	}
 
-	end
+	# end
 
-	def processed_planner_recipes_by_date(user = nil)
-		return if user == nil
+	# def processed_planner_recipes_by_date(user = nil)
+	# 	return if user == nil
 
-		planner_recipe_id_hash = Hashids.new(ENV['PLANNER_RECIPE_ID_SALT'])
-		planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
+	# 	planner_recipe_id_hash = Hashids.new(ENV['PLANNER_RECIPE_ID_SALT'])
+	# 	planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
 
-		planner_recipes_by_date = user.planner_recipes.select{|pr|pr.date > Date.current - 2.day}.group_by{|pr| [planner_recipe_date_hash.encode(pr.date.to_formatted_s(:number)), pr.date.to_formatted_s(:iso8601)] }
-		processed_planner_recipes_by_date_hash = planner_recipes_by_date.map{|(encoded_date_id, date_string), prs| {
-			encodedDateId: encoded_date_id,
-			date: date_string,
-			plannerRecipes: prs.map{|pr|processed_recipe(pr.recipe, planner_recipe_id_hash.encode(pr.id))}
-		}}
+	# 	planner_recipes_by_date = user.planner_recipes.select{|pr|pr.date > Date.current - 2.day}.group_by{|pr| [planner_recipe_date_hash.encode(pr.date.to_formatted_s(:number)), pr.date.to_formatted_s(:iso8601)] }
+	# 	processed_planner_recipes_by_date_hash = planner_recipes_by_date.map{|(encoded_date_id, date_string), prs| {
+	# 		encodedDateId: encoded_date_id,
+	# 		date: date_string,
+	# 		plannerRecipes: prs.map{|pr|processed_recipe(pr.recipe, planner_recipe_id_hash.encode(pr.id))}
+	# 	}}
 
-		return processed_planner_recipes_by_date_hash
-	end
+	# 	return processed_planner_recipes_by_date_hash
+	# end
 
 	def processed_planner_recipes_with_date(user = nil)
 

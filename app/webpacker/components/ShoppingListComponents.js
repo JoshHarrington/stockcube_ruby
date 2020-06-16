@@ -170,13 +170,18 @@ const ShoppingListTopBanner = ({
 }) => {
   return (
     <div
-      className="bg-primary-200 p-5 flex items-start flex-col justify-center relative"
+      className="bg-primary-200 p-5 flex items-start flex-col justify-center relative flex-shrink-0"
       style={{minHeight: "7rem"}}>
       <div className="flex justify-between w-full">
         <h2>Shopping List { totalPortionsPositive && `(${checkedPortionCount}/${totalPortionCount})`}</h2>
         {!!(!!sharePath && !onListPage) && <a href={sharePath} className="w-10 h-10 bg-white hover:bg-primary-400 ml-2"><Icon className="w-full h-full flex items-center justify-center text-black" name="fullscreen"/></a>}
       </div>
-      {totalPortionsPositive && <p data-name="shopping-list-note" className="flex text-gray-600 text-sm mt-2">Add to cupboards by checking off items</p>}
+      {totalPortionsPositive &&
+        <>
+          <p className="flex text-gray-900 text-sm mt-2">Based on the next 7 days of recipes</p>
+          <p data-name="shopping-list-note" className="flex text-gray-600 text-sm mt-2">Add to cupboards by checking off items</p>
+        </>
+      }
       {!!(!!mailtoHrefContent && onListPage) &&
         <a
           href={mailtoHrefContent}
