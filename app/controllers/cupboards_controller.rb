@@ -158,6 +158,24 @@ class CupboardsController < ApplicationController
 		end
 	end
 
+	def get_latest_planner_recipes
+
+		unless current_user
+			respond_to do |format|
+				format.json { render json: {'get cupboard planner recipes': 'not allowed'}.as_json, status: 400}
+				format.html { redirect_to planner_path }
+			end and return
+		end
+
+		fetched_shopping_list_portions = shopping_list_portions(nil, current_user)
+
+		respond_to do |format|
+			format.json { render json: {
+				plannerRecipes: processed_planner_recipes_with_date(current_user, true)
+			}.as_json, status: 200}
+		end
+	end
+
 	def accept_cupboard_invite
 		if params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
 			hashids = Hashids.new(ENV['CUPBOARD_EMAIL_SHARE_ID_SALT'])

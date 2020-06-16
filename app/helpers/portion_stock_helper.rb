@@ -171,7 +171,7 @@ module PortionStockHelper
 		user_cupboards = user_cupboards(user)
 		user_stock = user_stock(user)
 
-		available_stock = user_stock
+		available_stock = user_stock.select{|s|s.hidden == false && s.always_available == false && s.use_by_date > Date.current - stock_date_limit.day}
 			.select{|s|	s.ingredient_id == portion.ingredient_id}
 
 		return if available_stock.length == 0
