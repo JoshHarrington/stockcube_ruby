@@ -36,19 +36,19 @@ module CupboardHelper
 		end
 	end
 	def cupboard_empty_class(cupboard)
-		stock_num = cupboard.stocks.select{|s| s.planner_recipe == nil && s.hidden == false && s.ingredient.name.downcase.to_s != "water" && s.use_by_date > Date.current - 4.day}.length
+		stock_num = cupboard.stocks.select{|s| s.planner_recipe == nil && s.hidden == false && s.ingredient.name.downcase.to_s != "water" && s.use_by_date > Date.current - stock_date_limit.day}.length
 		if stock_num < 1
 			return 'empty'
 		end
 	end
 	def cupboard_stocks_selection_in_date(cupboard)
-		@stocks = cupboard.stocks.select{|s| s.planner_shopping_list_portion_id == nil && s.hidden == false && s.ingredient.name.downcase != 'water' && s.use_by_date > Date.current - 4.day}.sort_by{|s| s.use_by_date}
+		@stocks = cupboard.stocks.select{|s| s.planner_shopping_list_portion_id == nil && s.hidden == false && s.ingredient.name.downcase != 'water' && s.use_by_date > Date.current - stock_date_limit.day}.sort_by{|s| s.use_by_date}
 		return @stocks
 	end
 	def planner_stocks(planner_recipe)
 		stock_from_planner_portions = planner_recipe.planner_shopping_list_portions
 			.map{|p| p.stock}.compact
-			.select{|s|s.hidden == false && s.always_available == false && s.use_by_date > Date.current - 4.day}
+			.select{|s|s.hidden == false && s.always_available == false && s.use_by_date > Date.current - stock_date_limit.day}
 			.sort_by{|s| s.use_by_date}
 		return stock_from_planner_portions
 	end
@@ -64,14 +64,21 @@ module CupboardHelper
 	end
 
 
-	def user_stock(user = nil)
+	def user_stock(user = nil, showPlannerPortionStock = false)
 		return if user == nil
 
 		cupboards = user_cupboards(user)
 
-		user_stock = user.stocks
-			.where(cupboard_id: cupboards.map(&:id), planner_shopping_list_portion_id: nil, hidden: false)
-			.uniq
+		if showPlannerPortionStock
+			user_stock = user.stocks
+				.where(cupboard_id: cupboards.map(&:id), hidden: false)
+				.uniq
+		else
+			user_stock = user.stocks
+				.where(cupboard_id: cupboards.map(&:id), planner_shopping_list_portion_id: nil, hidden: false)
+				.uniq
+		end
+
 
 		return user_stock
 	end

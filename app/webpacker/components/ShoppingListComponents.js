@@ -77,7 +77,6 @@ function ShoppingListExample(props) {
     <ShoppingListWrapper shoppingListShown={shoppingListShown}>
       {toggleButtonShow &&
         <ShoppingListButton
-          switchShoppingListClass={switchShoppingListClass}
           shoppingListShown={shoppingListShown}
           toggleShoppingListShow={toggleShoppingListShow}
           checkedPortionCount={checkedPortionCount}
@@ -137,7 +136,6 @@ const ShoppingListWrapper = ({children, shoppingListShown}) => {
 }
 
 const ShoppingListButton = ({
-  switchShoppingListClass,
   shoppingListShown,
   toggleShoppingListShow,
   checkedPortionCount,

@@ -208,7 +208,6 @@ function PlannerIndex(props) {
 			<ShoppingListWrapper shoppingListShown={shoppingListShown}>
 				{toggleButtonShow &&
 					<ShoppingListButton
-						switchShoppingListClass={switchShoppingListClass}
 						shoppingListShown={shoppingListShown}
 						toggleShoppingListShow={toggleShoppingListShow}
 						checkedPortionCount={checkedPortionCount}

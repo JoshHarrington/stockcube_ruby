@@ -415,8 +415,8 @@ module StockHelper
 
 	def destroy_old_stock(user = nil)
 		return if user == nil
-		all_user_stock = user_stock(user)
-		out_of_date_stock = all_user_stock.select{|s| s.use_by_date < Date.current - stock_date_limit.days}
+		all_user_stock = user_stock(user, true)
+		out_of_date_stock = all_user_stock.select{|s| s.use_by_date <= Date.current - stock_date_limit.days}
 		out_of_date_stock.map{|s| s.destroy}
 	end
 end
