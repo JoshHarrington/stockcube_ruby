@@ -10,8 +10,8 @@
 
 <%= react_component("PlannerIndex", {
 			csrfToken: form_authenticity_token,
-			checkedPortionCount: checked_portions(),
-			totalPortionCount: total_portions(),
+			checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
+			totalPortionCount: fetched_shopping_list_portions.count,
 			shoppingListPortions: processed_shopping_list_portions(fetched_shopping_list_portions),
 			onListPage: false,
 			sharePath: user_signed_in? && shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id),
