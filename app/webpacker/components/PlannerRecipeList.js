@@ -6,8 +6,8 @@ import TooltipWrapper from "./TooltipWrapper"
 
 function PlannerRecipeList({children}) {
 	return (
-		<div className="list_block--collection">
-			<div className="list_block list_block-stack list_block-wide">
+		<div className="p-6">
+			<div className="flex flex-wrap border border-solid border-primary-600 rounded-sm relative ">
 				<div className="flex content-start pt-4 px-2 pb-6 w-full flex-wrap" data-recipe-list>
 					<div className="w-full flex flex-col flex-shrink-0 items-start px-2 mb-4" data-sortable={false}>
 						<h3 className="mb-2">Recipes to add to your planner</h3>

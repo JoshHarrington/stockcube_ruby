@@ -1,0 +1,21 @@
+.rbc-addons-dnd .rbc-addons-dnd-resize-ew-anchor {
+	@apply pointer-events-none hidden;
+}
+
+.rbc-row-segment {
+	@apply p-2;
+}
+
+.rbc-event {
+	@apply text-base p-0 bg-transparent font-sans;
+}
+
+.rbc-ellipsis, .rbc-event-label,
+.rbc-row-segment .rbc-event-content{
+	text-overflow: inherit;
+	white-space: normal;
+	@apply break-words;
+}
+.rbc-show-more {
+	@apply truncate;
+}
