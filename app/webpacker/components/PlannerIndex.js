@@ -22,8 +22,7 @@ function addRecipeToPlanner(
 	updateSuggestedRecipes,
 	updateCheckedPortionCount,
 	updateTotalPortionCount,
-	updateShoppingListPortions,
-	updateToggleButtonShow
+	updateShoppingListPortions
 ) {
 
 	const data = {
@@ -184,8 +183,7 @@ function PlannerIndex(props) {
 												updateSuggestedRecipes,
 												updateCheckedPortionCount,
 												updateTotalPortionCount,
-												updateShoppingListPortions,
-												updateToggleButtonShow
+												updateShoppingListPortions
 											)}>
 											<Icon name="list-add" className="w-full h-full" />
 										</button>
