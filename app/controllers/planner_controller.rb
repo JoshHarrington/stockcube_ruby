@@ -42,6 +42,27 @@ class PlannerController < ApplicationController
 
 	end
 
+	def refresh
+		unless current_user
+			respond_to do |format|
+				format.json { render json: {'planner refresh': 'not allowed'}.as_json, status: 400}
+				format.html { redirect_to planner_path }
+			end and return
+		end
+
+		fetched_shopping_list_portions = shopping_list_portions(nil, current_user)
+
+		respond_to do |format|
+			format.json { render json: {
+				plannerRecipes: processed_planner_recipes_with_date(current_user),
+				suggestedRecipes: processed_recipe_list_for_user(current_user),
+				checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
+				totalPortionCount: fetched_shopping_list_portions.count,
+				shoppingListPortions: processed_shopping_list_portions(fetched_shopping_list_portions)
+			}.as_json, status: 200}
+		end
+	end
+
 	def recipe_add_to_planner
 		current_user.planner_shopping_list.update_attributes(
 			ready: false
@@ -110,7 +131,6 @@ class PlannerController < ApplicationController
 				recipeTitle: recipe.title,
 				recipePath: recipe_path(recipe_id),
 				percentInCupboards: percent_in_cupboards(recipe),
-				plannerRecipesByDate: processed_planner_recipes_by_date(current_user),
 				plannerRecipes: processed_planner_recipes_with_date(current_user),
 				suggestedRecipes: processed_recipe_list_for_user(current_user),
 				checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
@@ -128,51 +148,46 @@ class PlannerController < ApplicationController
 			ready: false
 		)
 
-		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
-		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
-		if params.has_key?(:recipe_id) && Recipe.exists?(@recipe_id_hash.decode(params[:recipe_id]).first)
-			recipe = Recipe.find(@recipe_id_hash.decode(params[:recipe_id]).first)
+		planner_recipe_id_hash = Hashids.new(ENV['PLANNER_RECIPE_ID_SALT'])
+
+		if params.has_key?(:planner_recipe_id) && PlannerRecipe.exists?(planner_recipe_id_hash.decode(params[:planner_recipe_id]).first) && params.has_key?(:new_date)
+			planner_recipe = current_user.planner_recipes.find(planner_recipe_id_hash.decode(params[:planner_recipe_id]).first)
 		else
 			current_user.planner_shopping_list.update_attributes(
 				ready: true
 			)
-			return
+			respond_to do |format|
+				format.json { render json: {'planner recipe update': 'not allowed'}.as_json, status: 400}
+				format.html { redirect_to planner_path }
+			end and return
 		end
 
-		if recipe && params.has_key?(:new_date) && Date.parse(@planner_recipe_date_hash.decode(params[:new_date]).first.to_s).to_date && (recipe.public == true || recipe.user == current_user)
-			recipe_id = recipe.id
-			user_id = current_user.id
-			new_date = Date.parse(@planner_recipe_date_hash.decode(params[:new_date]).first.to_s).to_date
-		else
-			current_user.planner_shopping_list.update_attributes(
-				ready: true
+		if planner_recipe.present?
+
+			planner_recipe.update_attributes(
+				date: params[:new_date].to_date
 			)
-			return
+			update_planner_shopping_list_portions
 		end
-
-		if params.has_key?(:old_date) && Date.parse(@planner_recipe_date_hash.decode(params[:old_date]).first.to_s).to_date
-			old_date = Date.parse(@planner_recipe_date_hash.decode(params[:old_date]).first.to_s).to_date
-		else
-			current_user.planner_shopping_list.update_attributes(
-				ready: true
-			)
-			return
-		end
-
-		PlannerRecipe.find_or_create_by(
-			user_id: user_id,
-			recipe_id: recipe.id,
-			date: old_date,
-			planner_shopping_list_id: current_user.planner_shopping_list.id
-		).update_attributes(
-			date: new_date
-		)
-
-		update_planner_shopping_list_portions
 
 		current_user.planner_shopping_list.update_attributes(
 			ready: true
 		)
+
+		fetched_shopping_list_portions = shopping_list_portions(nil, current_user)
+
+		respond_to do |format|
+			format.json { render json: {
+				plannerRecipes: processed_planner_recipes_with_date(current_user),
+				suggestedRecipes: processed_recipe_list_for_user(current_user),
+				checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
+				totalPortionCount: fetched_shopping_list_portions.count,
+				shoppingListPortions: processed_shopping_list_portions(fetched_shopping_list_portions),
+			}.as_json, status: 200}
+			format.html { redirect_to planner_path }
+		end
+
+		update_current_planner_recipe_ids
 	end
 
 	def delete_recipe_from_planner
@@ -208,7 +223,6 @@ class PlannerController < ApplicationController
 
 		respond_to do |format|
 			format.json { render json: {
-				plannerRecipesByDate: processed_planner_recipes_by_date(current_user),
 				plannerRecipes: processed_planner_recipes_with_date(current_user),
 				suggestedRecipes: processed_recipe_list_for_user(current_user),
 				checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
