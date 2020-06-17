@@ -7,7 +7,6 @@ class CupboardsController < ApplicationController
 
 	include PortionStockHelper
 
-	before_action :correct_user,   only: [:show, :edit, :update]
 	def index
 		@cupboards = user_cupboards(current_user)
 		@planner_recipes = current_user.planner_recipes.select{|pr| pr.date > Date.current - 1.days}
@@ -203,30 +202,47 @@ class CupboardsController < ApplicationController
 		end
 	end
 	def location_update
-		if params.has_key?(:cupboard_location) && params[:cupboard_location].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != '' && Cupboard.find(params[:cupboard_id]).cupboard_users.where(owner: true).first.user == current_user
-			@cupboard_id = params[:cupboard_id]
-			@cupboard_title = params[:cupboard_location].strip
-			@cupboard_to_edit = user_cupboards(current_user).select{|c| c.id == @cupboard_id.to_i}.first
-			if @cupboard_to_edit.location != @cupboard_title
-				@cupboard_to_edit.update_attributes(
-					location: @cupboard_title
+		if params.has_key?(:cupboard_location) && params[:cupboard_location].to_s != '' && params.has_key?(:cupboard_id) && params[:cupboard_id].to_s != ''
+
+			cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+			encoded_cupboard_id = params[:cupboard_id]
+			cupboard_id = cupboard_id_hashids.decode(encoded_cupboard_id).first
+
+			cupboard_title = params[:cupboard_location].strip
+			cupboard_to_edit = user_cupboards(current_user).select{|c| c.id == cupboard_id}.first
+
+			if cupboard_to_edit == nil
+				respond_to do |format|
+					format.json { render json: {'cupboard': 'not found'}.as_json, status: 404}
+					format.html { redirect_to cupboards_path }
+				end and return
+			end
+
+			if cupboard_to_edit.location != cupboard_title
+				cupboard_to_edit.update_attributes(
+					location: cupboard_title
 				)
 				respond_to do |format|
 					format.json { render json: {
 						"status": "success",
-						"location": @cupboard_title
+						"cupboardContents": processed_cupboard_contents(current_user),
+						"cupboardLocation": cupboard_title
 					}.as_json, status: 200}
 					format.html { redirect_to cupboards_path }
 				end
 			else
 				respond_to do |format|
 					format.json { render json: {
-						"status": "no_change",
-						"location": @cupboard_title
-					}.as_json, status: 200}
+						"status": "no_change"
+					}.as_json, status: 202}
 					format.html { redirect_to cupboards_path }
 				end
 			end
+		else
+			respond_to do |format|
+				format.json { render json: {'update cupboard name': 'not allowed'}.as_json, status: 400}
+				format.html { redirect_to cupboards_path }
+			end and return
 		end
 	end
 	def delete
