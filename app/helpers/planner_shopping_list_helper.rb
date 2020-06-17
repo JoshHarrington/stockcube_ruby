@@ -260,9 +260,6 @@ module PlannerShoppingListHelper
 
 		shopping_list_portions = combi_portions + planner_recipe_portions + portion_wrappers
 
-		Rails.logger.debug "shopping_list_portions find mushrooms"
-		Rails.logger.debug shopping_list_portions.select{|p| p.ingredient_id == 108}
-
 		session[:sl_checked_portions_count] = shopping_list_portions.count{|p|p.checked == true}
 		session[:sl_unchecked_portions_count] = shopping_list_portions.count{|p|p.checked == false}
 		session[:sl_total_portions_count] = shopping_list_portions.count
@@ -300,22 +297,13 @@ module PlannerShoppingListHelper
 			freshForTime: distance_of_time_in_words(Time.zone.now, s.use_by_date).to_s + (s.use_by_date <= Time.zone.now ? ' ago' : '').to_s
 		}}
 
-		Rails.logger.debug "planner_stocks"
-		Rails.logger.debug planner_stocks.map{|ps|ps.ingredient.name}
-
 		needed_stocks_array = needed_stocks.map{|s| {
 			percentInCupboards: 0,
 			title: serving_description(s),
 			freshForTime: nil
 		}}
 
-		Rails.logger.debug "needed_stocks"
-		Rails.logger.debug needed_stocks.map{|s|s.ingredient.name}
-
 		combined_stocks_array = planner_stocks_array + needed_stocks_array
-
-		Rails.logger.debug "return_portions_for_planner_recipe combined_stocks_array"
-		Rails.logger.debug combined_stocks_array
 		return combined_stocks_array
 	end
 
@@ -410,7 +398,8 @@ module PlannerShoppingListHelper
 			encodedDateId: planner_recipe_date_hash.encode(pr.date.to_formatted_s(:number)),
 			date: pr.date.to_formatted_s(:iso8601),
 			encodedId: planner_recipe_id_hash.encode(pr.id),
-			plannerRecipe: processed_recipe(pr.recipe, planner_recipe_id_hash.encode(pr.id), return_portions)
+			plannerRecipe: processed_recipe(pr.recipe, planner_recipe_id_hash.encode(pr.id), return_portions),
+			active: pr.date >= Date.current && pr.date <= Date.current + 6.days
 		}}
 
 		return processed_planner_recipes_with_date_hash

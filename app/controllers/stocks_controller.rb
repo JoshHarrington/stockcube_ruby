@@ -11,7 +11,6 @@ class StocksController < ApplicationController
 	include PortionStockHelper
 
 	before_action :authenticate_user!, except: [:toggle_shopping_list_portion]
-	before_action :correct_user, only: [:edit]
 
 	def index
 		redirect_to cupboards_path
@@ -123,7 +122,11 @@ class StocksController < ApplicationController
 	end
 
 	def edit
-		@stock = current_user.stocks.find(params[:id])
+		@stock = current_user.stocks.where(id: params[:id]).first
+		if @stock == nil
+			redirect_to cupboards_path and return
+		end
+
 		@current_cupboard = @stock.cupboard
 
 		if @stock.planner_recipe_id == nil

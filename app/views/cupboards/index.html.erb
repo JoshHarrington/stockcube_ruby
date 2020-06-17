@@ -21,6 +21,6 @@
   onListPage: false,
   sharePath: user_signed_in? && shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id),
   mailtoHrefContent: email_sharing_mailto_list(fetched_shopping_list_portions, defined?(shopping_list) ? shopping_list.gen_id : (user_signed_in? && current_user.planner_shopping_list.gen_id)),
-  suggestedRecipes: processed_recipe_list(@recipes),
-  plannerRecipes: processed_planner_recipes_with_date(current_user, true)
+  plannerRecipes: processed_planner_recipes_with_date(current_user, true),
+  cupboardContents: processed_cupboard_contents(current_user)
 }) %>

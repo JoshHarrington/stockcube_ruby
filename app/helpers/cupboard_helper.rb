@@ -112,4 +112,22 @@ module CupboardHelper
 	def recipe_portions_in_stock_vs_total_percentage(planner_recipe)
 		return recipe_portions_in_stock_vs_total_float(planner_recipe) * 100
 	end
+
+
+	def processed_cupboard_contents(user = nil)
+		return [] if user == nil
+		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+		cupboards = user_cupboards(current_user)
+		return cupboards.map{|c| {
+			title: c.location,
+			id: cupboard_id_hashids.encode(c.id),
+			stock: cupboard_stocks_selection_in_date(c).length > 0 ? cupboard_stocks_selection_in_date(c).map{|s|
+				{
+					id: s.id,
+					title: serving_description(s),
+					href: edit_stock_path(s)
+				}
+			} : []
+		}}
+	end
 end
