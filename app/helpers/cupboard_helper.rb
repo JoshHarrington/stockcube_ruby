@@ -125,7 +125,9 @@ module CupboardHelper
 				{
 					id: s.id,
 					title: serving_description(s),
-					href: edit_stock_path(s)
+					href: edit_stock_path(s),
+					fresh: s.use_by_date >= Time.zone.now,
+					freshForTime: distance_of_time_in_words(Time.zone.now, s.use_by_date)
 				}
 			} : []
 		}}

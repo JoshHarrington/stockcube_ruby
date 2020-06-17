@@ -294,13 +294,15 @@ module PlannerShoppingListHelper
 		planner_stocks_array = planner_stocks.map{|s| {
 			percentInCupboards: percentage_of_portion_in_stock(s),
 			title: serving_description(s.planner_shopping_list_portion),
-			freshForTime: distance_of_time_in_words(Time.zone.now, s.use_by_date).to_s + (s.use_by_date <= Time.zone.now ? ' ago' : '').to_s
+			fresh: s.use_by_date >= Time.zone.now,
+			freshForTime: distance_of_time_in_words(Time.zone.now, s.use_by_date)
 		}}
 
 		needed_stocks_array = needed_stocks.map{|s| {
 			percentInCupboards: 0,
 			title: serving_description(s),
-			freshForTime: nil
+			freshForTime: nil,
+			fresh: nil
 		}}
 
 		combined_stocks_array = planner_stocks_array + needed_stocks_array
