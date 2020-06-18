@@ -159,19 +159,22 @@ function PlannerIndex(props) {
     )
 	}, [plannerRecipes])
 
+	const [tooltipsHidden, toggleTooltipsHidden] = useState(false)
+
+
   return (
 		<main>
 			<PlannerRecipeList>
 				{suggestedRecipes.map((recipe, index) => {
-						const {encodedId, title, percentInCupboards, path, stockInfoNote} = recipe
+					const {encodedId, title, percentInCupboards, path, stockInfoNote} = recipe
 						return (
-							<RecipeItem key={index} encodedId={encodedId}>
-								<TooltipWrapper width={48} text={stockInfoNote} className="top-0 left-0 flex-shrink-0 mb-2 bg-primary-100 w-full rounded-t-sm h-4">
+							<RecipeItem key={index} encodedId={encodedId} onDragStart={() => toggleTooltipsHidden(true)} onDragEnd={() => toggleTooltipsHidden(false)} draggable={true}>
+								<TooltipWrapper width={48} text={stockInfoNote} className="top-0 left-0 flex-shrink-0 mb-2 bg-primary-100 w-full rounded-t-sm h-4" hidden={tooltipsHidden}>
 									<span className="block h-full rounded-tl-sm bg-primary-600" style={{width: `${percentInCupboards}%`}}></span>
 								</TooltipWrapper>
 								<div className="flex w-full px-3 justify-between">
-									<a href={path}>{title}</a>
-									<TooltipWrapper text="Add to planner" width={24}>
+									<a href={path} draggable={false}>{title}</a>
+									<TooltipWrapper hidden={tooltipsHidden} text="Add to planner" width={24}>
 										<button
 											name="button" type="submit"
 											className="p-2 mb-1 ml-2 w-10 h-10 bg-white rounded-sm flex-shrink-0 flex" title="Add this recipe to your planner"
