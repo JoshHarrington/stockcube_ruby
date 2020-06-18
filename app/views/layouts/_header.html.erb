@@ -71,10 +71,8 @@
           --><%= link_current_page_element(your_recipes_path, 'Your Recipes') %><!--
         --></ul><% end %><!--
       --><%= link_current_page_element(cupboards_path, 'Cupboards', 'stocks') %><!--
-      --><li data-name="shopping-list-nav-item"><span class="fake_link"
-      onClick="(function(){document.querySelector('html').classList.toggle('shopping_list_open');
-      window.App.closeNav();})();">Shopping List</span></li><!--
-      --><% end %><!--
+      --><%= link_current_page_element(shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id), 'Shopping List') %><!--
+    --><% end %><!--
     --></ul>
       <% if not user_signed_in? %>
         <%= link_to new_user_session_path, class: "profile_item" do %>
