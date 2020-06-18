@@ -12,51 +12,8 @@ import PlannerRecipeList from "./PlannerRecipeList"
 import RecipeItem from "./RecipeItem"
 import TooltipWrapper from "./TooltipWrapper"
 import Icon from "./Icon"
-import { showAlert, switchShoppingListClass } from "../functions/utils"
+import { showAlert, switchShoppingListClass, addRecipeToPlanner } from "../functions/utils"
 import Dnd from "./DnDCalendar"
-
-function addRecipeToPlanner(
-	encodedId,
-	csrfToken,
-	updatePlannerRecipes,
-	updateSuggestedRecipes,
-	updateCheckedPortionCount,
-	updateTotalPortionCount,
-	updateShoppingListPortions
-) {
-
-	const data = {
-		method: 'post',
-    body: JSON.stringify({
-      "recipe_id": encodedId
-    }),
-		headers: {
-			'Content-Type': 'application/json',
-			'X-CSRF-Token': csrfToken
-		},
-		credentials: 'same-origin'
-  }
-
-	showAlert("Adding recipe to your planner")
-
-  fetch("/planner/recipe_add", data).then((response) => {
-		if(response.status === 200){
-      return response.json();
-		} else {
-			window.alert('Something went wrong! Maybe refresh the page and try again')
-			throw new Error('non-200 response status')
-    }
-  }).then((jsonResponse) => {
-		updatePlannerRecipes(jsonResponse["plannerRecipes"])
-		updateSuggestedRecipes(jsonResponse["suggestedRecipes"])
-		updateCheckedPortionCount(jsonResponse["checkedPortionCount"])
-		updateTotalPortionCount(jsonResponse["totalPortionCount"])
-		updateShoppingListPortions(jsonResponse["shoppingListPortions"])
-
-		showAlert("Recipe added to your planner")
-  });
-
-}
 
 
 function recipeDetailsRefresh(
@@ -161,6 +118,8 @@ function PlannerIndex(props) {
 
 	const [tooltipsHidden, toggleTooltipsHidden] = useState(false)
 
+	const [currentlyDraggedItem, updateCurrentlyDraggedItem] = useState(null)
+
 
   return (
 		<main>
@@ -168,7 +127,15 @@ function PlannerIndex(props) {
 				{suggestedRecipes.map((recipe, index) => {
 					const {encodedId, title, percentInCupboards, path, stockInfoNote} = recipe
 						return (
-							<RecipeItem key={index} encodedId={encodedId} onDragStart={() => toggleTooltipsHidden(true)} onDragEnd={() => toggleTooltipsHidden(false)} draggable={true}>
+							<RecipeItem key={index} encodedId={encodedId}
+								onDragStart={() => {
+									toggleTooltipsHidden(true)
+									updateCurrentlyDraggedItem({encodedId, title})
+								}}
+								onDragEnd={() => {
+									toggleTooltipsHidden(false)
+									updateCurrentlyDraggedItem(null)
+								}} title={title} draggable={true}>
 								<TooltipWrapper width={48} text={stockInfoNote} className="top-0 left-0 flex-shrink-0 mb-2 bg-primary-100 w-full rounded-t-sm h-4" hidden={tooltipsHidden}>
 									<span className="block h-full rounded-tl-sm bg-primary-600" style={{width: `${percentInCupboards}%`}}></span>
 								</TooltipWrapper>
@@ -206,6 +173,7 @@ function PlannerIndex(props) {
 					csrfToken={csrfToken}
 					events={events}
 					updateEvents={updateEvents}
+					currentlyDraggedItem={currentlyDraggedItem}
 				/>
 			</div>
 			<ShoppingListWrapper shoppingListShown={shoppingListShown}>
