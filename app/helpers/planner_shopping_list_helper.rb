@@ -289,7 +289,7 @@ module PlannerShoppingListHelper
 											.map{|p| p.stock}.compact
 											.select{|s|s.hidden == false && s.always_available == false}
 											.sort_by{|s| s.use_by_date}
-		needed_stocks = planner_recipe.recipe.portions.where.not(ingredient_id: planner_stocks.map(&:ingredient_id).uniq)
+		needed_stocks = planner_recipe.recipe.portions.where.not(ingredient_id: planner_stocks.map(&:ingredient_id).uniq).select{|p| p.ingredient.name.downcase != 'water'}
 
 		planner_stocks_array = planner_stocks.map{|s| {
 			percentInCupboards: percentage_of_portion_in_stock(s),
