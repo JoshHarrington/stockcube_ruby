@@ -143,9 +143,9 @@ const ShoppingListButton = ({
 }) => {
   return (
     <button
-      className="fixed border-0 bg-primary-600 text-white overflow-hidden outline-none transition-all duration-500 shadow-lg flex w-auto items-center rounded-full p-2 pr-4 right-0 top-0 mt-32 mr-5 focus:outline-none focus:shadow-outline"
+      className="fixed border-0 bg-primary-600 text-white overflow-hidden outline-none transition-all duration-500 shadow-lg flex w-auto items-center rounded-full p-2 pr-4 right-0 top-0 mt-32 mr-5 focus:bg-primary-700 focus:outline-none"
       onClick={() => {
-        switchShoppingListClass()
+        switchShoppingListClass(!shoppingListShown)
         toggleShoppingListShow(!shoppingListShown)
       }}
       style={{right: shoppingListShown ? '30rem' : 0}}>
