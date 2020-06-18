@@ -161,7 +161,7 @@ function Event(
 
   return (
     <div className={classNames(
-        "flex justify-between items-start p-2 rounded-sm",
+        "flex justify-between items-start p-2 rounded-sm h-full",
         {"bg-primary-400 text-black": !fadedOut},
         {"bg-primary-200 text-gray-600": fadedOut}
       )}>
@@ -286,7 +286,6 @@ const Dnd = props => {
         updateShoppingListPortions,
         csrfToken
       )}
-      // onSelectSlot={this.newEvent}
       popup={true}
       views={['week', 'month']}
       components={{
@@ -308,9 +307,6 @@ const Dnd = props => {
         },
       }}
       dayPropGetter={(date) => customDayPropGetter(date, yesterday, weeksTime)}
-      // dragFromOutsideItem={
-      //   this.state.displayDragItemInCell ? this.dragFromOutsideItem : null
-      // }
       onDropFromOutside={(e) => onDropFromOutside(
         e,
         events,
@@ -323,8 +319,6 @@ const Dnd = props => {
         updateShoppingListPortions,
         csrfToken
       )}
-      handleDragEnd={(e) => console.log(e, 'handleDragEnd')}
-      // handleDragStart={this.handleDragStart}
     />
   )
 }
