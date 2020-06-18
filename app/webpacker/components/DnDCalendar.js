@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { Calendar, Views, momentLocalizer } from 'react-big-calendar'
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
-import { showAlert } from '../functions/utils'
+import { showAlert, addRecipeToPlanner } from '../functions/utils'
 import * as classNames from "classnames"
 
 import Moment from "moment"
@@ -76,7 +76,7 @@ const moveEvent = (
 
     updateRecipeData(
       event.id,
-      start,
+      Moment(start).format('YYYY-MM-DD'),
       csrfToken,
       updatePlannerRecipes,
       updateSuggestedRecipes,
@@ -206,6 +206,52 @@ const customDayPropGetter = (date, yesterday, weeksTime) => {
   }
 }
 
+function onDropFromOutside(
+  e,
+  events,
+  updateEvents,
+  currentlyDraggedItem,
+  updatePlannerRecipes,
+  updateSuggestedRecipes,
+  updateCheckedPortionCount,
+  updateTotalPortionCount,
+  updateShoppingListPortions,
+  csrfToken
+) {
+
+  updateEvents([...events, {
+    id: currentlyDraggedItem.encodedId,
+    title: currentlyDraggedItem.title,
+    start: e.start,
+    end: e.end,
+    allDay: true
+  }])
+
+  console.log(e)
+
+  addRecipeToPlanner(
+    currentlyDraggedItem.encodedId,
+    csrfToken,
+    updatePlannerRecipes,
+    updateSuggestedRecipes,
+    updateCheckedPortionCount,
+    updateTotalPortionCount,
+    updateShoppingListPortions,
+    Moment(e.start).format('YYYY-MM-DD')
+  )
+
+  // const event = {
+  //   id: draggedEvent.id,
+  //   title: draggedEvent.title,
+  //   start,
+  //   end,
+  //   allDay: allDay,
+  // }
+
+  // this.setState({ draggedEvent: null })
+  // moveEvent({ event, start, end })
+}
+
 const Dnd = props => {
   const {
     updatePlannerRecipes,
@@ -215,7 +261,8 @@ const Dnd = props => {
     updateTotalPortionCount,
     updateShoppingListPortions,
     events,
-    updateEvents
+    updateEvents,
+    currentlyDraggedItem
   } = props
 
   const yesterday = new Date(new Date().setDate(new Date().getDate()-1));
@@ -240,7 +287,6 @@ const Dnd = props => {
         csrfToken
       )}
       // onSelectSlot={this.newEvent}
-      onDragStart={console.log}
       popup={true}
       views={['week', 'month']}
       components={{
@@ -265,7 +311,19 @@ const Dnd = props => {
       // dragFromOutsideItem={
       //   this.state.displayDragItemInCell ? this.dragFromOutsideItem : null
       // }
-      // onDropFromOutside={this.onDropFromOutside}
+      onDropFromOutside={(e) => onDropFromOutside(
+        e,
+        events,
+        updateEvents,
+        currentlyDraggedItem,
+        updatePlannerRecipes,
+        updateSuggestedRecipes,
+        updateCheckedPortionCount,
+        updateTotalPortionCount,
+        updateShoppingListPortions,
+        csrfToken
+      )}
+      handleDragEnd={(e) => console.log(e, 'handleDragEnd')}
       // handleDragStart={this.handleDragStart}
     />
   )

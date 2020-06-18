@@ -108,6 +108,52 @@ function switchShoppingListClass(openBool = null) {
 }
 
 
+function addRecipeToPlanner(
+	encodedId,
+	csrfToken,
+	updatePlannerRecipes,
+	updateSuggestedRecipes,
+	updateCheckedPortionCount,
+	updateTotalPortionCount,
+  updateShoppingListPortions,
+  date = null
+) {
+  console.log('addRecipeToPlanner', date)
+
+	const data = {
+		method: 'post',
+    body: JSON.stringify({
+      "recipe_id": encodedId,
+      "date": date
+    }),
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRF-Token': csrfToken
+		},
+		credentials: 'same-origin'
+  }
+
+	showAlert("Adding recipe to your planner")
+
+  fetch("/planner/recipe_add", data).then((response) => {
+		if(response.status === 200){
+      return response.json();
+		} else {
+			window.alert('Something went wrong! Maybe refresh the page and try again')
+			throw new Error('non-200 response status')
+    }
+  }).then((jsonResponse) => {
+		updatePlannerRecipes(jsonResponse["plannerRecipes"])
+		updateSuggestedRecipes(jsonResponse["suggestedRecipes"])
+		updateCheckedPortionCount(jsonResponse["checkedPortionCount"])
+		updateTotalPortionCount(jsonResponse["totalPortionCount"])
+		updateShoppingListPortions(jsonResponse["shoppingListPortions"])
+
+		showAlert("Recipe added to your planner")
+  });
+
+}
+
 export {
   ready,
   ajaxRequest,
@@ -117,5 +163,6 @@ export {
   isMobileDevice,
   toKebabCase,
   toCamelCase,
-  switchShoppingListClass
+  switchShoppingListClass,
+  addRecipeToPlanner
 }
