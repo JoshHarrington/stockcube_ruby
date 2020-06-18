@@ -88,8 +88,8 @@ class PlannerController < ApplicationController
 			return
 		end
 
-		if params.has_key?(:planner_date) && Date.parse(@planner_recipe_date_hash.decode(params[:planner_date]).first.to_s).to_date
-			date_string = Date.parse(@planner_recipe_date_hash.decode(params[:planner_date]).first.to_s).to_date
+		if params.has_key?(:date) && params[:date] != nil
+			date_string = params[:date].to_date
 		else
 			this_months_dates = (Date.current..Date.current+30.days).to_a
 			last_planner_recipe_dates = current_user.planner_recipes.where(date: this_months_dates).order(date: :asc).map(&:date).uniq
