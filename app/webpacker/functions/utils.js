@@ -100,12 +100,10 @@ const toCamelCase = str => (
 )
 
 function switchShoppingListClass(openBool = null) {
-  if (openBool === null) {
-    document.querySelector('html').classList.toggle('shopping_list_open')
-  } else if (openBool) {
-    document.querySelector('html').classList.add('shopping_list_open')
-  } else {
-    document.querySelector('html').classList.remove('shopping_list_open')
+  if (!!openBool) {
+    document.querySelector('#inner-wrap').style.width = "calc(100% - 30rem)"
+  } else if (!openBool) {
+    document.querySelector('#inner-wrap').style.width = "100%"
   }
 }
 

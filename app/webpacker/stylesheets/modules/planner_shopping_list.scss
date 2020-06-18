@@ -103,15 +103,6 @@ $bp-shopping-list-mobile: 35rem;
 	}
 }
 
-#inner-wrap {
-	transition: width .4s;
-	.shopping_list_open & {
-		@media all and (min-width: $bp-sm) {
-			width: calc(100% - 30em);
-		}
-	}
-}
-
 
 .planner_sl-recipe_list {
 	display: flex;
