@@ -414,10 +414,10 @@ module PlannerShoppingListHelper
 		intro = URI.escape('These are the ingredients needed for upcoming meals:') + '%0D%0A%0D%0A'
 
 		unchecked_portions = shopping_list_portions.select{|p| p.checked == false}
-		return "" if unchecked_portions.length == 0
+		return "" if unchecked_portions.length == 0 || unchecked_portions == nil
 
-		escaped_portion_list = unchecked_portions.map{|p|'- ' + URI.escape(stock_needed_serving_description(p)).to_s}.join('%0D%0A')
-		escaped_portion_list_with_pluses = escaped_portion_list.gsub(/\+/, '%2B')
+		escaped_portion_list = unchecked_portions.select{|p| p != nil && stock_needed_serving_description(p) != nil }.map{|p| '- ' + URI.escape(stock_needed_serving_description(p)).to_s}.join('%0D%0A')
+		escaped_portion_list_with_pluses = escaped_portion_list != nil ? escaped_portion_list.gsub(/\+/, '%2B') : ""
 
 		link_to_public_shopping_list = ''
 		if shopping_list_gen_id != nil
