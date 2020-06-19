@@ -64,9 +64,6 @@ class PlannerController < ApplicationController
 	end
 
 	def recipe_add_to_planner
-		current_user.planner_shopping_list.update_attributes(
-			ready: false
-		)
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
 		if params.has_key?(:recipe_id) && Recipe.exists?(@recipe_id_hash.decode(params[:recipe_id]).first)
@@ -75,7 +72,10 @@ class PlannerController < ApplicationController
 			current_user.planner_shopping_list.update_attributes(
 				ready: true
 			)
-			return
+			respond_to do |format|
+				format.json { render json: {message: 'Recipe not found'}.as_json, status: 404}
+				format.html { redirect_to planner_path }
+			end and return
 		end
 
 		if recipe && (recipe.public == true || recipe.user == current_user)
@@ -85,7 +85,10 @@ class PlannerController < ApplicationController
 			current_user.planner_shopping_list.update_attributes(
 				ready: true
 			)
-			return
+			respond_to do |format|
+				format.json { render json: {message: "Recipe not public / accessible for current user"}.as_json, status: 404}
+				format.html { redirect_to planner_path }
+			end and return
 		end
 
 		if params.has_key?(:date) && params[:date] != nil
@@ -101,11 +104,26 @@ class PlannerController < ApplicationController
 			end
 		end
 
+		planner_shopping_list = current_user.planner_shopping_list
+
+		if planner_shopping_list.ready == false
+			Rails.logger.debug "planner_shopping_list.ready == false"
+
+			respond_to do |format|
+				format.json { render json: {message: 'Server busy'}.as_json, status: 408}
+				format.html { redirect_to planner_path }
+			end and return
+		end
+
+		planner_shopping_list.update_attributes(
+			ready: false
+		)
+
 		planner_recipe = PlannerRecipe.create(
 			user_id: user_id,
 			recipe_id: recipe_id,
 			date: date_string,
-			planner_shopping_list_id: current_user.planner_shopping_list.id
+			planner_shopping_list_id: planner_shopping_list.id
 		)
 
 		# if recipe.portions.length > 0
@@ -114,15 +132,16 @@ class PlannerController < ApplicationController
 
 		update_planner_shopping_list_portions
 
-		current_user.planner_shopping_list.update_attributes(
-			ready: true
-		)
 
 		date_num = date_string.to_formatted_s(:number)
 		date_id = @planner_recipe_date_hash.encode(date_num)
 		hashed_recipe_id = @recipe_id_hash.encode(recipe_id)
 
 		fetched_shopping_list_portions = shopping_list_portions(nil, current_user)
+
+		planner_shopping_list.update_attributes(
+			ready: true
+		)
 
 		respond_to do |format|
 			format.json { render json: {
@@ -133,7 +152,7 @@ class PlannerController < ApplicationController
 				percentInCupboards: percent_in_cupboards(recipe),
 				plannerRecipes: processed_planner_recipes_with_date(current_user),
 				suggestedRecipes: processed_recipe_list_for_user(current_user),
-				checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
+				checkedPortionCount: fetched_shopping_list_portions.count{|p|p[:checked]},
 				totalPortionCount: fetched_shopping_list_portions.count,
 				shoppingListPortions: processed_shopping_list_portions(fetched_shopping_list_portions)
 			}.as_json, status: 200}
