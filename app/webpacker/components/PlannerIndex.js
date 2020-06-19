@@ -154,7 +154,9 @@ function PlannerIndex(props) {
 												updateSuggestedRecipes,
 												updateCheckedPortionCount,
 												updateTotalPortionCount,
-												updateShoppingListPortions
+												updateShoppingListPortions,
+												null,
+												updateShoppingListLoading
 											)}>
 											<Icon name="list-add" className="w-full h-full" />
 										</button>
@@ -175,6 +177,7 @@ function PlannerIndex(props) {
 					events={events}
 					updateEvents={updateEvents}
 					currentlyDraggedItem={currentlyDraggedItem}
+					updateShoppingListLoading={updateShoppingListLoading}
 				/>
 			</div>
 			<ShoppingListWrapper shoppingListShown={shoppingListShown}>

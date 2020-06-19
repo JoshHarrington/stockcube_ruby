@@ -107,6 +107,9 @@ function switchShoppingListClass(openBool = null) {
   }
 }
 
+let recipeListUpdateNeeded = false
+
+let timeoutId;
 
 function addRecipeToPlanner(
 	encodedId,
@@ -116,7 +119,8 @@ function addRecipeToPlanner(
 	updateCheckedPortionCount,
 	updateTotalPortionCount,
   updateShoppingListPortions,
-  date = null
+  date = null,
+  updateShoppingListLoading
 ) {
   console.log('addRecipeToPlanner', date)
 
@@ -133,24 +137,46 @@ function addRecipeToPlanner(
 		credentials: 'same-origin'
   }
 
-	showAlert("Adding recipe to your planner")
+  showAlert("Adding recipe to your planner")
 
-  fetch("/planner/recipe_add", data).then((response) => {
-		if(response.status === 200){
-      return response.json();
-		} else {
-			window.alert('Something went wrong! Maybe refresh the page and try again')
-			throw new Error('non-200 response status')
-    }
-  }).then((jsonResponse) => {
-		updatePlannerRecipes(jsonResponse["plannerRecipes"])
-		updateSuggestedRecipes(jsonResponse["suggestedRecipes"])
-		updateCheckedPortionCount(jsonResponse["checkedPortionCount"])
-		updateTotalPortionCount(jsonResponse["totalPortionCount"])
-		updateShoppingListPortions(jsonResponse["shoppingListPortions"])
+  const addRecipe = () => {
+    fetch("/planner/recipe_add", data).then((response) => {
+      if(response.status === 200){
+        return response.json();
+      } else {
+        console.warn('Something went wrong! Maybe refresh the page and try again')
+        if (response.status === 408) {
+          // server busy, update needed
+          console.log("server busy, update needed")
+          recipeListUpdateNeeded = true
+          if (window !== undefined) {
+            timeoutId = window.setTimeout(() => {
+              addRecipe()
+            }, 2000)
+          }
+        }
+      }
+    }).then((jsonResponse) => {
+      updatePlannerRecipes(jsonResponse.plannerRecipes)
+      updateSuggestedRecipes(jsonResponse.suggestedRecipes)
+      updateCheckedPortionCount(jsonResponse.checkedPortionCount)
+      updateTotalPortionCount(jsonResponse.totalPortionCount)
+      updateShoppingListPortions(jsonResponse.shoppingListPortions)
+      updateShoppingListLoading(false)
 
-		showAlert("Recipe added to your planner")
-  });
+      recipeListUpdateNeeded = false
+      if (window !== undefined) {
+        window.clearTimeout(timeoutId)
+      }
+
+      showAlert("Recipe added to your planner")
+    });
+  }
+
+  if(recipeListUpdateNeeded === false) {
+    addRecipe()
+  }
+
 
 }
 

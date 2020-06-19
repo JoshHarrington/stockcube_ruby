@@ -127,10 +127,14 @@ module PortionStockHelper
 
 		if portion_type == "combi_portion"
 			planner_portion.planner_shopping_list_portions.each do |portion|
-				portion.stock.destroy
+				if portion.stock != nil
+					portion.stock.destroy
+				end
 			end
 		elsif portion_type == "individual_portion"
-			planner_portion.stock.destroy
+			if planner_portion.stock != nil
+				planner_portion.stock.destroy
+			end
 		end
 	end
 
