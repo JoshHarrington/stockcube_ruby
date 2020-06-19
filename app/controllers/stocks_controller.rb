@@ -154,6 +154,7 @@ class StocksController < ApplicationController
 	end
 
 	def toggle_shopping_list_portion
+
 		unless params.has_key?(:shopping_list_portion_id) && params.has_key?(:portion_type)
 			respond_to do |format|
 				format.json { render json: {'message': 'Bad portion params'}.as_json, status: 400}
@@ -178,6 +179,21 @@ class StocksController < ApplicationController
 		### so currently description is generated before updates to combi portion or stock
 		planner_portion_description = serving_description(planner_portion)
 
+
+		planner_shopping_list = planner_portion.planner_shopping_list
+
+		if planner_shopping_list.ready == false
+			Rails.logger.debug "planner_shopping_list.ready == false"
+
+			respond_to do |format|
+				format.json { render json: {message: 'Server busy'}.as_json, status: 408}
+				format.html { redirect_to planner_path }
+			end and return
+		end
+
+		planner_shopping_list.update_attributes(ready: false)
+
+
 		checked_state = !planner_portion.checked
 
 		planner_portion.update_attributes(
@@ -200,20 +216,26 @@ class StocksController < ApplicationController
 			remove_stock_after_portion_unchecked(planner_portion, params[:portion_type])
 		end
 
-		delete_all_combi_planner_portions_and_create_new(planner_portion.planner_shopping_list.id)
+
+		# deleting and recreating the combi portions is needed because of the stock deletes happening
+		delete_old_combi_planner_portions_and_create_new(planner_portion.planner_shopping_list.id)
 
 		fetched_shopping_list_portions = shopping_list_portions(planner_portion.planner_shopping_list)
 		processed_fetched_shopping_list_portions = processed_shopping_list_portions(fetched_shopping_list_portions)
+
+
+		planner_shopping_list.update_attributes(ready: true)
 
 		respond_to do |format|
 			format.json { render json: {
 				shoppingListPortions: processed_fetched_shopping_list_portions,
 				portionDescription: planner_portion_description,
-				checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
+				checkedPortionCount: fetched_shopping_list_portions.count{|p|p[:checked]},
 				totalPortionCount: fetched_shopping_list_portions.count
 			}.as_json, status: 200}
 			format.html { redirect_to planner_path }
-		end and return
+		end
+
 	end
 
 	def delete_stock
@@ -289,7 +311,7 @@ class StocksController < ApplicationController
 			else
 				cupboard_redirect_path = cupboards_path(anchor: cupboard_id_hashids.encode(@stock.cupboard_id))
 			end
-			delete_all_combi_planner_portions_and_create_new(current_user.planner_shopping_list.id)
+			delete_old_combi_planner_portions_and_create_new(current_user.planner_shopping_list.id)
 			redirect_to cupboard_redirect_path
 			update_recipe_stock_matches(@stock[:ingredient_id])
 

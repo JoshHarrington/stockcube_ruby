@@ -6,3 +6,13 @@
   max-width: 90rem;
   @apply px-8 mx-auto;
 }
+
+.spinner {
+  border-top-color: hsl(177, 40%, 36%);
+  animation: spinner-anim 1.5s linear infinite;
+}
+
+@keyframes spinner-anim {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

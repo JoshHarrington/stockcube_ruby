@@ -122,6 +122,7 @@ const CupboardsIndex = props => {
 		getLatestPlannerRecipes(updatePlannerRecipes, csrfToken)
 	}, [checkedPortionCount, totalPortionCount])
 
+	const [shoppingListLoading, updateShoppingListLoading] = useState(false)
 
 	return (
 		<main>
@@ -225,6 +226,7 @@ const CupboardsIndex = props => {
 					sharePath={sharePath}
 					mailtoHrefContent={mailtoHrefContent}
 					onListPage={onListPage}
+					shoppingListLoading={shoppingListLoading}
 				/>
 				<PortionWrapper shoppingListComplete={shoppingListComplete}>
 					{/* {!shoppingListLoaded && <div className="h-screen relative bg-white">Loading...</div>} */}
@@ -237,10 +239,12 @@ const CupboardsIndex = props => {
 									checked={portion.checked}
 									portion={portion}
 									csrfToken={csrfToken}
+									shoppingListPortions={shoppingListPortions}
 									updateShoppingListPortions={updateShoppingListPortions}
 									updateShoppingListComplete={updateShoppingListComplete}
 									updateCheckedPortionCount={updateCheckedPortionCount}
 									updateTotalPortionCount={updateTotalPortionCount}
+									updateShoppingListLoading={updateShoppingListLoading}
 								/>
 							))}
 							{checkedPortionCount > 0 &&
