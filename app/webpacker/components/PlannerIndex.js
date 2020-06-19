@@ -120,6 +120,7 @@ function PlannerIndex(props) {
 
 	const [currentlyDraggedItem, updateCurrentlyDraggedItem] = useState(null)
 
+	const [shoppingListLoading, updateShoppingListLoading] = useState(false)
 
   return (
 		<main>
@@ -192,6 +193,7 @@ function PlannerIndex(props) {
 					sharePath={sharePath}
 					mailtoHrefContent={mailtoHrefContent}
 					onListPage={onListPage}
+					shoppingListLoading={shoppingListLoading}
 				/>
 				<PortionWrapper shoppingListComplete={shoppingListComplete}>
 					{/* {!shoppingListLoaded && <div className="h-screen relative bg-white">Loading...</div>} */}
@@ -204,10 +206,12 @@ function PlannerIndex(props) {
 									checked={portion.checked}
 									portion={portion}
 									csrfToken={csrfToken}
+									shoppingListPortions={shoppingListPortions}
 									updateShoppingListPortions={updateShoppingListPortions}
 									updateShoppingListComplete={updateShoppingListComplete}
 									updateCheckedPortionCount={updateCheckedPortionCount}
 									updateTotalPortionCount={updateTotalPortionCount}
+									updateShoppingListLoading={updateShoppingListLoading}
 								/>
 							))}
 							{checkedPortionCount > 0 &&

@@ -110,37 +110,42 @@ module PlannerShoppingListHelper
 		end
 	end
 
-	def delete_all_combi_planner_portions_and_create_new(planner_shopping_list_id = nil)
+	def delete_old_combi_planner_portions_and_create_new(planner_shopping_list_id = nil)
 		return if planner_shopping_list_id == nil
 
 		planner_shopping_list = PlannerShoppingList.find(planner_shopping_list_id)
 
-		Rails.logger.debug "delete_all_combi_planner_portions_and_create_new"
-		## Delete all planner combi portions
-		planner_shopping_list.combi_planner_shopping_list_portions.destroy_all
+		Rails.logger.debug "delete_old_combi_planner_portions_and_create_new"
+		## Delete all planner combi portions without planner portions
+		planner_shopping_list.combi_planner_shopping_list_portions.select{|cp| cp.planner_shopping_list_portions.length == 0}.map{|cp|cp.destroy}
 
-		## Find all planner portions with same ingredient
-		planner_shopping_list.planner_shopping_list_portions.group_by{|p| p.ingredient_id}.select{|k,v| v.length > 1}.each do |ing_id, portion_group|
+		## Find all planner portions with same ingredient, groups of more than 1
+		grouped_planner_portions = planner_shopping_list.planner_shopping_list_portions.group_by{|p| p.ingredient_id}.select{|k,v| v.length > 1}
+
+		if grouped_planner_portions.select{|k,pg| pg.select{|p| p.combi_planner_shopping_list_portion_id == nil}.length > 0}.length > 0
+
+			grouped_planner_portions.each do |ing_id, portion_group|
 
 
-			combi_amount = combine_grouped_servings(portion_group, true)
+				combi_amount = combine_grouped_servings(portion_group, true)
 
-			combi_portion = CombiPlannerShoppingListPortion.create(
-				user_id: planner_shopping_list.user_id,
-				planner_shopping_list_id: planner_shopping_list.id,
-				ingredient_id: ing_id,
-				amount: combi_amount != nil && combi_amount != false && combi_amount.has_key?(:amount) ? combi_amount[:amount] : nil,
-				unit_id: combi_amount != nil && combi_amount != false && combi_amount.has_key?(:unit) ? combi_amount[:unit].id : nil,
-				date: portion_group.sort_by{|p| p.planner_recipe.date}.first.date,
-				checked: portion_group.count{|p| p.checked == false} > 0 ? false : true
-			)
-
-			portion_group.each do |p|
-				p.update_attributes(
-					combi_planner_shopping_list_portion_id: combi_portion.id
+				combi_portion = CombiPlannerShoppingListPortion.create(
+					user_id: planner_shopping_list.user_id,
+					planner_shopping_list_id: planner_shopping_list.id,
+					ingredient_id: ing_id,
+					amount: combi_amount != nil && combi_amount != false && combi_amount.has_key?(:amount) ? combi_amount[:amount] : nil,
+					unit_id: combi_amount != nil && combi_amount != false && combi_amount.has_key?(:unit) ? combi_amount[:unit].id : nil,
+					date: portion_group.sort_by{|p| p.planner_recipe.date}.first.date,
+					checked: portion_group.count{|p| p.checked == false} > 0 ? false : true
 				)
-			end
 
+				portion_group.each do |p|
+					p.update_attributes(
+						combi_planner_shopping_list_portion_id: combi_portion.id
+					)
+				end
+
+			end
 		end
 
 	end
@@ -166,7 +171,7 @@ module PlannerShoppingListHelper
 			find_matching_stock_for_portion(portion)
 		end
 
-		delete_all_combi_planner_portions_and_create_new(planner_shopping_list.id)
+		delete_old_combi_planner_portions_and_create_new(planner_shopping_list.id)
 
 		combine_existing_similar_stock(current_user)
 

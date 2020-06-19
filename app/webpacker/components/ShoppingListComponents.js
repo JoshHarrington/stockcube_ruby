@@ -3,16 +3,46 @@ import * as classNames from "classnames"
 import { showAlert, switchShoppingListClass } from "../functions/utils"
 
 import Icon from './Icon'
+import Spinner from './Spinner'
+
+
+let shoppingListPortionsUpdateNeeded = false
+
+let timeoutId;
 
 function togglePortionCheck(
   portion,
   csrfToken,
   checked,
+  shoppingListPortions,
   updateShoppingListPortions,
   updateShoppingListComplete,
   updateCheckedPortionCount,
-  updateTotalPortionCount
+  updateTotalPortionCount,
+  updateShoppingListLoading
 ) {
+
+
+  updateShoppingListLoading(true)
+
+  const newShoppingListPortions = shoppingListPortions.map(currentPortion => {
+    return currentPortion.encodedId == portion.encodedId ?
+    {...portion, checked: !portion.checked} : currentPortion
+  })
+
+  updateShoppingListPortions(newShoppingListPortions)
+
+  const newCheckedPortionCount = newShoppingListPortions.filter(p => p.checked).length
+  updateCheckedPortionCount(newCheckedPortionCount)
+
+  const newTotalPortionCount = newShoppingListPortions.length
+  updateTotalPortionCount(newTotalPortionCount)
+
+  if (newCheckedPortionCount === newTotalPortionCount) {
+    updateShoppingListComplete(true)
+  } else {
+    updateShoppingListComplete(false)
+  }
 
 	const data = {
 		method: 'post',
@@ -28,25 +58,53 @@ function togglePortionCheck(
   }
 
 
-  fetch("/stock/toggle_portion", data).then((response) => {
-    if(response.status != 200){
-      window.alert('Something went wrong! Maybe refresh the page and try again')
-    } else {
-      return response.json();
-    }
-  }).then((jsonResponse) => {
-    updateShoppingListPortions(jsonResponse.shoppingListPortions)
-    updateCheckedPortionCount(jsonResponse.checkedPortionCount)
-    updateTotalPortionCount(jsonResponse.totalPortionCount)
-    if (jsonResponse["checkedPortionCount"] === jsonResponse["totalPortionCount"]) {
-      updateShoppingListComplete(true)
-    }
-    if (!checked){
-      showAlert(`${jsonResponse["portionDescription"]} - added to your cupboards`, 20000)
-    } else {
-      showAlert(`${jsonResponse["portionDescription"]} - removed from your cupboards`, 20000)
-    }
-  });
+  const togglePortion = () => {
+
+    fetch("/stock/toggle_portion", data).then((response) => {
+      if(response.status !== 200){
+        console.warn(`Something went wrong - ${response.status}`)
+        if (response.status === 408) {
+          // server busy, update needed
+          console.log("server busy, update needed")
+          shoppingListPortionsUpdateNeeded = true
+          if (window !== undefined){
+            timeoutId = window.setTimeout(() => {
+              togglePortion()
+            }, 2000)
+          }
+        }
+      } else {
+        return response.json();
+      }
+    }).then((jsonResponse) => {
+
+      if (newShoppingListPortions !== jsonResponse.shoppingListPortions) {
+        updateShoppingListPortions(jsonResponse.shoppingListPortions)
+      }
+      if (newCheckedPortionCount !== jsonResponse.checkedPortionCount) {
+        updateCheckedPortionCount(jsonResponse.checkedPortionCount)
+      }
+      if (newTotalPortionCount !== jsonResponse.totalPortionCount) {
+        updateTotalPortionCount(jsonResponse.totalPortionCount)
+      }
+
+
+      if (jsonResponse.checkedPortionCount === jsonResponse.totalPortionCount) {
+        updateShoppingListComplete(true)
+      }
+
+      shoppingListPortionsUpdateNeeded = false
+      if (window !== undefined) {
+        window.clearTimeout(timeoutId)
+      }
+
+      updateShoppingListLoading(false)
+    });
+  }
+
+  if (shoppingListPortionsUpdateNeeded === false){
+    togglePortion()
+  }
 
 }
 
@@ -69,7 +127,9 @@ function ShoppingListExample(props) {
     onListPage,
     sharePath,
     mailtoHrefContent,
-    csrfToken
+    csrfToken,
+    shoppingListLoading,
+    updateShoppingListLoading
   } = props
 
 
@@ -101,10 +161,12 @@ function ShoppingListExample(props) {
                 checked={portion.checked}
                 portion={portion}
                 csrfToken={csrfToken}
+                shoppingListPortions={shoppingListPortions}
                 updateShoppingListPortions={updateShoppingListPortions}
                 updateShoppingListComplete={updateShoppingListComplete}
                 updateCheckedPortionCount={updateCheckedPortionCount}
                 updateTotalPortionCount={updateTotalPortionCount}
+                updateShoppingListLoading={updateShoppingListLoading}
               />
             ))}
             {checkedPortionCount > 0 &&
@@ -164,14 +226,15 @@ const ShoppingListTopBanner = ({
   totalPortionCount,
   sharePath,
   mailtoHrefContent,
-  onListPage
+  onListPage,
+  shoppingListLoading
 }) => {
   return (
     <div
       className="bg-primary-200 p-5 flex items-start flex-col justify-center relative flex-shrink-0"
       style={{minHeight: "7rem"}}>
       <div className="flex justify-between w-full">
-        <h2>Shopping List { totalPortionsPositive && `(${checkedPortionCount}/${totalPortionCount})`}</h2>
+      <h2 className="flex items-center">Shopping List { totalPortionsPositive && `(${checkedPortionCount}/${totalPortionCount})`} {shoppingListLoading && <Spinner className="h-8 w-8 ml-3" />}</h2>
         {!!(!!sharePath && !onListPage) && <a href={sharePath} className="w-10 h-10 bg-white hover:bg-primary-400 ml-2"><Icon className="w-full h-full flex items-center justify-center text-black" name="fullscreen"/></a>}
       </div>
       {totalPortionsPositive &&
@@ -210,15 +273,17 @@ const PortionItem = ({
   checked,
   portion,
   csrfToken,
+  shoppingListPortions,
   updateShoppingListPortions,
   updateShoppingListComplete,
   updateCheckedPortionCount,
-  updateTotalPortionCount
+  updateTotalPortionCount,
+  updateShoppingListLoading
 }) => {
   return (
     <li
       id={portion.encodedId}
-      className={classNames('shopping_list_portion flex items-baseline flex-wrap justify-between mb-6',
+      className={classNames('shopping_list_portion flex items-baseline flex-wrap justify-between mb-6 select-none',
         {'portion_checked order-3': checked})}>
       <input
         type="checkbox" id={`planner_shopping_list_portions_add_${portion.encodedId}`}
@@ -228,10 +293,12 @@ const PortionItem = ({
             portion,
             csrfToken,
             checked,
+            shoppingListPortions,
             updateShoppingListPortions,
             updateShoppingListComplete,
             updateCheckedPortionCount,
-            updateTotalPortionCount
+            updateTotalPortionCount,
+            updateShoppingListLoading
           )
         }}
         name={`planner_shopping_list_portions_add[${portion.encodedId}]`} checked={checked} />
