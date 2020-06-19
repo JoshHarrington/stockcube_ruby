@@ -95,7 +95,8 @@ module PortionStockHelper
 	def new_stock_create(user = nil, amount = nil, unit_id = nil, use_by_date = nil, ingredient_id = nil, cupboard_id = nil, portion = nil)
 		return if user == nil || amount == nil || unit_id == nil || use_by_date == nil || ingredient_id == nil || cupboard_id == nil
 
-		new_stock = Stock.create(
+		return if !!portion && portion.ingredient.name.downcase == "water"
+		new_stock = Stock.find_or_create_by(
 			amount: amount,
 			unit_id: unit_id,
 			cupboard_id: cupboard_id,
@@ -103,10 +104,17 @@ module PortionStockHelper
 			always_available: false,
 			use_by_date: use_by_date,
 			ingredient_id: ingredient_id,
-			planner_recipe_id: portion ? portion.planner_recipe_id : nil,
-			planner_shopping_list_portion_id: portion ? portion.id : nil
+			planner_shopping_list_portion_id: nil,
+			planner_recipe_id: nil
 		)
-		StockUser.create(
+		if !!portion
+			new_stock.update_attributes(
+				planner_shopping_list_portion_id: portion.id,
+				planner_recipe_id: portion.planner_recipe_id != nil ? portion.planner_recipe_id : nil
+			)
+		end
+
+		StockUser.find_or_create_by(
 			stock_id: new_stock.id,
 			user_id: user.id
 		)
@@ -133,7 +141,10 @@ module PortionStockHelper
 		user = planner_portion.user
 
 		if portion_type == "combi_portion"
-			planner_portion.planner_shopping_list_portions.map{|p| p.stock.destroy if p.stock }
+			# why destroy associated stock?
+			# conflict with `before_destroy :uncheck_planner_portions` in stock.rb
+
+			# planner_portion.planner_shopping_list_portions.map{|p| p.stock.destroy if p.stock }
 			planner_portion.planner_shopping_list_portions.each do |portion|
 				check_if_planner_stock_exists_before_creating(portion)
 			end
@@ -155,12 +166,12 @@ module PortionStockHelper
 		user = portion.user
 
 		if portion.stock != nil
-			## if portion stock exists delete it
-			## simpler than figuring out how much extra stock to create and combining them
-			portion.stock.destroy
+			portion.stock.delete
+			return
+		else
+			new_stock_create(user, portion.amount, portion.unit_id, (portion.planner_recipe.date + 2.weeks), portion.ingredient_id, first_cupboard(user).id, portion)
 		end
 
-		new_stock_create(user, portion.amount, portion.unit_id, (portion.planner_recipe.date + 2.weeks), portion.ingredient_id, first_cupboard(user).id, portion)
 	end
 
 
