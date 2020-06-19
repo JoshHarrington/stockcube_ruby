@@ -19,7 +19,8 @@ function updateRecipeData(
   updateSuggestedRecipes,
   updateCheckedPortionCount,
   updateTotalPortionCount,
-  updateShoppingListPortions
+  updateShoppingListPortions,
+  updateShoppingListLoading
 ) {
 	const data = {
 		method: 'post',
@@ -49,6 +50,7 @@ function updateRecipeData(
 		updateCheckedPortionCount(jsonResponse.checkedPortionCount)
 		updateTotalPortionCount(jsonResponse.totalPortionCount)
     updateShoppingListPortions(jsonResponse.shoppingListPortions)
+    updateShoppingListLoading(false)
     showAlert("Planner and shopping list updated")
   })
 }
@@ -62,7 +64,8 @@ const moveEvent = (
   updateCheckedPortionCount,
   updateTotalPortionCount,
   updateShoppingListPortions,
-  csrfToken
+  csrfToken,
+  updateShoppingListLoading
 ) => {
   console.log('moveEvent')
 
@@ -74,6 +77,8 @@ const moveEvent = (
     })
     updateEvents(nextEvents)
 
+    updateShoppingListLoading(true)
+
     updateRecipeData(
       event.id,
       Moment(start).format('YYYY-MM-DD'),
@@ -82,7 +87,8 @@ const moveEvent = (
       updateSuggestedRecipes,
       updateCheckedPortionCount,
       updateTotalPortionCount,
-      updateShoppingListPortions
+      updateShoppingListPortions,
+      updateShoppingListLoading
     )
   }
 
@@ -100,10 +106,12 @@ function deleteRecipeFromCalendar(
   updateTotalPortionCount,
   updateShoppingListPortions,
   events,
-  updateEvents
+  updateEvents,
+  updateShoppingListLoading
 ) {
 
-  updateEvents(events.filter(existingEvent => existingEvent.id !== event.id))
+  updateEvents(events.filter(existingEvent => existingEvent.id !== plannerRecipeId))
+  updateShoppingListLoading(true)
 
 	const data = {
 		method: 'post',
@@ -132,6 +140,7 @@ function deleteRecipeFromCalendar(
 		updateCheckedPortionCount(jsonResponse["checkedPortionCount"])
 		updateTotalPortionCount(jsonResponse["totalPortionCount"])
 		updateShoppingListPortions(jsonResponse["shoppingListPortions"])
+    updateShoppingListLoading(false)
 
 		showAlert("Recipe removed from your planner")
   });
@@ -148,7 +157,8 @@ function Event(
   events,
   updateEvents,
   yesterday,
-  weeksTime
+  weeksTime,
+  updateShoppingListLoading
 ) {
 
   let fadedOut = false
@@ -177,7 +187,8 @@ function Event(
           updateTotalPortionCount,
           updateShoppingListPortions,
           events,
-          updateEvents
+          updateEvents,
+          updateShoppingListLoading
         )}
       ><Icon name="close" className="w-full h-full" /></button>
     </div>
@@ -216,7 +227,8 @@ function onDropFromOutside(
   updateCheckedPortionCount,
   updateTotalPortionCount,
   updateShoppingListPortions,
-  csrfToken
+  csrfToken,
+  updateShoppingListLoading
 ) {
 
   updateEvents([...events, {
@@ -229,6 +241,8 @@ function onDropFromOutside(
 
   console.log(e)
 
+  updateShoppingListLoading(true)
+
   addRecipeToPlanner(
     currentlyDraggedItem.encodedId,
     csrfToken,
@@ -237,7 +251,8 @@ function onDropFromOutside(
     updateCheckedPortionCount,
     updateTotalPortionCount,
     updateShoppingListPortions,
-    Moment(e.start).format('YYYY-MM-DD')
+    Moment(e.start).format('YYYY-MM-DD'),
+    updateShoppingListLoading
   )
 
   // const event = {
@@ -262,7 +277,8 @@ const Dnd = props => {
     updateShoppingListPortions,
     events,
     updateEvents,
-    currentlyDraggedItem
+    currentlyDraggedItem,
+    updateShoppingListLoading
   } = props
 
   const yesterday = new Date(new Date().setDate(new Date().getDate()-1));
@@ -284,7 +300,8 @@ const Dnd = props => {
         updateCheckedPortionCount,
         updateTotalPortionCount,
         updateShoppingListPortions,
-        csrfToken
+        csrfToken,
+        updateShoppingListLoading
       )}
       popup={true}
       views={['week', 'month']}
@@ -300,7 +317,8 @@ const Dnd = props => {
           events,
           updateEvents,
           yesterday,
-          weeksTime
+          weeksTime,
+          updateShoppingListLoading
         ),
         agenda: {
           event: EventAgenda,
@@ -317,7 +335,8 @@ const Dnd = props => {
         updateCheckedPortionCount,
         updateTotalPortionCount,
         updateShoppingListPortions,
-        csrfToken
+        csrfToken,
+        updateShoppingListLoading
       )}
     />
   )
