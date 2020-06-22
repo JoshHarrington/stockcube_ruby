@@ -302,7 +302,7 @@ const PortionItem = ({
           )
         }}
         name={`planner_shopping_list_portions_add[${portion.encodedId}]`} checked={checked} />
-      <label className={classNames('fancy_checkbox_label flex-wrap text-lg')} htmlFor={`planner_shopping_list_portions_add_${portion.encodedId}`}>
+      <label className={classNames('fancy_checkbox_label flex-wrap text-lg w-full')} htmlFor={`planner_shopping_list_portions_add_${portion.encodedId}`}>
         <span className={classNames({'line-through text-gray-500': checked})}>
 
           {portion.description}
