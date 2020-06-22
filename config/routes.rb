@@ -38,12 +38,12 @@ Rails.application.routes.draw do
   get '/stock/delete/:id' => 'stocks#delete_stock', as: :delete_stock
   patch '/stock/:id' => 'stocks#update'
   post '/stock' => 'stocks#create'
+  post '/stock/delete' => 'stocks#delete_stock_post'
   post '/stock/custom' => 'stocks#create_custom', as: :create_custom_stock
   post '/stock/toggle_portion' => 'stocks#toggle_shopping_list_portion'
   post '/stock/add_shopping_list' => 'stocks#add_shopping_list'
   post '/stock/new/:cupboard_id' => 'stocks#create', as: :create_stock
   post '/stock/new' => 'stocks#create_with_params', as: :create_stock_with_params
-  post '/stock/delete/:id' => 'stocks#delete_stock', as: :delete_stock_post
   get '/stock' => 'stocks#index'
 
   get '/cupboards' => 'cupboards#index'

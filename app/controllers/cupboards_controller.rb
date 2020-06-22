@@ -224,9 +224,10 @@ class CupboardsController < ApplicationController
 				)
 				respond_to do |format|
 					format.json { render json: {
-						"status": "success",
-						"cupboardContents": processed_cupboard_contents(current_user),
-						"cupboardLocation": cupboard_title
+						status: "success",
+						cupboardContents: processed_cupboard_contents(current_user),
+						cupboardLocation: cupboard_title,
+						newCupboardHref: cupboards_new_path
 					}.as_json, status: 200}
 					format.html { redirect_to cupboards_path }
 				end

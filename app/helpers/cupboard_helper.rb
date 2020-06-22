@@ -42,8 +42,8 @@ module CupboardHelper
 		end
 	end
 	def cupboard_stocks_selection_in_date(cupboard)
-		@stocks = cupboard.stocks.select{|s| s.planner_shopping_list_portion_id == nil && s.hidden == false && s.ingredient.name.downcase != 'water' && s.use_by_date > Date.current - stock_date_limit.day}.sort_by{|s| s.use_by_date}
-		return @stocks
+		stocks = cupboard.stocks.select{|s| s.planner_shopping_list_portion_id == nil && s.hidden == false && s.ingredient.name.downcase != 'water' && s.use_by_date > Date.current - stock_date_limit.day}.sort_by{|s| [s.use_by_date, s.ingredient.name]}
+		return stocks
 	end
 	def planner_stocks(planner_recipe)
 		stock_from_planner_portions = planner_recipe.planner_shopping_list_portions
@@ -117,6 +117,9 @@ module CupboardHelper
 	def processed_cupboard_contents(user = nil)
 		return [] if user == nil
 		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+		cupboard_sharing_hashids = Hashids.new(ENV['CUPBOARD_SHARING_ID_SALT'])
+		delete_stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
+
 		cupboards = user_cupboards(current_user)
 		return cupboards.map{|c| {
 			title: c.location,
@@ -127,9 +130,14 @@ module CupboardHelper
 					title: serving_description(s),
 					href: edit_stock_path(s),
 					fresh: s.use_by_date >= Time.zone.now,
-					freshForTime: distance_of_time_in_words(Time.zone.now, s.use_by_date)
+					freshForTime: distance_of_time_in_words(Time.zone.now, s.use_by_date),
+					encodedIdForDelete: delete_stock_hashids.encode(s.id)
 				}
-			} : []
+			} : [],
+			newStockHref: stocks_new_path(cupboard_id: cupboard_id_hashids.encode(c.id)),
+			customNewStockHref: stocks_custom_new_path(cupboard_id: cupboard_id_hashids.encode(c.id)),
+			users: c.cupboard_users.select{|cu|cu.user != current_user}.length > 0 ? c.cupboard_users.select{|cu|cu.user != current_user}.map{|cu|cu.user.name}.to_sentence : nil,
+			sharingPath: cupboard_share_path(cupboard_sharing_hashids.encode(c.id))
 		}}
 	end
 end
