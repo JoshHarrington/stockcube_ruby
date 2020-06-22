@@ -51,7 +51,7 @@ gem 'pg', '0.20.0'
 
 gem 'client_side_validations'
 
-gem 'searchkick'
+gem 'searchkick', '>= 4.4.0'
 
 gem 'pgsync'
 gem 'pry'
