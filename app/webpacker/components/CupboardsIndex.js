@@ -196,7 +196,7 @@ const CupboardsIndex = props => {
 											>
 												<a href={s.href} className="flex flex-wrap w-full items-start rounded p-3 border border-solid border-primary-400 bg-primary-400 hover:bg-primary-300 focus:bg-primary-300">
 													<p className="text-base">{s.title}</p>
-													<span class="w-full mt-auto text-sm text-gray-700">{s.fresh ? `Fresh for ${s.freshForTime}`: "Check freshness before use" }</span>
+													<span className="w-full mt-auto text-sm text-gray-700">{s.fresh ? `Fresh for ${s.freshForTime}`: "Check freshness before use" }</span>
 												</a>
 
 											</div>
