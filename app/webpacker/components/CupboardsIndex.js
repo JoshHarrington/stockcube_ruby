@@ -86,6 +86,33 @@ function updateCupboardName(name, encodedId, csrfToken, updateCupboardContents) 
   });
 }
 
+function deleteStock(encodedId, updateCupboardContents, csrfToken){
+	const data = {
+		method: 'post',
+		body: JSON.stringify({
+			"encoded_id": encodedId
+    }),
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRF-Token': csrfToken
+		},
+		credentials: 'same-origin'
+	}
+
+	fetch("/stock/delete", data).then((response) => {
+		if(response.status === 200){
+      return response.json();
+		} else {
+			window.alert('Something went wrong! Maybe refresh the page and try again')
+			throw new Error('non-200 response status')
+    }
+  }).then((jsonResponse) => {
+		updateCupboardContents(jsonResponse.cupboardContents)
+
+		showAlert(`"${jsonResponse.stockDescription}" deleted`)
+  });
+}
+
 
 const CupboardsIndex = props => {
 	const [checkedPortionCount, updateCheckedPortionCount] = useState(props.checkedPortionCount)
@@ -95,7 +122,7 @@ const CupboardsIndex = props => {
 	const [plannerRecipes, updatePlannerRecipes] = useState(props.plannerRecipes)
 	const [cupboardContents, updateCupboardContents] = useState(props.cupboardContents)
 
-	const {sharePath, csrfToken, mailtoHrefContent, onListPage} = props
+	const {sharePath, csrfToken, mailtoHrefContent, onListPage, newCupboardHref} = props
 
 	const totalPortionsPositive = !!(totalPortionCount && totalPortionCount !== 0)
   const [toggleButtonShow, updateToggleButtonShow] = useState(totalPortionsPositive)
@@ -133,7 +160,6 @@ const CupboardsIndex = props => {
 						<h2 className="w-full text-lg mb-2">Planner Recipes</h2>
 						<div className="w-full">
 							<p className="w-full text-gray-700 flex items-center text-base"><span className="flex w-5 h-5 mr-2"><Icon name="information-outline" /></span> Here are the upcoming recipes from your planner</p>
-							<p className="w-full text-gray-700 text-base">Checked off shopping list items will be shown here</p>
 						</div>
 					</div>
 					<div className="flex flex-wrap p-4">
@@ -145,7 +171,7 @@ const CupboardsIndex = props => {
 
 										<div className="flex flex-wrap pt-4 px-2 pb-10">
 											<div className="w-full mx-1 mb-4 non_sortable flex items-center">
-												<h3>{recipe.title}</h3>
+												<h3><a className="text-primary-700 hover:underline focus:underline" href={plannerRecipe.recipeHref}>{recipe.title} ({plannerRecipe.humanDate})</a></h3>
 											</div>
 											{recipe.portions.map((portion, index) => (
 												<CupboardPlannerPortion
@@ -194,18 +220,63 @@ const CupboardsIndex = props => {
 											style={{minHeight: "8rem"}}
 											id={s.id}
 											>
-												<a href={s.href} className="flex flex-wrap w-full items-start rounded p-3 border border-solid border-primary-400 bg-primary-400 hover:bg-primary-300 focus:bg-primary-300">
-													<p className="text-base">{s.title}</p>
-													<span className="w-full mt-auto text-sm text-gray-700">{s.fresh ? `Fresh for ${s.freshForTime}`: "Check freshness before use" }</span>
+												<a href={s.href} className="flex w-full items-start rounded p-3 border border-solid border-primary-400 bg-primary-400 hover:bg-primary-300 focus:bg-primary-300 justify-between">
+													<div className="flex flex-col h-full">
+														<p className="text-base mb-2">{s.title}</p>
+														<span className="w-full mt-auto text-sm text-gray-700">{s.fresh ? `Fresh for ${s.freshForTime}`: "Check freshness before use" }</span>
+													</div>
+													<button
+														className="p-1 mb-1 ml-2 w-6 h-6 bg-white rounded-sm flex-shrink-0 flex focus:shadow-outline"
+														onClick={(e) => {
+															e.preventDefault()
+															deleteStock(s.encodedIdForDelete, updateCupboardContents, csrfToken)
+														}}
+													><Icon name="close" className="w-full h-full" /></button>
+
 												</a>
 
 											</div>
 										))}
+										<div className={classNames("order-3 non_sortable max-w-lg flex p-1 w-1/2 sm:w-1/3", {"md:w-1/2 lg:w-1/3 xl:w-1/4": cupboardContents.length > 1}, {"md:w-1/4 lg:w-1/5 xl:w-1/6": cupboardContents.length === 1})}>
+											<div className="flex flex-col w-full bg-white rounded p-2 border border-solid border-primary-400">
+												<a className="m-1 rounded p-3 relative border border-solid border-primary-400 bg-primary-400 hover:bg-primary-300 focus:bg-primary-300" href={c.newStockHref}>Add typical ingredients</a>
+												<a className="m-1 rounded p-3 relative border border-solid border-primary-400 hover:bg-primary-100 focus:bg-primary-100" href={c.customNewStockHref}>Add other ingredient</a>
+											</div>
+										</div>
+									</div>
+									<div className="w-full mt-auto flex justify-center">
+										{ !!c.users ?
+											<a
+												href={c.sharingPath}
+												className="w-full border-t border-solid border-primary-400 flex"
+											>
+												<div className="w-full p-3 flex items-center hover:bg-primary-50">
+													<p className="text-base mr-3">
+														<span>Cupboard shared with: </span>
+														<span>
+															{c.users}
+														</span>
+													</p>
+												</div>
+												<span className="text-4xl p-2 w-20 bg-primary-300 text-center hover:bg-primary-400">+</span>
+											</a> :
+											<a
+												href={c.sharingPath}
+												className="w-full text-center px-4 py-5 bg-primary-200 border-t border-solid border-primary-400 text-base"
+											>Add people to this cupboard</a>
+										}
 									</div>
 								</div>
 							</div>
 						)
 					})}
+				</div>
+				<div className="w-full px-4">
+					<div className="w-full md:w-1/2 px-2">
+						<a className="w-full bg-primary-100 block p-4 h-48 flex items-center justify-center rounded" href={newCupboardHref}>
+							<span>Add a new cupboard</span>
+						</a>
+					</div>
 				</div>
 			</div>
 
