@@ -400,13 +400,15 @@ module PlannerShoppingListHelper
 		planner_recipe_id_hash = Hashids.new(ENV['PLANNER_RECIPE_ID_SALT'])
 		planner_recipe_date_hash = Hashids.new(ENV['PLANNER_RECIPE_DATE_SALT'])
 
-		user_planner_recipes = user.planner_recipes
+		user_planner_recipes = user.planner_recipes.sort_by{|pr| pr.date }
 		processed_planner_recipes_with_date_hash = user_planner_recipes.map{|pr| {
 			encodedDateId: planner_recipe_date_hash.encode(pr.date.to_formatted_s(:number)),
 			date: pr.date.to_formatted_s(:iso8601),
 			encodedId: planner_recipe_id_hash.encode(pr.id),
 			plannerRecipe: processed_recipe(pr.recipe, planner_recipe_id_hash.encode(pr.id), return_portions),
-			active: pr.date >= Date.current && pr.date <= Date.current + 6.days
+			active: pr.date >= Date.current && pr.date <= Date.current + 6.days,
+			recipeHref: recipe_path(pr.recipe),
+			humanDate: pr.date.to_s(:short)
 		}}
 
 		return processed_planner_recipes_with_date_hash

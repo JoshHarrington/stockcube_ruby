@@ -239,7 +239,7 @@ class StocksController < ApplicationController
 	end
 
 	def delete_stock
-		return unless params.has_key?(:id) && params[:id].to_s != ''
+		return unless params.has_key?(:id) && params[:id].to_s != '' && user_signed_in?
 
 		delete_stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
 		decrypted_stock_id = delete_stock_hashids.decode(params[:id]).first
@@ -249,8 +249,7 @@ class StocksController < ApplicationController
 			respond_to do |format|
 				format.json { render json: {"status": "no_stock_found"}.as_json, status: 404}
 				format.html {redirect_to cupboards_path}
-			end
-			return
+			end and return
 		end
 
 		cupboard_id = stock.cupboard_id
@@ -265,7 +264,55 @@ class StocksController < ApplicationController
 
 		if stock.destroy
 			respond_to do |format|
-				format.json { render json: {"status": "success"}.as_json, status: 200}
+				format.json { render json: {status: "success"}.as_json, status: 200}
+				format.html { redirect_to(cupboards_path(anchor: send_to_specific_cupboard ? encoded_cupboard_id : "")) }
+			end
+		else
+			respond_to do |format|
+				format.json { render json: {"status": "fails"}.as_json, status: 400}
+				format.html { redirect_to(cupboards_path(anchor: send_to_specific_cupboard ? encoded_cupboard_id : "")) }
+			end
+		end
+
+	end
+
+
+	def delete_stock_post
+		Rails.logger.debug "delete_stock_post params[:encoded_id]"
+		Rails.logger.debug params[:encoded_id]
+
+		return unless params.has_key?(:encoded_id) && params[:encoded_id].to_s != '' && user_signed_in?
+
+		delete_stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
+		decrypted_stock_id = delete_stock_hashids.decode(params[:encoded_id]).first
+		stock = current_user.stocks.find(decrypted_stock_id)
+
+		if stock == nil
+			respond_to do |format|
+				format.json { render json: {"status": "no_stock_found"}.as_json, status: 404}
+				format.html {redirect_to cupboards_path}
+			end and return
+		end
+
+		stock_description = serving_description(stock)
+
+		cupboard_id = stock.cupboard_id
+
+		stock_without_planner_portion = stock.planner_shopping_list_portion_id == nil ? true : false
+		non_post_request = !params.has_key?(:type) || (params.has_key?(:type) && params[:type].to_s != 'post')
+
+		send_to_specific_cupboard = stock_without_planner_portion && non_post_request
+
+		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+		encoded_cupboard_id = cupboard_id_hashids.encode(cupboard_id)
+
+		if stock.destroy
+			respond_to do |format|
+				format.json { render json: {
+					status: "success",
+					cupboardContents: processed_cupboard_contents(current_user),
+					stockDescription: stock_description
+				}.as_json, status: 200}
 				format.html { redirect_to(cupboards_path(anchor: send_to_specific_cupboard ? encoded_cupboard_id : "")) }
 			end
 		else
