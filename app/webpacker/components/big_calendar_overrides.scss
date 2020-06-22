@@ -25,3 +25,7 @@
 .rbc-show-more {
 	@apply truncate;
 }
+
+[data-dragging-over="true"] .rbc-month-view {
+	@apply shadow-outline;
+}

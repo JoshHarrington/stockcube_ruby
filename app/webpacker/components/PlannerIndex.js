@@ -68,7 +68,6 @@ function PlannerIndex(props) {
 
   const [toggleButtonShow, updateToggleButtonShow] = useState(totalPortionsPositive)
 	const [shoppingListShown, toggleShoppingListShow] = useState(false)
-	// const [shoppingListLoaded, toggleShoppingListLoaded] = useState(false)
 
 	useEffect(() => {
 		if (!!totalPortionCount && totalPortionCount > 0) {
@@ -122,6 +121,9 @@ function PlannerIndex(props) {
 
 	const [shoppingListLoading, updateShoppingListLoading] = useState(false)
 
+	const [draggingOver, updateDraggingOver] = useState(false)
+	const [draggedOverElement, updateDraggedOverElement] = useState(null)
+
   return (
 		<main>
 			<PlannerRecipeList>
@@ -137,16 +139,18 @@ function PlannerIndex(props) {
 									toggleTooltipsHidden(false)
 									updateCurrentlyDraggedItem(null)
 								}} title={title} draggable={true}>
-								<TooltipWrapper width={48} text={stockInfoNote} className="top-0 left-0 flex-shrink-0 mb-2 bg-primary-100 w-full rounded-t-sm h-4" hidden={tooltipsHidden}>
+								<TooltipWrapper width={48} text={stockInfoNote} className="top-0 left-0 flex-shrink-0 mb-2 bg-primary-100 w-full rounded-t-sm h-4 cursor-default" hidden={tooltipsHidden}>
 									<span className="block h-full rounded-tl-sm bg-primary-600" style={{width: `${percentInCupboards}%`}}></span>
 								</TooltipWrapper>
-								<div className="flex w-full px-3 justify-between">
-									<a href={path} draggable={false}>{title}</a>
-									<TooltipWrapper hidden={tooltipsHidden} text="Add to planner" width={24}>
+								<TooltipWrapper hidden={tooltipsHidden} text="Drag and drop recipe onto planner" width={48} className="flex flex-col w-full px-3 pb-4 justify-between relative h-full">
+									<div className="flex justify-between">
+										<p className="mb-5 cursor-move text-base leading-snug">{title}</p>
 										<button
 											name="button" type="submit"
-											className="p-2 mb-1 ml-2 w-10 h-10 bg-white rounded-sm flex-shrink-0 flex" title="Add this recipe to your planner"
+											className="p-2 mb-1 ml-3 w-10 h-10 bg-white rounded-sm flex-shrink-0 flex" title="Add this recipe to your planner"
 											data-recipe-id={encodedId} data-type="add-to-planner"
+											onMouseEnter={()=>toggleTooltipsHidden(true)}
+											onMouseLeave={()=>toggleTooltipsHidden(false)}
 											onClick={() => addRecipeToPlanner(
 												encodedId,
 												csrfToken,
@@ -160,13 +164,32 @@ function PlannerIndex(props) {
 											)}>
 											<Icon name="list-add" className="w-full h-full" />
 										</button>
+									</div>
+									<a
+										href={path}
+										onMouseEnter={()=>toggleTooltipsHidden(true)}
+										onMouseLeave={()=>toggleTooltipsHidden(false)}
+										className="text-sm text-gray-800 flex items-center hover:underline hover:text-black focus:underline focus:text-black"
+										draggable={false}
+									>View full recipe<Icon name="navigate_next" className="ml-1 w-6 h-6"/></a>
 									</TooltipWrapper>
-								</div>
 							</RecipeItem>
 						)
 					})}
 			</PlannerRecipeList>
-			<div className="h-screen px-6 mt-3">
+			<div
+				className="h-screen px-6 mt-3"
+				data-dragging-over={draggingOver}
+				onDragEnter={(e)=>{
+					updateDraggedOverElement(e.target)
+					updateDraggingOver(true)
+				}}
+				onDragLeave={(e)=>{
+					if (e.target === draggedOverElement) {
+						updateDraggingOver(false)
+					}
+				}}
+			>
 				<Dnd
 					updatePlannerRecipes={updatePlannerRecipes}
 					updateSuggestedRecipes={updateSuggestedRecipes}

@@ -16,7 +16,7 @@ const RecipeItem = props => {
 			onDragEnd={onDragEnd}
 			draggable={draggable}
 		>
-			<div className="flex bg-primary-400 pb-4 relative rounded-sm w-full flex-wrap content-start">
+			<div className="flex bg-primary-400 relative rounded-sm w-full flex-col cursor-move">
 				{children}
 			</div>
 		</div>
