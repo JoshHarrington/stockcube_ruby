@@ -24,11 +24,13 @@ class Stock < ApplicationRecord
 			if self.planner_shopping_list_portion_id != nil
 				planner_portion = self.planner_shopping_list_portion
 
-				planner_portion.update_attributes(
-					checked: false
-				)
-				if planner_portion.combi_planner_shopping_list_portion != nil
-					planner_portion.combi_planner_shopping_list_portion.destroy
+				if planner_portion != nil
+					planner_portion.update_attributes(
+						checked: false
+					)
+					if planner_portion.combi_planner_shopping_list_portion != nil
+						planner_portion.combi_planner_shopping_list_portion.destroy
+					end
 				end
 			end
 		end
