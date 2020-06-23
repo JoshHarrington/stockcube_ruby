@@ -26,6 +26,9 @@
 	@apply truncate;
 }
 
-[data-dragging-over="true"] .rbc-month-view {
-	@apply shadow-outline;
+[data-dragging-over="true"] {
+	.rbc-month-view,
+	.rbc-time-view {
+		@apply shadow-outline;
+	}
 }
