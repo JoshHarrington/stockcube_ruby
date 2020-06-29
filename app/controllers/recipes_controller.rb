@@ -165,6 +165,20 @@ class RecipesController < ApplicationController
 				format.json { render json: {status: "portion deleted"}.as_json, status: 200}
 				format.html {redirect_to recipes_path}
 			end and return
+		elsif current_user.admin == true
+			portion = Portion.where(id: params[:portion_id].to_i)
+			if portion.length > 0
+				portion.first.destroy
+				respond_to do |format|
+					format.json { render json: {status: "portion deleted"}.as_json, status: 200}
+					format.html {redirect_to recipes_path}
+				end and return
+			else
+				respond_to do |format|
+					format.json { render json: {"status": "portion not found"}.as_json, status: 404}
+					format.html {redirect_to recipes_path}
+				end and return
+			end
 		else
 			respond_to do |format|
 				format.json { render json: {"status": "portion not found"}.as_json, status: 404}
