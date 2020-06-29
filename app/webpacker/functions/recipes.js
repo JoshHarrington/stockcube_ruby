@@ -14,20 +14,45 @@ const setPublicRowFadeStatus = () => {
 }
 
 const deletePortion = (event) => {
-	const portionLabel = event.target
-	const portionItem = portionLabel.closest('li')
-	const portionDesc = portionItem.querySelector('p').innerText
-	const portionDeleteCheckbox = portionLabel.previousElementSibling
+	event.preventDefault()
+	const portionDeleteBtn = event.target
+	const portionId = portionDeleteBtn.dataset.portionId
+	console.log(portionDeleteBtn, portionId)
+	const portionRow = portionDeleteBtn.closest('li')
 	if (window.confirm("Sure that you want to delete that ingredient?")) {
-		portionDeleteCheckbox.checked = true
-		portionItem.remove()
-		showAlert(`Deleted the "${portionDesc}" portion from this recipe`)
+
+		const data = {
+			method: 'post',
+			body: JSON.stringify({
+				"portion_id": portionId
+			}),
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+			},
+			credentials: 'same-origin'
+		}
+
+		portionRow.classList.add('hidden')
+
+		fetch("/recipes/portion_delete", data).then((response) => {
+			if(response.status === 200){
+				return response.json();
+			} else {
+				window.alert('Something went wrong! Maybe refresh the page and try again')
+				portionRow.classList.remove('hidden')
+				throw new Error('non-200 response status')
+			}
+		}).then((jsonResponse) => {
+			showAlert("Portion deleted from recipe")
+		})
+
 	}
 }
 
 const confirmDeleteIngredient = () => {
-	document.querySelectorAll('.ingredient_row label').forEach((label) => {
-		label.addEventListener('click', deletePortion)
+	document.querySelectorAll('[data-js-action="delete_ingredient"]').forEach((deleteBtn) => {
+		deleteBtn.addEventListener('click', deletePortion)
 	})
 }
 
