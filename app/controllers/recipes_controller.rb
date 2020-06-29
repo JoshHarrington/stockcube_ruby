@@ -148,6 +148,32 @@ class RecipesController < ApplicationController
 			flash.alert = "Looks like there are similar ingredients, combine these similar ingredients into one and delete the others"
 		end
 	end
+
+	def portion_delete
+		if !user_signed_in? || !params.has_key?(:portion_id)
+			respond_to do |format|
+				format.json { render json: {"status": "not allowed"}.as_json, status: 403}
+				format.html {redirect_to recipes_path}
+			end and return
+		end
+
+		find_portion_for_user = current_user.recipes.map{|r|r.portions}.flatten.select{|p|p.id == params[:portion_id].to_i}
+
+		if find_portion_for_user.length > 0
+			find_portion_for_user.map{|p|p.destroy}
+			respond_to do |format|
+				format.json { render json: {status: "portion deleted"}.as_json, status: 200}
+				format.html {redirect_to recipes_path}
+			end and return
+		else
+			respond_to do |format|
+				format.json { render json: {"status": "portion not found"}.as_json, status: 404}
+				format.html {redirect_to recipes_path}
+			end and return
+		end
+
+	end
+
 	def update
 		@recipe = Recipe.find(params[:id])
 		@portions = @recipe.portions
