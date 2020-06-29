@@ -278,12 +278,14 @@ const PortionItem = ({
   updateShoppingListComplete,
   updateCheckedPortionCount,
   updateTotalPortionCount,
-  updateShoppingListLoading
+  updateShoppingListLoading,
+  setShowModal,
+  updateModalContent
 }) => {
   return (
     <li
       id={portion.encodedId}
-      className={classNames('shopping_list_portion flex items-baseline flex-wrap justify-between mb-6 select-none',
+      className={classNames('shopping_list_portion flex items-baseline justify-between mb-6 select-none',
         {'portion_checked order-3': checked})}>
       <input
         type="checkbox" id={`planner_shopping_list_portions_add_${portion.encodedId}`}
@@ -302,15 +304,17 @@ const PortionItem = ({
           )
         }}
         name={`planner_shopping_list_portions_add[${portion.encodedId}]`} checked={checked} />
-      <label className={classNames('fancy_checkbox_label flex-wrap text-lg w-full')} htmlFor={`planner_shopping_list_portions_add_${portion.encodedId}`}>
+      <label className={classNames('fancy_checkbox_label flex-wrap mr-3 text-lg w-full')} htmlFor={`planner_shopping_list_portions_add_${portion.encodedId}`}>
         <span className={classNames({'line-through text-gray-500': checked})}>
-
           {portion.description}
         </span>
         { checked &&
           <span className="fresh_note w-full text-sm mt-1 text-gray-500">Typically fresh for {portion.freshForTime} days</span>
         }
       </label>
+      <button className="bg-transparent border-0 ml-auto mb-auto mt-1" onClick={() => setShowModal(true)}>
+        <Icon name="close" className="w-8 h-8 p-1"/>
+      </button>
     </li>
   )
 }
