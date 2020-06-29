@@ -346,10 +346,6 @@ form.content_rich--wrapper {
 
 .portion_list--edit {
 	li {
-		border: 1px solid $teal-30;
-		padding: em(10, 10);
-		position: relative;
-		padding-right: em(55, 10);
 		&:not(.slide_up) + li {
 			margin-top: em(16, 10);
 		}
