@@ -280,7 +280,7 @@ const PortionItem = ({
   updateTotalPortionCount,
   updateShoppingListLoading,
   setShowModal,
-  updateModalContent
+  updateSelectedPortion
 }) => {
   return (
     <li
@@ -312,10 +312,45 @@ const PortionItem = ({
           <span className="fresh_note w-full text-sm mt-1 text-gray-500">Typically fresh for {portion.freshForTime} days</span>
         }
       </label>
-      <button className="bg-transparent border-0 ml-auto mb-auto mt-1" onClick={() => setShowModal(true)}>
+      <button className="bg-transparent border-0 ml-auto mb-auto mt-1" onClick={() => {
+        setShowModal(true)
+        updateSelectedPortion({
+          ingredientName: portion.ingredientName,
+          units: portion.units,
+          defaultAmount: portion.defaultAmount,
+          defaultUnitId: portion.defaultUnitId,
+          defaultUnitName: portion.defaultUnitName
+        })
+      }}>
         <Icon name="close" className="w-8 h-8 p-1"/>
       </button>
     </li>
+  )
+}
+
+const RemoveItemModalBody = ({portion}) => {
+  const {ingredient, description} = portion
+  return (
+    <div className="relative p-6 flex-auto">
+      <h4 className="text-xl">Do you already have {ingredient} in stock?</h4>
+      <div className="flex mt-4">
+        <button className="bg-primary-500 text-white active:bg-primary-600 uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1">Yes</button>
+        <button
+          className="text-gray-800 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 hover:underline focus:underline"
+          type="button"
+          style={{ transition: "all .15s ease" }}
+          onClick={() => setShowModal(false)}
+        >
+          No, remove from list
+        </button>
+      </div>
+      <div className="flex">
+        {/* <input */}
+      </div>
+      <p className="my-4 text-gray-600 text-lg leading-relaxed">
+        {modalContent}
+      </p>
+    </div>
   )
 }
 

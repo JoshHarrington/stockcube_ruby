@@ -1,5 +1,7 @@
 import React, {useState, useEffect} from "react"
 
+import Select from 'react-select'
+
 import {
 	ShoppingListWrapper,
 	ShoppingListButton,
@@ -126,7 +128,7 @@ function PlannerIndex(props) {
 
 	const [showModal, setShowModal] = useState(false)
 
-	const [modalContent, updateModalContent] = useState(null)
+	const [selectedPortion, updateSelectedPortion] = useState(null)
 
   return (
 		<main>
@@ -138,42 +140,54 @@ function PlannerIndex(props) {
               <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 {/*header*/}
                 <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t">
-                  <h3 className="text-3xl font-semibold">
-                    Modal Title
+                  <h3 className="text-2xl">
+										Do you already have {selectedPortion.ingredientName}?
                   </h3>
                   <button
                     className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
                     onClick={() => setShowModal(false)}
                   >
-                    <span className="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
-                      ×
-                    </span>
+										<Icon name="close" className="bg-transparent ml-3 text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none" />
                   </button>
                 </div>
                 {/*body*/}
                 <div className="relative p-6 flex-auto">
-                  <p className="my-4 text-gray-600 text-lg leading-relaxed">
-                    {modalContent}
-                  </p>
+									<div className="flex flex-wrap">
+										<h5 className="text-xl w-full">If yes, add it to your cupboards:</h5>
+										<div className="flex justify-between mt-8 w-full">
+											<input
+												type="number"
+												className="w-1/2 mr-2 border border-solid border-gray-400 rounded px-2 text-base"
+												placeholder="1"
+												min={0.01}
+												defaultValue={selectedPortion.defaultAmount}/>
+											<Select
+												options={selectedPortion.units}
+												className="w-1/2 text-base"
+												theme={theme => ({
+													...theme,
+													borderRadius: '.25rem'
+												})}
+												defaultValue={{
+													value: selectedPortion.defaultUnitId,
+													label: selectedPortion.defaultUnitName
+												}}
+												/>
+												{console.log("selectedPortion", selectedPortion)}
+										</div>
+									</div>
                 </div>
                 {/*footer*/}
-                <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
-                  <button
-                    className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"
-                    type="button"
-                    style={{ transition: "all .15s ease" }}
-                    onClick={() => setShowModal(false)}
-                  >
-                    Close
-                  </button>
-                  <button
-                    className="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
-                    type="button"
-                    style={{ transition: "all .15s ease" }}
-                    onClick={() => setShowModal(false)}
-                  >
-                    Save Changes
-                  </button>
+                <div className="flex items-center justify-center p-6 rounded-b">
+									<button className="bg-primary-700 text-white active:bg-primary-800 text-base py-2 px-4 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-2">Add to cupboards</button>
+									<button
+										className="text-gray-800 background-transparent font-bold p-2 text-base outline-none focus:outline-none hover:underline focus:underline"
+										type="button"
+										style={{ transition: "all .15s ease" }}
+										onClick={() => setShowModal(false)}
+									>
+										Skip, just remove from list
+									</button>
                 </div>
               </div>
             </div>
@@ -294,7 +308,7 @@ function PlannerIndex(props) {
 									updateTotalPortionCount={updateTotalPortionCount}
 									updateShoppingListLoading={updateShoppingListLoading}
 									setShowModal={setShowModal}
-									updateModalContent={updateModalContent}
+									updateSelectedPortion={updateSelectedPortion}
 								/>
 							))}
 							{checkedPortionCount > 0 &&
