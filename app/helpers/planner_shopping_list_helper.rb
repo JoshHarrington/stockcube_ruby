@@ -6,6 +6,7 @@ module PlannerShoppingListHelper
 	include UtilsHelper
 	include ServingHelper
 	include CupboardHelper
+	include UnitsHelper
 
 	def sort_all_planner_portions_by_date(planner_shopping_list = nil)
 		## Get all planner portions
@@ -276,12 +277,22 @@ module PlannerShoppingListHelper
 	def processed_shopping_list_portions(sl_portions = nil)
 		return [] if sl_portions == nil
 
+		defined_unit_list = unit_list()
+
 		return sl_portions.map{|p| {
 			encodedId: planner_portion_id_hash.encode(p.id),
 			checked: p.checked,
 			description: serving_description(p),
 			type: p.class == CombiPlannerShoppingListPortion ? 'combi_portion' : 'individual_portion',
-			freshForTime: (p.date - Date.today).to_i
+			freshForTime: (p.date - Date.today).to_i,
+			ingredientName: p.ingredient_id && p.ingredient != nil ? p.ingredient.name : serving_description(p),
+			units: p.ingredient.default_ingredient_sizes.length > 0 ? [{
+				value: p.ingredient.default_ingredient_sizes.first.unit_id,
+				label: p.ingredient.default_ingredient_sizes.first.unit.name
+			}] : defined_unit_list.map{|u| {value: u.id, label: u.name}},
+			defaultAmount: p.ingredient.default_ingredient_sizes.length > 0 ? p.ingredient.default_ingredient_sizes.first.amount : 1,
+			defaultUnitId: p.ingredient.default_ingredient_sizes.length > 0 ? p.ingredient.default_ingredient_sizes.first.unit_id : defined_unit_list.first.id,
+			defaultUnitName: p.ingredient.default_ingredient_sizes.length > 0 ? p.ingredient.default_ingredient_sizes.first.unit.name : defined_unit_list.first.name
 		}}
 	end
 
