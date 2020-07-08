@@ -14,7 +14,13 @@ import PlannerRecipeList from "./PlannerRecipeList"
 import RecipeItem from "./RecipeItem"
 import TooltipWrapper from "./TooltipWrapper"
 import Icon from "./Icon"
-import { showAlert, switchShoppingListClass, addRecipeToPlanner } from "../functions/utils"
+import {
+	showAlert,
+	switchShoppingListClass,
+	addRecipeToPlanner,
+	hidePlannerPortion,
+	addStockToCupboards
+} from "../functions/utils"
 import Dnd from "./DnDCalendar"
 
 
@@ -53,7 +59,6 @@ function recipeDetailsRefresh(
 		showAlert("Planner details updated")
   })
 }
-
 
 
 
@@ -129,6 +134,7 @@ function PlannerIndex(props) {
 	const [showModal, setShowModal] = useState(false)
 
 	const [selectedPortion, updateSelectedPortion] = useState(null)
+	const [newStockToAdd, updateNewStockToAdd] = useState(null)
 
   return (
 		<main>
@@ -156,35 +162,59 @@ function PlannerIndex(props) {
 										<h5 className="text-xl w-full">If yes, add it to your cupboards:</h5>
 										<div className="flex justify-between mt-8 w-full">
 											<input
-												type="number"
-												className="w-1/2 mr-2 border border-solid border-gray-400 rounded px-2 text-base"
-												placeholder="1"
-												min={0.01}
-												defaultValue={selectedPortion.defaultAmount}/>
-											<Select
-												options={selectedPortion.units}
-												className="w-1/2 text-base"
-												theme={theme => ({
-													...theme,
-													borderRadius: '.25rem'
-												})}
-												defaultValue={{
-													value: selectedPortion.defaultUnitId,
-													label: selectedPortion.defaultUnitName
-												}}
+													type="number"
+													className="w-1/2 mr-2 border border-solid border-gray-400 rounded px-2 text-base"
+													placeholder="1"
+													min={0.01}
+													defaultValue={selectedPortion.defaultAmount}
+													onChange={(e) => updateNewStockToAdd({...newStockToAdd, amount: e.target.value})}/>
+												<Select
+													options={selectedPortion.units}
+													className="w-1/2 text-base"
+													onChange={(target) => updateNewStockToAdd({...newStockToAdd, unitId: target.value})}
+													theme={theme => ({
+														...theme,
+														borderRadius: '.25rem'
+													})}
+													defaultValue={{
+														value: selectedPortion.defaultUnitId,
+														label: selectedPortion.defaultUnitName
+													}}
 												/>
-												{console.log("selectedPortion", selectedPortion)}
 										</div>
 									</div>
                 </div>
                 {/*footer*/}
-                <div className="flex items-center justify-center p-6 rounded-b">
-									<button className="bg-primary-700 text-white active:bg-primary-800 text-base py-2 px-4 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-2">Add to cupboards</button>
+                <div className="flex flex-col items-center justify-center p-6 rounded-b">
 									<button
-										className="text-gray-800 background-transparent font-bold p-2 text-base outline-none focus:outline-none hover:underline focus:underline"
+										className="bg-primary-700 text-white active:bg-primary-800 text-lg py-3 px-4 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-2"
+										onClick={() => {
+											addStockToCupboards({
+												csrfToken,
+												newStockToAdd,
+												portion: selectedPortion,
+												updateCheckedPortionCount,
+												updateTotalPortionCount,
+												updateShoppingListPortions,
+												setShowModal,
+												updateSuggestedRecipes
+											})
+										}}
+									>Add to cupboards</button>
+									<button
+										className="text-gray-800 background-transparent font-bold p-2 text-base outline-none focus:outline-none hover:underline focus:underline mt-3"
 										type="button"
-										style={{ transition: "all .15s ease" }}
-										onClick={() => setShowModal(false)}
+										onClick={() => {
+											setShowModal(false)
+											hidePlannerPortion({
+												portionEncodedId: selectedPortion.encodedId,
+												portionType: selectedPortion.type,
+												csrfToken,
+												updateCheckedPortionCount,
+												updateTotalPortionCount,
+												updateShoppingListPortions
+											})
+										}}
 									>
 										Skip, just remove from list
 									</button>
@@ -306,9 +336,11 @@ function PlannerIndex(props) {
 									updateShoppingListComplete={updateShoppingListComplete}
 									updateCheckedPortionCount={updateCheckedPortionCount}
 									updateTotalPortionCount={updateTotalPortionCount}
+									shoppingListLoading={shoppingListLoading}
 									updateShoppingListLoading={updateShoppingListLoading}
 									setShowModal={setShowModal}
 									updateSelectedPortion={updateSelectedPortion}
+									updateNewStockToAdd={updateNewStockToAdd}
 								/>
 							))}
 							{checkedPortionCount > 0 &&

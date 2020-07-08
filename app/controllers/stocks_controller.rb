@@ -121,6 +121,41 @@ class StocksController < ApplicationController
 
 	end
 
+	def create_from_post
+
+		unless params.has_key?(:stock_amount) && params.has_key?(:stock_unit_id) && params.has_key?(:stock_ingredient_id)
+			respond_to do |format|
+				format.json { render json: {'message': 'Bad portion params'}.as_json, status: 400}
+				format.html { redirect_to planner_path }
+			end and return
+		end
+
+		unless user_signed_in?
+			respond_to do |format|
+				format.json { render json: {'message': 'Not authorised'}.as_json, status: 401}
+				format.html { redirect_to planner_path }
+			end and return
+		end
+
+		stock = current_user.stocks.create(
+			unit_id: params[:stock_unit_id],
+			ingredient_id: params[:stock_ingredient_id],
+			amount: params[:stock_amount],
+			cupboard_id: first_cupboard(current_user).id,
+			use_by_date: Date.current + 2.weeks
+		)
+
+		respond_to do |format|
+			format.json { render json: {
+				cupboardContents: processed_cupboard_contents(current_user),
+				stockDescription: serving_description(stock),
+				suggestedRecipes: processed_recipe_list_for_user(current_user)
+			}.as_json, status: 200}
+			format.html { redirect_to cupboards_path }
+		end and return
+
+	end
+
 	def edit
 		@stock = current_user.stocks.where(id: params[:id]).first
 		if @stock == nil
@@ -158,6 +193,13 @@ class StocksController < ApplicationController
 		unless params.has_key?(:shopping_list_portion_id) && params.has_key?(:portion_type)
 			respond_to do |format|
 				format.json { render json: {'message': 'Bad portion params'}.as_json, status: 400}
+				format.html { redirect_to planner_path }
+			end and return
+		end
+
+		unless user_signed_in?
+			respond_to do |format|
+				format.json { render json: {'message': 'Not authorised'}.as_json, status: 401}
 				format.html { redirect_to planner_path }
 			end and return
 		end
@@ -231,11 +273,11 @@ class StocksController < ApplicationController
 				shoppingListPortions: processed_fetched_shopping_list_portions,
 				portionDescription: planner_portion_description,
 				checkedPortionCount: fetched_shopping_list_portions.count{|p|p[:checked]},
-				totalPortionCount: fetched_shopping_list_portions.count
+				totalPortionCount: fetched_shopping_list_portions.count,
+				plannerRecipes: processed_planner_recipes_with_date(current_user, true)
 			}.as_json, status: 200}
 			format.html { redirect_to planner_path }
 		end
-
 	end
 
 	def delete_stock

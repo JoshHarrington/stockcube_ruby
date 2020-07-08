@@ -136,7 +136,7 @@ module PlannerShoppingListHelper
 					ingredient_id: ing_id,
 					amount: combi_amount != nil && combi_amount != false && combi_amount.has_key?(:amount) ? combi_amount[:amount] : nil,
 					unit_id: combi_amount != nil && combi_amount != false && combi_amount.has_key?(:unit) ? combi_amount[:unit].id : nil,
-					date: portion_group.sort_by{|p| p.planner_recipe.date}.first.date,
+					date: portion_group.sort_by{|p| p.planner_recipe.date}.first.planner_recipe.date,
 					checked: portion_group.count{|p| p.checked == false} > 0 ? false : true
 				)
 
@@ -241,30 +241,18 @@ module PlannerShoppingListHelper
 		end
 
 		planner_recipe_portions = []
-		planner_portions_with_wrap = []
 		if shopping_list && shopping_list.planner_recipes && shopping_list.planner_recipes.length > 0
-			all_planner_recipe_portions = shopping_list.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.reject{|p| p.ingredient.name.downcase == 'water'}.reject{|p| p.checked == true && p.updated_at < Time.current - 1.day}}.flatten
-			planner_recipe_portions = all_planner_recipe_portions.reject{|p|p.planner_portion_wrapper_id != nil}
-			planner_portions_with_wrap = all_planner_recipe_portions.reject{|p|p.planner_portion_wrapper_id == nil}
+			planner_recipe_portions = shopping_list.planner_recipes.select{|pr| pr.date > Date.current - 6.hours && pr.date < Date.current + 7.day}.map{|pr| pr.planner_shopping_list_portions.select{|p| p.combi_planner_shopping_list_portion_id == nil && p.ingredient.name.downcase != 'water' && p.hidden == false}}.flatten
 		end
 
 		combi_portions = []
-		combi_portions_with_wrap = []
 		if shopping_list && shopping_list.combi_planner_shopping_list_portions && shopping_list.combi_planner_shopping_list_portions.length > 0
-			# all_combi_portions = shopping_list.combi_planner_shopping_list_portions.select{|c|c.date > Date.current - 6.hours && c.date < Date.current + 7.day}.reject{|cp| cp.checked == true && cp.updated_at < Time.current - 1./day}
-			all_combi_portions = shopping_list.combi_planner_shopping_list_portions
-			combi_portions = all_combi_portions.reject{|cp|cp.planner_portion_wrapper_id != nil}
-			combi_portions_with_wrap = all_combi_portions.reject{|cp|cp.planner_portion_wrapper_id == nil}
-		end
-
-		portion_wrappers = []
-		if shopping_list && shopping_list.planner_portion_wrappers && shopping_list.planner_portion_wrappers.length > 0
-			wrapped_portions = combi_portions_with_wrap + planner_portions_with_wrap
-			portion_wrappers = wrapped_portions.map{|p|p.planner_portion_wrapper}
+			combi_portions = shopping_list.combi_planner_shopping_list_portions.select{|cp| cp.hidden == false && cp.date > Date.current - 6.hours && cp.date < Date.current + 7.day}
 		end
 
 
-		shopping_list_portions = combi_portions + planner_recipe_portions + portion_wrappers
+		shopping_list_portions = combi_portions + planner_recipe_portions
+
 
 		session[:sl_checked_portions_count] = shopping_list_portions.count{|p|p.checked == true}
 		session[:sl_unchecked_portions_count] = shopping_list_portions.count{|p|p.checked == false}
@@ -286,10 +274,8 @@ module PlannerShoppingListHelper
 			type: p.class == CombiPlannerShoppingListPortion ? 'combi_portion' : 'individual_portion',
 			freshForTime: (p.date - Date.today).to_i,
 			ingredientName: p.ingredient_id && p.ingredient != nil ? p.ingredient.name : serving_description(p),
-			units: p.ingredient.default_ingredient_sizes.length > 0 ? [{
-				value: p.ingredient.default_ingredient_sizes.first.unit_id,
-				label: p.ingredient.default_ingredient_sizes.first.unit.name
-			}] : defined_unit_list.map{|u| {value: u.id, label: u.name}},
+			ingredientId: p.ingredient_id,
+			units: defined_unit_list.map{|u| {value: u[:id], label: u[:name]}},
 			defaultAmount: p.ingredient.default_ingredient_sizes.length > 0 ? p.ingredient.default_ingredient_sizes.first.amount : 1,
 			defaultUnitId: p.ingredient.default_ingredient_sizes.length > 0 ? p.ingredient.default_ingredient_sizes.first.unit_id : defined_unit_list.first.id,
 			defaultUnitName: p.ingredient.default_ingredient_sizes.length > 0 ? p.ingredient.default_ingredient_sizes.first.unit.name : defined_unit_list.first.name
@@ -302,10 +288,20 @@ module PlannerShoppingListHelper
 		planner_recipe = PlannerRecipe.find(planner_recipe_id)
 
 		planner_stocks = planner_recipe.planner_shopping_list_portions
+											.select{|p|p.hidden == false}
 											.map{|p| p.stock}.compact
 											.select{|s|s.hidden == false && s.always_available == false}
 											.sort_by{|s| s.use_by_date}
-		needed_stocks = planner_recipe.recipe.portions.where.not(ingredient_id: planner_stocks.map(&:ingredient_id).uniq).select{|p| p.ingredient.name.downcase != 'water'}
+
+		hidden_planner_portions_ing_ids = planner_recipe.planner_shopping_list_portions
+																					.select{|p|p.hidden}
+																					.map(&:ingredient_id).uniq
+
+		ingredient_ids_in_stock = (planner_stocks.map(&:ingredient_id) + hidden_planner_portions_ing_ids).uniq
+
+		needed_stocks = planner_recipe.recipe.portions
+										.where.not(ingredient_id: ingredient_ids_in_stock)
+										.select{|p| p.ingredient.name.downcase != 'water'}
 
 		planner_stocks_array = planner_stocks.map{|s| {
 			percentInCupboards: percentage_of_portion_in_stock(s),
@@ -354,7 +350,10 @@ module PlannerShoppingListHelper
 	def processed_recipe_list_for_user(user = nil)
 		return if user == nil
 
-		recipes = user.user_recipe_stock_matches.order(ingredient_stock_match_decimal: :desc).reject{|u_r| current_planner_recipe_ids.include?(u_r.recipe_id) }.select{|u_r| u_r.recipe && u_r.recipe.portions.length != 0 && (u_r.recipe[:public] || u_r.recipe[:user_id] == current_user[:id])}[0..11].map{|u_r| u_r.recipe}
+		recipes = user.user_recipe_stock_matches.order(ingredient_stock_match_decimal: :desc)
+									.reject{|u_r| current_planner_recipe_ids.include?(u_r.recipe_id) }
+									.select{|u_r| u_r.recipe && u_r.recipe.portions.length != 0 && ((u_r.recipe[:live] == true && u_r.recipe[:public] == true) || user == u_r.recipe.user)}[0..11]
+									.map{|u_r| u_r.recipe}
 
 		return processed_recipe_list(recipes)
 	end

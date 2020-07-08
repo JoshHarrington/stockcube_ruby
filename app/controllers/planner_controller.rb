@@ -258,6 +258,67 @@ class PlannerController < ApplicationController
 		update_portion_details(params)
 	end
 
+	def hide_portion
+		unless (user_signed_in? && params.has_key?(:encoded_id) && params.has_key?(:portion_type))
+			respond_to do |format|
+				format.json { render json: {'status': 'not allowed, bad request'}.as_json, status: 400}
+				format.html { redirect_to planner_path }
+			end and return
+		end
+
+
+		if params[:portion_type].to_s == "combi_portion"
+			combi_portion = current_user.combi_planner_shopping_list_portions.where(id: planner_portion_id_hash.decode(params[:encoded_id]).first).first
+			if combi_portion == nil
+				respond_to do |format|
+					format.json { render json: {'status': 'not found'}.as_json, status: 404}
+					format.html { redirect_to planner_path }
+				end and return
+			else
+				combi_portion.planner_shopping_list_portions.map{|p|p.update_attributes(hidden:true)}
+				combi_portion.update_attributes(hidden: true)
+
+				fetched_shopping_list_portions = shopping_list_portions(nil, current_user)
+				respond_to do |format|
+					format.json { render json: {
+						portionDescription: serving_description(combi_portion),
+						checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
+						totalPortionCount: fetched_shopping_list_portions.count,
+						shoppingListPortions: processed_shopping_list_portions(fetched_shopping_list_portions)
+					}.as_json, status: 200}
+					format.html { redirect_to planner_path }
+				end and return
+			end
+		elsif params[:portion_type].to_s == "individual_portion"
+			planner_portion = current_user.planner_shopping_list_portions.where(id: planner_portion_id_hash.decode(params[:encoded_id]).first).first
+			if planner_portion == nil
+				respond_to do |format|
+					format.json { render json: {'status': 'not found'}.as_json, status: 404}
+					format.html { redirect_to planner_path }
+				end and return
+			else
+				planner_portion.update_attributes(hidden: true)
+
+				fetched_shopping_list_portions = shopping_list_portions(nil, current_user)
+				respond_to do |format|
+					format.json { render json: {
+						portionDescription: serving_description(planner_portion),
+						checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
+						totalPortionCount: fetched_shopping_list_portions.count,
+						shoppingListPortions: processed_shopping_list_portions(fetched_shopping_list_portions)
+					}.as_json, status: 200}
+					format.html { redirect_to planner_path }
+				end and return
+			end
+		else
+			respond_to do |format|
+				format.json { render json: {'status': 'not found'}.as_json, status: 404}
+				format.html { redirect_to planner_path }
+			end and return
+		end
+
+	end
+
 	def get_shopping_list_content
 		shopping_list = nil
 

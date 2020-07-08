@@ -46,7 +46,7 @@ Rails.application.routes.draw do
   post '/stock/toggle_portion' => 'stocks#toggle_shopping_list_portion'
   post '/stock/add_shopping_list' => 'stocks#add_shopping_list'
   post '/stock/new/:cupboard_id' => 'stocks#create', as: :create_stock
-  post '/stock/new' => 'stocks#create_with_params', as: :create_stock_with_params
+  post '/stock/post_create' => 'stocks#create_from_post'
   get '/stock' => 'stocks#index'
 
   get '/cupboards' => 'cupboards#index'
@@ -101,6 +101,8 @@ Rails.application.routes.draw do
   post '/planner/recipe_update', to: 'planner#recipe_update_in_planner'
   post '/planner/update_portion', to: 'planner#update_portion'
   post '/planner/recipe_delete', to: 'planner#delete_recipe_from_planner'
+  post '/planner/hide_portion', to: 'planner#hide_portion'
+
 
   resources :user_fav_stocks
   resources :account_activations, only: [:edit]
