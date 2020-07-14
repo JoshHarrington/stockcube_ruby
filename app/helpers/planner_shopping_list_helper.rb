@@ -277,8 +277,8 @@ module PlannerShoppingListHelper
 			ingredientId: p.ingredient_id,
 			units: defined_unit_list.map{|u| {value: u[:id], label: u[:name]}},
 			defaultAmount: p.ingredient.default_ingredient_sizes.length > 0 ? p.ingredient.default_ingredient_sizes.first.amount : 1,
-			defaultUnitId: p.ingredient.default_ingredient_sizes.length > 0 ? p.ingredient.default_ingredient_sizes.first.unit_id : defined_unit_list.first.id,
-			defaultUnitName: p.ingredient.default_ingredient_sizes.length > 0 ? p.ingredient.default_ingredient_sizes.first.unit.name : defined_unit_list.first.name
+			defaultUnitId: p.ingredient.default_ingredient_sizes.length > 0 ? p.ingredient.default_ingredient_sizes.first.unit_id : defined_unit_list.first[:id],
+			defaultUnitName: p.ingredient.default_ingredient_sizes.length > 0 ? p.ingredient.default_ingredient_sizes.first.unit.name : defined_unit_list.first[:name]
 		}}
 	end
 
