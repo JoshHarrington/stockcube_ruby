@@ -46,11 +46,6 @@
 							<% end %>
 						<% end %>
 					<% end %>
-					<% if recipe.live && recipe.portions.length > 0 && !(current_planner_recipe_ids.include?(recipe.id)) %>
-						<%= button_tag class: 'svg-btn add_recipe_to_planner', title: 'Add this recipe to your planner', data: {"recipe-id": @recipe_id_hash.encode(recipe.id) } do %>
-							<%= icomoon('list-add') %>
-						<% end %>
-					<% end %>
 				<% end %>
 			</div>
 		</div>
