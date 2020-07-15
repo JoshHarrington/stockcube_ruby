@@ -151,18 +151,28 @@ module PlannerShoppingListHelper
 
 	end
 
-	def update_planner_shopping_list_portions
-		return if user_signed_in? == false
-		planner_shopping_list = PlannerShoppingList.find_or_create_by(user_id: current_user.id)
-		if current_user.planner_recipes && current_user.planner_recipes.length == 0
-			current_user.combi_planner_shopping_list_portions.destroy_all
+	def update_planner_shopping_list_portions(_user = nil)
+		return unless _user != nil || (defined?(user_signed_in?) && user_signed_in? != false)
+		if defined?(user_signed_in?)
+			if user_signed_in? == false
+				user = _user
+			else
+				user = current_user
+			end
+		else
+			user = _user
+		end
+
+		planner_shopping_list = PlannerShoppingList.find_or_create_by(user_id: user.id)
+		if user.planner_recipes && user.planner_recipes.length == 0
+			user.combi_planner_shopping_list_portions.destroy_all
 			planner_shopping_list.update_attributes(
 				ready: true
 			)
 			return
 		end
 
-		current_user.remove_out_of_date_stock
+		user.remove_out_of_date_stock
 
 		refresh_all_planner_portions(planner_shopping_list)
 
@@ -174,14 +184,14 @@ module PlannerShoppingListHelper
 
 		delete_old_combi_planner_portions_and_create_new(planner_shopping_list.id)
 
-		combine_existing_similar_stock(current_user)
+		combine_existing_similar_stock(user)
 
 
 		#### TODO -- figure out how wrapper portions can work alongside developed combi portions
 
 		# all_shopping_list_portions = []
 		# planner_shopping_list_portions.reject{|p| p.combi_planner_shopping_list_portion_id != nil}.map{|p| all_shopping_list_portions.push(p)}
-		# current_user.combi_planner_shopping_list_portions.select{|cp|cp.date >= Date.current}.map{|cp|all_shopping_list_portions.push(cp)}
+		# user.combi_planner_shopping_list_portions.select{|cp|cp.date >= Date.current}.map{|cp|all_shopping_list_portions.push(cp)}
 
 		# all_shopping_list_portions.each do |p|
 
@@ -231,13 +241,20 @@ module PlannerShoppingListHelper
 		end
 	end
 
-	def shopping_list_portions(shopping_list = nil, user = nil)
-		if shopping_list == nil && (user_signed_in? || user != nil)
-			shopping_list = user != nil ? user.planner_shopping_list : current_user.planner_shopping_list
-		elsif shopping_list == nil && user_signed_in? == false
-			return []
-		elsif user_signed_in? && current_user.planner_shopping_list.present?
-			shopping_list = PlannerShoppingList.find_or_create_by(user_id: current_user.id)
+	def shopping_list_portions(shopping_list = nil, _user = nil)
+		if defined?(user_signed_in?)
+			if user_signed_in? == false
+				user = _user
+			else
+				user = current_user
+			end
+		else
+			user = _user
+		end
+
+
+		if shopping_list == nil && user != nil
+			shopping_list = PlannerShoppingList.find_or_create_by(user_id: user.id)
 		end
 
 		planner_recipe_portions = []
