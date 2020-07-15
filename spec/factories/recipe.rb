@@ -1,6 +1,9 @@
 FactoryBot.define do
+  sequence :recipe_name do |n|
+    "Recipe #{n}"
+  end
   factory :recipe do
-    title { "New recipe" }
+    title { generate(:recipe_name) }
     live { true }
   end
 end
