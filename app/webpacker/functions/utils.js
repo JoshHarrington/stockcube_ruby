@@ -176,7 +176,117 @@ function addRecipeToPlanner(
   if(recipeListUpdateNeeded === false) {
     addRecipe()
   }
+}
 
+
+function hidePlannerPortion({
+  portionEncodedId,
+	portionType,
+	csrfToken,
+	updateCheckedPortionCount,
+	updateTotalPortionCount,
+	updateShoppingListPortions
+}) {
+	const data = {
+		method: 'post',
+		body: JSON.stringify({
+			"encoded_id": portionEncodedId,
+			"portion_type": portionType
+    }),
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRF-Token': csrfToken
+		},
+		credentials: 'same-origin'
+  }
+
+  fetch("/planner/hide_portion", data).then((response) => {
+    if(response.status === 200){
+      return response.json();
+		} else {
+			window.alert('Something went wrong! Maybe refresh the page and try again')
+			throw new Error('non-200 response status')
+    }
+  }).then((jsonResponse) => {
+		updateCheckedPortionCount(jsonResponse.checkedPortionCount)
+		updateTotalPortionCount(jsonResponse.totalPortionCount)
+		updateShoppingListPortions(jsonResponse.shoppingListPortions)
+
+		showAlert(`Portion "${jsonResponse.portionDescription}" removed from shopping list`)
+  })
+}
+
+function addStockToCupboards({
+    csrfToken,
+    newStockToAdd,
+    portion,
+    updateCheckedPortionCount,
+    updateTotalPortionCount,
+    updateShoppingListPortions,
+    updateCupboardContents = null,
+    setShowModal,
+    updateSuggestedRecipes = null
+}) {
+
+	const togglePortionData = {
+		method: 'post',
+		body: JSON.stringify({
+			"shopping_list_portion_id": portion.encodedId,
+			"portion_type": portion.type,
+    }),
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRF-Token': csrfToken
+		},
+		credentials: 'same-origin'
+	}
+
+	fetch("/stock/toggle_portion", togglePortionData).then((response) => {
+		if(response.status === 200){
+      return response.json();
+		} else {
+			window.alert('Something went wrong! Maybe refresh the page and try again')
+			throw new Error('non-200 response status')
+    }
+  }).then((jsonResponse) => {
+
+		updateCheckedPortionCount(jsonResponse.checkedPortionCount)
+		updateTotalPortionCount(jsonResponse.totalPortionCount)
+		updateShoppingListPortions(jsonResponse.shoppingListPortions)
+
+	})
+
+	const stockCreateData = {
+		method: 'post',
+		body: JSON.stringify({
+			"stock_amount": newStockToAdd.amount,
+			"stock_unit_id": newStockToAdd.unitId,
+      "stock_ingredient_id": newStockToAdd.ingredientId
+		}),
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRF-Token': csrfToken
+		},
+		credentials: 'same-origin'
+	}
+
+  setTimeout(() => fetch("/stock/post_create", stockCreateData).then((response) => {
+    if(response.status === 200){
+      return response.json();
+    } else {
+      window.alert('Something went wrong! Maybe refresh the page and try again')
+      throw new Error('non-200 response status')
+    }
+  }).then((jsonResponse) => {
+    if (updateCupboardContents !== null) {
+      updateCupboardContents(jsonResponse.cupboardContents)
+    }
+    if (updateSuggestedRecipes !== null) {
+      updateSuggestedRecipes(jsonResponse.suggestedRecipes)
+    }
+    setShowModal(false)
+    showAlert(`"${jsonResponse.stockDescription}" add to your cupboard`)
+  }), 10)
 
 }
 
@@ -190,5 +300,7 @@ export {
   toKebabCase,
   toCamelCase,
   switchShoppingListClass,
-  addRecipeToPlanner
+  addRecipeToPlanner,
+  hidePlannerPortion,
+  addStockToCupboards
 }

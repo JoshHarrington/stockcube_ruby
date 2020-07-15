@@ -8,9 +8,15 @@ import {
 	ShoppingListBottomBanner
 } from "./ShoppingListComponents"
 import Icon from "./Icon"
-import { switchShoppingListClass, showAlert } from "../functions/utils"
+import {
+	switchShoppingListClass,
+	showAlert,
+	hidePlannerPortion,
+	addStockToCupboards
+} from "../functions/utils"
 import * as classNames from "classnames"
 import TooltipWrapper from "./TooltipWrapper"
+import Select from 'react-select'
 
 const CupboardPlannerPortion = ({portion, moreThanOnePlannerRecipe}) => (
 	<TooltipWrapper
@@ -146,14 +152,105 @@ const CupboardsIndex = props => {
 		} else {
 			updateShoppingListComplete(false)
 		}
-		getLatestPlannerRecipes(updatePlannerRecipes, csrfToken)
+		// getLatestPlannerRecipes(updatePlannerRecipes, csrfToken)
 	}, [checkedPortionCount, totalPortionCount])
 
 	const [shoppingListLoading, updateShoppingListLoading] = useState(false)
 
+	const [showModal, setShowModal] = useState(false)
+
+	const [selectedPortion, updateSelectedPortion] = useState(null)
+	const [newStockToAdd, updateNewStockToAdd] = useState(null)
+
 	return (
 		<main>
-
+			{showModal ? (
+        <>
+          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+            <div className="relative w-auto my-6 mx-auto max-w-3xl z-50">
+              {/*content*/}
+              <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                {/*header*/}
+                <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t">
+                  <h3 className="text-2xl">
+										Do you already have {selectedPortion.ingredientName}?
+                  </h3>
+                  <button
+                    className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                    onClick={() => setShowModal(false)}
+                  >
+										<Icon name="close" className="bg-transparent ml-3 text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none" />
+                  </button>
+                </div>
+                {/*body*/}
+                <div className="relative p-6 flex-auto">
+									<div className="flex flex-wrap">
+										<h5 className="text-xl w-full">If yes, add it to your cupboards:</h5>
+										<div className="flex justify-between mt-8 w-full">
+											<input
+												type="number"
+												className="w-1/2 mr-2 border border-solid border-gray-400 rounded px-2 text-base"
+												placeholder="1"
+												min={0.01}
+												defaultValue={selectedPortion.defaultAmount}
+												onChange={(e) => updateNewStockToAdd({...newStockToAdd, amount: e.target.value})}/>
+											<Select
+												options={selectedPortion.units}
+												className="w-1/2 text-base"
+												onChange={(target) => updateNewStockToAdd({...newStockToAdd, unitId: target.value})}
+												theme={theme => ({
+													...theme,
+													borderRadius: '.25rem'
+												})}
+												defaultValue={{
+													value: selectedPortion.defaultUnitId,
+													label: selectedPortion.defaultUnitName
+												}}
+												/>
+										</div>
+									</div>
+                </div>
+                {/*footer*/}
+                <div className="flex flex-col items-center justify-center p-6 rounded-b">
+									<button
+										className="bg-primary-700 text-white active:bg-primary-800 text-lg py-3 px-4 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-2"
+										onClick={() => {
+											addStockToCupboards({
+												csrfToken,
+												newStockToAdd,
+												portion: selectedPortion,
+												updateCheckedPortionCount,
+												updateTotalPortionCount,
+												updateShoppingListPortions,
+												updateCupboardContents,
+												setShowModal
+											})
+										}}
+									>Add to cupboards</button>
+									<button
+										className="text-gray-800 background-transparent font-bold p-2 text-base outline-none focus:outline-none hover:underline focus:underline mt-3"
+										type="button"
+										onClick={() => {
+											setShowModal(false)
+											hidePlannerPortion({
+												portionEncodedId: selectedPortion.encodedId,
+												portionType: selectedPortion.type,
+												csrfToken,
+												updateCheckedPortionCount,
+												updateTotalPortionCount,
+												updateShoppingListPortions
+											})
+										}}
+									>
+										Skip, just remove from list
+									</button>
+                </div>
+              </div>
+            </div>
+						<div className="opacity-25 fixed inset-0 z-40 bg-black" onClick={() => setShowModal(false)}></div>
+          </div>
+        </>
+      ) : null}
 			{plannerRecipes.filter(pr => pr.active).length > 0 &&
 				<div className="py-8 border-b border-solid border-gray-500">
 					<div className="px-6 flex flex-wrap py-4">
@@ -173,13 +270,15 @@ const CupboardsIndex = props => {
 											<div className="w-full mx-1 mb-4 non_sortable flex items-center">
 												<h3><a className="text-primary-700 hover:underline focus:underline" href={plannerRecipe.recipeHref}>{recipe.title} ({plannerRecipe.humanDate})</a></h3>
 											</div>
-											{recipe.portions.map((portion, index) => (
+											{recipe.portions.length > 0 ?
+												recipe.portions.map((portion, index) => (
 												<CupboardPlannerPortion
 													key={index}
 													portion={portion}
 													moreThanOnePlannerRecipe={plannerRecipes.length > 1}
 												/>
-											))}
+											))
+											: <p className="mx-1 w-full text-gray-600">No portions in the shopping list for this recipe</p>}
 										</div>
 									</div>
 								</div>
@@ -315,7 +414,12 @@ const CupboardsIndex = props => {
 									updateShoppingListComplete={updateShoppingListComplete}
 									updateCheckedPortionCount={updateCheckedPortionCount}
 									updateTotalPortionCount={updateTotalPortionCount}
+									shoppingListLoading={shoppingListLoading}
 									updateShoppingListLoading={updateShoppingListLoading}
+									setShowModal={setShowModal}
+									updateSelectedPortion={updateSelectedPortion}
+									updateNewStockToAdd={updateNewStockToAdd}
+									updatePlannerRecipes={updatePlannerRecipes}
 								/>
 							))}
 							{checkedPortionCount > 0 &&

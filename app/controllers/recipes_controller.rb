@@ -76,7 +76,7 @@ class RecipesController < ApplicationController
 		# end
 
 		if current_user
-			if (@recipe.live != true || @recipe.public != true) && current_user != @recipe.user
+			if (@recipe[:live] != true || @recipe[:public] != true) && current_user != @recipe.user
 				redirect_to root_path
 			end
 			@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact

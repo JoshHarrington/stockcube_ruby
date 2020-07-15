@@ -10,17 +10,17 @@ let shoppingListPortionsUpdateNeeded = false
 
 let timeoutId;
 
-function togglePortionCheck(
+function togglePortionCheck({
   portion,
   csrfToken,
-  checked,
   shoppingListPortions,
   updateShoppingListPortions,
   updateShoppingListComplete,
   updateCheckedPortionCount,
   updateTotalPortionCount,
-  updateShoppingListLoading
-) {
+  updateShoppingListLoading,
+  updatePlannerRecipes = null
+}) {
 
 
   updateShoppingListLoading(true)
@@ -66,12 +66,12 @@ function togglePortionCheck(
         if (response.status === 408) {
           // server busy, update needed
           console.log("server busy, update needed")
-          shoppingListPortionsUpdateNeeded = true
-          if (window !== undefined){
-            timeoutId = window.setTimeout(() => {
-              togglePortion()
-            }, 2000)
-          }
+          // shoppingListPortionsUpdateNeeded = true
+          // if (window !== undefined){
+          //   timeoutId = window.setTimeout(() => {
+          //     togglePortion()
+          //   }, 2000)
+          // }
         }
       } else {
         return response.json();
@@ -86,6 +86,10 @@ function togglePortionCheck(
       }
       if (newTotalPortionCount !== jsonResponse.totalPortionCount) {
         updateTotalPortionCount(jsonResponse.totalPortionCount)
+      }
+
+      if (updatePlannerRecipes !== null) {
+        updatePlannerRecipes(jsonResponse.plannerRecipes)
       }
 
 
@@ -278,40 +282,102 @@ const PortionItem = ({
   updateShoppingListComplete,
   updateCheckedPortionCount,
   updateTotalPortionCount,
-  updateShoppingListLoading
+  shoppingListLoading,
+  updateShoppingListLoading,
+  setShowModal,
+  updateSelectedPortion,
+  updateNewStockToAdd,
+  updatePlannerRecipes = null
 }) => {
-  return (
-    <li
-      id={portion.encodedId}
-      className={classNames('shopping_list_portion flex items-baseline flex-wrap justify-between mb-6 select-none',
-        {'portion_checked order-3': checked})}>
-      <input
-        type="checkbox" id={`planner_shopping_list_portions_add_${portion.encodedId}`}
-        className="fancy_checkbox"
-        onChange={() => {
-          togglePortionCheck(
-            portion,
-            csrfToken,
-            checked,
-            shoppingListPortions,
-            updateShoppingListPortions,
-            updateShoppingListComplete,
-            updateCheckedPortionCount,
-            updateTotalPortionCount,
-            updateShoppingListLoading
-          )
-        }}
-        name={`planner_shopping_list_portions_add[${portion.encodedId}]`} checked={checked} />
-      <label className={classNames('fancy_checkbox_label flex-wrap text-lg w-full')} htmlFor={`planner_shopping_list_portions_add_${portion.encodedId}`}>
-        <span className={classNames({'line-through text-gray-500': checked})}>
-
-          {portion.description}
-        </span>
-        { checked &&
-          <span className="fresh_note w-full text-sm mt-1 text-gray-500">Typically fresh for {portion.freshForTime} days</span>
+  console.log(shoppingListLoading)
+  if (portion.description !== null) {
+    return (
+      <li
+        id={portion.encodedId}
+        className={classNames('shopping_list_portion flex items-baseline justify-between mb-6 select-none relative',
+          {'portion_checked order-3': checked},
+          {'opacity-25': shoppingListLoading})}>
+        {shoppingListLoading && <span className="cursor-not-allowed absolute z-10 w-full h-full"></span>}
+        <input
+          type="checkbox" id={`planner_shopping_list_portions_add_${portion.encodedId}`}
+          className="fancy_checkbox"
+          disabled={shoppingListLoading}
+          onChange={() => {
+            togglePortionCheck({
+              portion,
+              csrfToken,
+              shoppingListPortions,
+              updateShoppingListPortions,
+              updateShoppingListComplete,
+              updateCheckedPortionCount,
+              updateTotalPortionCount,
+              updateShoppingListLoading,
+              updatePlannerRecipes
+            })
+          }}
+          name={`planner_shopping_list_portions_add[${portion.encodedId}]`} checked={checked} />
+        <label
+          className={classNames('fancy_checkbox_label flex-wrap mr-3 text-lg w-full')}
+          htmlFor={`planner_shopping_list_portions_add_${portion.encodedId}`}
+        >
+          <span className={classNames({'line-through text-gray-500': checked})}>
+            {portion.description}
+          </span>
+          { checked &&
+            <span className={classNames('fresh_note w-full text-sm mt-1 text-gray-500')}>Typically fresh for {portion.freshForTime} days</span>
+          }
+        </label>
+        {!checked &&
+          <button className="bg-transparent border-0 ml-auto mb-auto mt-1" onClick={() => {
+            setShowModal(true)
+            updateSelectedPortion({
+              encodedId: portion.encodedId,
+              ingredientName: portion.ingredientName,
+              units: portion.units,
+              defaultAmount: portion.defaultAmount,
+              defaultUnitId: portion.defaultUnitId,
+              defaultUnitName: portion.defaultUnitName,
+              type: portion.type
+            })
+            updateNewStockToAdd({
+              ingredientId: portion.ingredientId,
+              amount: portion.defaultAmount,
+              unitId: portion.defaultUnitId
+            })
+          }}>
+            <Icon name="close" className="w-8 h-8 p-1"/>
+          </button>
         }
-      </label>
-    </li>
+      </li>
+    )
+  } else {
+    return null
+  }
+}
+
+const RemoveItemModalBody = ({portion}) => {
+  const {ingredient, description} = portion
+  return (
+    <div className="relative p-6 flex-auto">
+      <h4 className="text-xl">Do you already have {ingredient} in stock?</h4>
+      <div className="flex mt-4">
+        <button className="bg-primary-500 text-white active:bg-primary-600 uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1">Yes</button>
+        <button
+          className="text-gray-800 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 hover:underline focus:underline"
+          type="button"
+          style={{ transition: "all .15s ease" }}
+          onClick={() => setShowModal(false)}
+        >
+          No, remove from list
+        </button>
+      </div>
+      <div className="flex">
+        {/* <input */}
+      </div>
+      <p className="my-4 text-gray-600 text-lg leading-relaxed">
+        {modalContent}
+      </p>
+    </div>
   )
 }
 
