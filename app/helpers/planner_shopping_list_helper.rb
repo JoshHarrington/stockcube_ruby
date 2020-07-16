@@ -484,15 +484,25 @@ module PlannerShoppingListHelper
 		return session[:sl_total_portions_count]
 	end
 
-	def user_recipe_stock_match_check(recipe_id = nil)
-		return nil if user_signed_in? == false || recipe_id == nil
-		return UserRecipeStockMatch.find_by(user_id: current_user.id, recipe_id: recipe_id)
+	def user_recipe_stock_match_check(recipe_id = nil, user)
+		return nil if recipe_id == nil
+		return UserRecipeStockMatch.find_by(user_id: user.id, recipe_id: recipe_id)
 	end
 
-	def retrieve_recipe_stock_match_detail(recipe = nil, key = nil)
-		return 0 if recipe == nil || key == nil || user_signed_in? == false
+	def retrieve_recipe_stock_match_detail(recipe = nil, key = nil, _user = nil)
+		return 0 if recipe == nil || key == nil
+		return 0 unless _user != nil || (defined?(user_signed_in?) && user_signed_in? != false)
+		if defined?(user_signed_in?)
+			if user_signed_in? == false
+				user = _user
+			else
+				user = current_user
+			end
+		else
+			user = _user
+		end
 
-		user_recipe_stock_match = user_recipe_stock_match_check(recipe.id)
+		user_recipe_stock_match = user_recipe_stock_match_check(recipe.id, user)
 		return 0 if user_recipe_stock_match == nil
 
 		match_detail = user_recipe_stock_match[key]

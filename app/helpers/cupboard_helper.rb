@@ -114,13 +114,22 @@ module CupboardHelper
 	end
 
 
-	def processed_cupboard_contents(user = nil)
-		return [] if user == nil
+	def processed_cupboard_contents(_user = nil)
+		return [] unless _user != nil || (defined?(user_signed_in?) && user_signed_in? != false)
+		if defined?(user_signed_in?)
+			if user_signed_in? == false
+				user = _user
+			else
+				user = current_user
+			end
+		else
+			user = _user
+		end
 		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 		cupboard_sharing_hashids = Hashids.new(ENV['CUPBOARD_SHARING_ID_SALT'])
 		delete_stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
 
-		cupboards = user_cupboards(current_user)
+		cupboards = user_cupboards(user)
 		return cupboards.map{|c| {
 			title: c.location,
 			id: cupboard_id_hashids.encode(c.id),
@@ -136,7 +145,7 @@ module CupboardHelper
 			} : [],
 			newStockHref: stocks_new_path(cupboard_id: cupboard_id_hashids.encode(c.id)),
 			customNewStockHref: stocks_custom_new_path(cupboard_id: cupboard_id_hashids.encode(c.id)),
-			users: c.cupboard_users.select{|cu|cu.user != current_user}.length > 0 ? c.cupboard_users.select{|cu|cu.user != current_user}.map{|cu|cu.user.name}.to_sentence : nil,
+			users: c.cupboard_users.select{|cu|cu.user != user}.length > 0 ? c.cupboard_users.select{|cu|cu.user != user}.map{|cu|cu.user.name}.to_sentence : nil,
 			sharingPath: cupboard_share_path(cupboard_sharing_hashids.encode(c.id))
 		}}
 	end

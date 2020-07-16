@@ -109,11 +109,68 @@ describe PlannerController do
 
       combi_planner_portions = newly_processed_shopping_list_portions.select{|p|p[:type] == "combi_portion"}
       expect(combi_planner_portions.length).to eq 1
-      expect(combi_planner_portions.first[:description]).to eq "2 Unit 1s Ingredient 1"
+      expect(combi_planner_portions.first[:description]).to start_with("2")
+      expect(combi_planner_portions.first[:description]).to include(units.first.name)
+      expect(combi_planner_portions.first[:description]).to include(ingredients.first.name)
 
       indi_planner_portions = newly_processed_shopping_list_portions.select{|p|p[:type] == "individual_portion"}
       expect(indi_planner_portions.length).to eq 1
-      expect(indi_planner_portions.first[:description]).to eq "1 Unit 2 Ingredient 2"
+      expect(indi_planner_portions.first[:description]).to start_with("1")
+      expect(indi_planner_portions.first[:description]).to include(units.last.name)
+      expect(indi_planner_portions.first[:description]).to include(ingredients.last.name)
+
+    end
+
+    it "should show the correct cupboard portions" do
+      units = create_list(:unit, 3)
+      ingredients = create_list(:ingredient, 5)
+      recipes = create_list(:recipe, 2)
+      cupboard = user.cupboards.create(location: "Kitchen")
+      portion_1 = create(:portion, ingredient_id: ingredients[0].id, recipe_id: recipes[0].id, unit_id: units[0].id)
+      portion_2 = create(:portion, ingredient_id: ingredients[1].id, recipe_id: recipes[0].id, unit_id: units[1].id)
+      portion_3 = create(:portion, ingredient_id: ingredients[2].id, recipe_id: recipes[0].id, unit_id: units[2].id)
+      portion_4 = create(:portion, ingredient_id: ingredients[3].id, recipe_id: recipes[0].id, unit_id: units[1].id)
+      portion_5 = create(:portion, ingredient_id: ingredients[4].id, recipe_id: recipes[0].id, unit_id: units[0].id)
+      portion_6 = create(:portion, ingredient_id: ingredients[0].id, recipe_id: recipes[1].id, unit_id: units[0].id)
+      portion_7 = create(:portion, ingredient_id: ingredients[1].id, recipe_id: recipes[1].id, unit_id: units[0].id)
+
+      planner_recipe_1 = create(
+        :planner_recipe,
+        recipe_id: recipes.first.id,
+        planner_shopping_list_id: user.planner_shopping_list.id,
+        user_id: user.id,
+        date: Date.current + 1.day
+      )
+      planner_recipe_2 = create(
+        :planner_recipe,
+        recipe_id: recipes.last.id,
+        planner_shopping_list_id: user.planner_shopping_list.id,
+        user_id: user.id,
+        date: Date.current + 2.day
+      )
+
+      update_planner_shopping_list_portions(user)
+
+      planner_portion = PlannerShoppingListPortion.find_by(planner_recipe_id: planner_recipe_1.id, ingredient_id: ingredients[2].id)
+      planner_portion.update_attributes(checked: true)
+      add_stock_after_portion_checked(planner_portion, "individual_portion")
+
+
+      combi_portion = CombiPlannerShoppingListPortion.find_by(ingredient_id: ingredients[1].id)
+      combi_portion.update_attributes(checked: true)
+      combi_portion.planner_shopping_list_portions.update_all(
+				checked: true
+			)
+      add_stock_after_portion_checked(combi_portion, "combi_portion")
+
+      # p processed_cupboard_contents(user)
+      # # p processed_planner_recipes_with_date(user, true)
+
+      fetched_shopping_list_portions = shopping_list_portions(nil, user)
+      newly_processed_shopping_list_portions = processed_shopping_list_portions(fetched_shopping_list_portions)
+
+      expect(fetched_shopping_list_portions.count{|p|p[:checked]}).to eq 2
+      expect(fetched_shopping_list_portions.count).to eq 5
 
     end
   end
