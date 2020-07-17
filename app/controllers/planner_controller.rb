@@ -284,7 +284,8 @@ class PlannerController < ApplicationController
 						portionDescription: serving_description(combi_portion),
 						checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
 						totalPortionCount: fetched_shopping_list_portions.count,
-						shoppingListPortions: processed_shopping_list_portions(fetched_shopping_list_portions)
+						shoppingListPortions: processed_shopping_list_portions(fetched_shopping_list_portions),
+						plannerRecipes: processed_planner_recipes_with_date(current_user, true)
 					}.as_json, status: 200}
 					format.html { redirect_to planner_path }
 				end and return
@@ -305,7 +306,8 @@ class PlannerController < ApplicationController
 						portionDescription: serving_description(planner_portion),
 						checkedPortionCount: fetched_shopping_list_portions.count{|p|p.checked},
 						totalPortionCount: fetched_shopping_list_portions.count,
-						shoppingListPortions: processed_shopping_list_portions(fetched_shopping_list_portions)
+						shoppingListPortions: processed_shopping_list_portions(fetched_shopping_list_portions),
+						plannerRecipes: processed_planner_recipes_with_date(current_user, true)
 					}.as_json, status: 200}
 					format.html { redirect_to planner_path }
 				end and return

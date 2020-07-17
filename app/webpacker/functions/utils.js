@@ -185,7 +185,8 @@ function hidePlannerPortion({
 	csrfToken,
 	updateCheckedPortionCount,
 	updateTotalPortionCount,
-	updateShoppingListPortions
+  updateShoppingListPortions,
+  updatePlannerRecipes
 }) {
 	const data = {
 		method: 'post',
@@ -210,7 +211,8 @@ function hidePlannerPortion({
   }).then((jsonResponse) => {
 		updateCheckedPortionCount(jsonResponse.checkedPortionCount)
 		updateTotalPortionCount(jsonResponse.totalPortionCount)
-		updateShoppingListPortions(jsonResponse.shoppingListPortions)
+    updateShoppingListPortions(jsonResponse.shoppingListPortions)
+    updatePlannerRecipes(jsonResponse.plannerRecipes)
 
 		showAlert(`Portion "${jsonResponse.portionDescription}" removed from shopping list`)
   })
@@ -225,7 +227,8 @@ function addStockToCupboards({
     updateShoppingListPortions,
     updateCupboardContents = null,
     setShowModal,
-    updateSuggestedRecipes = null
+    updateSuggestedRecipes = null,
+    updatePlannerRecipes = null
 }) {
 
 	const togglePortionData = {
@@ -252,7 +255,8 @@ function addStockToCupboards({
 
 		updateCheckedPortionCount(jsonResponse.checkedPortionCount)
 		updateTotalPortionCount(jsonResponse.totalPortionCount)
-		updateShoppingListPortions(jsonResponse.shoppingListPortions)
+    updateShoppingListPortions(jsonResponse.shoppingListPortions)
+    updatePlannerRecipes(jsonResponse.plannerRecipes)
 
 	})
 

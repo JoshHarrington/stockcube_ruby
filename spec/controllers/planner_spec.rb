@@ -163,14 +163,83 @@ describe PlannerController do
 			)
       add_stock_after_portion_checked(combi_portion, "combi_portion")
 
-      # p processed_cupboard_contents(user)
-      # # p processed_planner_recipes_with_date(user, true)
+
+      planner_recipes = processed_planner_recipes_with_date(user, true)
+      planner_recipe_titles = planner_recipes.map{|pr| pr[:plannerRecipe][:title]}
+
+      recipes.each do |r|
+        expect(planner_recipe_titles).to include(r.title)
+        planner_recipe_portions = planner_recipes.select{|pr| pr[:plannerRecipe][:title] == r.title}.first[:plannerRecipe][:portions]
+        expect(planner_recipe_portions.length).to eq r.portions.length
+
+        planner_recipe_stock = planner_recipe_portions.select{|p|p[:percentInCupboards] != 0}
+        if r.title == recipes.first.title
+          expect(planner_recipe_stock.length).to eq 2
+        else
+          expect(planner_recipe_stock.length).to eq 1
+        end
+      end
 
       fetched_shopping_list_portions = shopping_list_portions(nil, user)
       newly_processed_shopping_list_portions = processed_shopping_list_portions(fetched_shopping_list_portions)
 
       expect(fetched_shopping_list_portions.count{|p|p[:checked]}).to eq 2
       expect(fetched_shopping_list_portions.count).to eq 5
+
+    end
+
+    it "should not show hidden portions in shopping list" do
+      units = create_list(:unit, 3)
+      ingredients = create_list(:ingredient, 5)
+      recipes = create_list(:recipe, 2)
+      cupboard = user.cupboards.create(location: "Kitchen")
+      portion_1 = create(:portion, ingredient_id: ingredients[0].id, recipe_id: recipes[0].id, unit_id: units[0].id)
+      portion_2 = create(:portion, ingredient_id: ingredients[1].id, recipe_id: recipes[0].id, unit_id: units[1].id)
+      portion_3 = create(:portion, ingredient_id: ingredients[2].id, recipe_id: recipes[0].id, unit_id: units[2].id)
+      portion_4 = create(:portion, ingredient_id: ingredients[3].id, recipe_id: recipes[0].id, unit_id: units[1].id)
+      portion_5 = create(:portion, ingredient_id: ingredients[4].id, recipe_id: recipes[0].id, unit_id: units[0].id)
+      portion_6 = create(:portion, ingredient_id: ingredients[0].id, recipe_id: recipes[1].id, unit_id: units[0].id)
+      portion_7 = create(:portion, ingredient_id: ingredients[1].id, recipe_id: recipes[1].id, unit_id: units[0].id)
+
+      planner_recipe_1 = create(
+        :planner_recipe,
+        recipe_id: recipes.first.id,
+        planner_shopping_list_id: user.planner_shopping_list.id,
+        user_id: user.id,
+        date: Date.current + 1.day
+      )
+      planner_recipe_2 = create(
+        :planner_recipe,
+        recipe_id: recipes.last.id,
+        planner_shopping_list_id: user.planner_shopping_list.id,
+        user_id: user.id,
+        date: Date.current + 2.day
+      )
+
+      update_planner_shopping_list_portions(user)
+
+      combi_portion_to_hide = CombiPlannerShoppingListPortion.find_by(ingredient_id: ingredients[1].id)
+      combi_portion_to_hide_desc = serving_description(combi_portion_to_hide)
+
+      p CombiPlannerShoppingListPortion.all.map{|cp| [cp, serving_description(cp)]}
+
+      request.headers.merge! headers
+      post :hide_portion, params: {
+        encoded_id: planner_portion_id_hash.encode(combi_portion_to_hide.id),
+        portion_type: "combi_portion"
+      }
+
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:ok)
+
+      response_body = JSON.parse(response.body)
+
+      expect(response_body["portionDescription"]).to eq combi_portion_to_hide_desc
+
+      response_combi_portions = response_body["shoppingListPortions"].select{|p|p["type"] == "combi_portion"}
+
+      expect(response_combi_portions.length).to eq 1
+      expect(response_combi_portions.first["description"]).not_to eq combi_portion_to_hide_desc
 
     end
   end

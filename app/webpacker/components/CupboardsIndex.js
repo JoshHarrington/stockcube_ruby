@@ -223,7 +223,8 @@ const CupboardsIndex = props => {
 												updateTotalPortionCount,
 												updateShoppingListPortions,
 												updateCupboardContents,
-												setShowModal
+												setShowModal,
+												updatePlannerRecipes
 											})
 										}}
 									>Add to cupboards</button>
@@ -238,7 +239,8 @@ const CupboardsIndex = props => {
 												csrfToken,
 												updateCheckedPortionCount,
 												updateTotalPortionCount,
-												updateShoppingListPortions
+												updateShoppingListPortions,
+												updatePlannerRecipes
 											})
 										}}
 									>
