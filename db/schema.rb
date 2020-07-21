@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200128223147) do
+ActiveRecord::Schema.define(version: 20200721143956) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 20200128223147) do
     t.date "date"
     t.boolean "checked", default: false, null: false
     t.bigint "planner_portion_wrapper_id"
+    t.boolean "hidden", default: false
     t.index ["ingredient_id"], name: "index_combi_planner_shopping_list_portions_on_ingredient_id"
     t.index ["planner_portion_wrapper_id"], name: "index_combi_portion_wrapper"
     t.index ["planner_shopping_list_id"], name: "index_combi_planner_shopping_list_portions"
@@ -151,6 +152,7 @@ ActiveRecord::Schema.define(version: 20200128223147) do
     t.boolean "checked", default: false, null: false
     t.bigint "planner_portion_wrapper_id"
     t.date "date"
+    t.boolean "hidden", default: false
     t.index ["combi_planner_shopping_list_portion_id"], name: "index_planner_shopping_list_portion_to_combi"
     t.index ["ingredient_id"], name: "index_planner_shopping_list_portions_on_ingredient_id"
     t.index ["planner_portion_wrapper_id"], name: "index_single_portion_wrapper"
@@ -216,6 +218,7 @@ ActiveRecord::Schema.define(version: 20200128223147) do
     t.boolean "public", default: true, null: false
     t.boolean "show_users_name", default: true, null: false
     t.string "link"
+    t.string "image_url"
   end
 
   create_table "stock_users", force: :cascade do |t|
