@@ -1,7 +1,9 @@
 <%
   require 'uri'
   background_image_url = 'https://source.unsplash.com/1600x1000/weekly?food'
-  if @recipe.title
+  if @recipe.image_url
+    background_image_url = @recipe.image_url
+  elsif @recipe.title
     background_image_url = 'https://source.unsplash.com/1200x800/weekly?' + URI::encode(@recipe.title).to_s.downcase + ',food'
   end
   user_note_when_lacking_content = 'Not yet set <span class="item_form--content_item_note">(Only you can see this)</span>'.html_safe
