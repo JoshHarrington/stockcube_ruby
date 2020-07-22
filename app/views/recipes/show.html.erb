@@ -11,25 +11,25 @@
 
 <% provide(:title, "Recipe: #{@recipe.title}") %>
 
-<div class="content_rich--header" style="background-image: url('<%= background_image_url %>')">
+<div class="content_rich--header h-full bg-cover bg-center" style="background-image: url('<%= background_image_url %>')">
   <% unless @recipe.image_url %>
     <button class="content_rich--header_attribution content_rich--header_info" data-title="This image was sourced from Unsplash.com automatically, so might seem a little strange or out of place!"><p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%></p></button>
     <%= link_to 'Image Link', background_image_url, class: "content_rich--header_attribution ml-auto", target: "_blank" %>
   <% end %>
 </div>
 <div class="content_rich--wrapper">
-  <div class="content_rich">
+  <div class="content_rich rounded">
     <div class="content_rich--title_block">
       <div class="content_rich--title_row">
         <h1 class="recipe-title">
         <% if user_signed_in? %>
           <% current_user.favourites.include?(@recipe) ? fav_status = "unfavourite" : fav_status = "favourite" %>
-          <%= link_to favourite_recipe_path(@recipe, type: fav_status), title: fav_status, class: "heart_stat_#{fav_status}", method: :put do %>
-            <%= icomoon('heart') %>
-            <span class="content_rich--title_text">
-              <%= @recipe.title %>
-            </span>
+          <%= link_to favourite_recipe_path(@recipe, type: fav_status), title: fav_status, class: "#{current_user.favourites.include?(@recipe) ? "text-primary-600 hover:text-white" : "text-white hover:text-primary-600"} w-8 h-8 flex mr-3", method: :put do %>
+            <svg class="stroke-primary-600 w-full h-full"><use class="fill-current" xlink:href="<%= svg_icon_path("heart") %>" /></svg>
           <% end %>
+          <span class="content_rich--title_text">
+            <%= @recipe.title %>
+          </span>
         <% else %>
           <span class="content_rich--title_text">
             <%= @recipe.title %>

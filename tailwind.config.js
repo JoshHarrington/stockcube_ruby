@@ -62,7 +62,10 @@ module.exports = {
       ...transitionProperty,
       'height': 'height, max-height',
       'spacing': 'margin, padding',
-    }
+    },
+    stroke: theme => ({
+      'primary-600': theme('colors.primary.600')
+    })
   },
   variants: {
     sizing: ['responsive'],
