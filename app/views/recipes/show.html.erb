@@ -14,8 +14,8 @@
 <div class="content_rich--header" style="background-image: url('<%= background_image_url %>')">
   <% unless @recipe.image_url %>
     <button class="content_rich--header_attribution content_rich--header_info" data-title="This image was sourced from Unsplash.com automatically, so might seem a little strange or out of place!"><p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%></p></button>
+    <%= link_to 'Image Link', background_image_url, class: "content_rich--header_attribution ml-auto", target: "_blank" %>
   <% end %>
-  <%= link_to 'Image Link', background_image_url, class: "content_rich--header_attribution ml-auto", target: "_blank" %>
 </div>
 <div class="content_rich--wrapper">
   <div class="content_rich">
