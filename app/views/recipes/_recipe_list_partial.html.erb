@@ -1,14 +1,14 @@
 <%
   require 'uri'
   background_image_url = 'https://source.unsplash.com/500x350/weekly?food'
-  if recipe.image_url
-    background_image_url = "https://res.cloudinary.com/hninnp7dh/image/upload/c_fill,f_jpg,h_350,q_auto,w_500/#{recipe.image_url}"
+	if recipe.image_url
+    background_image_url = "https://res.cloudinary.com/heo5njalm/image/upload/t_recipe_thumb_size/#{recipe.image_url}"
   elsif recipe.title
     background_image_url = 'https://source.unsplash.com/500x350/weekly?' + URI::encode(recipe.title).to_s.downcase + ',food'
   end
 %>
 
-<div class="list_block list_block__column" style="background-image: url('<%= background_image_url %>')">
+<div class="list_block list_block__column bg-center" style="background-image: url('<%= background_image_url %>')">
 	<% if defined?(ingredient_stock_match_decimal) && !(ingredient_stock_match_decimal.nan?) %>
 		<% percent_in_cupboards = ((defined?(waste_saving_rating)) && waste_saving_rating.to_f != 0.to_f) ? (waste_saving_rating.to_f * 100).round : (ingredient_stock_match_decimal.to_f * 100).round %>
 		<div class="list_block--content_start">

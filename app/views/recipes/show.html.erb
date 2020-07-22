@@ -2,7 +2,7 @@
   require 'uri'
   background_image_url = 'https://source.unsplash.com/1600x1000/weekly?food'
   if @recipe.image_url
-    background_image_url = "https://res.cloudinary.com/hninnp7dh/image/upload/c_fill,f_jpg,h_1066,q_auto,w_1600/#{@recipe.image_url}"
+    background_image_url = "https://res.cloudinary.com/heo5njalm/image/upload/t_recipe_hero_size/#{@recipe.image_url}"
   elsif @recipe.title
     background_image_url = 'https://source.unsplash.com/1200x800/weekly?' + URI::encode(@recipe.title).to_s.downcase + ',food'
   end
