@@ -2,7 +2,7 @@
   require 'uri'
   background_image_url = 'https://source.unsplash.com/1600x1000/weekly?food'
   if @recipe.image_url
-    background_image_url = @recipe.image_url
+    background_image_url = "https://res.cloudinary.com/hninnp7dh/image/upload/c_fill,f_jpg,h_1066,q_auto,w_1600/#{@recipe.image_url}"
   elsif @recipe.title
     background_image_url = 'https://source.unsplash.com/1200x800/weekly?' + URI::encode(@recipe.title).to_s.downcase + ',food'
   end
@@ -12,8 +12,10 @@
 <% provide(:title, "Recipe: #{@recipe.title}") %>
 
 <div class="content_rich--header" style="background-image: url('<%= background_image_url %>')">
-  <button class="content_rich--header_attribution content_rich--header_info" data-title="This image was sourced from Unsplash.com automatically, so might seem a little strange or out of place!"><p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%></p></button>
-  <%= link_to 'Image Link', background_image_url, class: "content_rich--header_attribution", target: "_blank" %>
+  <% unless @recipe.image_url %>
+    <button class="content_rich--header_attribution content_rich--header_info" data-title="This image was sourced from Unsplash.com automatically, so might seem a little strange or out of place!"><p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%></p></button>
+  <% end %>
+  <%= link_to 'Image Link', background_image_url, class: "content_rich--header_attribution ml-auto", target: "_blank" %>
 </div>
 <div class="content_rich--wrapper">
   <div class="content_rich">
