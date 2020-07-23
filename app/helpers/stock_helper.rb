@@ -346,6 +346,7 @@ module StockHelper
 			ingredient = Ingredient.where('lower(name) = ?', params[:stock][:ingredient_id].downcase).first
 			if ingredient == nil
 				ingredient = Ingredient.create(name: params[:stock][:ingredient_id].humanize, unit_id: unit_id)
+				UserMailer.admin_ingredient_add_notification(User.find(user_id), ingredient).deliver_now
 				Ingredient.reindex
 			end
 

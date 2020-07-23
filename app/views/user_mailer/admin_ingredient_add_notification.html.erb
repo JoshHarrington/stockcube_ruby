@@ -1,0 +1,12 @@
+<h2>Notification for Admins - New ingredient added</h2>
+
+<h3>User details</h3>
+
+<p>ID: <%= @user[:id] %></p>
+<p>Name: <%= @user[:name] %></p>
+<p>Email: <%= @user[:email] %></p>
+
+<h3>Ingredient details</h3>
+<p>Name: <%= @ingredient.name %></p>
+
+<p>Added at <strong><%= Time.current.in_time_zone.to_s(:short) %></strong></p>

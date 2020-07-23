@@ -1,0 +1,12 @@
+Notification for Admins - New ingredient added
+
+User details
+
+ID: <%= @user[:id] %>
+Name: <%= @user[:name] %>
+Email: <%= @user[:email] %>
+
+Ingredient details
+Name: <%= @ingredient.name %>
+
+Added at <%= Time.current.in_time_zone.to_s(:short) %>
