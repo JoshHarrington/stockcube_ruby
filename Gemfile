@@ -70,7 +70,6 @@ gem "rack", ">= 2.0.6"
 gem "loofah", ">= 2.2.3"
 
 gem 'webpacker', '~> 4.2', '>= 4.2.2'
-gem 'react-rails'
 
 gem 'inky-rb', require: 'inky'
 # Stylesheet inlining for email
