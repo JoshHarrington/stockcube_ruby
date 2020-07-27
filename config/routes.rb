@@ -25,6 +25,7 @@ Rails.application.routes.draw do
   get '/recipes/:id/delete' => 'recipes#delete', as: :recipe_delete
   post '/recipes' => 'recipes#create'
   post '/recipes/portion_delete' => 'recipes#portion_delete'
+  put '/recipes/:id' => 'recipes#update'
 
   get '/portions/new' => 'portions#new'
   get '/portions/:id' => 'portions#show', as: :portion
