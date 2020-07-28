@@ -45,14 +45,14 @@
 					<% @recipe.steps.order(:number).each do |step| %>
 						<li>
 							<%= f.text_area "[steps][#{step.id}][content]", :value => step.content, rows: 2,
-									class: "min-w-full border border-solid border-gray-600 rounded px-2 py-3",
+									class: "min-w-full border border-solid border-gray-600 rounded p-2",
 									style: 'min-height: 70px', :placeholder => "The next step to make this meal"%>
 						</li>
 					<% end %>
 				<% else %>
 					<li>
 						<textarea name="new_recipe_steps[]" value="" rows="2"
-											class="min-w-full border border-solid border-gray-600 rounded px-2 py-3"
+											class="min-w-full border border-solid border-gray-600 rounded p-2"
 											style="min-height: 70px"
 											placeholder="The next step to make this meal"></textarea>
 					</li>

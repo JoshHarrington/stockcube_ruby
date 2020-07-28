@@ -255,6 +255,7 @@ const stepListener = (e) => {
 		Textarea.setAttribute('rows', '2')
 		Textarea.style.minHeight = '70px'
 		Textarea.style.minWidth = '100%'
+		Textarea.classList.add('min-w-full','border', 'border-solid', 'border-gray-600', 'rounded', 'p-2')
 		Textarea.setAttribute('placeholder', 'The next step to make this meal')
 
 		newStep.appendChild(Textarea)
