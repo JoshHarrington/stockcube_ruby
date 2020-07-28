@@ -218,19 +218,11 @@ class RecipesController < ApplicationController
 		end
 
 		if params[:recipe].has_key?(:steps)
-			params[:recipe][:steps].to_unsafe_h.map do |step_id, values|
-				if step_id != nil
-					step = RecipeStep.find_by(id: step_id.to_i, recipe_id: @recipe.id)
-				end
-				if values[:content].to_s == ''
-					step.destroy
-				elsif step.content != values[:content].to_s
-					step.update_attributes(
-						content: values[:content],
-						number: @recipe.steps.length > 0 ? (@recipe.steps.where.not(number: nil).order(:number).last.number + 1) : 0
-					)
-				end
-			end
+			@recipe.steps.destroy_all
+			params[:recipe][:steps].to_unsafe_h.map.with_index {|(step_id, contents), i|
+				next if contents["content"].blank?
+				@recipe.steps.create(content: contents["content"], number: i)
+			}
 		end
 
 		if params.has_key?(:new_recipe_steps)
