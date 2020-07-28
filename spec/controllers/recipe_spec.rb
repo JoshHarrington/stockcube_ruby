@@ -18,31 +18,20 @@ describe RecipesController do
     end
 
     let(:adjusted_existing_steps_hash) do
-      # existing_steps_hash = {}
-      # recipe_steps.each_with_index do |step, index|
-      #   if index.odd?
-      #     existing_steps_hash[step.id.to_s] = {"content": "Step number " + index.to_s}
-      #   end
-      # end
-      # return existing_steps_hash
-
       {
-        "#{existing_steps_hash[0].id}": {"content": "Step number 2"},
-        "#{existing_steps_hash[0].id}": {"content": "Step number 1"},
-        "#{existing_steps_hash[0].id}": {"content": "Step number 3"}
+        "#{recipe_steps[0].id}": {"content": "The first step"},
+        "#{recipe_steps[1].id}": {"content": "The second step"},
+        "#{recipe_steps[2].id}": {"content": recipe_steps[2].content}
       }
-
-
     end
 
     let(:recipe_update_params) do
-      current_last_step_number = adjusted_existing_steps_hash.sort_by{|k, v| v[:content].delete("^0-9").to_i }.last.last[:content].delete("^0-9").to_i
       return {
         "id": recipe.id,
         "recipe": {
-          "steps": adjusted_existing_steps_hash,
+          "steps": adjusted_existing_steps_hash
         },
-        "new_recipe_steps": ["New Step #{current_last_step_number + 1}", "New Step #{current_last_step_number + 2}"]
+        "new_recipe_steps": ["New Step 1", "New Step 2"]
       }
     end
 
@@ -53,15 +42,20 @@ describe RecipesController do
 
       updated_recipe_steps_sorted = RecipeStep.where(recipe_id: recipe.id).sort_by(&:number)
 
-      p "updated_recipe_steps_sorted"
-      p updated_recipe_steps_sorted.map{|s|[s.number,s.content]}
-
       expect(updated_recipe_steps_sorted.length).to eq 5
 
       updated_recipe_steps_sorted.each_with_index do |step, index|
-        next if index == 0
-        updated_recipe_steps_sorted[0..(index - 1)].each do |earlier_step|
-          expect(step.content.delete("^0-9").to_i).to be > earlier_step.content.delete("^0-9").to_i
+        case index
+        when 0
+          expect(step.content).to eq "The first step"
+        when 1
+          expect(step.content).to eq "The second step"
+        when 2
+          expect(step.content).to eq recipe_steps[2].content
+        when 3
+          expect(step.content).to eq "New Step 1"
+        when 4
+          expect(step.content).to eq "New Step 2"
         end
       end
     end
