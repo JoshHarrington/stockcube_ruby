@@ -38,6 +38,16 @@
 			<p class="item_form--content_item_full item_form--content_item_note"><%= icomoon('information-outline')%>Quick note: if you want to share recipes with the Stockcubes community they have to be your own (not ones you've taken from a cookbook or somewhere online). </p>
 		</div>
 
+		<div class="content_rich--row content_rich--row-full_width">
+			<h3>Background image:</h3>
+			<% if @recipe.image_url != nil %>
+				<img id="recipe_bg_img" src="https://res.cloudinary.com/heo5njalm/image/upload/t_recipe_thumb_size/<%= @recipe.image_url %>">
+				<span id="upload_widget" class="bg-primary-400 rounded-sm py-4 px-3 inline-block mt-4 hover:bg-primary-200 cursor-pointer text-lg">Update background image</span>
+			<% else %>
+				<span id="upload_widget" class="bg-primary-400 rounded-sm py-4 px-3 inline-block mt-4 hover:bg-primary-200 cursor-pointer text-lg">Add a background image</span>
+			<% end %>
+			<span></span>
+		</div>
 		<div class="content_rich--row content_rich--row-full_width" id="recipe_steps_wrapper">
 			<h3>Steps *:</h3>
 			<ol class="ol">
