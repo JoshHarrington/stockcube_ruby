@@ -149,6 +149,54 @@ class RecipesController < ApplicationController
 		end
 	end
 
+	def add_image
+		if not user_signed_in?
+			respond_to do |format|
+				format.json { render json: {'add recipe image': 'not allowed'}.as_json, status: 400}
+				format.html { redirect_to recipes_path }
+			end and return
+		end
+
+		if not params.has_key?(:image_path)
+			respond_to do |format|
+				format.json { render json: {'no image path seen': 'not allowed'}.as_json, status: 400}
+				format.html { redirect_to recipes_path }
+			end and return
+		end
+
+		if not params.has_key?(:recipe_id)
+			respond_to do |format|
+				format.json { render json: {'no recipe id seen': 'not allowed'}.as_json, status: 400}
+				format.html { redirect_to recipes_path }
+			end and return
+		end
+
+		recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
+		recipe_id = recipe_id_hash.decode(params[:recipe_id]).first
+
+		if Recipe.exists?(recipe_id) && (current_user.recipes.map(&:id).include?(recipe_id) || current_user.admin)
+			recipe = Recipe.find(recipe_id)
+			recipe.update_attributes(image_url: params[:image_path].to_s)
+
+			respond_to do |format|
+				format.json { render json: {
+					status: "recipe image added",
+					imageUrl: recipe.image_url
+				}.as_json, status: 200}
+				format.html {redirect_to recipes_path}
+			end and return
+		else
+			respond_to do |format|
+				format.json { render json: {
+					status: "recipe not available to edit"
+				}.as_json, status: 400}
+				format.html {redirect_to recipes_path}
+			end and return
+		end
+
+
+	end
+
 	def portion_delete
 		if !user_signed_in? || !params.has_key?(:portion_id)
 			respond_to do |format|

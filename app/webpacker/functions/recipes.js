@@ -312,9 +312,56 @@ const deleteLastStep = () => {
 	}
 }
 
+function cloudinaryLoad() {
+	const uploadWidgetEl = document.getElementById("upload_widget")
+	const myWidget = cloudinary.createUploadWidget({
+		cloudName: 'heo5njalm',
+		uploadPreset: 'ml_default'}, (error, result) => {
+			if (!error && result && result.event === "success") {
+				console.log('Done! Here is the image info: ', result.info);
+				fetch('/recipes/add_image', {
+					method: 'POST',
+					credentials: 'include',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRF-Token': csrfToken
+					},
+					body: JSON.stringify({
+						image_path: result.info.path,
+						recipe_id: window.encodedRecipeId
+					})
+				})
+				.then(response => {
+					if(response.status === 200){
+						return response.json();
+					} else {
+						alert('Something went wrong! Maybe refresh the page and try again')
+						throw new Error('Something went wrong');
+					}
+				})
+				.then(data => {
+					let thumbnailImg = document.getElementById("recipe_bg_img")
+					if (thumbnailImg === null) {
+						thumbnailImg = document.createElement('img')
+						uploadWidgetEl.parentNode.insertBefore(thumbnailImg, uploadWidgetEl)
+					}
+
+					thumbnailImg.setAttribute('src', `https://res.cloudinary.com/heo5njalm/image/upload/t_recipe_thumb_size/${data.imageUrl}`)
+					uploadWidgetEl.innerText = "Update background image"
+				})
+			}
+		}
+	)
+
+	uploadWidgetEl.addEventListener("click", function(){
+			myWidget.open()
+		}, false);
+}
+
 const recipeFn = () => {
 	if (!!document.querySelector('#recipe_edit')){
 		// beforeUnload();
+		cloudinaryLoad();
 		confirmDeleteIngredient();
 		setPublicRowFadeStatus();
 		hashFocus();
