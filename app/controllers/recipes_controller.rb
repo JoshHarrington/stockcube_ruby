@@ -57,13 +57,6 @@ class RecipesController < ApplicationController
 
 		@recipe_cuisine = @recipe.cuisine
 
-
-		Rails.logger.debug "edit recipes"
-		Rails.logger.debug "cuisines"
-		Rails.logger.debug @cuisines
-		Rails.logger.debug "recipe cuisine"
-		Rails.logger.debug @recipe_cuisine
-
 		### checking for duplicate ingredients should be done once as a rake task and the database updated
 		# similar_portions_count = 0
 		# @portions.each do |portion|
@@ -75,8 +68,8 @@ class RecipesController < ApplicationController
 		# 	flash.alert = "Looks like there are similar ingredients, #{link_to('edit and combine', edit_recipe_path(@recipe))} these similar ingredients into one and delete the others"
 		# end
 
-		if current_user
-			if (@recipe.live != true || @recipe.public != true) && current_user != @recipe.user
+		if user_signed_in?
+			if (@recipe.live != true || @recipe.public != true) && current_user != @recipe.user && !current_user.admin
 				redirect_to root_path
 			end
 			@cupboard_ids = CupboardUser.where(user_id: current_user.id, accepted: true).map{|cu| cu.cupboard.id unless cu.cupboard.setup == true || cu.cupboard.hidden == true }.compact
@@ -86,8 +79,8 @@ class RecipesController < ApplicationController
 		end
 
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
-
 	end
+
 	def favourites
 		@recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
 		@fav_recipes = current_user.favourites.paginate(:page => params[:page], :per_page => 12)
