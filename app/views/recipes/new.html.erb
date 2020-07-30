@@ -4,3 +4,10 @@
 	<%= render 'recipe_form_partial', f: f %>
 
 <% end %>
+
+<script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
+
+<script>
+	window.encodedRecipeId = '<%= Hashids.new(ENV['RECIPE_ID_SALT']).encode(@recipe.id) %>'
+	window.csrfToken = '<%= form_authenticity_token %>'
+</script>
