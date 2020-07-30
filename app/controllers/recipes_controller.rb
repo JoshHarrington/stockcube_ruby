@@ -378,7 +378,7 @@ class RecipesController < ApplicationController
 
 	private
 		def recipe_params
-			params.require(:recipe).permit(:user_id, :steps, :portions, :search, :live, :public, :cuisine, :search_ingredients, :title, :prep_time, :cook_time, :yield, :note, portions_attributes:[:amount, :unit_id, :ingredient_id, :recipe_id, :_destroy], steps_attributes: [:content])
+			params.require(:recipe).permit(:user_id, :image_url, :steps, :portions, :search, :live, :public, :cuisine, :search_ingredients, :title, :prep_time, :cook_time, :yield, :note, portions_attributes:[:amount, :unit_id, :ingredient_id, :recipe_id, :_destroy], steps_attributes: [:content])
 		end
 
 		# Confirms an correct user.

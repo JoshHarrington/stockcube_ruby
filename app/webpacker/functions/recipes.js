@@ -312,6 +312,39 @@ const deleteLastStep = () => {
 	}
 }
 
+function addImageFn({imagePath, encodedRecipeId, uploadWidgetEl}){
+	fetch('/recipes/add_image', {
+		method: 'POST',
+		credentials: 'include',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRF-Token': csrfToken
+		},
+		body: JSON.stringify({
+			image_path: imagePath,
+			recipe_id: encodedRecipeId
+		})
+	})
+	.then(response => {
+		if(response.status === 200){
+			return response.json();
+		} else {
+			alert('Something went wrong! Maybe refresh the page and try again')
+			throw new Error('Something went wrong');
+		}
+	})
+	.then(data => {
+		let thumbnailImg = document.getElementById("recipe_bg_img")
+		if (thumbnailImg === null) {
+			thumbnailImg = document.createElement('img')
+			uploadWidgetEl.parentNode.insertBefore(thumbnailImg, uploadWidgetEl)
+		}
+
+		thumbnailImg.setAttribute('src', `https://res.cloudinary.com/heo5njalm/image/upload/t_recipe_thumb_size/${data.imageUrl}`)
+		uploadWidgetEl.innerText = "Update background image"
+	})
+}
+
 function cloudinaryLoad() {
 	const uploadWidgetEl = document.getElementById("upload_widget")
 	const myWidget = cloudinary.createUploadWidget({
@@ -319,36 +352,25 @@ function cloudinaryLoad() {
 		uploadPreset: 'ml_default'}, (error, result) => {
 			if (!error && result && result.event === "success") {
 				console.log('Done! Here is the image info: ', result.info);
-				fetch('/recipes/add_image', {
-					method: 'POST',
-					credentials: 'include',
-					headers: {
-						'Content-Type': 'application/json',
-						'X-CSRF-Token': csrfToken
-					},
-					body: JSON.stringify({
-						image_path: result.info.path,
-						recipe_id: window.encodedRecipeId
+				const imagePath = result.info.path
+				if (window.encodedRecipeId !== undefined) {
+					addImageFn({
+						imagePath,
+						encodedRecipeId: window.encodedRecipeId || null,
+						uploadWidgetEl
 					})
-				})
-				.then(response => {
-					if(response.status === 200){
-						return response.json();
-					} else {
-						alert('Something went wrong! Maybe refresh the page and try again')
-						throw new Error('Something went wrong');
-					}
-				})
-				.then(data => {
-					let thumbnailImg = document.getElementById("recipe_bg_img")
-					if (thumbnailImg === null) {
-						thumbnailImg = document.createElement('img')
-						uploadWidgetEl.parentNode.insertBefore(thumbnailImg, uploadWidgetEl)
-					}
+				} else {
+					const hiddenImgUrlField = document.createElement('input')
+					hiddenImgUrlField.setAttribute('type', 'hidden')
+					hiddenImgUrlField.setAttribute('name', 'recipe[image_url]')
+					hiddenImgUrlField.value = imagePath
+					uploadWidgetEl.parentNode.insertBefore(hiddenImgUrlField, uploadWidgetEl)
 
-					thumbnailImg.setAttribute('src', `https://res.cloudinary.com/heo5njalm/image/upload/t_recipe_thumb_size/${data.imageUrl}`)
-					uploadWidgetEl.innerText = "Update background image"
-				})
+					const thumbnailImg = document.createElement('img')
+					thumbnailImg.setAttribute('src', `https://res.cloudinary.com/heo5njalm/image/upload/t_recipe_thumb_size/${imagePath}`)
+					uploadWidgetEl.parentNode.insertBefore(thumbnailImg, uploadWidgetEl)
+				}
+
 			}
 		}
 	)
