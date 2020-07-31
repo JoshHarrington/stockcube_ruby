@@ -25,6 +25,6 @@ task :remove_old_stock_and_portions => :environment do
 end
 
 task :reindex_recipes_and_ingredients => :environment do
-	Ingredient.reindex
 	Recipe.reindex
+	Ingredient.reindex
 end
