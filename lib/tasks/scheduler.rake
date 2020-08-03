@@ -25,6 +25,13 @@ task :remove_old_stock_and_portions => :environment do
 end
 
 task :reindex_recipes_and_ingredients => :environment do
+	if Recipe.searchkick_index.exists?
+		Recipe.searchkick_index.delete
+	end
 	Recipe.reindex
+
+	if Ingredient.searchkick_index.exists?
+		Ingredient.searchkick_index.delete
+	end
 	Ingredient.reindex
 end
