@@ -180,7 +180,9 @@ module PortionStockHelper
 
 
 	def find_matching_stock_for_portion(portion = nil)
+		p "find_matching_stock_for_portion"
 		return if portion == nil
+		p "find_matching_stock_for_portion portion != nil"
 
 		user = portion.user
 		user_cupboards = user_cupboards(user)
@@ -193,6 +195,8 @@ module PortionStockHelper
 
 		### check if portion is metric
 		if portion.unit.unit_type != nil
+
+			p "find_matching_stock_for_portion portion.unit.unit_type != nil"
 
 
 			subsection_of_available_metric_stock = available_stock.select{|s|s.unit.unit_type != nil}
@@ -257,6 +261,9 @@ module PortionStockHelper
 		else
 
 			subsection_of_available_stock_non_metric = available_stock.select{|s|s.unit.unit_type == nil && s.unit_id == portion.unit_id}
+
+			p "subsection_of_available_stock_non_metric"
+			p subsection_of_available_stock_non_metric
 
 			if subsection_of_available_stock_non_metric.length > 1
 				combine_stock_group(subsection_of_available_stock_non_metric, user)

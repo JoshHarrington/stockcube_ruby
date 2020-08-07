@@ -131,6 +131,13 @@ describe PlannerController do
       fetched_shopping_list_portions = shopping_list_portions(nil, user)
       p "fetched_shopping_list_portions"
       p fetched_shopping_list_portions
+
+
+      p "stock"
+      p stock
+      p "stock unit"
+      p stock.unit
+
       expect(fetched_shopping_list_portions.count).to eq 1
       expect(fetched_shopping_list_portions.count{|p|p[:checked]}).to eq 1
 
