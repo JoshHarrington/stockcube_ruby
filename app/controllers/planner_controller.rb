@@ -14,10 +14,6 @@ class PlannerController < ApplicationController
 
 		recipe_id_plus_planner_recipe_ids = @recipes.map(&:id) + current_planner_recipe_ids
 		@fav_recipes = current_user.favourites.reject{|f| recipe_id_plus_planner_recipe_ids.include?(f.id) }.first(8)
-
-		# if current_user
-			# update_planner_shopping_list_portions
-		# end
 	end
 
 	def list
@@ -86,7 +82,7 @@ class PlannerController < ApplicationController
 				ready: true
 			)
 			respond_to do |format|
-				format.json { render json: {message: "Recipe not public / accessible for current user"}.as_json, status: 404}
+				format.json { render json: {message: "Recipe not public / accessible for current user"}.as_json, status: 403}
 				format.html { redirect_to planner_path }
 			end and return
 		end
@@ -130,7 +126,7 @@ class PlannerController < ApplicationController
 		# 	add_planner_recipe_to_shopping_list(planner_recipe)
 		# end
 
-		update_planner_shopping_list_portions
+		update_planner_shopping_list_portions()
 
 
 		date_num = date_string.to_formatted_s(:number)
@@ -186,7 +182,7 @@ class PlannerController < ApplicationController
 			planner_recipe.update_attributes(
 				date: params[:new_date].to_date
 			)
-			update_planner_shopping_list_portions
+			update_planner_shopping_list_portions()
 		end
 
 		current_user.planner_shopping_list.update_attributes(
@@ -231,7 +227,7 @@ class PlannerController < ApplicationController
 		if planner_recipe.present?
 			combine_divided_stock_after_planner_recipe_delete(planner_recipe)
 			planner_recipe.destroy
-			update_planner_shopping_list_portions
+			update_planner_shopping_list_portions()
 		end
 
 		current_user.planner_shopping_list.update_attributes(

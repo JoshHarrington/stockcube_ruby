@@ -150,7 +150,7 @@ module PlannerShoppingListHelper
 
 	end
 
-	def update_planner_shopping_list_portions
+	def update_planner_shopping_list_portions()
 		return if user_signed_in? == false
 		planner_shopping_list = PlannerShoppingList.find_or_create_by(user_id: current_user.id)
 		if current_user.planner_recipes && current_user.planner_recipes.length == 0
