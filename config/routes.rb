@@ -2,8 +2,14 @@ Rails.application.routes.draw do
   devise_for :users, controllers: { registrations: "users/registrations" }
   match '/404', :to => 'errors#not_found', :via => :all, as: :errors_not_found
   match '/500', :to => 'errors#internal_server_error', :via => :all, as: :errors_internal_server_error
+
+  match '/chefs', to: 'chefs#home', via: [:get]
+
+  constraints subdomain: 'chefs' do
+    root to: 'chefs#home'
+  end
+
   root 'static_pages#home'
-  # get '/about' => 'static_pages#about'
 
   get '/logo', to: 'static_pages#logo'
   get '/cookie-policy', to: 'static_pages#cookie_policy'
