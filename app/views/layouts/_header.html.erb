@@ -62,26 +62,34 @@
       </h1>
       <h2 class="block-title">Sections</h2>
       <ul>
-      <% if user_signed_in? %><!--
-      --><%= link_current_page_element(planner_path, 'Planner') %><!--
-      --><%= link_current_page_element(recipes_path, 'Recipes') %><!----><%
-          if current_section == 'recipes' %><!----><ul>
-            <%= link_current_page_element(recipes_path, 'All Recipes') %><!--
-          --><%= link_current_page_element(recipes_new_path, 'Create new recipe') %><!--
-          --><%= link_current_page_element(your_recipes_path, 'Your Recipes') %><!--
-        --></ul><% end %><!--
-      --><%= link_current_page_element(cupboards_path, 'Cupboards', 'stocks') %><!--
+      <% if user_signed_in? %>
+        <%= link_current_page_element(planner_path, 'Planner') %>
+      <% end %>
+      <%= link_current_page_element(recipes_path, 'Recipes') %>
+      <% if current_section == 'recipes' %>
+        <ul>
+          <%= link_current_page_element(recipes_path, 'All Recipes') %>
+          <%= link_current_page_element(new_recipe_path, 'Create new recipe') %>
+          <% if user_signed_in? %>
+            <%= link_current_page_element(your_recipes_path, 'Your Recipes') %>
+          <% end %>
+        </ul>
+      <% end %>
+      <% if user_signed_in? %>
+        <%= link_current_page_element(cupboards_path, 'Cupboards', 'stocks') %><!--
       --><%= link_current_page_element(shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id), 'Shopping List') %><!--
     --><% end %><!--
     --></ul>
       <% if not user_signed_in? %>
-        <%= link_to new_user_session_path, class: "profile_item" do %>
-          <p>Log in</p>
-          <%= render './layouts/account_nav_item_fake_partial', current_section: current_section %>
-        <% end %>
-        <%= link_to new_user_registration_path, class: "profile_item profile_item__sign_up" do %>
-          <p>Sign up</p>
-        <% end %>
+        <span class="flex">
+          <%= link_to new_user_session_path, class: "profile_item" do %>
+            <p>Log in</p>
+            <%= render './layouts/account_nav_item_fake_partial', current_section: current_section %>
+          <% end %>
+          <%= link_to new_user_registration_path, class: "profile_item profile_item__sign_up" do %>
+            <p>Sign up</p>
+          <% end %>
+        </span>
       <% elsif current_user.demo == true %>
         <span class="profile_item demo_mode">
           <p>Demo</p>

@@ -8,7 +8,7 @@ class RecipesController < ApplicationController
 
 	require 'will_paginate/array'
 
-	before_action :authenticate_user!, except: [:show]
+	before_action :authenticate_user!, except: [:index, :show]
 	before_action :correct_user_or_admin, 	 only: [:edit, :publish_update, :delete]
 
 	def index
@@ -18,11 +18,20 @@ class RecipesController < ApplicationController
 		### setup session record with recipe ingredient cupboard match
 		###  - should also update on stock changes
 
-		@fallback_recipes_unformatted = current_user.user_recipe_stock_matches.order(ingredient_stock_match_decimal: :desc).map{|user_recipe_stock_match| user_recipe_stock_match.recipe if user_recipe_stock_match.recipe && user_recipe_stock_match.recipe.portions.length != 0 && ((user_recipe_stock_match.recipe[:public] && user_recipe_stock_match.recipe[:live]) || user_recipe_stock_match.recipe[:user_id] == current_user[:id]) }.compact
-		@fallback_recipes = @fallback_recipes_unformatted.paginate(:page => params[:page], :per_page => 12)
+		if user_signed_in?
+			@fallback_recipes_unformatted = current_user.user_recipe_stock_matches.order(ingredient_stock_match_decimal: :desc).map{|user_recipe_stock_match| user_recipe_stock_match.recipe if user_recipe_stock_match.recipe && user_recipe_stock_match.recipe.portions.length != 0 && ((user_recipe_stock_match.recipe[:public] && user_recipe_stock_match.recipe[:live]) || user_recipe_stock_match.recipe[:user_id] == current_user[:id]) }.compact
+			@fallback_recipes = @fallback_recipes_unformatted.paginate(:page => params[:page], :per_page => 12)
+		else
+			@fallback_recipes_unformatted = Recipe.where(live: true, public: true)
+			@fallback_recipes = @fallback_recipes_unformatted.paginate(:page => params[:page], :per_page => 12)
+		end
 
-		if params.has_key?(:search) && params[:search].to_s != '' && user_signed_in?
-			@recipes = Recipe.where(live: true, public: true).or(Recipe.where(user_id: current_user[:id])).search(params[:search], operator: 'or', fields: ["ingredient_names^12", "title^4", "cuisine^3"]).results.uniq.paginate(:page => params[:page], :per_page => 12)
+		if params.has_key?(:search) && params[:search].to_s != ''
+			if user_signed_in?
+				@recipes = Recipe.where(live: true, public: true).or(Recipe.where(user_id: current_user[:id])).search(params[:search], operator: 'or', fields: ["ingredient_names^12", "title^4", "cuisine^3"]).results.uniq.paginate(:page => params[:page], :per_page => 12)
+			else
+				@recipes = Recipe.where(live: true, public: true).search(params[:search], operator: 'or', fields: ["ingredient_names^12", "title^4", "cuisine^3"]).results.uniq.paginate(:page => params[:page], :per_page => 12)
+			end
 
 			@ingredient_results = Ingredient.search(params[:search],  operator: 'or').results
 
@@ -35,8 +44,15 @@ class RecipesController < ApplicationController
 		else
 			@recipes = @fallback_recipes
 		end
-		@fav_recipes = current_user.favourites
-		@fav_recipes_limit = current_user.favourites.first(6)
+
+
+		if user_signed_in?
+			@fav_recipes = current_user.favourites
+			@fav_recipes_limit = current_user.favourites.first(6)
+		else
+			@fav_recipes = []
+			@fav_recipes_limit = []
+		end
 
 
 		recipe_titles = @fallback_recipes_unformatted.map(&:title)
@@ -191,6 +207,7 @@ class RecipesController < ApplicationController
 	end
 
 	def portion_delete
+		p "portion_delete action"
 		if !user_signed_in? || !params.has_key?(:portion_id)
 			respond_to do |format|
 				format.json { render json: {"status": "not allowed"}.as_json, status: 403}
@@ -356,23 +373,28 @@ class RecipesController < ApplicationController
 
 	# Add and remove favourite recipes
   # for current_user
-  def favourite
+	def favourite
+		if not user_signed_in?
+			redirect_back fallback_location: recipes_path, notice: 'You need to sign up or sign in, before being able to favourite a recipe'
+			return
+		end
+
 		type = params[:type]
 		@recipe = Recipe.where(id: params[:id]).first
 		recipe_title = @recipe.title.to_s
     if type == "favourite"
 			current_user.favourites << @recipe
 			@string = "Added the \"#{link_to(@recipe.title, recipe_path(@recipe))}\" recipe to favourites"
-      redirect_back fallback_location: root_path, notice: @string
+      redirect_back fallback_location: recipes_path, notice: @string
 
     elsif type == "unfavourite"
 			current_user.favourites.delete(@recipe)
 			@string = "Removed the \"#{link_to(@recipe.title, recipe_path(@recipe))}\" recipe from favourites"
-			redirect_back fallback_location: root_path, notice: @string
+			redirect_back fallback_location: recipes_path, notice: @string
 
     else
       # Type missing, nothing happens
-      redirect_back fallback_location: root_path, notice: 'Nothing happened.'
+      redirect_back fallback_location: recipes_path, notice: 'Nothing happened.'
     end
 	end
 

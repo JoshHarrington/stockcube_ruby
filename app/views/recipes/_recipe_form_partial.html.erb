@@ -135,7 +135,7 @@
 			<%= f.submit "Save Recipe", class: "list_block--collection--action" %>
 			<%= f.hidden_field :user_id, value: current_user[:id] %>
 			<% if @recipe[:id] %>
-				<%= link_to "Delete Recipe", recipe_delete_path(@recipe), onclick: "if (window.confirm(\"Definitely want to delete this recipe?\")) {return true;} else {return false;}", class: "list_block--collection--action list_block--collection--cancel_action" %>
+				<%= link_to "Delete Recipe", delete_recipe_path(@recipe), onclick: "if (window.confirm(\"Definitely want to delete this recipe?\")) {return true;} else {return false;}", class: "list_block--collection--action list_block--collection--cancel_action" %>
 			<% end %>
 		</div>
 	</div>
