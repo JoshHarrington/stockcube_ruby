@@ -9,7 +9,7 @@
 %>
 
 <div class="list_block list_block__column bg-center" style="background-image: url('<%= background_image_url %>')">
-	<% if defined?(ingredient_stock_match_decimal) && !(ingredient_stock_match_decimal.nan?) %>
+	<% if defined?(ingredient_stock_match_decimal) && ingredient_stock_match_decimal != nil && !(ingredient_stock_match_decimal.nan?) %>
 		<% percent_in_cupboards = ((defined?(waste_saving_rating)) && waste_saving_rating.to_f != 0.to_f) ? (waste_saving_rating.to_f * 100).round : (ingredient_stock_match_decimal.to_f * 100).round %>
 		<div class="list_block--content_start">
 			<span class="list_block--progress_bar" style="width: <%= percent_in_cupboards %>%"></span>
@@ -40,7 +40,7 @@
 		<div class="list_block--title">
 			<h3><%= link_to recipe.title, recipe_path(recipe) %></h3>
 			<div class="list_block--action_row">
-				<% if current_user %>
+				<% if user_signed_in? %>
 					<% if defined?(recipe_edit_mode) %>
 							<%= link_to edit_recipe_path(recipe), class: 'svg-btn', title: 'Edit this recipe' do %>
 								<%= icomoon('edit') %>
