@@ -289,4 +289,29 @@ describe RecipesController do
       expect(response).to have_http_status(:ok)
     end
   end
+
+  context "with logged IN user with relevant stock" do
+    let!(:user) { create(:user) }
+    before do
+      user.confirm
+      sign_in(user)
+    end
+
+    let!(:recipe) { create(:recipe, user_id: user.id) }
+
+    let!(:unit) { create(:unit) }
+    let!(:ingredient) { create(:ingredient, unit_id: unit.id) }
+    let!(:portion) { create(:portion, ingredient_id: ingredient.id, unit_id: unit.id, recipe_id: recipe.id) }
+
+    let!(:cupboard) { create(:cupboard) }
+    let!(:cupboard_user) { create(:cupboard_user, cupboard_id: cupboard.id, user_id: user.id) }
+    let!(:stock) { create(:stock, ingredient_id: ingredient.id, unit_id: unit.id, cupboard_id: cupboard.id) }
+
+    it "should create UserRecipeStockMatch" do
+      expect(UserRecipeStockMatch.all.length).to eq(0)
+
+      post :update_recipe_matches
+      expect(UserRecipeStockMatch.all.length).to eq(1)
+    end
+  end
 end
