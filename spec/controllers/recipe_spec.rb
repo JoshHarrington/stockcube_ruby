@@ -250,4 +250,43 @@ describe RecipesController do
       expect(Recipe.find(user_recipe.id).image_url).to eq("image_path")
     end
   end
+
+  context "with logged OUT user" do
+
+    it "should respond redirect for favourites" do
+      get :favourites
+
+      expect(response.content_type).to eq("text/html")
+      expect(response).to have_http_status(:redirect)
+    end
+
+    it "should respond redirect for your recipes" do
+      get :yours
+
+      expect(response.content_type).to eq("text/html")
+      expect(response).to have_http_status(:redirect)
+    end
+  end
+
+  context "with logged IN user" do
+    let!(:user) { create(:user) }
+    before do
+      user.confirm
+      sign_in(user)
+    end
+
+    it "should respond ok for favourites" do
+      get :favourites
+
+      expect(response.content_type).to eq("text/html")
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "should respond ok for your recipes" do
+      get :yours
+
+      expect(response.content_type).to eq("text/html")
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end
