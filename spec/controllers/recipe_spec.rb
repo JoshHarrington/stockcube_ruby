@@ -84,7 +84,7 @@ describe RecipesController do
 
     it "should be able to favourite recipe" do
       get :favourite, params: {
-        id: user.id,
+        id: recipe.id,
         type: "favourite"
       }
       expect(response).to have_http_status(:redirect)
@@ -93,7 +93,7 @@ describe RecipesController do
 
     it "should be able to unfavourite recipe" do
       get :favourite, params: {
-        id: user.id,
+        id: recipe.id,
         type: "unfavourite"
       }
       expect(response).to have_http_status(:redirect)
