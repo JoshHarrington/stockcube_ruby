@@ -169,4 +169,85 @@ describe RecipesController do
       expect(response).to have_http_status(:ok)
     end
   end
+
+  context "with logged OUT user with json headers" do
+    let!(:user) { create(:user) }
+    before do
+      user.confirm
+    end
+
+    let!(:user_recipe) { create(:recipe, user_id: user.id) }
+
+    let!(:unit) { create(:unit) }
+    let!(:ingredient) { create(:ingredient, unit_id: unit.id) }
+    let!(:user_portion) { create(:portion, ingredient_id: ingredient.id, unit_id: unit.id, recipe_id: user_recipe.id) }
+    let(:headers) {{
+      "ACCEPT": "application/json"
+    }}
+
+    it "should return unauthorized for add image" do
+      request.headers.merge! headers
+
+      post :add_image, params: {}
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:unauthorized)
+    end
+  end
+
+  context "with logged IN user with json headers" do
+    let!(:user) { create(:user) }
+    before do
+      user.confirm
+      sign_in(user)
+    end
+
+    let!(:user_recipe) { create(:recipe, user_id: user.id) }
+    recipe_id_hash = Hashids.new(ENV['RECIPE_ID_SALT'])
+    let!(:encoded_recipe_id) {
+      recipe_id_hash.encode(user_recipe.id)
+    }
+
+    let!(:unit) { create(:unit) }
+    let!(:ingredient) { create(:ingredient, unit_id: unit.id) }
+    let!(:user_portion) { create(:portion, ingredient_id: ingredient.id, unit_id: unit.id, recipe_id: user_recipe.id) }
+    let(:headers) {{
+      "ACCEPT": "application/json"
+    }}
+
+    it "should return bad request for add image without params" do
+      request.headers.merge! headers
+
+      post :add_image, params: {}
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "should return bad request for add image with only image_path" do
+      request.headers.merge! headers
+
+      post :add_image, params: {image_path: "image_path"}
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "should return bad request for add image with only recipe_id" do
+      request.headers.merge! headers
+
+      post :add_image, params: {recipe_id: encoded_recipe_id}
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "should return ok for add image with all params" do
+      request.headers.merge! headers
+
+      post :add_image, params: {
+        image_path: "image_path",
+        recipe_id: encoded_recipe_id
+      }
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:ok)
+      expect(Recipe.find(user_recipe.id).image_url).to eq("image_path")
+    end
+  end
 end
