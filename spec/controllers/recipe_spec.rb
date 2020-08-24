@@ -103,15 +103,70 @@ describe RecipesController do
   end
 
   context "with logged in user with json headers" do
+    let!(:user) { create(:user) }
+    before do
+      user.confirm
+      sign_in(user)
+    end
+
+    let!(:user_recipe) { create(:recipe, user_id: user.id) }
+    let!(:non_user_recipe) { create(:recipe) }
+
+    let!(:unit) { create(:unit) }
+    let!(:ingredient) { create(:ingredient, unit_id: unit.id) }
+    let!(:user_portion) { create(:portion, ingredient_id: ingredient.id, unit_id: unit.id, recipe_id: user_recipe.id) }
+    let!(:non_user_portion) { create(:portion, ingredient_id: ingredient.id, unit_id: unit.id, recipe_id: non_user_recipe.id) }
     let(:headers) {{
-      "ACCEPT": "application/json",
-      # "X-CSRF-Token": form_authenticity_token  ## need to provide csrf token
+      "ACCEPT": "application/json"
     }}
 
     it "should return not allowed for portion delete without portion id" do
       request.headers.merge! headers
-      post :portion_delete, params: {portion_id: 1}
-      expect(response).to have_http_status(403)
+
+      post :portion_delete, params: {}
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "should return ok for portion delete with available portion id" do
+      request.headers.merge! headers
+
+      post :portion_delete, params: {portion_id: user_portion.id}
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "should return not found for portion delete with available portion id but different user" do
+      request.headers.merge! headers
+
+      post :portion_delete, params: {portion_id: non_user_portion.id}
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  context "with logged in ADMIN user with json headers" do
+    let!(:user) { create(:user, admin: true) }
+    before do
+      user.confirm
+      sign_in(user)
+    end
+
+    let!(:non_user_recipe) { create(:recipe) }
+
+    let!(:unit) { create(:unit) }
+    let!(:ingredient) { create(:ingredient, unit_id: unit.id) }
+    let!(:non_user_portion) { create(:portion, ingredient_id: ingredient.id, unit_id: unit.id, recipe_id: non_user_recipe.id) }
+    let(:headers) {{
+      "ACCEPT": "application/json"
+    }}
+
+    it "should return ok for portion delete with available portion id but different user" do
+      request.headers.merge! headers
+
+      post :portion_delete, params: {portion_id: non_user_portion.id}
+      expect(response.content_type).to eq("application/json")
+      expect(response).to have_http_status(:ok)
     end
   end
 end

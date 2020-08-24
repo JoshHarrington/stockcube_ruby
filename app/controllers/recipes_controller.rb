@@ -207,7 +207,6 @@ class RecipesController < ApplicationController
 	end
 
 	def portion_delete
-		p "portion_delete action"
 		if !user_signed_in? || !params.has_key?(:portion_id)
 			respond_to do |format|
 				format.json { render json: {"status": "not allowed"}.as_json, status: 403}
