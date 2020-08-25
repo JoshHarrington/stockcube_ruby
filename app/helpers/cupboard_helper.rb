@@ -1,5 +1,5 @@
 module CupboardHelper
-	def use_by_date(stock)
+	def use_by_date_string(stock)
 		days_from_now = (stock.use_by_date - Date.current).to_i
 		weeks_from_now = (days_from_now / 7).floor
 		months_from_now = (days_from_now / 30).floor
