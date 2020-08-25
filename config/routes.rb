@@ -114,7 +114,7 @@ Rails.application.routes.draw do
 
   resources :recipes do
     member do
-      get 'add_to_shopping_list'
+      # get 'add_to_shopping_list'
       get 'favourite'
       get 'publish_update', as: 'publish_update'
       get 'delete', as: 'delete'
