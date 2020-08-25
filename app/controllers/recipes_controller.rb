@@ -330,29 +330,34 @@ class RecipesController < ApplicationController
 	end
 
 	def publish_update
+		unless (params.has_key?(:type) && params.has_key?(:id))
+			redirect_to recipes_path, notice: "Something went wrong. That recipe change didn't go through"
+			return
+		end
+
 		type = params[:type]
 		@recipe = Recipe.where(id: params[:id]).first
 		if type == 'make_live'
 			@recipe.update_attributes(live: true)
 			@string = "#{@recipe.title} is now live!"
-			redirect_back fallback_location: root_path, notice: @string
+			redirect_back fallback_location: recipes_path, notice: @string
 		elsif type == 'make_draft'
 			@recipe.update_attributes(live: false)
 			@string = "#{@recipe.title} is now in draft mode"
-			redirect_back fallback_location: root_path, notice: @string
+			redirect_back fallback_location: recipes_path, notice: @string
 			if @recipe.public
 				@recipe.update_attributes(public: false)
 			end
 		elsif type == 'make_public' && @recipe.live
 			@recipe.update_attributes(public: true)
 			@string = "#{@recipe.title} is live and public"
-			redirect_back fallback_location: root_path, notice: @string
+			redirect_back fallback_location: recipes_path, notice: @string
 		elsif type == 'make_private' && @recipe.live
 			@recipe.update_attributes(public: false)
 			@string = "#{@recipe.title} is live and private"
-			redirect_back fallback_location: root_path, notice: @string
+			redirect_back fallback_location: recipes_path, notice: @string
 		else
-			redirect_back fallback_location: root_path
+			redirect_back fallback_location: recipes_path, notice: "Something went wrong. That recipe change didn't go through"
 		end
 	end
 
