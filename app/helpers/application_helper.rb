@@ -123,14 +123,14 @@ module ApplicationHelper
 		fresh_names = names - User.all.map(&:name).uniq
 		return fresh_names.sample
 	end
-	def link_current_page_element(page_path, link_string, optional_section = nil)
+	def link_current_page_element(page_path: nil, link_string: nil, optional_section: nil, classes: nil, title: nil)
 		section = request.path_parameters[:controller]
 		if current_page?(page_path) && !request.parameters.has_key?(:search)
-			return '<li class="current_page"><span class="fake_link">'.html_safe + link_string.html_safe + '</span></li>'.html_safe
+			return "<li class=\"current_page #{classes}\"><span class=\"fake_link\" title=\"#{title != nil ? title : link_string}\">".html_safe + link_string.html_safe + '</span></li>'.html_safe
 		elsif section != "planner" && page_path.to_s.include?(section) || (optional_section != nil ? section.to_s.include?(optional_section) : false)
-			return '<li class="current_section">'.html_safe + link_to(link_string, page_path) + '</li>'.html_safe
+			return "<li class=\"current_page #{classes}\">".html_safe + link_to(link_string, page_path, title: title != nil ? title : link_string) + '</li>'.html_safe
 		else
-			return '<li>'.html_safe + link_to(link_string, page_path) + '</li>'.html_safe
+			return "<li class=\"#{classes}\">".html_safe + link_to(link_string, page_path, title: title != nil ? title : link_string) + '</li>'.html_safe
 		end
 	end
 

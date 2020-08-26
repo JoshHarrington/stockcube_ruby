@@ -62,20 +62,20 @@
       </h1>
       <h2 class="block-title">Sections</h2>
       <ul>
-        <%= link_current_page_element(planner_path, 'Planner') %>
-        <%= link_current_page_element(recipes_path, 'Recipes') %>
+        <%= link_current_page_element(page_path: planner_path, link_string: 'Planner', classes: "#{!user_signed_in? ? "opacity-25" : ""}", title: "Sign in to view Planner") %>
+        <%= link_current_page_element(page_path: recipes_path, link_string: 'Recipes') %>
         <% if current_section == 'recipes' %>
           <ul>
-            <%= link_current_page_element(recipes_path, 'All Recipes') %>
-            <%= link_current_page_element(new_recipe_path, 'Create new recipe') %>
+            <%= link_current_page_element(page_path: recipes_path, link_string: 'All Recipes') %>
+            <%= link_current_page_element(page_path: new_recipe_path, link_string: 'Create new recipe', classes: "#{!user_signed_in? ? "opacity-50" : ""}", title: "Sign in to add a recipe") %>
             <% if user_signed_in? %>
-              <%= link_current_page_element(your_recipes_path, 'Your Recipes') %>
+              <%= link_current_page_element(page_path: your_recipes_path, link_string: 'Your Recipes') %>
             <% end %>
           </ul>
         <% end %>
-        <%= link_current_page_element(cupboards_path, 'Cupboards', 'stocks') %>
+        <%= link_current_page_element(page_path: cupboards_path, link_string: 'Cupboards', optional_section: 'stocks', classes: "#{!user_signed_in? ? "opacity-25" : ""}", title: "Sign in to view Cupboards") %>
         <% if user_signed_in? && (total_portions() - checked_portions()) > 0 %>
-          <%= link_current_page_element(shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id), 'Shopping List') %>
+          <%= link_current_page_element(page_path: shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id), link_string: 'Shopping List') %>
         <% end %>
       </ul>
       <% if not user_signed_in? %>
