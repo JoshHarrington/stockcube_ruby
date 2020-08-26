@@ -8,7 +8,7 @@ function PlannerSharePage(props) {
   const [totalPortionCount, updateTotalPortionCount] = useState(props.totalPortionCount)
   const [shoppingListPortions, updateShoppingListPortions] = useState(props.shoppingListPortions)
   const {sharePath, csrfToken, mailtoHrefContent} = props
-
+  const [shoppingListLoading, updateShoppingListLoading] = useState(false)
 
   const [shoppingListComplete, updateShoppingListComplete] = useState(!!(checkedPortionCount === totalPortionCount))
 	useEffect(() => {
@@ -48,10 +48,12 @@ function PlannerSharePage(props) {
                 checked={portion.checked}
                 portion={portion}
                 csrfToken={csrfToken}
+                shoppingListPortions={shoppingListPortions}
                 updateShoppingListPortions={updateShoppingListPortions}
                 updateShoppingListComplete={updateShoppingListComplete}
                 updateCheckedPortionCount={updateCheckedPortionCount}
                 updateTotalPortionCount={updateTotalPortionCount}
+                updateShoppingListLoading={updateShoppingListLoading}
               />
             ))}
             {checkedPortionCount > 0 &&

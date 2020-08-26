@@ -62,24 +62,22 @@
       </h1>
       <h2 class="block-title">Sections</h2>
       <ul>
-      <% if user_signed_in? %>
         <%= link_current_page_element(planner_path, 'Planner') %>
-      <% end %>
-      <%= link_current_page_element(recipes_path, 'Recipes') %>
-      <% if current_section == 'recipes' %>
-        <ul>
-          <%= link_current_page_element(recipes_path, 'All Recipes') %>
-          <%= link_current_page_element(new_recipe_path, 'Create new recipe') %>
-          <% if user_signed_in? %>
-            <%= link_current_page_element(your_recipes_path, 'Your Recipes') %>
-          <% end %>
-        </ul>
-      <% end %>
-      <% if user_signed_in? %>
-        <%= link_current_page_element(cupboards_path, 'Cupboards', 'stocks') %><!--
-      --><%= link_current_page_element(shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id), 'Shopping List') %><!--
-    --><% end %><!--
-    --></ul>
+        <%= link_current_page_element(recipes_path, 'Recipes') %>
+        <% if current_section == 'recipes' %>
+          <ul>
+            <%= link_current_page_element(recipes_path, 'All Recipes') %>
+            <%= link_current_page_element(new_recipe_path, 'Create new recipe') %>
+            <% if user_signed_in? %>
+              <%= link_current_page_element(your_recipes_path, 'Your Recipes') %>
+            <% end %>
+          </ul>
+        <% end %>
+        <%= link_current_page_element(cupboards_path, 'Cupboards', 'stocks') %>
+        <% if user_signed_in? && (total_portions() - checked_portions()) > 0 %>
+          <%= link_current_page_element(shopping_list_share_path(gen_id: current_user.planner_shopping_list.gen_id), 'Shopping List') %>
+        <% end %>
+      </ul>
       <% if not user_signed_in? %>
         <span class="flex">
           <%= link_to new_user_session_path, class: "profile_item" do %>
