@@ -330,6 +330,7 @@ class RecipesController < ApplicationController
 	end
 
 	def publish_update
+
 		unless (params.has_key?(:type) && params.has_key?(:id))
 			redirect_to recipes_path, notice: "Something went wrong. That recipe change didn't go through"
 			return
@@ -337,25 +338,27 @@ class RecipesController < ApplicationController
 
 		type = params[:type]
 		@recipe = Recipe.where(id: params[:id]).first
-		if type == 'make_live'
+		recipe_publishable = publishable_state_check(recipe: @recipe)
+
+		if type == 'make_live' && recipe_publishable
 			@recipe.update_attributes(live: true)
-			@string = "#{@recipe.title} is now live!"
+			@string = "#{@recipe.title} is now live and #{@recipe.public ? "public" : "in draft mode"}!"
 			redirect_back fallback_location: recipes_path, notice: @string
 		elsif type == 'make_draft'
-			@recipe.update_attributes(live: false)
+			@recipe.update_attributes(live: false, public: false)
 			@string = "#{@recipe.title} is now in draft mode"
 			redirect_back fallback_location: recipes_path, notice: @string
-			if @recipe.public
-				@recipe.update_attributes(public: false)
-			end
-		elsif type == 'make_public' && @recipe.live
-			@recipe.update_attributes(public: true)
-			@string = "#{@recipe.title} is live and public"
-			redirect_back fallback_location: recipes_path, notice: @string
-		elsif type == 'make_private' && @recipe.live
+		elsif type == 'make_public' && recipe_publishable
+				@recipe.update_attributes(public: true, live: true)
+				@string = "#{@recipe.title} is live and public"
+				redirect_back fallback_location: recipes_path, notice: @string
+		elsif type == 'make_private'
 			@recipe.update_attributes(public: false)
-			@string = "#{@recipe.title} is live and private"
+			@string = "#{@recipe.title} is #{@recipe.live ? "live" : "in draft mode"} and private"
 			redirect_back fallback_location: recipes_path, notice: @string
+		elsif !recipe_publishable && (type == 'make_live' || type == 'make_public')
+			@recipe.update_attributes(public: false, live: false)
+			redirect_back fallback_location: recipes_path, notice: "That recipe needs completing before it can be #{type == 'make_live' ? 'made live' : 'made public'}"
 		else
 			redirect_back fallback_location: recipes_path, notice: "Something went wrong. That recipe change didn't go through"
 		end

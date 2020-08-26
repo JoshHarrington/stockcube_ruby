@@ -23,7 +23,7 @@ describe RecipesController do
     end
 
     let!(:recipe) { create(:recipe) }
-    let(:recipe_steps) { create_list(:recipe_step, 3, recipe_id: recipe.id)}
+    let!(:recipe_steps) { create_list(:recipe_step, 3, recipe_id: recipe.id)}
 
     it "should have recipe steps in the correct order" do
       expect(recipe_steps.first.number).to be < recipe_steps.last.number
@@ -314,4 +314,143 @@ describe RecipesController do
       expect(UserRecipeStockMatch.all.length).to eq(1)
     end
   end
+
+
+  context "with logged IN user and recipe that IS NOT publishable" do
+    let!(:user) { create(:user) }
+    before do
+      user.confirm
+      sign_in(user)
+    end
+
+    let!(:recipe) { create(:recipe, live: false, user_id: user.id) }
+    let!(:unit) { create(:unit) }
+    let!(:ingredient) { create(:ingredient, unit_id: unit.id) }
+    let!(:user_portion) { create(:portion, ingredient_id: ingredient.id, unit_id: unit.id, recipe_id: recipe.id) }
+
+    it "should return that this recipe CANNOT be published" do
+      expect(publishable_state_check(recipe: recipe)).to eq false
+    end
+
+    it "should return bad request if no type" do
+      get :publish_update, params: { id: recipe.id }
+
+      expect(response).to have_http_status(:redirect)
+      expect(Recipe.find(recipe.id).live).to eq false
+      expect(flash[:notice]).to eq "Something went wrong. That recipe change didn't go through"
+    end
+
+    it "should redirect if type is set to empty string" do
+      get :publish_update, params: { type: "", id: recipe.id }
+      expect(response).to have_http_status(:redirect)
+      expect(Recipe.find(recipe.id).live).to eq false
+      expect(flash[:notice]).to eq "Something went wrong. That recipe change didn't go through"
+    end
+
+    it "should redirect and set recipe live if type is make_live" do
+      get :publish_update, params: {
+        id: recipe.id.to_s,
+        type: "make_live"
+      }
+
+      expect(response).to have_http_status(:redirect)
+      expect(Recipe.find(recipe.id).live).to eq false
+      expect(flash[:notice]).to eq "That recipe needs completing before it can be made live"
+    end
+
+    it "should redirect and set recipe live to false if type is make_draft" do
+      get :publish_update, params: {
+        id: recipe.id.to_s,
+        type: "make_draft"
+      }
+
+      expect(response).to have_http_status(:redirect)
+      expect(Recipe.find(recipe.id).live).to eq false
+      expect(Recipe.find(recipe.id).public).to eq false
+      expect(flash[:notice]).to eq "#{recipe.title} is now in draft mode"
+    end
+
+    it "should redirect and set recipe public to true if type is make_public" do
+      get :publish_update, params: {
+        id: recipe.id.to_s,
+        type: "make_public"
+      }
+
+      expect(response).to have_http_status(:redirect)
+      expect(Recipe.find(recipe.id).live).to eq false
+      expect(Recipe.find(recipe.id).public).to eq false
+      expect(flash[:notice]).to eq "That recipe needs completing before it can be made public"
+    end
+
+  end
+
+  context "with logged IN user and recipe that IS publishable" do
+    let!(:user) { create(:user) }
+    before do
+      user.confirm
+      sign_in(user)
+    end
+
+    let!(:recipe) { create(:recipe, live: false, user_id: user.id) }
+    let!(:unit) { create(:unit) }
+    let!(:ingredient) { create(:ingredient, unit_id: unit.id) }
+    let!(:user_portion) { create(:portion, ingredient_id: ingredient.id, unit_id: unit.id, recipe_id: recipe.id) }
+    let!(:recipe_steps) { create_list(:recipe_step, 3, recipe_id: recipe.id)}
+
+    it "should return that this recipe CAN be published" do
+      expect(publishable_state_check(recipe: recipe)).to eq true
+    end
+
+    it "should return bad request if no type" do
+      get :publish_update, params: { id: recipe.id }
+
+      expect(response).to have_http_status(:redirect)
+      expect(Recipe.find(recipe.id).live).to eq false
+      expect(flash[:notice]).to eq "Something went wrong. That recipe change didn't go through"
+    end
+
+    it "should redirect if type is set to empty string" do
+      get :publish_update, params: { type: "", id: recipe.id }
+      expect(response).to have_http_status(:redirect)
+      expect(Recipe.find(recipe.id).live).to eq false
+      expect(flash[:notice]).to eq "Something went wrong. That recipe change didn't go through"
+    end
+
+    it "should redirect and set recipe live if type is make_live" do
+      get :publish_update, params: {
+        id: recipe.id.to_s,
+        type: "make_live"
+      }
+
+      expect(response).to have_http_status(:redirect)
+      expect(Recipe.find(recipe.id).live).to eq true
+      expect(flash[:notice]).to eq "#{recipe.title} is now live and public!"
+    end
+
+    it "should redirect and set recipe live to false if type is make_draft" do
+      get :publish_update, params: {
+        id: recipe.id.to_s,
+        type: "make_draft"
+      }
+
+      expect(response).to have_http_status(:redirect)
+      expect(Recipe.find(recipe.id).live).to eq false
+      expect(Recipe.find(recipe.id).public).to eq false
+      expect(flash[:notice]).to eq "#{recipe.title} is now in draft mode"
+    end
+
+    it "should redirect and set recipe public to true if type is make_public" do
+      get :publish_update, params: {
+        id: recipe.id.to_s,
+        type: "make_public"
+      }
+
+      expect(response).to have_http_status(:redirect)
+      expect(Recipe.find(recipe.id).live).to eq true
+      expect(Recipe.find(recipe.id).public).to eq true
+      expect(flash[:notice]).to eq "#{recipe.title} is live and public"
+    end
+
+  end
+
 end

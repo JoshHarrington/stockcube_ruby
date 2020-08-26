@@ -77,4 +77,21 @@ module RecipesHelper
 		return ["American", "British", "Caribbean", "Chinese", "French", "Greek", "Indian", "Italian", "Japanese", "Mediterranean", "Mexican", "Moroccan", "Spanish", "Thai", "Turkish", "Vietnamese"]
 	end
 
+	def publishable_state_check(recipe: nil)
+		return nil if recipe == nil
+
+		if !recipe.title.blank? &&
+				recipe.steps.length > 0 &&
+				!recipe.steps.first.content.blank? &&
+				recipe.cook_time != nil &&
+				recipe.portions.length > 0
+			## Recipe is publishable
+
+			return true
+		else
+			## Recipe is not publishable
+			return false
+		end
+	end
+
 end

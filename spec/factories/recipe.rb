@@ -5,5 +5,7 @@ FactoryBot.define do
   factory :recipe do
     title { generate(:recipe_name) }
     live { true }
+    public { true }
+    cook_time { 30 }
   end
 end
