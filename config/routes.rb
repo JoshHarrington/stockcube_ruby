@@ -93,19 +93,6 @@ Rails.application.routes.draw do
   resources :account_activations, only: [:edit]
   resources :password_resets,     only: [:new, :create, :edit, :update]
 
-  # get '/recipes/new' => 'recipes#new'
-  # get '/recipes/favourites' => 'recipes#favourites', as: :favourite_recipes
-  # get '/recipes/yours' => 'recipes#yours', as: :your_recipes
-  # post '/recipes/update_matches' => 'recipes#update_recipe_matches'
-    # get '/recipes/:id/add_to_shopping_list' => 'recipes#add_to_shopping_list'
-    # get '/recipes/:id/favourite' => 'recipes#favourite'
-    # get '/recipes/:id/publish_update' => 'recipes#publish_update', as: :publish_update_recipe
-    # get '/recipes/:id/delete' => 'recipes#delete', as: :recipe_delete
-  # post '/recipes' => 'recipes#create'
-  # post '/recipes/portion_delete' => 'recipes#portion_delete'
-  # put '/recipes/:id' => 'recipes#update'
-  # post '/recipes/add_image' => 'recipes#add_image'
-
   post '/recipes/portion_delete', to: 'recipes#portion_delete'
   post '/recipes/add_image', to: 'recipes#add_image'
   get '/recipes/favourites', to: 'recipes#favourites', as: :favourite_recipes
