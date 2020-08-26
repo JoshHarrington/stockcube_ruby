@@ -266,6 +266,27 @@ describe RecipesController do
       expect(response.content_type).to eq("text/html")
       expect(response).to have_http_status(:redirect)
     end
+
+
+    let!(:recipe) { create(:recipe) }
+
+    it "should not be able to edit recipe" do
+      get :edit, params: {id: recipe.id}
+
+      expect(response).to have_http_status(:redirect)
+    end
+
+    it "should not be able to edit recipe" do
+      get :update, params: {id: recipe.id}
+
+      expect(response).to have_http_status(:redirect)
+    end
+
+    it "should be able to view a recipe" do
+      get :show, params: {id: recipe.id}
+
+      expect(response).to have_http_status(:ok)
+    end
   end
 
   context "with logged IN user" do
