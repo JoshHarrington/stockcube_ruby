@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   get '/portions/new' => 'portions#new'
   get '/portions/:id' => 'portions#show', as: :portion
   post '/portions' => 'portions#create'
+  post '/portions/new_recipe_portion', to: 'portions#create_from_post'
 
   get '/stock/new' => 'stocks#new_no_id', as: :stocks_new_no_id
   get '/stock/new/:cupboard_id/custom' => 'stocks#custom_new', as: :stocks_custom_new
