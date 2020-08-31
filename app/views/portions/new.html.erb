@@ -1,9 +1,16 @@
+
+<%= react_component("NewPortion", {
+	recipeId: params.has_key?(:recipe_id) ? params[:recipe_id] : nil,
+	recipeName: params.has_key?(:recipe_id) ? Recipe.find(params[:recipe_id]).title : nil,
+	ingredients: @ingredients,
+	units: @units,
+	csrfToken: form_authenticity_token
+}) %>
+
+
+
+
 <% params[:recipe_id] ? recipe_title = Recipe.find(params[:recipe_id]).title : redirect = true %>
-<% if redirect %>
- <script type="text/javascript">
-    window.location.href="/recipes"
-  </script>
-<% end %>
 <% params[:recipe_id] ? provide(:title, "Add ingredient to \"#{recipe_title}\"") : '' %>
 
 <div class="item_form--wrapper">

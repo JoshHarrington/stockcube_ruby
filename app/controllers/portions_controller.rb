@@ -7,9 +7,22 @@ class PortionsController < ApplicationController
 		@units =	@portion.units
 	end
 	def new
+		if not params.has_key?(:recipe_id)
+			redirect_back fallback_location: recipes_path, notice: "Looks like something went wrong adding that ingredient"
+			return
+		end
 		@portion = Portion.new
 		@ingredients = Ingredient.all.order('name ASC')
+		@units = unit_list()
 	end
+
+	def create_from_post
+		if !user_signed_in?
+
+		end
+	end
+
+
 	def create
 		@portion = Portion.new(portion_params)
 		@ingredients = Ingredient.all.order('name ASC')
