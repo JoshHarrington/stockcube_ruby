@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Select from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import classNames from 'classnames'
+import { showAlert } from '../functions/utils'
 
 
 function validateNumberField({value, updateValidStateFn, updateValidationMessage}) {
@@ -41,7 +42,7 @@ function sendNewPortionRequest({recipeId, selectedIngredient, amount, selectedUn
   //   }
   // }).then((jsonResponse) => {
 	// 	window.location.href = `/recipes/${recipeId}/edit`
-	// 	showAlert(`Cupboard name updated to: "${jsonResponse.cupboardLocation}"`)
+	// 	showAlert(`Ingredient added to "${jsonResponse.recipeTitle}"`)
   // });
 }
 
@@ -88,22 +89,22 @@ const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 	})
 
 	return (
-		<div className="standard-wrapper">
-			<h1 className="bg-primary-300 px-5 py-6 text-2xl">Adding an ingredient to "{recipeName}"</h1>
-			<div className="bg-primary-50 p-5">
+		<div className="standard-wrapper mt-20 mb-40">
+			<h1 className="bg-primary-300 px-6 py-6 text-2xl">Adding an ingredient to "{recipeName}"</h1>
+			<div className="bg-primary-50 pt-6 px-6 pb-8">
 
-				<h2 className="mb-2 text-xl">Pick your Ingredient</h2>
+				<h2 className="mb-1 text-xl">Pick your recipe ingredient</h2>
+				<p className="mb-3 text-gray-700 text-base">... or create a new ingredient</p>
 				<CreatableSelect
 					className="text-base"
 					value={selectedIngredient}
+					placeholder="Select ingredient"
 					isClearable
 					onChange={updateSelectedIngredient}
 					options={ingredientsFormatted}
 					onBlur={() => {
 						if (selectedIngredient === null) {
 							updateIngredientValidState(false)
-						} else {
-							updateIngredientValidState(true)
 						}
 					}}
 				/>
@@ -113,7 +114,7 @@ const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 					<div className="flex flex-wrap w-full md:w-1/2 md:mr-3 mb-3">
 						<input
 							type="number"
-							className="w-full md:mb-0 text-base p-4 rounded border border-solid border-gray-400" placeholder="4" min={0}
+							className="w-full md:mb-0 text-base p-4 rounded-md border border-solid border-gray-400 h-16" placeholder="4" min={0}
 							onChange={(e) => {
 								setAmount(e.target.value)
 								validateNumberField({value: e.target.value, updateValidStateFn: updateAmountValidState, updateValidationMessage: updateAmountValidationMessage})
@@ -126,6 +127,7 @@ const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 					<div className="w-full md:w-1/2">
 						<Select
 							className="w-full text-base"
+							placeholder="Select unit"
 							onChange={updateSelectedUnit}
 							value={selectedUnit}
 							options={unitsFormatted}
@@ -148,7 +150,7 @@ const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 							sendNewPortionRequest({recipeId, selectedIngredient, amount, selectedUnit, csrfToken})
 						}
 					}}
-					className={classNames("bg-white border border-solid border-primary-500 text-base p-4 rounded", {"cursor-not-allowed": formValidState === false})}
+					className={classNames("bg-white border border-solid border-primary-500 text-lg pt-4 pb-5 px-6 rounded", {"cursor-not-allowed opacity-50": formValidState === false})}
 				>Save</button>
 			</div>
 		</div>
