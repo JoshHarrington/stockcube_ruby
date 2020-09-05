@@ -1,6 +1,7 @@
 class PortionsController < ApplicationController
 	before_action :authenticate_user!
 	include UnitsHelper
+	include RecipesHelper
 
 	def show
 		@portion = Portion.find(params[:id])
@@ -18,8 +19,54 @@ class PortionsController < ApplicationController
 
 	def create_from_post
 		if !user_signed_in?
-
+			respond_to do |format|
+				format.json { render json: {'adding new recipe portion': 'not authorised'}.as_json, status: 401}
+				format.html { redirect_back fallback_location: recipes_path, notice: 'You are not currently authorised to complete that action' }
+			end and return
 		end
+
+		if !params.has_key?(:recipeId) || !params.has_key?(:ingredient) || !params.has_key?(:amount) || !params.has_key?(:unitId)
+			respond_to do |format|
+				format.json { render json: {'adding new recipe portion': 'bad request'}.as_json, status: 400}
+				format.html { redirect_back fallback_location: recipes_path, notice: 'There was an issue when trying to complete that action' }
+			end and return
+		end
+
+		ingredient = nil
+		if params[:ingredient].is_number?
+			if Ingredient.exists?(params[:ingredient])
+				ingredient = Ingredient.find(params[:ingredient])
+			else
+				respond_to do |format|
+					format.json { render json: {'adding new recipe portion': 'bad request'}.as_json, status: 400}
+					format.html { redirect_back fallback_location: recipes_path, notice: 'There was an issue when trying to complete that action' }
+				end and return
+			end
+		else
+			ingredient = Ingredient.create(name: params[:ingredient])
+		end
+
+		if recipe_exists_and_can_be_edited(recipe_id: params[:recipeId], current_user: current_user)
+			new_portion = Portion.new(recipe_id: params[:recipeId], ingredient_id: ingredient.id, unit_id: params[:unitId], amount: params[:amount])
+			if new_portion.save
+				respond_to do |format|
+					format.json { render json: {'adding new recipe portion': 'successful'}.as_json, status: 200}
+					format.html { redirect_to recipe_path(params[:recipeId]), notice: 'Portion added to your recipe' }
+				end and return
+			else
+				respond_to do |format|
+					format.json { render json: {'adding new recipe portion': 'bad request'}.as_json, status: 400}
+					format.html { redirect_back fallback_location: recipes_path, notice: 'There was an issue when trying to complete that action' }
+				end and return
+			end
+
+		else
+			respond_to do |format|
+				format.json { render json: {'adding new recipe portion': 'not authorised'}.as_json, status: 401}
+				format.html { redirect_back fallback_location: recipes_path, notice: 'You are not currently authorised to complete that action' }
+			end and return
+		end
+
 	end
 
 

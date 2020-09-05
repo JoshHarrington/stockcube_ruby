@@ -22,7 +22,7 @@ function sendNewPortionRequest({recipeId, selectedIngredient, amount, selectedUn
 			recipeId,
 			ingredient: selectedIngredient.value,
 			amount,
-			unit: selectedUnit.value
+			unitId: selectedUnit.value
     }),
 		headers: {
 			'Content-Type': 'application/json',
@@ -31,19 +31,16 @@ function sendNewPortionRequest({recipeId, selectedIngredient, amount, selectedUn
 		credentials: 'same-origin'
 	}
 
-	console.log(recipeId, selectedIngredient.value, amount, selectedUnit.value)
-
-  // fetch("/portion/new_recipe_portion", data).then((response) => {
-	// 	if(response.status === 200){
-  //     return response.json();
-	// 	} else if(response.status !== 202) {
-	// 		window.alert('Something went wrong! Maybe refresh the page and try again')
-	// 		throw new Error('non-200 response status')
-  //   }
-  // }).then((jsonResponse) => {
-	// 	window.location.href = `/recipes/${recipeId}/edit`
-	// 	showAlert(`Ingredient added to "${jsonResponse.recipeTitle}"`)
-  // });
+  fetch("/portions/new_recipe_portion", data).then((response) => {
+		if(response.status === 200){
+      return response.json();
+		} else {
+			window.alert('Something went wrong! Maybe refresh the page and try again')
+			throw new Error('non-200 response status')
+    }
+  }).then(() => {
+		window.location.href = `/recipes/${recipeId}/edit`
+  });
 }
 
 const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
@@ -81,7 +78,7 @@ const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 
 	const unitsFormatted = units.map(u => {
 		const titleizedName = [...u.name].map((w, i) => i === 0 ? w[0].toUpperCase() : w).join('')
-		return {value: u.name, label: titleizedName}
+		return {value: u.id, label: titleizedName}
 	})
 
 	const ingredientsFormatted = ingredients.map(i => {
