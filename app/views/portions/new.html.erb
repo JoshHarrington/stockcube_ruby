@@ -1,4 +1,3 @@
-
 <%= react_component("NewPortion", {
 	recipeId: params.has_key?(:recipe_id) ? params[:recipe_id] : nil,
 	recipeName: params.has_key?(:recipe_id) ? Recipe.find(params[:recipe_id]).title : nil,
@@ -6,40 +5,3 @@
 	units: @units,
 	csrfToken: form_authenticity_token
 }) %>
-
-
-
-
-<% params[:recipe_id] ? recipe_title = Recipe.find(params[:recipe_id]).title : redirect = true %>
-<% params[:recipe_id] ? provide(:title, "Add ingredient to \"#{recipe_title}\"") : '' %>
-
-<div class="item_form--wrapper">
-	<%= form_for @portion, :html => {id: "portion_form", class: 'item_form'}, :validate => true do |p| %>
-		<div class="item_form--title">
-			<% if params[:recipe_id] %>
-				<h1 class="recipe-title">Adding an ingredient to "<%= recipe_title.to_s %>"</h1>
-			<% end %>
-		</div>
-		<div class="item_form--contents">
-			<div class="item_form--content_row">
-				<%= p.label :ingredient_id, "Ingredient" %>
-				<%= p.hidden_field(:recipe_id, value: params[:recipe_id]) %>
-				<%= p.select(:ingredient_id, options_from_collection_for_select(@ingredients, "id", "name"), {prompt: "Pick your ingredient"}, {class: "choices--basis wide_select", required: true, validate: true }) %>
-			</div>
-			<div class="item_form--content_row">
-				<%= p.label :amount, 'Ingredient amount' %>
-				<%= p.number_field(:amount, value: '', placeholder: '250', validate: true, class: "item_form--content_row--half_width_input", min: "0") %>
-				<%= p.select(:unit_id, options_for_select(unit_list().collect{|u| [u[:name], u[:id]] }), {}, {class: "choices--basis half_select", aria: {label: "Pick the units for the ingredient"}}) %>
-			</div>
-			<div class="item_form--content_row">
-				<p>
-					<%= p.button "Save" %>
-					<% if params[:recipe_id] %>
-						<span style="margin-left: 10px">and return to editing "<%= recipe_title.to_s %>"</span>
-					<% end %>
-				</p>
-			</div>
-		</div>
-	<% end %>
-</div>
-
