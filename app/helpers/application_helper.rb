@@ -152,4 +152,8 @@ module ApplicationHelper
 		## 		then those portions will be destroyed and
 		##		any associated stock with be disassociated from that planner recipe
 	end
+
+	def is_number?
+    to_f.to_s == to_s || to_i.to_s == to_s
+  end
 end
