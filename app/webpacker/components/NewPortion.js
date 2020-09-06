@@ -118,6 +118,9 @@ const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 		return {value: i.id, label: i.name}
 	})
 
+	const [ingredientsSelectFocused, updateIngredientsSelectFocused] = useState(false)
+	const [unitsSelectFocused, updateUnitsSelectFocused] = useState(false)
+
 	return (
 		<div className="standard-wrapper mt-20 mb-40">
 			<h1 className="bg-primary-300 px-6 py-6 text-2xl">Adding an ingredient to "{recipeName}"</h1>
@@ -126,17 +129,17 @@ const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 				<h2 className="mb-1 text-xl">Pick your recipe ingredient</h2>
 				<p className="mb-3 text-gray-700 text-base">... or create a new ingredient</p>
 				<CreatableSelect
-					className="text-base"
+					className={classNames("w-full text-base", {"z-20": ingredientsSelectFocused})}
 					value={selectedIngredient}
 					placeholder="Select ingredient"
 					isClearable
 					onChange={updateSelectedIngredient}
 					options={ingredientsFormatted}
 					onBlur={() => {
-						if (selectedIngredient === null) {
-							updateIngredientValidState(false)
-						}
+						validateSelectField({value: selectedIngredient, updateValidStateFn: updateIngredientValidState})
+						updateIngredientsSelectFocused(false)
 					}}
+					onFocus={() => {updateIngredientsSelectFocused(true)}}
 				/>
 				{ingredientValidState === false && <p className="text-red-600 mt-2 text-base">Make sure you've selected an ingredient</p>}
 				<h2 className="mb-2 mt-4 text-xl">Set the amount</h2>
@@ -148,18 +151,26 @@ const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 							onChange={(e) => {
 								setAmount(e.target.value)
 							}}
+							onBlur={() => {
+								validateNumberField({value: amount, updateValidStateFn: updateAmountValidState, updateValidationMessage: updateAmountValidationMessage})
+							}}
 							value={amount}
-							/>
+						/>
 						{amountValidState === false && <p className="text-red-600 mt-2 text-base w-full mb-4">{amountValidationMessage}</p>}
 					</div>
 
 					<div className="w-full md:w-1/2">
 						<Select
-							className="w-full text-base"
+							className={classNames("w-full text-base", {"z-20": unitsSelectFocused})}
 							placeholder="Select unit"
 							onChange={updateSelectedUnit}
 							value={selectedUnit}
 							options={unitsFormatted}
+							onBlur={() => {
+								validateSelectField({value: selectedUnit, updateValidStateFn: updateUnitValidState})
+								updateUnitsSelectFocused(false)
+							}}
+							onFocus={() => {updateUnitsSelectFocused(true)}}
 						/>
 						{unitValidState === false && <p className="text-red-600 mt-2 text-base w-full mb-4">Make sure you've selected a unit</p>}
 					</div>
