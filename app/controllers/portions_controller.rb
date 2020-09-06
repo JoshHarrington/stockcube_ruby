@@ -46,7 +46,7 @@ class PortionsController < ApplicationController
 			ingredient = Ingredient.create(name: params[:ingredient])
 		end
 
-		if recipe_exists_and_can_be_edited(recipe_id: params[:recipeId], current_user: current_user)
+		if recipe_exists_and_can_be_edited(recipe_id: params[:recipeId], user: current_user)
 			new_portion = Portion.new(recipe_id: params[:recipeId], ingredient_id: ingredient.id, unit_id: params[:unitId], amount: params[:amount])
 			if new_portion.save
 				respond_to do |format|

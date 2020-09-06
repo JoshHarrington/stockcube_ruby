@@ -94,9 +94,9 @@ module RecipesHelper
 		end
 	end
 
-	def recipe_exists_and_can_be_edited(recipe_id: nil, current_user: nil)
-		return nil if recipe_id == nil || current_user == nil
-		if Recipe.exists?(recipe_id) && (current_user.admin || current_user.recipes.map(&:id).include?(recipe_id))
+	def recipe_exists_and_can_be_edited(recipe_id: nil, user: nil)
+		return nil if recipe_id == nil || user == nil
+		if Recipe.exists?(recipe_id.to_f) && (user.admin || user.recipes.map(&:id).include?(recipe_id.to_f))
 			return true
 		else
 			return false
