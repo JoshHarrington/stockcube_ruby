@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Select from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import classNames from 'classnames'
+import Icon from './Icon'
 
 
 function validateNumberField({value, updateValidStateFn, updateValidationMessage}) {
@@ -122,7 +123,8 @@ const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 	const [unitsSelectFocused, updateUnitsSelectFocused] = useState(false)
 
 	return (
-		<div className="standard-wrapper mt-20 mb-40">
+		<div className="standard-wrapper mt-16 mb-40">
+			<a href={`/recipes/${recipeId}/edit`} className="flex mb-4 items-center hover:underline text-gray-600 hover:text-gray-800 transition duration-300"><Icon name="arrow_back" className="w-8 h-8 mr-2" />Back to recipe</a>
 			<h1 className="bg-primary-300 px-6 py-6 text-2xl">Adding an ingredient to "{recipeName}"</h1>
 			<div className="bg-primary-50 pt-6 px-6 pb-8">
 
