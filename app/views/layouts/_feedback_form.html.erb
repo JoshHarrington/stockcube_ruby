@@ -1,21 +1,21 @@
-<style>
-	.static_pages_controller [data-name="feedback-form-wrapper"],
-	.static_pages_controller [data-name="feedback-form-label"] {
-		display: none;
-	}
-
-	#feedback_form_button:checked ~ [data-name="feedback-form-wrapper"] {
-		max-height: 30rem;
-	}
-
-	#feedback_form_button:checked + [data-name="feedback-form-label"] {
-		background-color: var(--teal-10);
-	}
-
-</style>
-
 <% if user_signed_in? %>
-	<div class="flex flex-col z-10">
+	<style>
+		.static_pages_controller [data-name="feedback-form-wrapper"],
+		.static_pages_controller [data-name="feedback-form-label"] {
+			display: none;
+		}
+
+		#feedback_form_button:checked ~ [data-name="feedback-form-wrapper"] {
+			max-height: 30rem;
+		}
+
+		#feedback_form_button:checked + [data-name="feedback-form-label"] {
+			background-color: var(--teal-10);
+		}
+
+	</style>
+
+	<div class="flex flex-col z-10 mt-auto">
 		<input type="checkbox" class="hidden_checkbox" id="feedback_form_button" value="" />
 		<label for="feedback_form_button"
 				data-name="feedback-form-label"

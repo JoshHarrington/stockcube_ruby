@@ -1,73 +1,26 @@
-<style>
-	footer {
-		background-color: var(--teal-40);
-	}
-	footer ul li + li {
-		margin-top: 1rem;
-	}
-	footer a {
-		text-decoration: none;
-		color: black;
-	}
-	footer ul a:hover {
-		text-decoration: underline;
-	}
-	.footer-wrapper {
-		max-width: 90rem;
-    padding-left: 2rem;
-    padding-right: 2rem;
-		margin: 4rem auto 6rem;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-between;
-	}
-	.footer--logo-row {
-		width: 100%;
-	}
-	.footer--logo-row a {
-		display: flex;
-    width: 10rem;
-    height: 6rem;
-		margin-bottom: 1.5rem;
-	}
-	@media (min-width: 60rem) {
-		.footer--logo-row a {
-			margin-left: -3rem;
-		}
-	}
-	@media (max-width: 25rem) {
-		footer ul {
-			width: 100%;
-		}
-		footer ul + ul {
-			margin-top: 2.3rem;
-		}
-	}
-	.footer--logo-row a svg {
-		width: 100%;
-	}
-</style>
-
-<footer>
-	<div class="footer-wrapper">
-		<div class="footer--logo-row">
-			<%= link_to root_path do %>
-				<%= icomoon('logo', '0 0 38 20') %>
-			<% end %>
+<footer class="mt-auto">
+	<%= render 'layouts/feedback_form' %>
+	<div class="bg-primary-400">
+		<div class="standard-wrapper flex flex-wrap justify-between pt-16 pb-24">
+			<div class="footer--logo-row w-full">
+				<%= link_to root_path, class: "lg:-ml-12 flex w-40 h-24 mb-6" do %>
+					<svg class="w-full" viewBox="0 0 38 20"><use class="fill-current" xlink:href="<%= svg_icon_path("logo") %>" /></svg>
+				<% end %>
+			</div>
+			<ul class="w-full sm:w-auto">
+				<li><%= link_to 'Home', root_path, class: "no-underline text-black hover:underline" %></li>
+				<li class="mt-4"><%= link_to 'Roadmap', 'https://trello.com/b/5mJZ882b/stockcubes-roadmap-work-in-progress', target: "_blank", class: "no-underline text-black hover:underline" %></li>
+				<li class="mt-4"><%= link_to 'Support us', 'https://www.patreon.com/stockcubes', target: '_blank', class: "no-underline text-black hover:underline" %></li>
+			</ul>
+			<ul class="w-full mt-10 sm:w-auto sm:mt-0">
+				<li><%= link_to 'Twitter', 'https://twitter.com/stock_cubes', target: '_blank', class: "no-underline text-black hover:underline" %></li>
+				<li class="mt-4"><%= link_to 'Email', 'mailto:team@getstockcubes.com', class: "no-underline text-black hover:underline" %></li>
+			</ul>
+			<ul class="w-full mt-10 sm:w-auto sm:mt-0">
+				<li><%= link_to 'Privacy Policy', privacy_policy_path, class: "no-underline text-black hover:underline" %></li>
+				<li class="mt-4"><%= link_to 'Cookies Policy', cookie_policy_path, class: "no-underline text-black hover:underline" %></li>
+				<li class="mt-4"><%= link_to 'Terms of Use', terms_of_use_path, class: "no-underline text-black hover:underline" %></li>
+			</ul>
 		</div>
-		<ul>
-			<li><%= link_to 'Home', root_path %></li>
-			<li><%= link_to 'Roadmap', 'https://trello.com/b/5mJZ882b/stockcubes-roadmap-work-in-progress', target: "_blank" %></li>
-			<li><%= link_to 'Support us', 'https://www.patreon.com/stockcubes', target: '_blank' %></li>
-		</ul>
-		<ul>
-			<li><%= link_to 'Twitter', 'https://twitter.com/stock_cubes', target: '_blank' %></li>
-			<li><%= link_to 'Email', 'mailto:team@getstockcubes.com' %></li>
-		</ul>
-		<ul>
-			<li><%= link_to 'Privacy Policy', privacy_policy_path %></li>
-			<li><%= link_to 'Cookies Policy', cookie_policy_path %></li>
-			<li><%= link_to 'Terms of Use', terms_of_use_path %></li>
-		</ul>
 	</div>
 </footer>
