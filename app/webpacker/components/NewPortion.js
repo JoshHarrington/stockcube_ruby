@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import Select from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import classNames from 'classnames'
-import { showAlert } from '../functions/utils'
 
 
 function validateNumberField({value, updateValidStateFn, updateValidationMessage}) {
@@ -14,6 +13,15 @@ function validateNumberField({value, updateValidStateFn, updateValidationMessage
 		updateValidationMessage(null)
 	}
 }
+
+function validateSelectField({value, updateValidStateFn}) {
+	if (value === null) {
+		updateValidStateFn(false)
+	} else {
+		updateValidStateFn(true)
+	}
+}
+
 
 function sendNewPortionRequest({recipeId, selectedIngredient, amount, selectedUnit, csrfToken}) {
 	const data = {
@@ -43,6 +51,25 @@ function sendNewPortionRequest({recipeId, selectedIngredient, amount, selectedUn
   });
 }
 
+function submitClick({
+	selectedIngredient,
+	amount,
+	selectedUnit,
+	updateFormValidState,
+	updateIngredientValidState,
+	updateAmountValidState,
+	updateAmountValidationMessage,
+	updateUnitValidState
+}) {
+	if (selectedIngredient === null || amount === '' || selectedUnit === null) {
+		updateFormValidState(false)
+	}
+
+	validateSelectField({value: selectedIngredient, updateValidStateFn: updateIngredientValidState})
+	validateSelectField({value: selectedUnit, updateValidStateFn: updateUnitValidState})
+	validateNumberField({value: amount, updateValidStateFn: updateAmountValidState, updateValidationMessage: updateAmountValidationMessage})
+}
+
 const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 	const [selectedIngredient, updateSelectedIngredient] = useState(null)
 	const [selectedUnit, updateSelectedUnit] = useState(null)
@@ -65,16 +92,22 @@ const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 	}, [ingredientValidState, amountValidState, unitValidState])
 
 	useEffect(() => {
-		if (selectedUnit !== null) {
-			updateUnitValidState(true)
-		}
-	}, [selectedUnit])
-
-	useEffect(() => {
 		if (selectedIngredient !== null) {
-			updateIngredientValidState(true)
+			validateSelectField({value: selectedIngredient, updateValidStateFn: updateIngredientValidState})
 		}
 	}, [selectedIngredient])
+
+	useEffect(() => {
+		if (amount !== '') {
+			validateNumberField({value: amount, updateValidStateFn: updateAmountValidState, updateValidationMessage: updateAmountValidationMessage})
+		}
+	}, [amount])
+
+	useEffect(() => {
+		if (selectedUnit !== null) {
+			validateSelectField({value: selectedUnit, updateValidStateFn: updateUnitValidState})
+		}
+	}, [selectedUnit])
 
 	const unitsFormatted = units.map(u => {
 		const titleizedName = [...u.name].map((w, i) => i === 0 ? w[0].toUpperCase() : w).join('')
@@ -114,7 +147,6 @@ const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 							className="w-full md:mb-0 text-base p-4 rounded-md border border-solid border-gray-400 h-16" placeholder="4" min={0}
 							onChange={(e) => {
 								setAmount(e.target.value)
-								validateNumberField({value: e.target.value, updateValidStateFn: updateAmountValidState, updateValidationMessage: updateAmountValidationMessage})
 							}}
 							value={amount}
 							/>
@@ -139,10 +171,16 @@ const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 					onClick={(e) => {
 						e.preventDefault()
 						if (formValidState !== true) {
-							updateFormValidState(false)
-							updateIngredientValidState(false)
-							updateAmountValidState(false)
-							updateUnitValidState(false)
+							submitClick({
+								selectedIngredient,
+								amount,
+								selectedUnit,
+								updateFormValidState,
+								updateIngredientValidState,
+								updateAmountValidState,
+								updateAmountValidationMessage,
+								updateUnitValidState
+							})
 						} else {
 							sendNewPortionRequest({recipeId, selectedIngredient, amount, selectedUnit, csrfToken})
 						}
