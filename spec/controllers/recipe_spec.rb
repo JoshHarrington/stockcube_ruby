@@ -474,4 +474,30 @@ describe RecipesController do
 
   end
 
+  context "with different users and recipe" do
+    let!(:first_user) { create(:user) }
+    let!(:second_user) { create(:user) }
+    let!(:admin_user) { create(:user, admin: true)}
+
+    let!(:recipe) { create(:recipe, user_id: first_user.id) }
+    let!(:unit) { create(:unit) }
+    let!(:ingredient) { create(:ingredient, unit_id: unit.id) }
+    let!(:portion) { create(:portion, ingredient_id: ingredient.id, unit_id: unit.id, recipe_id: recipe.id) }
+    let!(:recipe_steps) { create_list(:recipe_step, 3, recipe_id: recipe.id)}
+
+    it "should return true that a recipe owner can edit this recipe" do
+      expect(recipe_exists_and_can_be_edited(recipe_id: recipe.id, user: first_user)).to eq true
+      expect(recipe_exists_and_can_be_edited(recipe_id: recipe.id.to_s, user: first_user)).to eq true
+    end
+
+    it "should return false that another user can edit this recipe" do
+      expect(recipe_exists_and_can_be_edited(recipe_id: recipe.id, user: second_user)).to eq false
+    end
+
+    it "should return true that an admin user can edit this recipe" do
+      expect(recipe_exists_and_can_be_edited(recipe_id: recipe.id, user: admin_user)).to eq true
+    end
+
+  end
+
 end
