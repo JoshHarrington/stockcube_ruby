@@ -18,7 +18,7 @@ class UserMailer < ApplicationMailer
 		mail(
 			to: User.where(admin: true).first.email,
 			cc: User.where(admin:true).length > 1 ? User.where(admin:true)[1..-1].map(&:email) : nil,
-			subject: "User feedback form submitted"
+			subject: "User added new ingredient"
 		)
 	end
 
