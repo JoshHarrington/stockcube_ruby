@@ -44,6 +44,8 @@ class PortionsController < ApplicationController
 			end
 		else
 			ingredient = Ingredient.create(name: params[:ingredient])
+			UserMailer.admin_ingredient_add_notification(current_user, ingredient).deliver_now
+			Ingredient.reindex
 		end
 
 		if recipe_exists_and_can_be_edited(recipe_id: params[:recipeId], user: current_user)
