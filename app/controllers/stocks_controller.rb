@@ -32,6 +32,105 @@ class StocksController < ApplicationController
 		@gram_unit_id = Unit.where(name: "gram").first.id
 	end
 
+
+	def create_from_post
+		if !user_signed_in?
+			respond_to do |format|
+				format.json {
+					render json: {
+						'adding new cupboard stock': 'not authorised'
+					}.as_json, status: 401
+				}
+				format.html {
+					redirect_back fallback_location: root_path,
+					notice: 'You are not currently authorised to complete that action'
+				}
+			end and return
+		end
+
+
+		if !params.has_key?(:cupboardId) ||
+			!params.has_key?(:ingredient) ||
+			!params.has_key?(:amount) ||
+			!params.has_key?(:unitId) ||
+			!params.has_key?(:useByDate)
+
+			respond_to do |format|
+				format.json {
+					render json: {
+						'adding new cupboard stock': 'bad request'
+					}.as_json, status: 400
+				}
+				format.html {
+					redirect_back fallback_location: root_path,
+					notice: 'There was an issue when trying to complete that action'
+				}
+			end and return
+		end
+
+		ingredient = nil
+		if params[:ingredient].is_number?
+			if Ingredient.exists?(params[:ingredient])
+				ingredient = Ingredient.find(params[:ingredient])
+			else
+				respond_to do |format|
+					format.json {
+						render json: {
+							'adding new cupboard stock': 'bad request'
+						}.as_json, status: 400
+					}
+					format.html {
+						redirect_back fallback_location: root_path,
+						notice: 'There was an issue when trying to complete that action'
+					}
+				end and return
+			end
+		else
+			ingredient = Ingredient.create(name: params[:ingredient])
+			UserMailer.admin_ingredient_add_notification(current_user, ingredient).deliver_now
+			Ingredient.reindex
+		end
+
+		new_stock = Stock.new(
+			cupboard_id: params[:cupboardId],
+			ingredient_id: ingredient.id,
+			unit_id: params[:unitId],
+			amount: params[:amount],
+			use_by_date: params[:useByDate].to_date
+		)
+
+		if new_stock.save
+			StockUser.create(user_id: current_user.id, stock_id: new_stock.id)
+			validated_cupboard_ids = validate_cupboard_id(current_user.id, params[:cupboardId])
+
+			respond_to do |format|
+				format.json {
+					render json: {
+						'adding new cupboard stock': 'successful'
+					}.as_json, status: 200
+				}
+				format.html {
+					redirect_to cupboards_path(anchor: validated_cupboard_ids[:encoded]),
+					notice: 'Stock added to your cupboard'
+				}
+			end and return
+		else
+			respond_to do |format|
+				format.json {
+					render json: {
+						'adding new cupboard stock': 'bad request'
+					}.as_json, status: 400
+				}
+				format.html {
+					redirect_back fallback_location: root_path,
+					notice: 'There was an issue when trying to complete that action'
+				}
+			end and return
+		end
+
+	end
+
+
 	def new_no_id
 		@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 		@cupboards = user_cupboards(current_user)
