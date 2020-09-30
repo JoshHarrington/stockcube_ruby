@@ -92,8 +92,10 @@ class StocksController < ApplicationController
 			Ingredient.reindex
 		end
 
+		@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+
 		new_stock = Stock.new(
-			cupboard_id: params[:cupboardId],
+			cupboard_id: @cupboard_id_hashids.decode(params[:cupboardId]).first,
 			ingredient_id: ingredient.id,
 			unit_id: params[:unitId],
 			amount: params[:amount],
@@ -166,13 +168,24 @@ class StocksController < ApplicationController
 		@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 		@stock = Stock.new
 		@cupboards = user_cupboards(current_user)
+		@units = unit_list()
+
+		if !params.has_key?(:cupboard_id) || !(Cupboard.exists?(@cupboard_id_hashids.decode(params[:cupboard_id]).first)) || !user_can_access_cupboard(user: current_user, cupboard_id: @cupboard_id_hashids.decode(params[:cupboard_id]).first)
+			redirect_back fallback_location: cupboards_path, notice: "There was something wrong with that link, please try to add stock again"
+		end and return
+
 		@ingredients = ingredient_list()
+		current_cupboard = user_cupboards(current_user).find(@cupboard_id_hashids.decode(params[:cupboard_id]).first).first
+
+		@cupboard_name = current_cupboard.location
+		@cupboard_id = @cupboard_id_hashids.encode(current_cupboard.id)
+
 		if @cupboards.length == 0
 			create_cupboard_if_none
 			redirect_to stocks_custom_new_path(:cupboard_id => @cupboard_id_hashids.encode(new_cupboard[:id]))
 			flash[:warning] = %Q[Looks like you didn't have a cupboard to add stock to so we've created one for you]
-		end
-		@ingredients = Ingredient.all.reject{|i| i.name == ''}.sort_by{|i| i.name.downcase}
+		end and return
+
 		if params.has_key?(:standard_use_by_limit) && params[:standard_use_by_limit]
 			@use_by_limit = Date.current + params[:standard_use_by_limit].to_i.days
 		else

@@ -59,6 +59,7 @@ module CupboardHelper
 			.select{|cu| cu.cupboard.setup == false && cu.cupboard.hidden == false }
 			.map{|cu| cu.cupboard }.sort_by{|c| c.created_at}.reverse!
 	end
+
 	def first_cupboard(user = nil)
 		return user_cupboards(user).first
 	end
@@ -139,5 +140,11 @@ module CupboardHelper
 			users: c.cupboard_users.select{|cu|cu.user != current_user}.length > 0 ? c.cupboard_users.select{|cu|cu.user != current_user}.map{|cu|cu.user.name}.to_sentence : nil,
 			sharingPath: cupboard_share_path(cupboard_sharing_hashids.encode(c.id))
 		}}
+	end
+
+	def user_can_access_cupboard(user: nil, cupboard_id: nil)
+		return false if (user == nil || cupboard_id == nil)
+
+		return user_cupboards(user).map(&:id).include?(cupboard_id)
 	end
 end
