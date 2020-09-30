@@ -1,0 +1,34 @@
+.react-datepicker__month-container{
+	@apply max-w-full text-lg;
+}
+
+.react-datepicker__day-name, .react-datepicker__day, .react-datepicker__time-name {
+	@apply w-16 leading-loose;
+}
+
+.react-datepicker__current-month {
+	@apply text-lg;
+}
+
+.react-datepicker__week,
+.react-datepicker__day-names {
+	@apply flex;
+	@media (min-width: 640px) {
+		display: block;
+	}
+}
+
+.react-datepicker__header {
+	@apply pt-4;
+}
+
+.react-datepicker__day-names {
+	@apply mt-2;
+}
+
+.react-datepicker__navigation {
+	@apply top-0 mt-5;
+	&:focus {
+		@apply outline-none;
+	}
+}
