@@ -7,6 +7,7 @@ class StocksController < ApplicationController
 	include CupboardHelper
 	include PlannerShoppingListHelper
 	include UnitsHelper
+	include IngredientsHelper
 
 	include PortionStockHelper
 
@@ -165,6 +166,7 @@ class StocksController < ApplicationController
 		@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
 		@stock = Stock.new
 		@cupboards = user_cupboards(current_user)
+		@ingredients = ingredient_list()
 		if @cupboards.length == 0
 			create_cupboard_if_none
 			redirect_to stocks_custom_new_path(:cupboard_id => @cupboard_id_hashids.encode(new_cupboard[:id]))
@@ -234,7 +236,7 @@ class StocksController < ApplicationController
 			@cupboards = []
 		end
 
-		@ingredients = Ingredient.all.sort_by{|i| i.name.downcase}
+		@ingredients = ingredient_list()
 		@current_ingredient = @stock.ingredient
 
 		preselect_unit = @stock.unit

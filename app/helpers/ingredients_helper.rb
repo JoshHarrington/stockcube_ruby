@@ -187,4 +187,8 @@ module IngredientsHelper
 		return 14
 	end
 
+	def ingredient_list()
+		return Ingredient.all.order('name ASC').reject{|i| i.name == ''}
+	end
+
 end
