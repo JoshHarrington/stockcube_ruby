@@ -37,6 +37,7 @@ Rails.application.routes.draw do
   post '/stock/new' => 'stocks#create_with_params', as: :create_stock_with_params
   get '/stock' => 'stocks#index'
   post '/stocks/new_cupboard_stock', to: 'stocks#create_from_post'
+  post '/stocks/edit_cupboard_stock', to: 'stocks#update_from_post'
 
   get '/cupboards' => 'cupboards#index'
   get '/cupboards/demo' => 'cupboards#demo'
