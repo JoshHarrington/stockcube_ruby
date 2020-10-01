@@ -4,7 +4,7 @@ import '../functions/alert';
 
 import '../functions/cupboard';
 import '../functions/navigation';
-import '../functions/stocks';
+// import '../functions/stocks';
 import '../functions/recipes';
 import '../functions/cupboard_share';
 import '../functions/user';
