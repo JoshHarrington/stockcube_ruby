@@ -4,7 +4,7 @@ import Select from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import classNames from 'classnames'
 import Icon from './Icon'
-import { addDays, formatDistance, differenceInCalendarDays, differenceInDays, format } from 'date-fns'
+import { addDays, formatDistance, differenceInCalendarDays, differenceInDays, format, parse } from 'date-fns'
 import DatePicker from 'react-datepicker'
 
 
@@ -44,9 +44,36 @@ function sendNewStockRequest({cupboardId, selectedIngredient, amount, selectedUn
 		credentials: 'same-origin'
 	}
 
-	console.log('fake cupboard new stock fetch', data)
-
   fetch("/stocks/new_cupboard_stock", data).then((response) => {
+		if(response.status === 200){
+      return response.json();
+		} else {
+			window.alert('Something went wrong! Maybe refresh the page and try again')
+			throw new Error('non-200 response status')
+    }
+  }).then(() => {
+		window.location.href = `/cupboards#${cupboardId}`
+  });
+}
+
+function sendEditStockRequest({stockId, cupboardId, amount, selectedUnit, useByDate, csrfToken}) {
+	const data = {
+		method: 'post',
+    body: JSON.stringify({
+			stockId,
+			cupboardId,
+			amount,
+			unitId: selectedUnit.value,
+			useByDate
+    }),
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRF-Token': csrfToken
+		},
+		credentials: 'same-origin'
+	}
+
+  fetch("/stocks/edit_cupboard_stock", data).then((response) => {
 		if(response.status === 200){
       return response.json();
 		} else {
@@ -77,9 +104,41 @@ function submitClick({
 	validateNumberField({value: amount, updateValidStateFn: updateAmountValidState, updateValidationMessage: updateAmountValidationMessage})
 }
 
-const NewStock = ({cupboardId, cupboardName, ingredients, units, csrfToken}) => {
-	const [selectedIngredient, updateSelectedIngredient] = useState(null)
-	const [selectedUnit, updateSelectedUnit] = useState(null)
+function titleizeString(string){
+	return [...string].map((w, i) => i === 0 ? w[0].toUpperCase() : w).join('')
+}
+
+const AddOrEditStock = ({stockData, cupboardId, cupboardName, ingredients, units, csrfToken}) => {
+
+	const stockExists = !!stockData &&
+		stockData.hasOwnProperty('ingredientName') &&
+		stockData.hasOwnProperty('amount') &&
+		stockData.hasOwnProperty('unitId') &&
+		stockData.hasOwnProperty('useByDate') &&
+		stockData.hasOwnProperty('id')
+
+	let stockIngredientName = null
+	let stockAmount = null
+	let stockUnitId = null
+	let stockUseByDate = null
+
+	if (stockExists) {
+		stockIngredientName = stockData.ingredientName
+		stockAmount = stockData.amount
+		stockUnitId = stockData.unitId
+		stockUseByDate = stockData.useByDate
+	}
+
+	const [selectedIngredient, updateSelectedIngredient] = useState(stockExists ? stockData.ingredientName : null)
+	const unitsFormatted = units.map(u => {
+		return {value: u.id, label: titleizeString(u.name)}
+	})
+	const findStockUnit = stockExists ? units.filter(u => u.id === stockUnitId)[0] : null
+	let selectedUnitObject = null
+	if (findStockUnit) {
+		selectedUnitObject = {value: findStockUnit.id, label: titleizeString(findStockUnit.name)}
+	}
+	const [selectedUnit, updateSelectedUnit] = useState(selectedUnitObject)
 	const [ingredientValidState, updateIngredientValidState] = useState(null)
 	const [amountValidState, updateAmountValidState] = useState(null)
 	const [amountValidationMessage, updateAmountValidationMessage] = useState("Make sure you've entered an amount")
@@ -87,7 +146,7 @@ const NewStock = ({cupboardId, cupboardName, ingredients, units, csrfToken}) => 
 
 	const [formValidState, updateFormValidState] = useState(null)
 
-	const [amount, setAmount] = useState('')
+	const [amount, setAmount] = useState(stockExists ? stockAmount : '')
 
 	useEffect(() => {
 		if (ingredientValidState === false || amountValidState === false || unitValidState === false) {
@@ -116,11 +175,6 @@ const NewStock = ({cupboardId, cupboardName, ingredients, units, csrfToken}) => 
 		}
 	}, [selectedUnit])
 
-	const unitsFormatted = units.map(u => {
-		const titleizedName = [...u.name].map((w, i) => i === 0 ? w[0].toUpperCase() : w).join('')
-		return {value: u.id, label: titleizedName}
-	})
-
 	const ingredientsFormatted = ingredients.map(i => {
 		return {value: i.id, label: i.name}
 	})
@@ -128,31 +182,38 @@ const NewStock = ({cupboardId, cupboardName, ingredients, units, csrfToken}) => 
 	const [ingredientsSelectFocused, updateIngredientsSelectFocused] = useState(false)
 	const [unitsSelectFocused, updateUnitsSelectFocused] = useState(false)
 
-	const [useByDate, setUseByDate] = useState(addDays(new Date(), 14));
+	const [useByDate, setUseByDate] = useState(stockExists ? parse(stockUseByDate, "yyyy-MM-dd", new Date()) : addDays(new Date(), 14))
 
 	return (
 		<div className="standard-wrapper mt-16 mb-40">
-			<a href={`/cupboards#${cupboardId}`} className="flex mb-4 items-center hover:underline text-gray-600 hover:text-gray-800 transition duration-300"><Icon name="arrow_back" className="w-8 h-8 mr-2" />Back to recipe</a>
-			<h1 className="bg-primary-300 px-6 py-6 text-2xl">Adding an ingredient to "{cupboardName}"</h1>
+			<a href={!!cupboardId ? `/cupboards#${cupboardId}` : '/cupboards'} className="flex mb-4 items-center hover:underline text-gray-600 hover:text-gray-800 transition duration-300"><Icon name="arrow_back" className="w-8 h-8 mr-2" />Back to cupboards</a>
+			<h1 className="bg-primary-300 px-6 py-6 text-2xl">
+				{stockExists && `Editing ${stockIngredientName} in "${cupboardName}"`}
+				{!stockExists && `Adding an ingredient to "${cupboardName}"`}
+			</h1>
 			<div className="bg-primary-50 pt-6 px-6 pb-8">
 
-				<h2 className="mb-1 text-xl">Pick an ingredient to add</h2>
-				<p className="mb-3 text-gray-700 text-base">... or create a new ingredient</p>
-				<CreatableSelect
-					className={classNames("w-full text-base", {"z-20": ingredientsSelectFocused})}
-					value={selectedIngredient}
-					placeholder="Select ingredient"
-					isClearable
-					onChange={updateSelectedIngredient}
-					options={ingredientsFormatted}
-					onBlur={() => {
-						validateSelectField({value: selectedIngredient, updateValidStateFn: updateIngredientValidState})
-						updateIngredientsSelectFocused(false)
-					}}
-					onFocus={() => {updateIngredientsSelectFocused(true)}}
-				/>
-				{ingredientValidState === false && <p className="text-red-600 mt-2 text-base">Make sure you've selected an ingredient</p>}
-				<h2 className="mb-2 mt-4 text-xl">Set the amount</h2>
+				{!stockExists &&
+					<>
+						<h2 className="mb-1 text-xl">Pick an ingredient to add</h2>
+						<p className="mb-3 text-gray-700 text-base">... or create a new ingredient</p>
+						<CreatableSelect
+							className={classNames("w-full text-base", {"z-20": ingredientsSelectFocused})}
+							value={selectedIngredient}
+							placeholder="Select ingredient"
+							isClearable
+							onChange={updateSelectedIngredient}
+							options={ingredientsFormatted}
+							onBlur={() => {
+								validateSelectField({value: selectedIngredient, updateValidStateFn: updateIngredientValidState})
+								updateIngredientsSelectFocused(false)
+							}}
+							onFocus={() => {updateIngredientsSelectFocused(true)}}
+						/>
+						{ingredientValidState === false && <p className="text-red-600 mt-2 text-base">Make sure you've selected an ingredient</p>}
+					</>
+				}
+				<h2 className="mb-2 mt-4 text-xl">{!stockExists ? 'Set the amount' : 'Update the ingredient amount'}</h2>
 				<div className="flex flex-wrap md:flex-no-wrap mb-4">
 					<div className="flex flex-wrap w-full md:w-1/2 md:mr-3 mb-3">
 						<input
@@ -219,7 +280,12 @@ const NewStock = ({cupboardId, cupboardName, ingredients, units, csrfToken}) => 
 								updateUnitValidState
 							})
 						} else {
-							sendNewStockRequest({cupboardId, selectedIngredient, amount, selectedUnit, useByDate, csrfToken})
+							if (stockExists) {
+								sendEditStockRequest({stockId: stockData.id, cupboardId, amount, selectedUnit, useByDate, csrfToken})
+							} else {
+								sendNewStockRequest({cupboardId, selectedIngredient, amount, selectedUnit, useByDate, csrfToken})
+							}
+							updateFormValidState(false)
 						}
 					}}
 					className={classNames("bg-white border border-solid border-primary-500 text-lg pt-4 pb-5 px-6 rounded", {"cursor-not-allowed opacity-50": formValidState === false})}
@@ -229,4 +295,4 @@ const NewStock = ({cupboardId, cupboardName, ingredients, units, csrfToken}) => 
 	)
 }
 
-export default NewStock
+export default AddOrEditStock
