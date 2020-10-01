@@ -236,18 +236,30 @@ class StocksController < ApplicationController
 	end
 
 	def edit
+		@cupboards = user_cupboards(current_user)
+		@units = unit_list()
 		@stock = current_user.stocks.where(id: params[:id]).first
 		if @stock == nil
-			redirect_to cupboards_path and return
+			redirect_back fallback_location: cupboards_path, notice: "There was something wrong with that link, please refresh and try again"
+			return
 		end
 
 		@current_cupboard = @stock.cupboard
+		@is_planner_stock = !!@stock.planner_recipe_id
 
-		if @stock.planner_recipe_id == nil
-			@cupboards = user_cupboards(current_user)
-		else
-			@cupboards = []
-		end
+		@cupboard_name = @stock.cupboard.location
+
+		cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
+		@cupboard_id = cupboard_id_hashids.encode(@stock.cupboard_id)
+
+
+		### to stop from people moving stock to other cupboard
+		### while it is required by a planner recipe we don't show cupboards
+		# if @stock.planner_recipe_id == nil
+		# 	@cupboards = user_cupboards(current_user)
+		# else
+		# 	@cupboards = []
+		# end
 
 		@ingredients = ingredient_list()
 		@current_ingredient = @stock.ingredient
@@ -265,6 +277,88 @@ class StocksController < ApplicationController
 
 
 		@delete_stock_hashids = Hashids.new(ENV['DELETE_STOCK_ID_SALT'])
+	end
+
+	def update_from_post
+		if !user_signed_in?
+			respond_to do |format|
+				format.json {
+					render json: {
+						'adding new cupboard stock': 'not authorised'
+					}.as_json, status: 401
+				}
+				format.html {
+					redirect_back fallback_location: root_path,
+					notice: 'You are not currently authorised to complete that action'
+				}
+			end and return
+		end
+
+
+		if !params.has_key?(:cupboardId) ||
+			!params.has_key?(:stockId) ||
+			!params.has_key?(:amount) ||
+			!params.has_key?(:unitId) ||
+			!params.has_key?(:useByDate)
+
+			respond_to do |format|
+				format.json {
+					render json: {
+						'adding new cupboard stock': 'bad request'
+					}.as_json, status: 400
+				}
+				format.html {
+					redirect_back fallback_location: root_path,
+					notice: 'There was an issue when trying to complete that action'
+				}
+			end and return
+		end
+
+		if not current_user.stocks.exists?(params[:stockId])
+			respond_to do |format|
+				format.json {
+					render json: {
+						'editing cupboard stock': 'not found'
+					}.as_json, status: 404
+				}
+				format.html {
+					redirect_back fallback_location: root_path,
+					notice: 'There was an issue when trying to complete that action'
+				}
+			end and return
+		end
+
+		stock = current_user.stocks.find(params[:stockId])
+
+		if stock.update(amount: params[:amount], unit_id: params[:unitId], use_by_date: params[:useByDate].to_date)
+			StockUser.find_or_create_by(user_id: current_user.id, stock_id: stock.id)
+			validated_cupboard_ids = validate_cupboard_id(current_user.id, params[:cupboardId])
+
+			respond_to do |format|
+				format.json {
+					render json: {
+						'editing cupboard stock': 'successful'
+					}.as_json, status: 200
+				}
+				format.html {
+					redirect_to cupboards_path(anchor: validated_cupboard_ids[:encoded]),
+					notice: 'Stock added to your cupboard'
+				}
+			end and return
+		else
+			respond_to do |format|
+				format.json {
+					render json: {
+						'editing cupboard stock': 'bad request'
+					}.as_json, status: 400
+				}
+				format.html {
+					redirect_back fallback_location: root_path,
+					notice: 'There was an issue when trying to complete that action'
+				}
+			end and return
+		end
+
 	end
 
 	def toggle_shopping_list_portion
