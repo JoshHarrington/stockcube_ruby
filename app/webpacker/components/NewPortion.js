@@ -196,6 +196,7 @@ const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 							})
 						} else {
 							sendNewPortionRequest({recipeId, selectedIngredient, amount, selectedUnit, csrfToken})
+							updateFormValidState(false)
 						}
 					}}
 					className={classNames("bg-white border border-solid border-primary-500 text-lg pt-4 pb-5 px-6 rounded", {"cursor-not-allowed opacity-50": formValidState === false})}
