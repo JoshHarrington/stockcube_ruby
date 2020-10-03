@@ -4,7 +4,7 @@ import Select from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import classNames from 'classnames'
 import Icon from './Icon'
-import { addDays, formatDistance, differenceInCalendarDays, differenceInDays, format, parse } from 'date-fns'
+import { addDays, formatDistance, differenceInCalendarDays, startOfDay, format, parse } from 'date-fns'
 import DatePicker from 'react-datepicker'
 
 
@@ -182,7 +182,8 @@ const AddOrEditStock = ({stockData, cupboardId, cupboardName, ingredients, units
 	const [ingredientsSelectFocused, updateIngredientsSelectFocused] = useState(false)
 	const [unitsSelectFocused, updateUnitsSelectFocused] = useState(false)
 
-	const [useByDate, setUseByDate] = useState(stockExists ? parse(stockUseByDate, "yyyy-MM-dd", new Date()) : addDays(new Date(), 14))
+	const currentDate = startOfDay(new Date())
+	const [useByDate, setUseByDate] = useState(stockExists ? parse(stockUseByDate, "yyyy-MM-dd", currentDate) : addDays(currentDate, 14))
 
 	const [submitText, setSubmitText] = useState('Save')
 
@@ -255,15 +256,15 @@ const AddOrEditStock = ({stockData, cupboardId, cupboardName, ingredients, units
 					<DatePicker
 						selected={useByDate}
 						onChange={date => setUseByDate(date)}
-						minDate={new Date()}
+						minDate={currentDate}
 						disabledKeyboardNavigation
 						calendarClassName="font-sans max-w-full"
 						inline
 					/>
 					<p className="mt-3"><strong>{format(useByDate, "dd/MM/yy")}</strong>{' '}
-					{differenceInCalendarDays(useByDate, new Date()) === 0 && "(Today)"}
-					{differenceInCalendarDays(useByDate, new Date()) === 1 && "(Tomorrow)"}
-					{differenceInCalendarDays(useByDate, new Date()) > 1 && `(${formatDistance(new Date(), useByDate)} from today)`} </p>
+					{differenceInCalendarDays(useByDate, currentDate) === 0 && "(Today)"}
+					{differenceInCalendarDays(useByDate, currentDate) === 1 && "(Tomorrow)"}
+					{differenceInCalendarDays(useByDate, currentDate) > 1 && `(${formatDistance(currentDate, useByDate)} from today)`} </p>
 				</div>
 
 				<button
