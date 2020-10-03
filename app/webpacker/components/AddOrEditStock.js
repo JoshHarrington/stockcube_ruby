@@ -184,6 +184,8 @@ const AddOrEditStock = ({stockData, cupboardId, cupboardName, ingredients, units
 
 	const [useByDate, setUseByDate] = useState(stockExists ? parse(stockUseByDate, "yyyy-MM-dd", new Date()) : addDays(new Date(), 14))
 
+	const [submitText, setSubmitText] = useState('Save')
+
 	return (
 		<div className="standard-wrapper mt-16 mb-40">
 			<a href={!!cupboardId ? `/cupboards#${cupboardId}` : '/cupboards'} className="flex mb-4 items-center hover:underline text-gray-600 hover:text-gray-800 transition duration-300"><Icon name="arrow_back" className="w-8 h-8 mr-2" />Back to cupboards</a>
@@ -286,10 +288,11 @@ const AddOrEditStock = ({stockData, cupboardId, cupboardName, ingredients, units
 								sendNewStockRequest({cupboardId, selectedIngredient, amount, selectedUnit, useByDate, csrfToken})
 							}
 							updateFormValidState(false)
+							setSubmitText('Saving...')
 						}
 					}}
 					className={classNames("bg-white border border-solid border-primary-500 text-lg pt-4 pb-5 px-6 rounded", {"cursor-not-allowed opacity-50": formValidState === false})}
-				>Save</button>
+				>{submitText}</button>
 			</div>
 		</div>
 	)
