@@ -122,6 +122,8 @@ const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 	const [ingredientsSelectFocused, updateIngredientsSelectFocused] = useState(false)
 	const [unitsSelectFocused, updateUnitsSelectFocused] = useState(false)
 
+	const [submitText, setSubmitText] = useState('Save')
+
 	return (
 		<div className="standard-wrapper mt-16 mb-40">
 			<a href={`/recipes/${recipeId}/edit`} className="flex mb-4 items-center hover:underline text-gray-600 hover:text-gray-800 transition duration-300"><Icon name="arrow_back" className="w-8 h-8 mr-2" />Back to recipe</a>
@@ -197,10 +199,11 @@ const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 						} else {
 							sendNewPortionRequest({recipeId, selectedIngredient, amount, selectedUnit, csrfToken})
 							updateFormValidState(false)
+							setSubmitText('Saving...')
 						}
 					}}
 					className={classNames("bg-white border border-solid border-primary-500 text-lg pt-4 pb-5 px-6 rounded", {"cursor-not-allowed opacity-50": formValidState === false})}
-				>Save</button>
+				>{submitText}</button>
 			</div>
 		</div>
 	)
