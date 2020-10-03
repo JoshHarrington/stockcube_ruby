@@ -35,7 +35,7 @@ function sendNewStockRequest({cupboardId, selectedIngredient, amount, selectedUn
 			ingredient: selectedIngredient.value,
 			amount,
 			unitId: selectedUnit.value,
-			useByDate
+			useByDate: format(useByDate, "yyyy-MM-dd")
     }),
 		headers: {
 			'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ function sendEditStockRequest({stockId, cupboardId, amount, selectedUnit, useByD
 			cupboardId,
 			amount,
 			unitId: selectedUnit.value,
-			useByDate
+			useByDate: format(useByDate, "yyyy-MM-dd")
     }),
 		headers: {
 			'Content-Type': 'application/json',
