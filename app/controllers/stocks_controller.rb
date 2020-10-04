@@ -87,9 +87,10 @@ class StocksController < ApplicationController
 				end and return
 			end
 		else
-			ingredient = Ingredient.create(name: params[:ingredient])
-			UserMailer.admin_ingredient_add_notification(current_user, ingredient).deliver_now
-			Ingredient.reindex
+			ingredient = Ingredient.find_or_create_by(name: params[:ingredient]) do |i|
+				i.save!
+				UserMailer.admin_ingredient_add_notification(current_user, i).deliver_later
+			end
 		end
 
 		@cupboard_id_hashids = Hashids.new(ENV['CUPBOARDS_ID_SALT'])
