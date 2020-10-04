@@ -6,6 +6,7 @@ import classNames from 'classnames'
 import Icon from './Icon'
 import { addDays, formatDistance, differenceInCalendarDays, startOfDay, format, parse } from 'date-fns'
 import DatePicker from 'react-datepicker'
+import { showAlert } from '../functions/utils'
 
 
 function validateNumberField({value, updateValidStateFn, updateValidationMessage}) {
@@ -27,7 +28,16 @@ function validateSelectField({value, updateValidStateFn}) {
 }
 
 
-function sendNewStockRequest({cupboardId, selectedIngredient, amount, selectedUnit, useByDate, csrfToken}) {
+function sendNewStockRequest({
+	cupboardId,
+	selectedIngredient,
+	amount,
+	selectedUnit,
+	useByDate,
+	csrfToken,
+	updateFormValidState,
+	setSubmitText
+}) {
 	const data = {
 		method: 'post',
     body: JSON.stringify({
@@ -35,7 +45,8 @@ function sendNewStockRequest({cupboardId, selectedIngredient, amount, selectedUn
 			ingredient: selectedIngredient.value,
 			amount,
 			unitId: selectedUnit.value,
-			useByDate: format(useByDate, "yyyy-MM-dd")
+			useByDate: format(useByDate, "yyyy-MM-dd"),
+			isNewIngredient: selectedIngredient.hasOwnProperty('__isNew__')
     }),
 		headers: {
 			'Content-Type': 'application/json',
@@ -44,11 +55,19 @@ function sendNewStockRequest({cupboardId, selectedIngredient, amount, selectedUn
 		credentials: 'same-origin'
 	}
 
+	if (selectedIngredient.hasOwnProperty('__isNew__')) {
+		showAlert("Creating a new ingredient and adding your stock now, this might take a minute")
+	} else {
+		showAlert("Adding your stock now")
+	}
+
   fetch("/stocks/new_cupboard_stock", data).then((response) => {
 		if(response.status === 200){
       return response.json();
 		} else {
-			window.alert('Something went wrong! Maybe refresh the page and try again')
+			showAlert('Something went wrong! Please try again')
+			updateFormValidState(true)
+			setSubmitText('Save')
 			throw new Error('non-200 response status')
     }
   }).then(() => {
@@ -56,7 +75,16 @@ function sendNewStockRequest({cupboardId, selectedIngredient, amount, selectedUn
   });
 }
 
-function sendEditStockRequest({stockId, cupboardId, amount, selectedUnit, useByDate, csrfToken}) {
+function sendEditStockRequest({
+	stockId,
+	cupboardId,
+	amount,
+	selectedUnit,
+	useByDate,
+	csrfToken,
+	updateFormValidState,
+	setSubmitText
+}) {
 	const data = {
 		method: 'post',
     body: JSON.stringify({
@@ -73,11 +101,15 @@ function sendEditStockRequest({stockId, cupboardId, amount, selectedUnit, useByD
 		credentials: 'same-origin'
 	}
 
+	showAlert("Updating your stock now")
+
   fetch("/stocks/edit_cupboard_stock", data).then((response) => {
 		if(response.status === 200){
       return response.json();
 		} else {
-			window.alert('Something went wrong! Maybe refresh the page and try again')
+			showAlert('Something went wrong! Please try again')
+			updateFormValidState(true)
+			setSubmitText('Save')
 			throw new Error('non-200 response status')
     }
   }).then(() => {
@@ -284,9 +316,27 @@ const AddOrEditStock = ({stockData, cupboardId, cupboardName, ingredients, units
 							})
 						} else {
 							if (stockExists) {
-								sendEditStockRequest({stockId: stockData.id, cupboardId, amount, selectedUnit, useByDate, csrfToken})
+								sendEditStockRequest({
+									stockId: stockData.id,
+									cupboardId,
+									amount,
+									selectedUnit,
+									useByDate,
+									csrfToken,
+									updateFormValidState,
+									setSubmitText
+								})
 							} else {
-								sendNewStockRequest({cupboardId, selectedIngredient, amount, selectedUnit, useByDate, csrfToken})
+								sendNewStockRequest({
+									cupboardId,
+									selectedIngredient,
+									amount,
+									selectedUnit,
+									useByDate,
+									csrfToken,
+									updateFormValidState,
+									setSubmitText
+								})
 							}
 							updateFormValidState(false)
 							setSubmitText('Saving...')

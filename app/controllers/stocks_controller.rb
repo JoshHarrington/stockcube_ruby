@@ -70,7 +70,7 @@ class StocksController < ApplicationController
 		end
 
 		ingredient = nil
-		if params[:ingredient].is_number?
+		if params[:isNewIngredient] == false
 			if Ingredient.exists?(params[:ingredient])
 				ingredient = Ingredient.find(params[:ingredient])
 			else
