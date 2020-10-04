@@ -32,3 +32,7 @@
 		@apply outline-none;
 	}
 }
+
+.react-datepicker-popper {
+	@apply z-40
+}
