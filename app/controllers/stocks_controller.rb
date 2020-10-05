@@ -71,7 +71,7 @@ class StocksController < ApplicationController
 		end
 
 		ingredient = nil
-		if params.has_key?(:isNewIngredient) && ActiveModel::Type::Boolean.new.cast(params[:isNewIngredient]) == false
+		if ActiveModel::Type::Boolean.new.cast(params[:isNewIngredient]) == false
 			if Ingredient.exists?(params[:ingredient])
 				ingredient = Ingredient.find(params[:ingredient])
 			else
@@ -87,7 +87,7 @@ class StocksController < ApplicationController
 					}
 				end and return
 			end
-		elsif params.has_key?(:isNewIngredient) && ActiveModel::Type::Boolean.new.cast(params[:isNewIngredient]) == true
+		elsif ActiveModel::Type::Boolean.new.cast(params[:isNewIngredient]) == true
 			ingredient = Ingredient.find_or_create_by(name: params[:ingredient]) do |i|
 				i.save!
 				UserMailer.admin_ingredient_add_notification(current_user, i).deliver_later
