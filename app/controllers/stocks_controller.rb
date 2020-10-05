@@ -54,7 +54,8 @@ class StocksController < ApplicationController
 			!params.has_key?(:ingredient) ||
 			!params.has_key?(:amount) ||
 			!params.has_key?(:unitId) ||
-			!params.has_key?(:useByDate)
+			!params.has_key?(:useByDate) ||
+			!params.has_key?(:isNewIngredient)
 
 			respond_to do |format|
 				format.json {
@@ -70,7 +71,7 @@ class StocksController < ApplicationController
 		end
 
 		ingredient = nil
-		if params[:isNewIngredient] == false
+		if params.has_key?(:isNewIngredient) && ActiveModel::Type::Boolean.new.cast(params[:isNewIngredient]) == false
 			if Ingredient.exists?(params[:ingredient])
 				ingredient = Ingredient.find(params[:ingredient])
 			else
@@ -86,7 +87,7 @@ class StocksController < ApplicationController
 					}
 				end and return
 			end
-		else
+		elsif params.has_key?(:isNewIngredient) && ActiveModel::Type::Boolean.new.cast(params[:isNewIngredient]) == true
 			ingredient = Ingredient.find_or_create_by(name: params[:ingredient]) do |i|
 				i.save!
 				UserMailer.admin_ingredient_add_notification(current_user, i).deliver_later
