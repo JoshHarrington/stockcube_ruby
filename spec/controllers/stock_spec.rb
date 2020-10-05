@@ -38,18 +38,28 @@ describe StocksController do
 			request.headers.merge! headers
 
 			expect(Stock.exists?(amount: 2, ingredient_id: ingredient.id, unit_id: unit.id, cupboard_id: cupboard.id)).to eq false
+			expect(Ingredient.order(created_at: :desc).first.id).to eq ingredient.id
 
 			post :create_from_post, params: {
 				cupboardId: encoded_cupboard_id,
 				ingredient: ingredient.id,
 				unitId: unit.id,
 				amount: 2,
-				useByDate: Date.current + 14.days
+				useByDate: Date.current + 14.days,
+				isNewIngredient: false
 			}
 
 			expect(response.content_type).to eq("application/json")
 			expect(response).to have_http_status(:ok)
-			expect(Stock.exists?(amount: 2, ingredient_id: ingredient.id, cupboard_id: cupboard.id, unit_id: unit.id, use_by_date: Date.current + 14.days)).to eq true
+
+			expect(Stock.all.length).to eq 1
+			stock = Stock.first
+			expect(stock.amount).to eq 2
+			expect(stock.ingredient_id).to eq ingredient.id
+			expect(stock.cupboard_id).to eq cupboard.id
+			expect(stock.unit_id).to eq unit.id
+			expect(stock.use_by_date).to eq Date.current + 14.days
+			expect(stock.use_by_date.to_date).to eq Date.current + 14.days
 		end
 
 		it "should return ok for post with correct params and new ingredient from string" do
@@ -67,7 +77,8 @@ describe StocksController do
 				ingredient: "New ingredient",
 				unitId: unit.id,
 				amount: 2,
-				useByDate: Date.current + 14.days
+				useByDate: Date.current + 14.days,
+				isNewIngredient: true
 			}
 
 			expect(response.content_type).to eq("application/json")
