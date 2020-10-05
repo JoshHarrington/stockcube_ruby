@@ -3,6 +3,7 @@ import Select from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import classNames from 'classnames'
 import Icon from './Icon'
+import { showAlert } from '../functions/utils'
 
 
 function validateNumberField({value, updateValidStateFn, updateValidationMessage}) {
@@ -24,14 +25,23 @@ function validateSelectField({value, updateValidStateFn}) {
 }
 
 
-function sendNewPortionRequest({recipeId, selectedIngredient, amount, selectedUnit, csrfToken}) {
+function sendNewPortionRequest({
+	recipeId,
+	selectedIngredient,
+	amount,
+	selectedUnit,
+	csrfToken,
+	updateFormValidState,
+	setSubmitText
+}) {
 	const data = {
 		method: 'post',
     body: JSON.stringify({
 			recipeId,
 			ingredient: selectedIngredient.value,
 			amount,
-			unitId: selectedUnit.value
+			unitId: selectedUnit.value,
+			isNewIngredient: selectedIngredient.hasOwnProperty('__isNew__')
     }),
 		headers: {
 			'Content-Type': 'application/json',
@@ -40,11 +50,19 @@ function sendNewPortionRequest({recipeId, selectedIngredient, amount, selectedUn
 		credentials: 'same-origin'
 	}
 
+	if (selectedIngredient.hasOwnProperty('__isNew__')) {
+		showAlert("Creating a new ingredient and adding your recipe portion now, this might take a minute")
+	} else {
+		showAlert("Adding your stock now")
+	}
+
   fetch("/portions/new_recipe_portion", data).then((response) => {
 		if(response.status === 200){
       return response.json();
 		} else {
-			window.alert('Something went wrong! Maybe refresh the page and try again')
+			showAlert('Something went wrong! Please try again')
+			updateFormValidState(true)
+			setSubmitText('Save')
 			throw new Error('non-200 response status')
     }
   }).then(() => {
@@ -197,7 +215,15 @@ const NewPortion = ({recipeId, recipeName, ingredients, units, csrfToken}) => {
 								updateUnitValidState
 							})
 						} else {
-							sendNewPortionRequest({recipeId, selectedIngredient, amount, selectedUnit, csrfToken})
+							sendNewPortionRequest({
+								recipeId,
+								selectedIngredient,
+								amount,
+								selectedUnit,
+								csrfToken,
+								updateFormValidState,
+								setSubmitText
+							})
 							updateFormValidState(false)
 							setSubmitText('Saving...')
 						}
