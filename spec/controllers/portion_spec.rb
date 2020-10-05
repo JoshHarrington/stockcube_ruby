@@ -40,7 +40,8 @@ describe PortionsController do
 				recipeId: recipe.id,
 				ingredient: ingredient.id,
 				unitId: unit.id,
-				amount: 2
+				amount: 2,
+				isNewIngredient: false
 			}
 
 			expect(response.content_type).to eq("application/json")
@@ -58,7 +59,8 @@ describe PortionsController do
 				recipeId: recipe.id,
 				ingredient: "New ingredient",
 				unitId: unit.id,
-				amount: 2
+				amount: 2,
+				isNewIngredient: true
 			}
 
 			expect(response.content_type).to eq("application/json")
