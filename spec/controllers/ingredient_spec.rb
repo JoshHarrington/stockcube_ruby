@@ -33,7 +33,7 @@ describe IngredientsController do
 	end
 
 	context "with existing ingredient" do
-		let!(:ingredient) { create(:ingredient, name: "Ingredient 1") }
+		let!(:ingredient) { create(:ingredient, name: "Ingredient 1", use_by_date_diff: 14) }
 		let!(:units) { create_list(:unit, 2)}
 		let!(:default_ingredient_size_1) { create(
 			:default_ingredient_size,
@@ -78,7 +78,8 @@ describe IngredientsController do
 					vegetarian: true,
 					gluten_free: false,
 					dairy_free: true,
-					kosher: false
+					kosher: false,
+					use_by_date_diff: 20
 				},
 				default_ingredient_sizes: {
 					"#{default_ingredient_size_1.id}": {
@@ -87,7 +88,8 @@ describe IngredientsController do
 					},
 					"#{default_ingredient_size_2.id}": {
 						amount: default_ingredient_size_2.amount,
-						unit_id: default_ingredient_size_2.unit_id
+						unit_id: default_ingredient_size_2.unit_id,
+						delete: true
 					},
 					new: [{
 						amount: 3,
@@ -107,6 +109,7 @@ describe IngredientsController do
 			expect(ingredient_to_edit.gluten_free).to eq false
 			expect(ingredient_to_edit.dairy_free).to eq true
 			expect(ingredient_to_edit.kosher).to eq false
+			expect(ingredient_to_edit.use_by_date_diff).to eq 20
 
 			expect(ingredient_to_edit.default_ingredient_sizes.exists?(
 				amount: 1,
@@ -118,7 +121,7 @@ describe IngredientsController do
 				amount: 2,
 				unit_id: units.second.id,
 				ingredient_id: ingredient.id
-			)).to eq true
+			)).to eq false
 
 			expect(ingredient_to_edit.default_ingredient_sizes.exists?(
 				amount: 3,
@@ -140,5 +143,3 @@ describe IngredientsController do
 		end
 	end
 end
-
-# {"utf8"=>"✓", "authenticity_token"=>"kfotDMHiHypTETKhOnAt9u3F+V192YrP5XXSXxHBE/ajNLgxNi5PlzWYAN1wDRfYKdDQyS21KbAoI+r0+KYijg==", "ingredient"=>{"name"=>"American cheese", "vegan"=>"false", "vegetarian"=>"false", "gluten_free"=>"false", "dairy_free"=>"false", "kosher"=>"false"}, "default_ingredient_sizes"=>{"1"=>{"amount"=>"110.0", "unit_id"=>"10"}, "2"=>{"amount"=>"160.0", "unit_id"=>"10"}, "3"=>{"amount"=>"180.0", "unit_id"=>"10"}, "new"=>[{"amount"=>"", "unit_id"=>"10"}, {"amount"=>"222", "unit_id"=>"17"}]}, "button"=>"", "id"=>"13"}
