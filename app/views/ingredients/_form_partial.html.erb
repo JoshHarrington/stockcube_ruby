@@ -2,7 +2,7 @@
 <div class="item_form--wrapper">
 	<%= form_for ingredient, :html => {id: "ingredient_form", class: "item_form"} do |i| %>
 		<div class="item_form--title">
-			<h1 style="padding-right:0"><%= i.text_field :name, value: ingredient.name, style: "width:100%;padding-left:.5rem" %></h1>
+			<h1 class="pr-0"><%= i.text_field :name, value: ingredient.name, class: "w-full pl-2" %></h1>
 		</div>
 		<div class="item_form--contents">
 
@@ -24,6 +24,10 @@
 				<%= i.check_box :kosher, {id: "kosher_check", style: "display:none", checked: ingredient.kosher}, "true", "false" %>
 				<%= label_tag "kosher_check", "Kosher", class: "fancy_checkbox_label" %>
 
+			</div>
+			<div class="my-3">
+				<p>Usually fresh for (this number of days):</p>
+				<%= i.number_field :use_by_date_diff, {value: (ingredient.use_by_date_diff == 0 ? 14 : ingredient.use_by_date_diff), class: "px-2 py-3 mt-2"} %>
 			</div>
 			<div class="item_form--content_row">
 				<h3>Default sizes</h3>

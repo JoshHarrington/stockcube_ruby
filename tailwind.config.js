@@ -1,4 +1,5 @@
 const { transitionProperty, spacing } = require('tailwindcss/defaultTheme')
+const plugin = require('tailwindcss/plugin')
 
 module.exports = {
   theme: {
@@ -72,6 +73,16 @@ module.exports = {
     padding: ['responsive', 'hover', 'focus'],
     borderStyle: ['responsive', 'hover', 'focus'],
     borderWidth: ['responsive', 'hover', 'focus'],
+    backgroundColor: ['responsive', 'hover', 'focus', 'target'],
+    boxShadow: ['responsive', 'hover', 'focus', 'target']
   },
-  plugins: [],
+  plugins: [
+    plugin(function({ addVariant, e }) {
+      addVariant('target', ({ modifySelectors, separator }) => {
+        modifySelectors(({ className }) => {
+          return `.${e(`target${separator}${className}`)}:target`
+        })
+      })
+    })
+  ]
 }
