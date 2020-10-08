@@ -6,31 +6,48 @@
         <br />
         <%= link_to 'New Ingredient', ingredients_new_path %>
       </div>
-      <div class="list_block--collection list_block--collection__tight">
+      <div class="flex flex-wrap">
         <% @ingredients.order(updated_at: :desc).each do |ingredient| %>
-
-          <div class="list_block list_block__column" id="<%= ingredient.id %>">
-            <div class="list_block--content">
-              <div class="list_block--title">
-                <h3><%= link_to ingredient.name, edit_ingredient_path(ingredient) %></h3>
+          <div class="p-2 w-1/2 lg:w-1/4 flex">
+            <%= link_to edit_ingredient_path(ingredient),
+                class: "flex flex-wrap p-3
+                        border border-solid border-primary-400
+                        text-base w-full content-start
+                        hover:bg-primary-100
+                        target:shadow-outline
+                        rounded",
+                id: ingredient.id do %>
+              <h3 class="w-full mb-2 text-2xl"><%= ingredient.name %></h3>
+              <div class="w-full">
+                <p class="text-base">Fresh for <%= ingredient.use_by_date_diff %> days</p>
               </div>
-              <div style="width:100%;height:1em"></div>
-              <h4>Default sizes</h4>
-              <% if ingredient.default_ingredient_sizes.length > 0 %>
-                <ul style="width: 100%;list-style: circle;padding-left: 2em;">
-                  <% ingredient.default_ingredient_sizes.each do |size| %>
-                    <li>
-                      <p><%= short_serving_size(size) %></p>
-                    </li>
-                  <% end %>
-                </ul>
-              <% else %>
-                <p style="width:100%;font-style: italic;">No ingredient sizes</p>
-              <% end %>
-              <div style="width:100%;height:1em"></div>
-              <h4>Dietary details</h4>
-              <p style="width:100%">[<%= ingredient.vegan == true ? 'Vegan, ' : '' %><%= ingredient.vegetarian == true ? 'Vegetarian, ' : '' %><%= ingredient.dairy_free == true ? 'Dairy free, ' : '' %> <%= ingredient.gluten_free == true ? 'Gluten free, ' : '' %><%= ingredient.kosher == true ? 'Kosher' : '' %>]</p>
-            </div>
+              <div class="w-full">
+                <h4 class="text-lg mt-3 mb-1">Default sizes</h4>
+                <% if ingredient.default_ingredient_sizes.length > 0 %>
+                  <ul style="width: 100%;list-style: circle;padding-left: 2em;">
+                    <% ingredient.default_ingredient_sizes.each do |size| %>
+                      <li>
+                        <p class="text-base"><%= short_serving_size(size) %></p>
+                      </li>
+                    <% end %>
+                  </ul>
+                <% else %>
+                  <p class="w-full italic text-base">No ingredient sizes</p>
+                <% end %>
+                <div class="w-full">
+                  <h4 class="text-lg mt-3 mb-1">Dietary details</h4>
+                  <p class="w-full text-base">
+                    [
+                      <%= ingredient.vegan == true ? 'Vegan, ' : '' %>
+                      <%= ingredient.vegetarian == true ? 'Vegetarian, ' : '' %>
+                      <%= ingredient.dairy_free == true ? 'Dairy free, ' : '' %>
+                      <%= ingredient.gluten_free == true ? 'Gluten free, ' : '' %>
+                      <%= ingredient.kosher == true ? 'Kosher' : '' %>
+                    ]
+                  </p>
+                </div>
+              </div>
+            <% end %>
           </div>
 
         <% end  %>
