@@ -96,7 +96,10 @@ class IngredientsController < ApplicationController
 
 		# Confirms an admin user.
 		def admin_user
-			redirect_to(root_url) unless current_user.admin?
+			if current_user.admin == false
+				flash[:notice] = "Only admins can edit ingredients directly"
+				redirect_to(root_path)
+			end
 		end
 
 end
