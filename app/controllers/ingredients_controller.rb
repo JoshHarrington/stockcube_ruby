@@ -91,7 +91,16 @@ class IngredientsController < ApplicationController
 
 	protected
 		def ingredient_params
-			params.require(:ingredient).permit(:name, :searchable, :vegan, :vegetarian, :gluten_free, :dairy_free, :kosher)
+			params.require(:ingredient).permit(
+				:name,
+				:searchable,
+				:vegan,
+				:vegetarian,
+				:gluten_free,
+				:dairy_free,
+				:kosher,
+				:use_by_date_diff
+			)
 		end
 
 		# Confirms an admin user.
