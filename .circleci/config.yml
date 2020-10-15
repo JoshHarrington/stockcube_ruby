@@ -7,19 +7,22 @@ workflows:
   heroku_deploy:
     jobs:
       - build
-      - deploy-staging:
+      - heroku/deploy-via-git: # Use the pre-configured job, deploy-via-git
+          app-name: "stockcubes-staging"
           requires:
             - build
           filters:
             branches:
-              only: staging
-      - deploy-prod:
+              only:
+                - staging
+      - heroku/deploy-via-git: # Use the pre-configured job, deploy-via-git
+          app-name: "stockcubes-prod"
           requires:
             - build
           filters:
             branches:
-              only: master
-
+              only:
+                - master
 jobs:
   build:
     docker:
@@ -77,34 +80,3 @@ jobs:
       - run:
           name: Run tests
           command: bundle exec rspec
-
-
-  deploy-staging:
-    machine:
-        enabled: true
-    environment:
-      HEROKU_APP_NAME: "stockcubes-staging"
-    steps:
-      - checkout
-
-      - run:
-          command: |
-            git push heroku staging
-            heroku run rake db:migrate
-            sleep 5 # sleep for 5 seconds to wait for dynos
-            heroku restart
-
-  deploy-prod:
-    machine:
-        enabled: true
-    environment:
-      HEROKU_APP_NAME: "stockcubes-prod"
-    steps:
-      - checkout
-
-      - run:
-          command: |
-            git push heroku master
-            heroku run rake db:migrate
-            sleep 5 # sleep for 5 seconds to wait for dynos
-            heroku restart
