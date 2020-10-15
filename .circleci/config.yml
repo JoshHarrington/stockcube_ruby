@@ -1,21 +1,24 @@
 version: 2.1
 
 orbs:
-  heroku: circleci/heroku@1.0.1
   node: circleci/node@4.1.0
 
 workflows:
   heroku_deploy:
     jobs:
       - build
-      - heroku/deploy-via-git: # Use the pre-configured job, deploy-via-git
+      - deploy-staging:
           requires:
             - build
           filters:
             branches:
-              only:
-                - staging
-                - master
+              only: staging
+      - deploy-master:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
 
 jobs:
   build:
@@ -75,12 +78,39 @@ jobs:
           name: Run tests
           command: bundle exec rspec
 
+
+  deploy-staging:
+    machine:
+        enabled: true
+    environment:
+      HEROKU_APP_NAME: "stockcubes-staging"
+    steps:
+      - checkout
       - run:
-          name: Set env vars per branch
+          name: Setup Heroku
+          command: bash .circleci/setup-heroku.sh # run a script to set up Heroku
+
+      - run:
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              HEROKU_APP_NAME=${HEROKU_MASTER_APP_NAME}
-            fi
-            if [ "${CIRCLE_BRANCH}" == "staging" ]; then
-              HEROKU_APP_NAME=${HEROKU_STAGING_APP_NAME}
-            fi
+            git push heroku staging
+            heroku run rake db:migrate
+            sleep 5 # sleep for 5 seconds to wait for dynos
+            heroku restart
+
+  deploy-prod:
+    machine:
+        enabled: true
+    environment:
+      HEROKU_APP_NAME: "stockcubes-prod"
+    steps:
+      - checkout
+      - run:
+          name: Setup Heroku
+          command: bash .circleci/setup-heroku.sh # run a script to set up Heroku
+
+      - run:
+          command: |
+            git push heroku master
+            heroku run rake db:migrate
+            sleep 5 # sleep for 5 seconds to wait for dynos
+            heroku restart
