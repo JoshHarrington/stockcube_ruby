@@ -74,3 +74,13 @@ jobs:
       - run:
           name: Run tests
           command: bundle exec rspec
+
+      - run:
+          name: Set env vars per branch
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              HEROKU_APP_NAME=${HEROKU_MASTER_APP_NAME}
+            fi
+            if [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              HEROKU_APP_NAME=${HEROKU_STAGING_APP_NAME}
+            fi
