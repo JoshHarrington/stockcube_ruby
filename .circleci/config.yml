@@ -13,7 +13,7 @@ workflows:
           filters:
             branches:
               only: staging
-      - deploy-master:
+      - deploy-prod:
           requires:
             - build
           filters:
