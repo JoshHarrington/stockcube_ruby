@@ -86,9 +86,6 @@ jobs:
       HEROKU_APP_NAME: "stockcubes-staging"
     steps:
       - checkout
-      - run:
-          name: Setup Heroku
-          command: bash .circleci/setup-heroku.sh # run a script to set up Heroku
 
       - run:
           command: |
