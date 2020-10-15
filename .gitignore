@@ -39,6 +39,8 @@ notes.md
 /node_modules
 yarn-debug.log*
 .yarn-integrity
+.yarnrc
+.yarn/releases
 
 /public/packs
 /public/packs-test
