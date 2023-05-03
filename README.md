@@ -1,6 +1,6 @@
 # Stockcubes
 
-This is the now defunct and no longer maintained prototype for the Stockcubes application
+This is the now deprecated and no longer maintained prototype for the Stockcubes application
 
 ## Project purpose
 
