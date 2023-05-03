@@ -35,3 +35,7 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 4. For first use, run `npm install && npm start`
 5. At all other times, only run `npm start`
 6. Use proxy address provided, shown in terminal window
+
+## License
+
+This project is licensed under the terms of the MIT license.
