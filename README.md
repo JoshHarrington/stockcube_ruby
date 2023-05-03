@@ -1,8 +1,18 @@
-# README
+# Stockcubes
 
-Welcome to this rudamentary prototype for the StockCube App
+This is the now defunct and no longer maintained prototype for the Stockcubes application
 
-* Ruby version - >=2.5.0
+## Project purpose
+
+The application was design to help users manage their food at home, with inventory systems, automatic shopping list creation and meal planning.
+
+## Tech stack
+
+The code of the application is a mix of Ruby on Rails for the backend and React components for the frontend
+
+* Ruby version >=2.5.0
+
+## Running the project
 
 I recommend using [Homebrew](https://brew.sh/) to manage your packages and Ruby environment (if you're on a Mac).
 
@@ -25,14 +35,3 @@ If you're using Homebrew on Mac then you use it to install PostgresQL (the datab
 4. For first use, run `npm install && npm start`
 5. At all other times, only run `npm start`
 6. Use proxy address provided, shown in terminal window
-
-## To dos
-Find all to dos on the [General tasks project](https://github.com/JoshHarrington/stockcube_ruby/projects/1) board
-
-## Points to consider
-- Are physical devices needed?
-	- Order Ardunio/Raspberry Pi kit for physical prototyping
-	- Figure out how physical device would update data in db, api call?
-	- What happens if physical device records data but is not connected to a stock ingredient?
-	- The user needs a method of reviewing all physical devices connected with account
-- Sponsorship / Funding?
